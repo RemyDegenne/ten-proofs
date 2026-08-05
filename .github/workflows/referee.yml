@@ -57,9 +57,20 @@ env:
     MulticolorTriangleRamsey|Multicolor Ramsey numbers
     CompactnessAndDegeneracy|Extremal number conjectures
 
-  # Excluded from every phase that imports the project: these are the challenge statements, left
-  # `sorry` on purpose, and none of them is under any of the roots above anyway.
-  REFEREE_EXCLUDE_LIB: ComparatorChallenges
+  # Excluded from every phase that imports the project. Repeatable, so this is passed unquoted and
+  # split into arguments.
+  #
+  # `ComparatorChallenges` holds the challenge statements, left `sorry` on purpose, and none of them
+  # is under any of the roots above anyway.
+  #
+  # `All` is excluded because it must be: it is the one library in `lakefile.toml` missing from
+  # `defaultTargets`, so `lake build` never writes `All.olean`, and referee imports every project
+  # library root it is not told to skip — it fails with `unknown module prefix 'All'` before
+  # collecting anything. Excluding it costs nothing, since `All.lean` is an aggregator holding only
+  # imports and declares nothing any site would show. (Adding `All` to `defaultTargets` would fix it
+  # from the other end, and would also mean `lake build` starts checking that `All.lean` still
+  # compiles — worth doing on its own merits, but not required by this workflow.)
+  REFEREE_EXCLUDE_ARGS: --exclude-lib ComparatorChallenges --exclude-lib All
 
   # Generated data, deliberately *outside* the working tree. `provenance` records whether the tree
   # was clean when it folded, via `git status --porcelain`, which counts untracked files — so
@@ -191,9 +202,10 @@ jobs:
           while IFS='|' read -r root _title; do
             [ -n "$root" ] || continue
             echo "::group::collect $root"
+            # shellcheck disable=SC2086 # word splitting is the point: one --exclude-lib per library
             lake env "$REFEREE_BIN" collect \
               --root "$root" \
-              --exclude-lib "$REFEREE_EXCLUDE_LIB" \
+              $REFEREE_EXCLUDE_ARGS \
               --hashes "$REFEREE_HASHES" \
               --data "$REFEREE_DATA_DIR/$root.json"
             echo "::endgroup::"
@@ -347,14 +359,15 @@ jobs:
               baseline=""
             fi
 
-            # `--exclude-lib` goes only to `extract`, the one phase here that imports the project
+            # The exclusions go only to `extract`, the one phase here that imports the project
             # wholesale. `highlight` fans out to per-module workers driven by the data file, and
-            # `build-site` reads only the JSON, so neither needs it. `highlight-extracted` is
+            # `build-site` reads only the JSON, so neither needs them. `highlight-extracted` is
             # deliberately skipped — it re-elaborates every extracted file and costs more than the
             # rest of this job combined; without it the standalone files are still written and
             # linked, just not rendered inline.
+            # shellcheck disable=SC2086 # word splitting is the point: one --exclude-lib per library
             lake env "$REFEREE_BIN" extract \
-              --data "$data" --exclude-lib "$REFEREE_EXCLUDE_LIB" --output "$out"
+              --data "$data" $REFEREE_EXCLUDE_ARGS --output "$out"
             lake env "$REFEREE_BIN" highlight --data "$data" --output "$out"
             # `--trust` is an editorial claim, not a derived fact: it says whoever publishes this
             # site vouches for Mathlib and everything under it. Drop it and every upstream package
