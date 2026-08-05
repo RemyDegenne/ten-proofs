@@ -920,6 +920,7 @@ def pi₂ : K →* Q := modTwoGroupHom.comp KSubgroup.subtype
 theorem modTwoPolynomial_surjective : Function.Surjective modTwoPolynomial := by
   exact Polynomial.map_surjective _ (ZMod.ringHom_surjective _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem specialLinear_map_transvection_baseChange
     {A B : Type*} [CommRing A] [CommRing B]
     (f : A →+* B) {i j : Index} (hij : i ≠ j) (a : A) :
@@ -2203,6 +2204,7 @@ theorem suslin_transvection_conj_opposite_factor
             simp [mul_assoc]
     _ = _ := by rw [hadjacent, hreverse]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem suslin_specialLinear_map_transvection
     {ι : Type u} {A : Type v} {B : Type w}
     [Fintype ι] [DecidableEq ι] [CommRing A] [CommRing B]
@@ -2669,6 +2671,7 @@ def dvrPolynomialQuotientFractionSurjection
       (Ideal.span ({f} : Set (Polynomial A)))) Polynomial.X)
     (mapped_polynomial_eval₂_zero f)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem dvrPolynomialQuotientFractionSurjection_of_algebraMap
     {π : A} (hπ : Irreducible π)
     (f q : Polynomial A) (hf : f = 1 + Polynomial.C π * q)
@@ -3767,6 +3770,7 @@ def StabilizedThreeElementaryGeneration (R : Type u) [CommRing R] : Prop :=
   cases i using Fin.cases <;> cases j using Fin.cases <;>
     simp [lowerBlockSpecialLinear, Matrix.one_apply, eq_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem lowerBlockSpecialLinear_mul
     (b c : Matrix.SpecialLinearGroup (Fin 3) R) :
     lowerBlockSpecialLinear (b * c) =
@@ -4352,6 +4356,7 @@ open scoped BigOperators
 
 universe u v
 
+set_option backward.isDefEq.respectTransparency false in
 theorem specialLinearThree_map_transvection
     {A : Type u} {B : Type v} [CommRing A] [CommRing B]
     (φ : A →+* B) {i j : Fin 3} (hij : i ≠ j) (a : A) :
@@ -5116,6 +5121,7 @@ def mennickeWord
 set_option maxRecDepth 2048 in
 set_option maxHeartbeats 1200000 in
 
+set_option backward.isDefEq.respectTransparency false in
 theorem parkWoodburn_mennicke_identity
     (a ap b c d : R) (hdet : a * ap * d - b * c = 1) :
     mennickeBlock (a * ap) b c d hdet =
@@ -5193,6 +5199,7 @@ private theorem mennicke_target_det
 set_option maxRecDepth 2048 in
 set_option maxHeartbeats 400000 in
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mennickeBlock_rotation_conjugate
     (a b c d : R) (hdet : a * d - b * c = 1) :
     mennickeRotation *
@@ -5632,6 +5639,7 @@ theorem mennickeBlock_mem_of_isUnit_topLeft
     fin_cases i <;> simp [MennickeIdentity.mennickeBlock]
   · exact ha
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mennickeBlock_mem_of_isUnit_topRight
     {R : Type*} [CommRing R]
     (a b c d : R) (hdet : a * d - b * c = 1) (hb : IsUnit b) :
@@ -5709,6 +5717,7 @@ theorem mennickeBlock_X_constant_shear_det
 set_option maxRecDepth 2048 in
 set_option maxHeartbeats 400000 in
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mennickeBlock_X_constant_shear_mul
     {A : Type u} [CommRing A]
     (a g p : Polynomial A)
@@ -6108,6 +6117,7 @@ open MennickeIdentity StabilizedBlockReduction
 
 universe u
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem suslin_uniformizer_column_shear
     {R : Type u} [CommRing R]
     (a b c d r : R) (hdet : a * d - b * c = 1) :
@@ -6511,6 +6521,7 @@ theorem mennicke_columnFirst_sub_det
     (a - q * b) * d - b * (c - q * d) = 1 := by
   linear_combination hdet
 
+set_option backward.isDefEq.respectTransparency false in
 set_option maxRecDepth 2048 in
 set_option maxHeartbeats 400000 in
 theorem mennickeBlock_rowSecond_sub_mul
@@ -6527,6 +6538,7 @@ theorem mennickeBlock_rowSecond_sub_mul
       Matrix.mul_apply, Fin.sum_univ_succ, Matrix.one_apply,
       Matrix.single_apply] <;> ring
 
+set_option backward.isDefEq.respectTransparency false in
 set_option maxRecDepth 2048 in
 set_option maxHeartbeats 400000 in
 theorem mennickeBlock_columnFirst_sub_mul
@@ -6741,6 +6753,7 @@ theorem secondColumnSub_det
   linear_combination hdet
 
 omit [IsDomain A] in
+set_option backward.isDefEq.respectTransparency false in
 theorem mennickeBlock_secondColumnSub_mem_iff
     (f g p q t : Polynomial A)
     (hdet : f * q - g * p = 1) :
@@ -6961,6 +6974,7 @@ theorem mennickeBlock_columnSubtract_det
     (f - t * g) * q - g * (p - t * q) = 1 := by
   linear_combination hdet
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mennickeBlock_mul_columnSubtract
     {R : Type u} [CommRing R]
     (f g p q t : R) (hdet : f * q - g * p = 1) :
@@ -7439,6 +7453,7 @@ def upperLeftSpecialLinear
   ⟨g.val.submatrix Fin.castSucc Fin.castSucc,
     upperLeft_det_eq_one g hcolumn⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lastColumn_block_decomposition
     (g : Matrix.SpecialLinearGroup (Fin 3) R)
     (hcolumn : ∀ i : Fin 3, g i 2 = if i = 2 then 1 else 0) :
@@ -10113,6 +10128,7 @@ private theorem minkowski_prime_ne_three_matrix
   exact sub_eq_zero.mp
     (minkowski_matrix_mul_eq_zero_of_det_ne_zero hzero hdet)
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem minkowski_exists_sub_one_eq_three_smul
     (A : Matrix ι ι ℤ) (hA : minkowskiModThree A = 1) :
     ∃ B : Matrix ι ι ℤ, A - 1 = (3 : ℤ) • B := by
@@ -11967,6 +11983,7 @@ private def coordinateProduct : V →ₗ[F] V →ₗ[F] V where
 
 private def tensorDiagonal : T →ₗ[F] V := TensorProduct.lift coordinateProduct
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem scalar_mul_self (c : F) : c * c = c := by
   fin_cases c <;> decide
 
@@ -12240,6 +12257,7 @@ theorem quadraticPairing_range_le_quadraticRestriction_range (n : ℕ) :
         rw [hone]
         exact ih
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem binary_sq_eq_self (a : F) : a * a = a := by
   fin_cases a <;> decide
 
@@ -13587,6 +13605,13 @@ instance : Countable D := inferInstance
 
 instance : Countable (Multiplicative D) :=
   (Multiplicative.toAdd (α := D)).injective.countable
+
+/-- Shortcut instances: `D` unfolds to a tower of reducible abbreviations, so
+searching for these from scratch is very expensive. -/
+instance instAddCommGroupD : AddCommGroup D := inferInstanceAs (AddCommGroup (V × B))
+
+instance instGroupMultiplicativeD : Group (Multiplicative D) :=
+  inferInstanceAs (Group (Multiplicative D))
 
 def kLinear : K →* (V ≃ₗ[F] V) where
   toFun k := (Matrix.SpecialLinearGroup.toLin' (pi₂ k)).restrictScalars F
@@ -22306,6 +22331,7 @@ abbrev integralElementaryRankTwoProjection :
       integralElementaryRankTwoActingGroup :=
   SemidirectProduct.rightHom
 
+set_option backward.isDefEq.respectTransparency false in
 def integralElementaryRankTwoSplitAbelianExtension :
     SplitAbelianExtension (Fin 2 → IntegralPolynomial)
       integralElementaryRankTwoGroup
@@ -23259,6 +23285,7 @@ def rankTwoParabolicSpecialLinear :
     · simp
     · simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem rankTwoParabolicSpecialLinear_inl
     (v : Fin 2 → A) :
     rankTwoParabolicSpecialLinear
@@ -23276,6 +23303,7 @@ def rankTwoParabolicSpecialLinear :
       Matrix.SpecialLinearGroup.transvection_coe, Matrix.mul_apply,
       Fin.sum_univ_four, Matrix.one_apply, Matrix.single_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem rankTwoParabolicSpecialLinear_inr_root
     {i j : Fin 2} (hij : i ≠ j) (a : A) :
     rankTwoParabolicSpecialLinear
@@ -23403,6 +23431,7 @@ def specialLinearReindexHom (e : Equiv.Perm (Fin 4)) :
     exact map_mul (Matrix.reindexAlgEquiv A A e)
       (g : Matrix (Fin 4) (Fin 4) A) (h : Matrix (Fin 4) (Fin 4) A)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem specialLinearReindexHom_transvection
     (e : Equiv.Perm (Fin 4)) {i j : Fin 4} (hij : i ≠ j) (a : A) :
     specialLinearReindexHom e
@@ -26195,6 +26224,7 @@ abbrev integerElementaryRankTwoProjection :
       integerElementaryRankTwoActingGroup :=
   SemidirectProduct.rightHom
 
+set_option backward.isDefEq.respectTransparency false in
 def integerElementaryRankTwoSplitAbelianExtension :
     SplitAbelianExtension (Fin 2 → ℤ)
       integerElementaryRankTwoGroup
@@ -29026,6 +29056,7 @@ theorem polynomialElementaryRankTwoRoot_inv
   apply Subtype.ext
   exact Matrix.SpecialLinearGroup.transvection_inv hij a
 
+set_option backward.isDefEq.respectTransparency false in
 theorem shalomPolynomialUpperShear_inv (a : IntegralPolynomial) :
     (shalomPolynomialUpperShear a)⁻¹ = shalomPolynomialUpperShear (-a) := by
   change (integralElementaryRankTwoInr _)⁻¹ =
@@ -29034,6 +29065,7 @@ theorem shalomPolynomialUpperShear_inv (a : IntegralPolynomial) :
   congr 1
   exact polynomialElementaryRankTwoRoot_inv _ a
 
+set_option backward.isDefEq.respectTransparency false in
 theorem shalomPolynomialLowerShear_inv (a : IntegralPolynomial) :
     (shalomPolynomialLowerShear a)⁻¹ = shalomPolynomialLowerShear (-a) := by
   change (integralElementaryRankTwoInr _)⁻¹ =
@@ -29231,6 +29263,7 @@ def shalomConstantSpecialLinear :
     (g : Matrix.SpecialLinearGroup (Fin 2) ℤ) (i j : Fin 2) :
     shalomConstantSpecialLinear g i j = Polynomial.C (g i j) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem shalomConstantSpecialLinear_transvection
     {i j : Fin 2} (hij : i ≠ j) (a : ℤ) :
     shalomConstantSpecialLinear
@@ -29389,6 +29422,7 @@ noncomputable section
 
 open scoped Classical
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem shalomPolynomialUpperShear_one_inv :
     (shalomPolynomialUpperShear 1)⁻¹ =
       shalomPolynomialUpperShear (-1) := by
@@ -29407,6 +29441,7 @@ open scoped Classical
   exact Matrix.SpecialLinearGroup.transvection_inv
     (show (0 : Fin 2) ≠ 1 by decide) (1 : IntegralPolynomial)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem shalomPolynomialLowerShear_one_inv :
     (shalomPolynomialLowerShear 1)⁻¹ =
       shalomPolynomialLowerShear (-1) := by
@@ -30479,6 +30514,7 @@ theorem pair_reduce (i j : Index) (h : i ≠ j) (v : V) :
         exact euclideanStep_smul_other i j k h hki hkj w
   exact hp v rfl rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem binaryPolynomial_eq_one_of_isUnit (p : R) (hp : IsUnit p) :
     p = 1 := by
   obtain ⟨a, ha, hpa⟩ := Polynomial.isUnit_iff.mp hp
@@ -33099,6 +33135,7 @@ variable (φ : K →* MulAut (Multiplicative E))
           (Multiplicative.toAdd x)) := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem semidirectIntrinsicSubquotientEquiv_mk_inclusion
     (hfour : ∀ x : E, (4 : ℕ) • x = 0)
     (I D : Subgroup (Multiplicative E ⋊[φ] K)) [D.Normal]
@@ -33283,6 +33320,7 @@ abbrev gammaInr (n : ℕ) : K →* Gamma n :=
 abbrev gammaProjection (n : ℕ) : Gamma n →* K :=
   SemidirectProduct.rightHom
 
+set_option backward.isDefEq.respectTransparency false in
 def gammaSplitAbelianExtension (n : ℕ) :
     SplitAbelianExtension (E n) (gammaGroup n) actingGroup where
   inclusion := gammaInl n
@@ -33358,6 +33396,7 @@ theorem gammaCharacter_pow_four (n : ℕ)
     simpa using E_four_nsmul n η
   rw [hη, map_one]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem gammaFourthRootEnergy_lower_bound (z : Circle) (hz : z ^ 4 = 1)
     (hne : z ≠ 1) : (2 : ℝ) ≤ ‖(z : ℂ) - 1‖ ^ 2 := by
   have hz' : (z : ℂ) ^ 4 = 1 := congrArg (fun w : Circle => (w : ℂ)) hz
@@ -34601,6 +34640,7 @@ theorem boundedStandardVector_mem_primitiveTruncationFinset
   rw [mem_primitiveTruncationFinset]
   exact e_isPrimitiveVector
 
+set_option backward.isDefEq.respectTransparency false in
 theorem invariantDual_boxDetection_bound
     (μ : ProbabilityMeasure (X × Y))
     (hμ : IsInvariantDualProbability μ)
@@ -35545,6 +35585,7 @@ theorem lambdaGroupFactorUnitary_conj_inr (k : K) :
   apply groupFactorUnitary_conj_inr
   exact splitTaggedFourierCovariance
 
+set_option backward.isDefEq.respectTransparency false in
 theorem gammaGroupFactorUnitary_conj_inl (n : ℕ) (η : E n) :
     (gammaGroupFactorUnitary n).conjStarAlgEquiv
       (leftRegularUnitary
@@ -35574,7 +35615,6 @@ theorem gammaGroupFactorUnitary_conj_inl (n : ℕ) (η : E n) :
         (crossedBaseMultiplier (paperCarryHaarAction n)
           (carryCharacterCoefficient n η))
   rw [carryFourier_conjugates_normal_generator]
-  rfl
 
 theorem split_normalFourierCoordinates_eq :
     normalFourierCoordinates paperSplitHaarAction splitFourierEquiv =
@@ -35583,6 +35623,9 @@ theorem split_normalFourierCoordinates_eq :
   intro ξ
   congr 1
 
+set_option synthInstance.maxHeartbeats 1000000 in
+set_option maxHeartbeats 4000000 in
+set_option backward.isDefEq.respectTransparency false in
 theorem lambdaGroupFactorUnitary_conj_inl (d : D) :
     lambdaGroupFactorUnitary.conjStarAlgEquiv
       (leftRegularUnitary
@@ -36051,6 +36094,9 @@ private theorem splitVacuum_apply (k : K) :
     exact lp.single_apply_ne (E := fun _ : K => Lp ℂ 2 productHaar)
       2 (1 : K) (Lp.const 2 productHaar (1 : ℂ)) hk
 
+set_option synthInstance.maxHeartbeats 1000000 in
+set_option maxHeartbeats 4000000 in
+set_option backward.isDefEq.respectTransparency false in
 theorem lambdaGroupFactorUnitary_vacuum :
     lambdaGroupFactorUnitary (delta lambdaGroup 1) =
       crossedVacuum paperSplitHaarAction := by

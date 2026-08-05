@@ -6851,7 +6851,7 @@ theorem exists_proofSchmidtDecomposition
       (∀ i, 0 ≤ σ i) ∧
         ξ = schmidtVector σ U V := by
   classical
-  let C : Matrix (Fin d) (Fin d) ℂ := fun b a => ξ (a, b)
+  let C : Matrix (Fin d) (Fin d) ℂ := Matrix.of fun b a => ξ (a, b)
   let T : EuclideanSpace ℂ (Fin d) →ₗ[ℂ]
       EuclideanSpace ℂ (Fin d) := Matrix.toEuclideanLin C
   obtain ⟨σ, u, v, hσ, hsing⟩ :=

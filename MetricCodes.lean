@@ -4030,6 +4030,7 @@ theorem binaryTranslate_injective {n : ℕ} (x : BinaryWord n) :
   have := congrArg (binaryTranslate x) h
   simpa using this
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hammingDist_binaryTranslate {n : ℕ} (z x y : BinaryWord n) :
     hammingDist (binaryTranslate z x) (binaryTranslate z y) =
       hammingDist x y := by
@@ -6794,6 +6795,7 @@ def shellCodeFamily (n w d : ℕ) : Finset (Finset (BinaryWord n)) := by
   classical
   simp [shellCodeFamily]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem shellCodeFamily_nonempty (n w d : ℕ) :
     (shellCodeFamily n w d).Nonempty := by
   classical
@@ -18399,6 +18401,7 @@ theorem globalHarmonicVector_harmonicBasisFunction {n j : ℕ}
       (MetricCodes.Boolean.harmonicOrthonormalBasis n j hj a).val
   rw [MetricCodes.Boolean.layerRestrict_layerExtend]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem johnsonHarmonicCoordinates_eq_basis_dot {n j : ℕ}
     (hj : 2 * j ≤ n)
     (f : MetricCodes.Boolean.Function n)
@@ -36299,6 +36302,7 @@ def SphericalCode.ofCodes {n : ℕ} {s : ℝ}
     (SphericalCode.ofCodes C).points.card = C.points.card := by
   simp [SphericalCode.ofCodes]
 
+set_option backward.isDefEq.respectTransparency false in
 def sphericalCodeEquiv (n : ℕ) (s : ℝ) :
     SphericalCode n s ≃ MetricCodes.SphericalCode n s where
   toFun := SphericalCode.toCodes
@@ -49103,6 +49107,7 @@ def leadingMinor {r n : ℕ} (h : 2 * (r + 1) ≤ n)
   Matrix.det (fun i j : Fin (k.val + 1) =>
     isotropicVariable h (minorIndex k i) (minorIndex k j))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem leadingMinor_isHomogeneous {r n : ℕ}
     (h : 2 * (r + 1) ≤ n) (k : Fin (r + 1)) :
     (leadingMinor h k).IsHomogeneous (k.val + 1) := by
@@ -49177,6 +49182,7 @@ theorem rowDerivation_leadingMinor_upper {r n : ℕ}
       omega
     simp [hne]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rowDerivation_leadingMinor_self {r n : ℕ}
     (h : 2 * (r + 1) ≤ n)
     (i : Fin (r + 1)) (k : Fin (r + 1)) :
@@ -49254,6 +49260,7 @@ def sourceLeadingMinor {r : ℕ} (k : Fin (r + 1)) :
   Matrix.det (fun i j : Fin (k.val + 1) =>
     MvPolynomial.X (minorIndex k i, minorIndex k j))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nullSubstitution_sourceLeadingMinor {r n : ℕ}
     (h : 2 * (r + 1) ≤ n) (k : Fin (r + 1)) :
     nullSubstitution h (sourceLeadingMinor k) = leadingMinor h k := by
@@ -49291,6 +49298,7 @@ theorem eval_isotropicVariable {r n : ℕ}
     have hodd : 2 * j.val + 1 ≠ 2 * i.val := by omega
     simp [hij, heven, hodd]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eval_leadingMinor {r n : ℕ}
     (h : 2 * (r + 1) ≤ n) (k : Fin (r + 1)) :
     MvPolynomial.eval diagonalEvaluation (leadingMinor h k) = 1 := by
@@ -49696,6 +49704,7 @@ theorem derivation_det_singleColumn {σ ι : Type*}
   · intro b c hb
     exact h c b hb
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ambientPositiveRoot_leadingMinor {r n : ℕ}
     (h : 2 * (r + 1) ≤ n)
     (p q : Fin (r + 1)) (hpq : p < q) (k : Fin (r + 1)) :
@@ -49971,6 +49980,7 @@ theorem ambientCartan_isotropicVariable {r n : ℕ}
       if p = j then (2 : ℂ) • isotropicVariable h i p else 0 :=
   ambientPositiveRoot_isotropicVariable h p p i j
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ambientCartan_leadingMinor {r n : ℕ}
     (h : 2 * (r + 1) ≤ n)
     (p k : Fin (r + 1)) :
@@ -54655,6 +54665,7 @@ theorem weyl_detailed_balance {r m : ℕ}
       probability_eq_zero_of_not_adjacent a b n w v hreverse]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem symmetric_probability_eq_trueGrid {r m : ℕ}
     (a : Fin (r + 1) → ℝ) (b : Fin r → ℝ) (n : ℕ)
     (v w : Vertex r m) :
@@ -72624,6 +72635,7 @@ theorem coeff_X_mul_pderiv_ne {σ : Type*}
     simp [MvPolynomial.pderiv_X, Pi.single_apply]
   · simp [MvPolynomial.pderiv_X, Pi.single_apply, h, Ne.symm h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sourceRowRoot_sourceLeadingMinor_self {r : ℕ}
     (i k : Fin (r + 1)) :
     sourceRowRoot i i (sourceLeadingMinor k) =
@@ -72668,6 +72680,7 @@ theorem sourceRowRoot_sourceLeadingMinor_self {r : ℕ}
       omega
     simp [hne]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sourceColumnRoot_sourceLeadingMinor_self {r : ℕ}
     (i k : Fin (r + 1)) :
     sourceColumnRoot i i (sourceLeadingMinor k) =
@@ -72819,6 +72832,7 @@ theorem sourceRowRoot_sourceHighestWeightPolynomial_upper {r : ℕ}
 def sourceDiagonalEvaluation {m : ℕ} : Fin m × Fin m → ℂ :=
   fun z => if z.1 = z.2 then 1 else 0
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eval_sourceLeadingMinor {r : ℕ} (k : Fin (r + 1)) :
     MvPolynomial.eval sourceDiagonalEvaluation
       (sourceLeadingMinor k) = 1 := by
@@ -82356,6 +82370,7 @@ theorem rootJointHarmonicDegreeZeroEquiv_coe {r n : ℕ}
     (rootWedgeWeight_degree_zero lam (emptyAdmissibleRootWedge lam))
     (p (emptyAdmissibleRootWedge lam))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem weightedExteriorActionCoboundary_degreeZero_active_coe
     {r n : ℕ} (lam : Fin (r + 1) → ℕ)
     (p : RootJointHarmonicChain n lam 0)
@@ -82738,6 +82753,7 @@ theorem reversePermutationMonomial {r : ℕ}
     simp
   rw [h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem reversedWeylPolynomial_eq_sum (r : ℕ) :
     reversedWeylPolynomial r =
       ∑ σ : Equiv.Perm (Fin (r + 1)),
@@ -82945,6 +82961,7 @@ theorem coeff_ambientBinomialPolynomial_mul_axisDifferenceProduct
     intro i hi
     simp [Finsupp.indicator_apply, hi]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_ambientBinomialPolynomial_mul_det_separable
     {r n B : ℕ} (m : Fin (r + 1) →₀ ℕ)
     (a b : Fin (r + 1) → Fin (r + 1) → ℕ)
@@ -94590,6 +94607,7 @@ open MetricCodes.Spherical.HigherHarmonicYoung.DeterminantVectors
 open MetricCodes.Spherical.HigherYoungAmbientRootRotationDecomposition
 open MetricCodes.Spherical.HigherYoungArbitraryRankOrthogonalRootHighestKernel
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isotropicMatrix_det_ne_zero
     {r n : ℕ} (h : 2 * (r + 1) ≤ n) :
     Matrix.det (fun a p : Fin (r + 1) => isotropicVariable h a p) ≠ 0 := by
@@ -94607,6 +94625,7 @@ theorem isotropicMatrix_det_ne_zero
   rw [hmatrix, Matrix.det_one] at heval
   exact one_ne_zero heval
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isotropicMatrix_transpose_mulVec_injective
     {r n : ℕ} (h : 2 * (r + 1) ≤ n)
     (v : Fin (r + 1) → MvPolynomial (Fin ((r + 1) * n)) ℂ)
@@ -102841,6 +102860,7 @@ open MetricCodes.Spherical.HigherChannel
 open MetricCodes.Spherical.HigherYoungPenultimateRowProjectedLower
 open MetricCodes.Spherical.HigherYoungAllRankOrthogonalTensorPieriCoefficient
 
+set_option backward.isDefEq.respectTransparency false in
 theorem orthogonalJacobiTrudiMatrix_raiseWeight_eq_updateRow
     {r : ℕ} (n : ℕ) (lam : Fin (r + 1) → ℕ) (i : Fin (r + 1)) :
     orthogonalJacobiTrudiMatrix n (raiseWeight lam i) =
@@ -102856,6 +102876,7 @@ theorem orthogonalJacobiTrudiMatrix_raiseWeight_eq_updateRow
       orthogonalTensorPieriCoefficient_update_row_ne n lam k i j
         (lam i + 1) hk]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem orthogonalJacobiTrudiMatrix_lowered_eq_updateRow
     {r : ℕ} (n : ℕ) (lam : Fin (r + 1) → ℕ)
     (i : Fin (r + 1)) (hi : 0 < lam i) :
@@ -104455,6 +104476,7 @@ def retainedPaddedPieriPhysicalSource {r : ℕ}
       loweredInternalYoungWeight lam
         (row.val.castPred (paddedPieriLowerRow_ne_last lam row))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem paddedPieriSource_retained_eq_appendZero
     {r : ℕ} (lam : Fin (r + 1) → ℕ)
     (i : {j : PaddedPieriChannel (appendZeroWeight lam) //
@@ -105818,6 +105840,7 @@ theorem physicalPaddedPieriChannel_relativeCasimir
     (paddedOrthogonalTensorPieriChannel_relativeCasimir
       hn (appendZeroWeight low) hdom channel q)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem selectedSignedEigenspace_le_youngClebschLower_range
     {r n : ℕ} (hn : 2 * (r + 2) + 4 ≤ n + 1)
     (low : Fin (r + 2) → ℕ)
@@ -110223,6 +110246,7 @@ def normalizedGTTransverseWallSector
       (Real.sqrt (gtWallSectorGram n mu))⁻¹ •
         gtTransverseWallSector lam mu h hn hlast p := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem normalizedGTTransverseWallSector_axis_inner_eq_zero
     {r n : ℕ} (lam : Fin (r + 2) → ℕ)
     (mu : Fin (r + 1) → ℕ) (h : Interlaces lam mu)
@@ -113974,6 +113998,7 @@ open MetricCodes.Spherical.HigherYoungAllRankOrthogonalTensorPieriSourceSignatur
 open MetricCodes.Spherical.HigherYoungMixedGapAxisProbability
 open MetricCodes.Spherical.HigherYoungPenultimateRowProjectedLower
 
+set_option backward.isDefEq.respectTransparency false in
 theorem normalizedNegativeSector_canonicalAxis_inner_eq_zero
     {r n : ℕ} (lam : Fin (r + 2) → ℕ)
     (mu : Fin (r + 1) → ℕ) (kappa : Fin r → ℕ)
@@ -114002,6 +114027,7 @@ theorem normalizedNegativeSector_canonicalAxis_inner_eq_zero
       lam mu row hnu hnuGram hmu hmuGram p,
     smul_zero, inner_zero_left]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem normalizedPositiveSector_canonicalAxis_inner_eq_zero
     {r n : ℕ} (lam : Fin (r + 2) → ℕ)
     (mu nu : Fin (r + 1) → ℕ) (row : Fin (r + 1))

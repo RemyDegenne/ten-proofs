@@ -1103,7 +1103,7 @@ theorem weightedTorusMeasure_eq_withDensity {n : ℕ} (k : ℕ)
 theorem angularCharacter_norm {n : ℕ} (m : Fin n → ℤ)
     (θ : TorusCharacters.AngularTorus n) :
     ‖UnitAddTorus.mFourier m θ‖ = 1 := by
-  simp [UnitAddTorus.mFourier, fourier_apply, norm_prod]
+  simp [UnitAddTorus.mFourier, fourier_apply, norm_prod, Circle.norm_coe]
 
 theorem angularCharacter_inner {n : ℕ} (m q : Fin n → ℤ) :
     (∫ θ : TorusCharacters.AngularTorus n,

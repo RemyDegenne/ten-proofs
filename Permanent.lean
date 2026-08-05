@@ -23,23 +23,6 @@ theorem eq_monomial_of_unique_weight
 
 end MvPolynomial.IsWeightedHomogeneous
 
-namespace Finset
-
-noncomputable def equivMap {α β : Type*}
-    (f : α ↪ β) (s : Finset α) : s ≃ s.map f :=
-  Equiv.ofBijective
-    (fun a : s =>
-      (⟨f a, Finset.mem_map.mpr ⟨a, a.property, rfl⟩⟩ : s.map f))
-    ⟨by
-      intro a b h
-      apply Subtype.ext
-      exact f.injective (congrArg Subtype.val h), by
-      intro b
-      obtain ⟨a, ha, hab⟩ := Finset.mem_map.mp b.property
-      exact ⟨⟨a, ha⟩, Subtype.ext hab⟩⟩
-
-end Finset
-
 namespace PermanentCircuitCompatibility
 
 theorem ofList_take_succ {R : Type*} [CommRing R]
@@ -7086,7 +7069,7 @@ def substituteInputs {ι κ : Type*} (circuit : FreeAffineCircuit ι)
   | cons instruction tail ih =>
     cases instruction <;>
       simp [FreeAffineInstruction.substituteInputs,
-        FreeAffineInstruction.isMultiplication, ih]
+        FreeAffineInstruction.isMultiplication, ih, List.filter_cons]
 
 theorem values_substituteInputs {ι κ : Type*}
     (circuit : FreeAffineCircuit ι)
@@ -7163,7 +7146,8 @@ theorem multiplicationCount_ofArithmetic_le {ι : Type}
   | cons instruction tail ih =>
     cases instruction <;>
       simp [FreeAffineInstruction.ofInstruction,
-        FreeAffineInstruction.isMultiplication, Instruction.isArithmetic] at * <;>
+        FreeAffineInstruction.isMultiplication, Instruction.isArithmetic,
+        List.filter_cons] at * <;>
       omega
 
 end FreeAffineCircuit
@@ -7999,7 +7983,8 @@ theorem appendReverseProducts_multiplicationCount {ι : Type*}
       hadjoint hleft hright).multiplicationCount =
         circuit.multiplicationCount + 2 := by
   simp [appendReverseProducts, appendInstruction,
-    FreeAffineCircuit.multiplicationCount,     FreeAffineInstruction.isMultiplication]
+    FreeAffineCircuit.multiplicationCount,     FreeAffineInstruction.isMultiplication,
+    List.filter_cons]
 
 theorem affineForm_gateBound_mono {ι : Type*}
     (form : FreeAffineForm ι) {oldBound newBound : ℕ}
@@ -8310,7 +8295,7 @@ theorem instructionCost_sum {ι : Type*}
         List.filter_cons] using ih
     | mul left right =>
       simp [instructionCost, FreeAffineInstruction.isMultiplication,
-        ih, Nat.mul_add, Nat.add_comm]
+        ih, List.filter_cons, Nat.mul_add, Nat.add_comm]
 
 theorem zipIdx_instructionCost_sum {ι : Type*}
     (program : List (FreeAffineInstruction ι)) (start : ℕ) :
@@ -18708,7 +18693,7 @@ theorem sourceBlockMinor_sourceRowBlockEmbedding
   symm
   refine Fintype.prod_equiv rowEquiv _ _ ?_
   intro row
-  simp [matchingEquiv, rowEquiv, Finset.equivMap]
+  simp [matchingEquiv, rowEquiv, Finset.equivMap_apply_coe]
 
 theorem sourceRowBlockMinorSum_eq_local_minors
     {R : Type*} [CommSemiring R]

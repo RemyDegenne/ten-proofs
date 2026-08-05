@@ -238,7 +238,7 @@ section
 def canonicalNoInstance : GapCVPInstance where
   dimension := 1
   dimension_pos := by norm_num
-  basis := fun _ _ => 2
+  basis := Matrix.of fun _ _ => 2
   basis_nonsingular := by norm_num [Matrix.det_fin_one]
   target := fun _ => 1
   radius := 1 / 2
@@ -1254,6 +1254,7 @@ theorem firstConfiguration_init
       by_cases hk : k = first.tm.k₀
       · subst k
         simp [firstStacks]
+        rfl
       · simp [firstStacks, hk]
   | inr k =>
       simp [firstStacks]
@@ -1613,17 +1614,12 @@ theorem secondStacks_secondStack
       unfold secondAlphabetEquiv secondStack
       rw! (castMode := .all) [hdec]
       simp [secondStacks]
-      intro a _
-      rfl
   | isFalse hk =>
       unfold secondAlphabetEquiv secondStack
       rw! (castMode := .all) [hdec]
       simp [secondStacks, hk]
-      induction sourceStacks k with
-      | nil => rfl
-      | cons a rest ih =>
-          exact congrArg (List.cons a) ih
 
+set_option backward.isDefEq.respectTransparency false in
 theorem secondConfiguration_halt
     {f g : List Bool → List Bool}
     (first : BitTM f)
@@ -1674,9 +1670,7 @@ theorem secondConfiguration_halt
               secondStack first.tm second.tm second.tm.k₁
             simp [secondStack, h.symm]
           rw [haltList_stk_of_ne _ _ _ hinput, List.map_nil]
-          rfl
         · simp [secondStacks, hshared]
-          rfl
     | inr j =>
         rw [secondStacks_private]
         have hout : j.val ≠ second.tm.k₁ := by
@@ -1769,6 +1763,7 @@ def comp {A B : BitLanguage} {P : PromiseProblem}
 
 end PromiseReduction
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nphardPromise_of_nphard_of_promiseReduction
     {A : BitLanguage} {P : PromiseProblem} (hard : NPHard A)
     (reduction : PromiseReduction A P)
@@ -2642,6 +2637,7 @@ def restrictAssignment {T S : ℕ}
   simp only [liftAssignment, accumulatorVariable, ↓reduceIte,
     hone, hdiv, Encodable.encodek, hclause, Nat.one_ne_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem gateList_sound {T S : ℕ}
     (assignment : ℕ → Bool)
     (clauseIndex prefixIndex : ℕ)
@@ -2690,6 +2686,7 @@ theorem gateList_sound {T S : ℕ}
         ih (prefixIndex + 1) hremaining hnext' hfinish'
       exact ⟨witness, by simp [hwitness], hvalue⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem encodeClause_sound {T S : ℕ}
     (assignment : ℕ → Bool)
     (clauseIndex : ℕ) (clause : Clause T S)
@@ -3877,6 +3874,7 @@ noncomputable instance instFintypeCellAtom
     (tm : Turing.FinTM2) : Fintype (CellAtom tm) := by
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 inductive PhaseTag where
   | guessing
   | verifying
@@ -4402,6 +4400,7 @@ def coordinateOffset (tm : Turing.FinTM2) (width : ℕ)
   ⟨index.val % blockSize tm,
     Nat.mod_lt index.val (blockSize_pos tm)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem packRow_cell
     (tm : Turing.FinTM2) (width : ℕ)
     (row : CellRow tm width) (index : Fin (width + 1)) :
@@ -7114,6 +7113,7 @@ theorem stackWindowOfScriptBlock_canonical
   rw [stackAtomsOfBlock_pack_canonical machine width certificate
     next hnext hnextLength index stack]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem canonicalScriptBlockWindows_iff
     {verifier : List Bool × List Bool → Bool}
     (machine : VerifierTM verifier)
@@ -8135,6 +8135,7 @@ theorem canonicalAnchoredVerifierWindow_static
     canonicalAnchoredVerifyingRow, completeIsFirstBlock,
     canonicalScriptBlockRow]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem canonicalAnchoredVerifierWindow_allowed_iff
     (bound : Polynomial ℕ)
     {verifier : List Bool × List Bool → Bool}
@@ -8415,6 +8416,7 @@ noncomputable def AllAnchoredPhaseWindows
       (anchoredVerifierWindowAt machine.tm width
         first next position)
   ) (Classical.propDecidable _)
+set_option backward.isDefEq.respectTransparency false in
 theorem allAnchoredWindows_mode_constant
     {verifier : List Bool × List Bool → Bool}
     (machine : VerifierTM verifier)
@@ -8438,6 +8440,7 @@ theorem allAnchoredWindows_mode_constant
       rw [leftBlock_succ] at hleft
       exact hleft.symm.trans ih
 
+set_option backward.isDefEq.respectTransparency false in
 theorem allAnchoredWindows_guessBit_constant
     {verifier : List Bool × List Bool → Bool}
     (machine : VerifierTM verifier)
@@ -8612,6 +8615,7 @@ theorem anchoredPhase_old_not_accepting_of_next_not_accepting
   rw [hcleared]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem anchoredPhase_staticMasks_of_next_not_accepting
     {verifier : List Bool × List Bool → Bool}
     (machine : VerifierTM verifier)
@@ -8815,6 +8819,7 @@ theorem firstAcceptanceIndex_min
   exact Nat.find_min (anchoredValidTrace_hasAcceptingTime
     bound machine x trace htrace) hindex
 
+set_option backward.isDefEq.respectTransparency false in
 theorem anchoredPhase_first_acceptance_is_verifying
     {verifier : List Bool × List Bool → Bool}
     (machine : VerifierTM verifier)
@@ -8992,6 +8997,7 @@ noncomputable def AllAnchoredVerificationWindows
       (anchoredVerifierWindowAt machine.tm width
         first next position)
   ) (Classical.propDecidable _)
+set_option backward.isDefEq.respectTransparency false in
 theorem anchoredPhase_verification_of_verifying_modes
     {verifier : List Bool × List Bool → Bool}
     (machine : VerifierTM verifier)
@@ -9454,6 +9460,7 @@ theorem stackSoundValidTrace_has_first_checked_acceptance
     (stackSoundValidTrace_to_anchored
       bound machine x trace htrace)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem stackSoundPhase_verification_of_verifying_modes
     {verifier : List Bool × List Bool → Bool}
     (machine : VerifierTM verifier)
@@ -9819,6 +9826,7 @@ theorem stackSoundPhase_initialization_of_modes
     cases hguessMode
   · exact hinit
 
+set_option backward.isDefEq.respectTransparency false in
 theorem initializationWindow_next_wellTyped
     {verifier : List Bool × List Bool → Bool}
     (machine : VerifierTM verifier)
@@ -9964,6 +9972,7 @@ theorem filterMap_ofFn_comp
           simpa [List.ofFn_succ, Function.comp_def, hhead] using
             ih (fun index : Fin size => atoms index.succ)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem filterMap_filter_isSome
     {verifier : List Bool × List Bool → Bool}
     (machine : VerifierTM verifier)
@@ -10361,6 +10370,7 @@ noncomputable def PhaseRowStackRangeFaithful
       ((completeMachineBlock machine.tm (row position)
         offset).2.2.1 stack) = none
   ) (Classical.propDecidable _)
+set_option backward.isDefEq.respectTransparency false in
 theorem allInitializationWindows_next_stackRangeFaithful
     {verifier : List Bool × List Bool → Bool}
     (machine : VerifierTM verifier)
@@ -11190,6 +11200,7 @@ theorem allCorrectedVerifierWindows_fullPacked_decoded_suffix
     (allCorrectedVerifierWindows_occupied_fullPackedWindows
       machine width first next hboundary hwindows stack)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem allCorrectedVerifierWindows_actual_fullPackedStep
     {verifier : List Bool × List Bool → Bool}
     (machine : VerifierTM verifier)
@@ -12599,6 +12610,7 @@ theorem stackSoundValidTrace_guessingSuccessor_bit_constant
       congrArg (fun row =>
         (decodeCorrectedPhaseRow machine row 0).guessBit) hrow
 
+set_option backward.isDefEq.respectTransparency false in
 theorem stackSoundValidTrace_allGuessingWindows
     (bound : Polynomial ℕ)
     {verifier : List Bool × List Bool → Bool}
@@ -12805,6 +12817,7 @@ theorem initialPairedAtom_pairedInput_decode
       rw [htag]
       exact initialPairedAtom_input_decode machine bit
 
+set_option backward.isDefEq.respectTransparency false in
 theorem allInitializationWindows_stackAtom
     {verifier : List Bool × List Bool → Bool}
     (machine : VerifierTM verifier)
@@ -13058,6 +13071,7 @@ theorem allInitializationWindows_decodedFullPackedStack
       bound machine x first next hfirst hmasks hwindows stack hstack]
     simp [Turing.initList, hstack]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem allInitializationWindows_initialControl
     (bound : Polynomial ℕ)
     {verifier : List Bool × List Bool → Bool}
@@ -13099,6 +13113,7 @@ theorem allInitializationWindows_initialControl
         (⟨0, blockSize_pos machine.tm⟩ :
           Fin (blockSize machine.tm)) = true := by
     simpa [firstPhaseOffset] using hrange
+  simp only [Fin.zero_eta] at hrangeZero
   have hlabel :
       (initializedPhaseBlock machine
         (completeMachineHead machine.tm (first 0))
@@ -14000,6 +14015,7 @@ theorem stackSoundValidTrace_predecessor_nonaccepting
         bound machine x trace htrace (windowAt time position))
   · exact hnonaccept position
 
+set_option backward.isDefEq.respectTransparency false in
 theorem stackSoundValidTrace_verifyingSuccessor_modes
     (bound : Polynomial ℕ)
     {verifier : List Bool × List Bool → Bool}
@@ -15130,6 +15146,7 @@ theorem canonicalTrueHalt_acceptingPhaseBlock
         omega
       simp [hposition, hout]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem canonicalTrueHalt_acceptanceAnchoredWindows
     (bound : Polynomial ℕ)
     {verifier : List Bool × List Bool → Bool}
@@ -15986,6 +16003,7 @@ theorem canonicalInitialization_staticTracks
     canonicalAnchoredGuessingRow, canonicalAnchoredVerifyingRow,
     canonicalGuessingScriptRow, canonicalScriptBlockRow]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem canonicalInitialization_anchoredWindows
     (bound : Polynomial ℕ)
     {verifier : List Bool × List Bool → Bool}
@@ -16321,6 +16339,7 @@ theorem paddedAcceptanceValidTrace_window
   apply (paddedAcceptancePhaseAllowed_iff machine _).mp
   exact htrace'.2.2 window
 
+set_option backward.isDefEq.respectTransparency false in
 theorem paddedAcceptanceValidTrace_machineHead_constant
     (bound : Polynomial ℕ)
     {verifier : List Bool × List Bool → Bool}
@@ -16359,6 +16378,7 @@ theorem paddedAcceptanceValidTrace_machineHead_constant
       rw [leftBlock_succ] at hleft
       exact hleft.symm.trans ih
 
+set_option backward.isDefEq.respectTransparency false in
 theorem paddedAcceptanceValidTrace_firstAcceptance_trueHalt
     (bound : Polynomial ℕ)
     {verifier : List Bool × List Bool → Bool}
@@ -17549,6 +17569,7 @@ def canonicalYesInstance : GapCVPInstance where
   target _ := 0
   radius := 1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem canonicalYesInstance_wellFormed :
     gapCVPWellFormed canonicalYesInstance := by
   simp only [GapCVP.gapCVPWellFormed, decide_eq_true_eq]
@@ -22971,6 +22992,7 @@ namespace CNFEncodedClauseSort
 open Computability Turing GapCVP.BinaryEncoding GapCVP.SourceTotalStructuralDecoder
 open GapCVP.CNFSortingDedup
 
+set_option backward.isDefEq.respectTransparency false in
 inductive EncodedWordOrdering where
   | invalid
   | less
@@ -25314,6 +25336,7 @@ def littleEndianNaturalOrdering
     (first second : List Bool) : EncodedWordOrdering :=
   littleEndianNaturalFold .equal first second
 
+set_option backward.isDefEq.respectTransparency false in
 theorem littleEndianNaturalFold_eq_value_order
     (first second : List Bool) (current : EncodedWordOrdering) :
     littleEndianNaturalFold current first second =
@@ -25850,6 +25873,7 @@ open Computability Turing GapCVP.BinaryEncoding GapCVP.SourceTotalStructuralDeco
 open GapCVP.CNFSortingDedup GapCVP.CNFEncodedClauseSort GapCVP.CNFNaturalOrderComparator
 open GapCVP.CNFNaturalOrderTotalComparator
 
+set_option backward.isDefEq.respectTransparency false in
 theorem certifiedNatural_step_eq_old
     (configuration : delimitedNaturalComparisonMachine.Cfg)
     (hphase : configuration.l ≠ some (6 : Fin 12)) :
@@ -28677,6 +28701,7 @@ theorem fixedOutputStatement_stepAux
           List.append_assoc]
       · simp [Function.update, hk]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fallbackConfiguration_step
     {valid : List Bool → List Bool}
     (computer : BitTM valid)
@@ -28752,6 +28777,7 @@ noncomputable def fallbackTrace
         1 (remaining.length + 1) _ _ _ hfirst ih
       simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using hfull
 
+set_option backward.isDefEq.respectTransparency false in
 theorem markerConditional_start_true
     {valid : List Bool → List Bool}
     (computer : BitTM valid)
@@ -28774,6 +28800,7 @@ theorem markerConditional_start_true
     simp
   · simp [Function.update, hk]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem markerConditional_start_false
     {valid : List Bool → List Bool}
     (computer : BitTM valid)
@@ -28795,6 +28822,7 @@ theorem markerConditional_start_false
     simp
   · simp [Function.update, hk]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem markerConditional_start_missing
     {valid : List Bool → List Bool}
     (computer : BitTM valid)
@@ -28807,12 +28835,6 @@ theorem markerConditional_start_missing
   simp [markerConditionalMachine, fallbackConfiguration,
     Turing.initList, Turing.FinTM2.step, Turing.TM2.step,
     Turing.TM2.stepAux]
-  congr 2
-  funext k
-  by_cases hk : k = computer.tm.k₀
-  · subst k
-    simp [Function.update]
-  · simp [Function.update, hk]
 
 theorem validConfiguration_halt
     {valid : List Bool → List Bool}
@@ -28910,6 +28932,7 @@ noncomputable def markerConditional_missingTrace
   exact EvalsToInTime.trans (markerConditionalMachine computer fallback).step
     1 1 _ _ _ hstart hrest
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def markerConditional_totalTrace
     {valid : List Bool → List Bool}
     (computer : BitTM valid)
@@ -29631,6 +29654,7 @@ noncomputable def boundedFoldMalformedConfiguration
         boundedFoldDrainConfiguration computer output counter [] := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem boundedDependentRecordFoldMachine_init
     {worker : List Bool → List Bool}
     (computer : BitTM worker)
@@ -29747,6 +29771,7 @@ theorem boundedFold_dispatch_step
   | inr stack =>
       cases stack <;> simp [boundedFoldStacks, Function.update]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem boundedFold_dispatch_finish
     {worker : List Bool → List Bool}
     (computer : BitTM worker)
@@ -29907,6 +29932,7 @@ theorem boundedFold_malformed_step
   | inr stack =>
       cases stack <;> simp [boundedFoldStacks, Function.update]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem boundedFold_malformed_finish
     {worker : List Bool → List Bool}
     (computer : BitTM worker) :
@@ -30451,6 +30477,7 @@ theorem boundedFold_malformedTotalBudget_le
     Polynomial.eval_ofNat]
   omega
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def boundedDependentRecordFold_totalTrace
     {worker : List Bool → List Bool}
     (computer : BitTM worker)
@@ -34393,6 +34420,7 @@ def formulaPreservation_restoreTrace
       simpa [List.reverse_cons, List.append_assoc,
         Nat.add_assoc] using hfull
 
+set_option backward.isDefEq.respectTransparency false in
 theorem formulaPreservationCanonical_initial
     (input backup scratch : List Bool) :
     formulaPreservationCanonicalConfiguration
@@ -34405,6 +34433,7 @@ theorem formulaPreservationCanonical_initial
     formulaPreservationCanonicalLabel,
     canonicalConfiguration, formulaPreservationConfiguration]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem formulaPreservationCanonical_halt
     (output backup scratch : List Bool) :
     formulaPreservationCanonicalConfiguration
@@ -35809,6 +35838,7 @@ def sourceLatticeStructuralRecords
     sourceMatrixStructuralRecords lattice.dimension lattice.dimension
       lattice.basis
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sourceLatticeStructuralRecords_flatten
     (lattice : GapCVPInstance) :
     (sourceLatticeStructuralRecords lattice).flatten =
@@ -35818,6 +35848,7 @@ theorem sourceLatticeStructuralRecords_flatten
     sourceMatrixStructuralRecords_flatten,
     encodeGapCVPInstance, List.append_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem sourceLatticeStructuralRecords_length
     (lattice : GapCVPInstance) :
     (sourceLatticeStructuralRecords lattice).length =
@@ -37745,6 +37776,7 @@ def originalSourceOutputConfiguration
       (sourceOutputSymbols computer output)).stk
     backup scratch result
 
+set_option backward.isDefEq.respectTransparency false in
 theorem originalSourcePreservingMachine_init
     {f : List Bool → List Bool}
     (computer : BitTM f)
@@ -37851,6 +37883,7 @@ theorem originalSourcePreservingMachine_init
   (sourceStacks_update_result
     tm source backup scratch result value).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem originalSourcePreserving_embedded_haltStacks
     {f : List Bool → List Bool}
     (computer : BitTM f)
@@ -38102,6 +38135,7 @@ def originalSourcePreserving_inputRestoreTrace
       simpa [List.reverse_cons, List.append_assoc,
         Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using hfull
 
+set_option backward.isDefEq.respectTransparency false in
 theorem originalSourcePreservingWorkerConfiguration_halt
     {f : List Bool → List Bool}
     (computer : BitTM f)
@@ -40163,6 +40197,7 @@ def unaryPrefixSuffixConfiguration (input : List Bool) :
   var := none
   stk := fun _ => input
 
+set_option backward.isDefEq.respectTransparency false in
 theorem actualUnaryPrefixSuffixMachine_init
     (input : List Bool) :
     Turing.initList actualUnaryPrefixSuffixMachine input =
@@ -41428,6 +41463,7 @@ def sourceInputEraseConfiguration (input : List Bool) :
   var := none
   stk := fun _ => input
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sourceInputEraseMachine_init (input : List Bool) :
     Turing.initList sourceInputEraseMachine input =
       sourceInputEraseConfiguration input := by
@@ -41740,6 +41776,7 @@ def flatAdjacentConditionalSwapEmbedded
       configuration.var)
   stk := configuration.stk
 
+set_option backward.isDefEq.respectTransparency false in
 theorem flatAdjacentConditionalSwapEmbedded_step
     (configuration next : actualFlatAdjacentRecordSwapMachine.Cfg)
     (hstep : actualFlatAdjacentRecordSwapMachine.step configuration =
@@ -41769,7 +41806,6 @@ theorem flatAdjacentConditionalSwapEmbedded_step
             state sourceStacks))
       rw [liftValidStatement_stepAux
         flatAdjacentRecordSwapComputable []]
-      rfl
 
 theorem flatAdjacentConditionalSwap_start_true
     (input : List Bool) :
@@ -41949,6 +41985,7 @@ theorem keepFirstDropSecondMachine_step
             Turing.TM2.step, Turing.TM2.stepAux]
           congr 2
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def keepFirstDropSecondComputable :
     BitTM
       keepFirstDropSecondWord where
@@ -50673,6 +50710,7 @@ open GapCVP.CNFCappedUnaryMinimumTM GapCVP.CNFCappedUnaryMinimumTotalCert
 open GapCVP.CNFFiveFamilyFlatIndexedRankArithmeticTM
 open GapCVP.CNFFiveFamilyFlatRowMajorAtLeastClauseWorkerTM
 
+set_option backward.isDefEq.respectTransparency false in
 inductive FiveFamilyForbiddenWindowCoordinate where
   | left
   | center
@@ -57495,6 +57533,7 @@ theorem mem_fiveFamilyIndependentPhysicalForbiddenSourceClauses
         bound machine original window, ?_⟩
     exact hequality
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fiveFamilyIndependentPhysicalSourceClauses_toFinset
     (bound : Polynomial ℕ)
     {verifier : List Bool × List Bool → Bool}
@@ -59966,6 +60005,7 @@ theorem flatIndexedGadgetNegateLeadingBitMachine_step
           Turing.TM2.step, Turing.TM2.stepAux]
         <;> congr 2
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def flatIndexedGadgetNegateLeadingBitComputable :
     BitTM
       flatIndexedGadgetNegateLeadingBitWord where
@@ -62117,6 +62157,7 @@ theorem gapFactor400_one_le {I : GapCVPInstance}
   · exact_mod_cast hdimension
   · norm_num
 
+set_option backward.isDefEq.respectTransparency false in
 theorem gapYES400_not_gapNO400 (I : GapCVPInstance)
     (hyes : gapYES400 I) (hno : gapNO400 I) : False := by
   simp only [GapCVP.gapNO400, GapCVP.gapYES400, GapCVP.gapCVPWellFormed, decide_eq_true_eq] at *
@@ -62163,6 +62204,7 @@ end
 
 namespace Factor400BinaryCanonicalNo
 
+set_option backward.isDefEq.respectTransparency false in
 theorem canonicalNoInstance_squaredNo400 :
     GapCVP.Core.SquaredNoAt ((1 : ℝ) / 400)
       GapCVP.Core.canonicalNoInstance := by
@@ -62192,6 +62234,7 @@ theorem adaptedCanonicalNoInstance_wellFormed :
     GapCVP.Core.canonicalNoInstance.basis_nonsingular,
     GapCVP.Core.canonicalNoInstance.radius_pos⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem adaptedCanonicalNoInstance_distanceSquared
     (z : Fin 1 → ℤ) :
     distanceSquared adaptedCanonicalNoInstance z =
@@ -62201,6 +62244,7 @@ theorem adaptedCanonicalNoInstance_distanceSquared
     distanceSquared, GapCVP.Core.squaredDistance]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem adaptedCanonicalNoInstance_gapNO400 :
     gapNO400 adaptedCanonicalNoInstance := by
   simp only [GapCVP.gapNO400, decide_eq_true_eq]
@@ -62991,6 +63035,7 @@ theorem monicPolynomial_natDegree {e : ℕ}
   rw [Polynomial.degree_eq_natDegree hne] at hdegree
   exact_mod_cast hdegree
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bitValue_foldl {α : Type}
     (items : List α) (step : Bool → α → Bool)
     (weight : α → ZMod 2)
@@ -63860,6 +63905,7 @@ def assembledBinaryAffineSystem [Fintype ι]
         ((Fintype.equivFin (assembledBinaryRow rowCounts e)).symm row) := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem assembledBinaryAffineSystem_check_mulVec_eq_iff
     [Fintype ι]
     (basis : Module.Basis (Fin e) (ZMod 2) K)
@@ -70801,6 +70847,7 @@ def BinaryAffineSystem.effectiveGaussianState (H : BinaryAffineSystem) :
     EffectiveBinaryGaussian.State H.rowCount H.dimension :=
   EffectiveBinaryGaussian.eliminate H.effectiveGaussianSystem
 
+set_option backward.isDefEq.respectTransparency false in
 theorem BinaryAffineSystem.effectiveGaussian_solves_iff
     (H : BinaryAffineSystem) (z : Fin H.dimension → ℤ) :
     H.effectiveGaussianState.system.Satisfies (binaryResidue z) ↔
@@ -72315,6 +72362,7 @@ def assembledBinaryAffineSystemOrdered
         basis rowCounts checks).mulVec bits (rowOrder row) := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem assembledBinaryAffineSystemOrdered_check_mulVec_eq_iff
     (basis : Module.Basis (Fin degree) (ZMod 2) K)
     (rowCounts : ι → ℕ)
@@ -74722,6 +74770,7 @@ theorem adaptGapCVPInstance_distanceSquared
   · intro i _
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem adaptGapCVPInstance_gapYES400_iff_squaredYes
     (I : GapCVP.Core.GapCVPInstance) :
     gapYES400 (adaptGapCVPInstance I) ↔
@@ -74762,6 +74811,7 @@ theorem adaptGapCVPInstance_gapYES400_iff_metricYes
     nlinarith [dist_nonneg (x := I.targetPoint)
       (y := I.latticePoint z)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem adaptGapCVPInstance_gapNO400_iff_metricNo
     (I : GapCVP.Core.GapCVPInstance) :
     gapNO400 (adaptGapCVPInstance I) ↔
@@ -76092,6 +76142,7 @@ theorem eliminate_inKernel_iff
 
 end EffectiveBinaryGaussian
 
+set_option backward.isDefEq.respectTransparency false in
 theorem BinaryAffineSystem.effectiveGaussian_kernel_iff
     (H : BinaryAffineSystem)
     (assignment : Fin H.dimension → ZMod 2) :
@@ -78720,6 +78771,7 @@ theorem compactFirstOccurrenceScanPreparation_valid
     compactFirstOccurrenceScanSeed_valid,
     unaryBoundedFoldWord]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem compactFirstOccurrenceValidState_iterate
     (formula : ThreeCNF) (index : ℕ)
     (hindex : index ≤ (sourceNormalizedVariableLiteralList formula).length) :
@@ -91691,6 +91743,7 @@ def paperFormulaRetainedClause
   exact (paperSourceNormalizedClauses formula).attach.get
     (Fin.cast hlength index)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem paperFormulaRetainedClause_sourceClause
     (formula : ThreeCNF)
     (index : Fin (srcFormula formula).clauses.length) :
@@ -92064,6 +92117,7 @@ def physicalCoordinateIndex
   (sourceCoordinateWordOrder
     encodingLength formula).symm (tableType, point, value)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem
     paperVariableArityPhysicalColumnPermutation_symm_sourceSATColumnIndex
     (encodingLength : ℕ) (formula : ThreeCNF)
@@ -92207,6 +92261,7 @@ open GapCVP.Core GapCVP.Factor400BinaryCodeDecodingCorollary
 open GapCVP.Factor400BinaryConstructiveSourcePlaces GapCVP.FormulaBridge
 open GapCVP.FourFamilySoundness GapCVP.PhysicalColumnOrder
 
+set_option backward.isDefEq.respectTransparency false in
 theorem paperVariableArityPhysicalWordBinarySystem_oneHot_of_satisfiable
     (encodingLength : ℕ) (formula : ThreeCNF)
     (hsatisfiable : ∃ assignment : ℕ → Bool,
@@ -92244,6 +92299,7 @@ theorem paperVariableArityPhysicalWordBinarySystem_oneHot_of_satisfiable
       simpa [vector, coordinate] using htransport
     exact hequal.symm.trans hnorm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem paperVariableArityPhysicalWordBinarySystem_signedSolution_of_satisfiable
     (encodingLength : ℕ) (formula : ThreeCNF)
     (hsatisfiable : ∃ assignment : ℕ → Bool,
@@ -103065,6 +103121,7 @@ def physicalWordCoordinateDelta
       encodingLength formula tableType point value = column
     then 1 else 0
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem paperVariableArityPhysicalWordBasisVector_apply_coordinate
     (encodingLength : ℕ) (formula : ThreeCNF)
     (column : Fin
@@ -103629,6 +103686,7 @@ def physicalRowDependentBlockRank
     (n := paperExplicitBinaryFamilyBlockCount
       encodingLength formula)).symm row).2
 
+set_option backward.isDefEq.respectTransparency false in
 theorem physicalRowDependentRank_eq_prefix
     (encodingLength : ℕ) (formula : ThreeCNF)
     (row : Fin
@@ -105872,6 +105930,7 @@ open GapCVP.GaussianPivotScheduleTM GapCVP.GaussianRowWorker GapCVP.Core.Effecti
   · intro heq
     rw [heq]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem paperVariableAritySourceIrreducibleFactorPairMarker_query
     (formula : ThreeCNF)
     (candidateRank : Fin
@@ -106982,6 +107041,7 @@ open GapCVP.BinaryEncoding GapCVP.Factor400BinaryConstructiveSourcePlaces
 open GapCVP.BinarySourceCoordinateOrder GapCVP.FormulaBridge GapCVP.SourceOrder
 open GapCVP.PhysicalFamilyRowTM GapCVP.PhysicalRowOrderProjection
 
+set_option backward.isDefEq.respectTransparency false in
 theorem paperVariableAritySourceCoordinateFieldWordRank
     (encodingLength : ℕ) (formula : ThreeCNF)
     (column : Fin
@@ -106997,6 +107057,7 @@ theorem paperVariableAritySourceCoordinateFieldWordRank
   simp [sourceCoordinateWordOrder,
     sourceFormulaCoordinateOrder, finProdFinEquiv]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sourceCoordinateGridWordRank
     (encodingLength : ℕ) (formula : ThreeCNF)
     (column : Fin
@@ -107014,6 +107075,7 @@ theorem sourceCoordinateGridWordRank
   simp [sourceCoordinateWordOrder,
     sourceFormulaCoordinateOrder, finProdFinEquiv]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sourceCoordinateTypeWordRank
     (encodingLength : ℕ) (formula : ThreeCNF)
     (column : Fin
@@ -107388,6 +107450,7 @@ theorem paperVariableArityPhysicalGlobalFieldCoefficient_eq_mixedRadix
       exact hsource ⟨htype.mpr hphysical.1, hgrid.mpr hphysical.2⟩
     rw [if_neg hsource, if_neg hphysical]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem paperVariableArityPhysicalGlobalWordBinaryCheck_eq_mixedRadix
     (formula : ThreeCNF)
     (row : Fin
@@ -108172,6 +108235,7 @@ def physicalRetainedClause
       simpa [paperVariableAritySourceFormula_clauses_length]
         using clause.isLt⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem paperVariableArityPhysicalRetainedClauseWidth
     (formula : ThreeCNF)
     (clause : Fin (srcFormula formula).clauses.length) :
@@ -116130,6 +116194,7 @@ open GapCVP.PhysicalInterpolationNodeWeightTM GapCVP.PhysicalLagrangeNodeDenomin
 open GapCVP.PhysicalLagrangeNodeProductAlgebra GapCVP.SourceFieldMomentOperationsTM
 open GapCVP.BinarySourceCoordinateOrder
 
+set_option backward.isDefEq.respectTransparency false in
 theorem paperVariableArityPhysicalInterpolationNodeWeightSourceWord_sourceField
     (family : Fin 4)
     (row : ℕ)
@@ -120095,6 +120160,7 @@ theorem paperVariableArityPhysicalOrdinarySourceRowGridEvaluation
     paperVariableArityPhysicalOrdinarySourceRowGrid_val
       formula row inOrdinary
 
+set_option backward.isDefEq.respectTransparency false in
 theorem paperVariableArityPhysicalOrdinaryInterpolationNodeWeight_eq_explicitProducts
     (formula : ThreeCNF)
     (row : Fin (paperExplicitBinaryRowWordCount
@@ -120554,6 +120620,7 @@ theorem paperVariableArityPhysicalOrdinaryActualSourceGridMatch_iff
       physicalSourceColumnExplicitGridPosition_val]
     exact matching
 
+set_option backward.isDefEq.respectTransparency false in
 theorem paperVariableArityPhysicalOrdinaryActualDirectMomentBasis_decide
     (formula : ThreeCNF)
     (row : Fin (paperExplicitBinaryRowWordCount
@@ -122682,6 +122749,7 @@ theorem paperVariableArityPhysicalShiftedColumnGridSourceWord_eq_evaluationWord
         (physicalShiftedColumnGridIndex formula column) := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem paperVariableArityPhysicalShiftedInterpolationDenominatorSourceValue_ne_zero
     (formula : ThreeCNF) (column rank : ℕ)
     (bounded : rank < (noTautClauses formula).length)
@@ -122707,6 +122775,7 @@ theorem paperVariableArityPhysicalShiftedInterpolationDenominatorSourceValue_ne_
       (paperShiftedTupleSelectedSourceVariableIndex
         formula rank bounded position validPosition)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem paperVariableArityPhysicalShiftedInterpolationNumeratorSourceWord_sourceField
     (formula : ThreeCNF) (column : ℕ) (bit : Bool) :
     sourceWordValue (encodeThreeCNF formula).length
@@ -122728,6 +122797,7 @@ theorem paperVariableArityPhysicalShiftedInterpolationNumeratorSourceWord_source
   rw [compactPhysicalFieldWordXorValue_sourceWordValue_sub,
     paperVariableArityShiftedTupleBetaIndexedWord_sourceField]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem paperVariableArityPhysicalShiftedInterpolationBaseSourceWord_sourceField
     (formula : ThreeCNF) (column rank : ℕ)
     (bounded : rank < (noTautClauses formula).length)
@@ -122933,6 +123003,7 @@ noncomputable def physicalShiftedSourceGridPoints
   sourceFormulaEvaluationWord (encodeThreeCNF formula).length
     (srcFormula formula)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem paperVariableArityPhysicalShiftedLagrangeParity_mul_eq_selectedNodeWeight
     (formula : ThreeCNF) (row : ℕ)
     (position : PaperVariableArityPhysicalLagrangeNodeGridIndex formula)
@@ -122988,9 +123059,7 @@ theorem paperVariableArityPhysicalShiftedLagrangeParity_mul_eq_selectedNodeWeigh
       rfl
     simp only [physicalShiftedSourceGridPoints]
     rw [same]
-    rfl
   · simp only [dif_neg selected]
-    rfl
 
 theorem paperVariableArityPhysicalShiftedMaskedNodeSum_eq_selected
     {K : Type*} [AddCommMonoid K]
@@ -125468,6 +125537,7 @@ open GapCVP.PhysicalShiftedInterpolationBaseSourceFieldCorrectness
 open GapCVP.PhysicalInterpolationColumnSourceFieldCorrectness
 open GapCVP.PhysicalShiftedInterpolationParityMaskedFieldCorrectness
 
+set_option backward.isDefEq.respectTransparency false in
 theorem
     paperVariableArityPhysicalShiftedFiniteRowCanonicalBaseSourceWord_eq_decodedSourceRatio
     (formula : ThreeCNF)
@@ -126310,6 +126380,7 @@ theorem binaryCodeGapFactor_two_lt_two : binaryCodeGapFactor 2 < 2 := by
   · norm_num
   · norm_num
 
+set_option backward.isDefEq.respectTransparency false in
 theorem canonicalBinaryNearestCodewordNo_mem :
     binaryNearestCodewordPromise.no
       (encodeBinaryNearestCodewordInstance
@@ -126335,6 +126406,7 @@ theorem canonicalBinaryNearestCodewordNo_mem :
   simpa [canonicalBinaryNearestCodewordNo] using
     binaryCodeGapFactor_two_lt_two
 
+set_option backward.isDefEq.respectTransparency false in
 theorem canonicalBinarySyndromeNo_mem :
     binarySyndromeDecodingPromise.no
       (encodeBinarySyndromeDecodingInstance
@@ -126402,6 +126474,7 @@ theorem paperVariableAritySyndromeInstance_completeness
     rw [← integerSquaredNorm_eq_hammingNorm_binaryResidue
       vector binary, weight]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem paperVariableAritySyndromeInstance_soundness
     (encodingLength : ℕ) (formula : ThreeCNF)
     (consistent :
@@ -127352,6 +127425,7 @@ def finitePCanonicalNoInstance : GapCVPInstance where
   target _ := 1
   radius := 1 / 2
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finitePCanonicalNoInstance_wellFormed :
     gapCVPWellFormed finitePCanonicalNoInstance := by
   simp only [GapCVP.gapCVPWellFormed, decide_eq_true_eq] at *
@@ -127368,6 +127442,7 @@ def finitePCanonicalCoordinate :
 def finitePCanonicalNoWord : List Bool :=
   (binaryFinEncoding GapCVPInstance).encode finitePCanonicalNoInstance
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finitePCanonicalNo_distance (p : ℚ) (hp : 1 ≤ p)
     (z : Fin finitePCanonicalNoInstance.dimension → ℤ) :
     finitePLatticeDistance p
@@ -127717,6 +127792,7 @@ theorem finiteP_power_sum_le_scaled_binary_radius
       mul_le_mul_of_nonneg_left hradius_power hgap
     _ = 2 * binaryCodeGapFactor I.dimension * (R : ℝ) := by ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finiteP_binaryLift_squaredNorm_le_power_sum
     (p : ℚ) (hp : 1 ≤ p)
     {n : ℕ} (vector : Fin n → ℤ) :
@@ -127905,6 +127981,7 @@ theorem
             p hp encodingLength formula)
           R radius hradius.le hradiusPower values short
 
+set_option backward.isDefEq.respectTransparency false in
 theorem
     paperVariableArityFinitePPhysicalFormulaInstance_close_of_satisfiable
     (p : ℚ) (hp : 1 ≤ p)
@@ -127942,7 +128019,7 @@ theorem
   have solutionH : H.Solves valuesH := by
     change (paperFinitePPhysicalSystem
       encodingLength formula).Solves _
-    simpa [valuesH, H, Fin.cast] using solution
+    exact solution
   have binaryH : ∀ index, valuesH index = 0 ∨ valuesH index = 1 := by
     intro index
     exact binary ((finCongr hdimensions) index)
@@ -128668,6 +128745,7 @@ theorem nearestInstanceOfAffine_eq_basisResidue
         ZMod 2)
   simp [Matrix.mulVec, dotProduct, Int.cast_sum, Int.cast_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nearestInstanceOfAffine_mem_kernel
     (system : GapCVP.Core.BinaryAffineSystem) (radius : ℕ)
     (coefficients : Fin system.dimension → ZMod 2) :
@@ -128701,6 +128779,7 @@ theorem nearestInstanceOfAffine_mem_kernel
   rw [codeword]
   simpa only [GapCVP.Core.BinaryAffineSystem.InLattice, decide_eq_true_eq] using kernel
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nearestInstanceOfAffine_residual_solves
     (system : GapCVP.Core.BinaryAffineSystem) (radius : ℕ)
     (consistent : system.effectiveReducedConsistent = true)
@@ -128748,6 +128827,7 @@ theorem nearestInstanceOfAffine_residual_solves
       · exact congrFun kernel row
     _ = system.rightHandSide row := sub_zero _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nearestInstanceOfAffine_completeness
     (system : GapCVP.Core.BinaryAffineSystem) (radius : ℕ)
     (dimensionPositive : 0 < system.dimension)
@@ -128812,6 +128892,7 @@ theorem nearestInstanceOfAffine_completeness
     _ = radius := weight
     _ ≤ radius := le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nearestInstanceOfAffine_soundness
     (system : GapCVP.Core.BinaryAffineSystem) (radius : ℕ)
     (dimensionPositive : 0 < system.dimension)
@@ -129843,6 +129924,7 @@ def gapNO400 (record : Instance) : Bool :=
           distanceSquared record vector)
     (Classical.propDecidable _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem gapYES400_not_gapNO400 (record : Instance)
     (positive : gapYES400 record) (negative : gapNO400 record) : False := by
   simp only [gapYES400, gapNO400, wellFormed, decide_eq_true_eq]
@@ -130163,6 +130245,7 @@ noncomputable def finitePLatticeDistance (p : ℚ) (I : Instance)
 noncomputable def finitePGapFactor (p : ℚ) (I : Instance) : ℝ :=
   (I.dimension : ℝ) ^ (((200 : ℝ) * (p : ℝ))⁻¹)
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def finitePGapCVPPromise (p : ℚ) (hp : 1 ≤ p) : PromiseProblem where
   yes bits :=
     @decide
@@ -130269,6 +130352,7 @@ theorem encodeBinarySyndromeDecodingInstance_eq_original
       GapCVP.Factor400BinaryDecodingPromiseReduction.encodeBinarySyndromeDecodingInstance
         (toOriginalSyndrome record) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem yesLanguage_iff_original (bits : List Bool) :
     yesLanguage bits ↔
       GapCVP.Factor400BinaryPaperVariableArityUnconditionalPhysicalSourceMachine.integerTargetGapCVP400Promise.yes bits := by
@@ -130282,6 +130366,7 @@ theorem yesLanguage_iff_original (bits : List Bool) :
     simp only [encodeInstance_eq_original]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem noLanguage_iff_original (bits : List Bool) :
     noLanguage bits ↔
       GapCVP.Factor400BinaryPaperVariableArityUnconditionalPhysicalSourceMachine.integerTargetGapCVP400Promise.no bits := by
@@ -130343,6 +130428,7 @@ theorem binarySyndromeDecoding_no_iff_original (bits : List Bool) :
     simp only [encodeBinarySyndromeDecodingInstance_eq_original]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finiteP_yes_iff_original (p : ℚ) (hp : 1 ≤ p)
     (bits : List Bool) :
     (finitePGapCVPPromise p hp).yes bits ↔
@@ -130357,6 +130443,7 @@ theorem finiteP_yes_iff_original (p : ℚ) (hp : 1 ≤ p)
       encodeInstance_eq_original]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finiteP_no_iff_original (p : ℚ) (hp : 1 ≤ p)
     (bits : List Bool) :
     (finitePGapCVPPromise p hp).no bits ↔
