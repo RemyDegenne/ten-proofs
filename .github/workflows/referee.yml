@@ -40,22 +40,22 @@ env:
   # One line per published site: `<root module>|<title>`. Single source of truth for the collect,
   # fold and build loops below and for the index page written at the Pages root.
   #
-  # Ten sites rather than one because `referee --root` takes a *component-wise module prefix*, and
-  # this project's ten results are sibling top-level modules with no common prefix. `--root All`
-  # exposes nothing (`All.lean` holds only imports, and no other module has `All` as a prefix), and
-  # an empty `--root` matches every module in the environment, Mathlib included. One root per
-  # result is the only value that selects what it names.
+  # One site per result rather than one for the project because `referee --root` takes a
+  # *component-wise module prefix*, and these results are sibling top-level modules with no common
+  # prefix. `--root All` exposes nothing (`All.lean` holds only imports, and no other module has
+  # `All` as a prefix), and an empty `--root` matches every module in the environment, Mathlib
+  # included. One root per result is the only value that selects what it names.
+  #
+  # Six of the paper's ten: the four largest results were removed from the repository because
+  # building and rendering all ten did not fit in a CI job. Keep this list and `defaultTargets` in
+  # `lakefile.toml` in step — a root named here that no longer has a module fails `collect`.
   REFEREE_SITES: |
     SpherePacking|High-dimensional sphere packing
     MetricCodes|Binary and spherical codes
     NonSoficGroup|Non-sofic groups
     ConnesRigidity|Connes's rigidity conjecture
     Permanent|Arithmetic circuit complexity
-    QuantumParallelRepetition|Quantum parallel repetition
-    GapCVP|Closest vector problem
-    EhrhartVolumeInequality|Ehrhart's volume conjecture
     MulticolorTriangleRamsey|Multicolor Ramsey numbers
-    CompactnessAndDegeneracy|Extremal number conjectures
 
   # Excluded from every phase that imports the project. Repeatable, so this is passed unquoted and
   # split into arguments.
@@ -408,6 +408,9 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p home_page
+          # Counted rather than written out, so that the page stays truthful about how much of the
+          # paper this repository formalizes as results are added back or removed.
+          count=$(echo "$REFEREE_SITES" | grep -c '|')
           {
             echo '<!doctype html><html lang="en"><head><meta charset="utf-8">'
             echo '<meta name="viewport" content="width=device-width, initial-scale=1">'
@@ -421,7 +424,8 @@ jobs:
             echo 'code{font-size:.9em;opacity:.7}'
             echo '</style></head><body>'
             echo '<h1>Ten advances in mathematics and theoretical computer science</h1>'
-            echo '<p>Lean 4 formalizations, one referee site per result.</p><ol>'
+            echo "<p>Lean 4 formalizations. $count of the paper's ten results are in this"
+            echo 'repository, each with its own referee site.</p><ol>'
             while IFS='|' read -r root title; do
               [ -n "$root" ] || continue
               slug=$(echo "$root" | tr '[:upper:]' '[:lower:]')
