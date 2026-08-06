@@ -6,6 +6,7 @@ This repository contains Lean 4 formalizations of the results presented in
 - [Read the paper](https://cdn.openai.com/pdf/ten-proofs-oai.pdf)
 - [Read the reasoning walkthroughs](https://cdn.openai.com/pdf/reasoning-walkthroughs.pdf)
 
+
 ## The results
 
 Six of the paper's ten results are formalized here. The other four were removed
