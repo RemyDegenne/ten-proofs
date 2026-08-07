@@ -12,10 +12,10 @@ namespace FeedbackBooleanPolynomial
 variable {ι : Type*} [DecidableEq ι]
 
 @[simp]
-theorem two_eq_zero_zmod_two : (2 : ZMod 2) = 0 := by
+lemma two_eq_zero_zmod_two : (2 : ZMod 2) = 0 := by
   rfl
 
-theorem eq_one_of_ne_zero_zmod_two
+lemma eq_one_of_ne_zero_zmod_two
     (a : ZMod 2) (ha : a ≠ 0) :
     a = 1 := by
   fin_cases a
@@ -135,13 +135,13 @@ def l2Reindex {α : Type u} {β : Type v} (e : α ≃ β) :
     exact e.symm.tsum_eq (fun i ↦ ‖f i‖ ^ (2 : ℝ≥0∞).toReal)
 
 @[simp]
-theorem l2Reindex_apply {α : Type u} {β : Type v} (e : α ≃ β)
+lemma l2Reindex_apply {α : Type u} {β : Type v} (e : α ≃ β)
     (f : GroupL2 α) (j : β) :
     l2Reindex e f j = f (e.symm j) :=
   rfl
 
 @[simp]
-theorem l2Reindex_symm {α : Type u} {β : Type v} (e : α ≃ β) :
+lemma l2Reindex_symm {α : Type u} {β : Type v} (e : α ≃ β) :
     (l2Reindex e).symm = l2Reindex e.symm := by
   ext f i
   rfl
@@ -151,7 +151,7 @@ def leftRegularUnitary {G : Type u} [Group G] (g : G) :
   Unitary.linearIsometryEquiv.symm (l2Reindex (Equiv.mulLeft g))
 
 @[simp]
-theorem leftRegularUnitary_apply {G : Type u} [Group G]
+lemma leftRegularUnitary_apply {G : Type u} [Group G]
     (g : G) (f : GroupL2 G) (h : G) :
     (leftRegularUnitary g : GroupL2 G →L[ℂ] GroupL2 G) f h = f (g⁻¹ * h) := by
   rfl
@@ -249,7 +249,7 @@ section
 
 universe u
 
-theorem UnitaryRepresentation.hasAlmostInvariantUnitVectors_comp
+lemma UnitaryRepresentation.hasAlmostInvariantUnitVectors_comp
     {G H K : Type u} [Group G] [Group H]
     [NormedAddCommGroup K] [InnerProductSpace ℂ K] [CompleteSpace K]
     (π : UnitaryRepresentation H K)
@@ -263,7 +263,7 @@ theorem UnitaryRepresentation.hasAlmostInvariantUnitVectors_comp
   intro g hg
   exact hclose (f g) (Finset.mem_image.mpr ⟨g, hg, rfl⟩)
 
-theorem hasKazhdanPropertyT_of_surjective
+lemma hasKazhdanPropertyT_of_surjective
     (G H : CountableDiscreteGroup.{u})
     (f : G →* H) (hf : Function.Surjective f)
     (hG : HasKazhdanPropertyT G) :
@@ -277,7 +277,7 @@ theorem hasKazhdanPropertyT_of_surjective
   obtain ⟨g, rfl⟩ := hf h
   exact hinv g
 
-theorem hasKazhdanPropertyT_iff_of_mulEquiv
+lemma hasKazhdanPropertyT_iff_of_mulEquiv
     (G H : CountableDiscreteGroup.{u}) (e : G ≃* H) :
     HasKazhdanPropertyT G ↔ HasKazhdanPropertyT H := by
   constructor
@@ -316,7 +316,7 @@ noncomputable def unitaryLinearIsometryEquiv
   norm_map' := ContinuousLinearMap.norm_map_of_mem_unitary U.property
 
 @[simp]
-theorem unitaryLinearIsometryEquiv_apply
+lemma unitaryLinearIsometryEquiv_apply
     {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
     (U : unitary (H →L[ℂ] H)) (x : H) :
     unitaryLinearIsometryEquiv U x = (U : H →L[ℂ] H) x :=
@@ -331,7 +331,7 @@ noncomputable def linearIsometryEquivUnitary
     constructor <;> ext x <;> simp⟩
 
 @[simp]
-theorem linearIsometryEquivUnitary_apply
+lemma linearIsometryEquivUnitary_apply
     {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
     (e : H ≃ₗᵢ[ℂ] H) (x : H) :
     (linearIsometryEquivUnitary e : H →L[ℂ] H) x = e x :=
@@ -357,25 +357,25 @@ noncomputable def correction (g : G) (q : G ⧸ S) : S :=
         (QuotientGroup.leftRel_apply (s := S)).mp hrel)⟩
 
 @[simp]
-theorem correction_coe (g : G) (q : G ⧸ S) :
+lemma correction_coe (g : G) (q : G ⧸ S) :
     (correction S g q : G) =
       (Quotient.out (g • q))⁻¹ * g * Quotient.out q :=
   rfl
 
-theorem correction_mul (g h : G) (q : G ⧸ S) :
+lemma correction_mul (g h : G) (q : G ⧸ S) :
     correction S (g * h) q =
       correction S g (h • q) * correction S h q := by
   apply Subtype.ext
   simp [correction, mul_assoc, mul_smul]
 
 @[simp]
-theorem correction_one (q : G ⧸ S) :
+lemma correction_one (q : G ⧸ S) :
     correction S 1 q = 1 := by
   apply Subtype.ext
   simp [correction]
 
 @[simp]
-theorem subgroup_smul_baseCoset (s : S) :
+lemma subgroup_smul_baseCoset (s : S) :
     (s : G) • (QuotientGroup.mk 1 : G ⧸ S) =
       QuotientGroup.mk 1 := by
   apply Quotient.sound
@@ -383,7 +383,7 @@ theorem subgroup_smul_baseCoset (s : S) :
   rw [QuotientGroup.leftRel_apply]
   simp
 
-theorem quotientOut_baseCoset_mem :
+lemma quotientOut_baseCoset_mem :
     Quotient.out (QuotientGroup.mk 1 : G ⧸ S) ∈ S := by
   let q₀ : G ⧸ S := QuotientGroup.mk 1
   have hrel : QuotientGroup.leftRel S (Quotient.out q₀) 1 := by
@@ -415,7 +415,7 @@ noncomputable def inducedLinearIsometryEquiv
           (π (correction S g (g⁻¹ • q)))))
 
 @[simp]
-theorem inducedLinearIsometryEquiv_apply
+lemma inducedLinearIsometryEquiv_apply
     (π : UnitaryRepresentation S H) (g : G)
     (ξ : InducedSpace (H := H) S) (q : G ⧸ S) :
     inducedLinearIsometryEquiv S π g ξ q =
@@ -429,7 +429,7 @@ noncomputable def inducedUnitary
   linearIsometryEquivUnitary (inducedLinearIsometryEquiv S π g)
 
 @[simp]
-theorem inducedUnitary_apply
+lemma inducedUnitary_apply
     (π : UnitaryRepresentation S H) (g : G)
     (ξ : InducedSpace (H := H) S) (q : G ⧸ S) :
     (inducedUnitary S π g :
@@ -454,7 +454,7 @@ noncomputable def inducedRepresentation
     simp [map_mul, mul_smul]
 
 @[simp]
-theorem inducedRepresentation_apply
+lemma inducedRepresentation_apply
     (π : UnitaryRepresentation S H) (g : G)
     (ξ : InducedSpace (H := H) S) (q : G ⧸ S) :
     (inducedRepresentation S π g :
@@ -465,7 +465,7 @@ theorem inducedRepresentation_apply
 
 omit [InnerProductSpace ℂ H] [CompleteSpace H] in
 
-theorem inducedSpace_norm_le_sum_norm_apply
+lemma inducedSpace_norm_le_sum_norm_apply
     (ξ : InducedSpace (H := H) S) :
     ‖ξ‖ ≤ ∑ q : G ⧸ S, ‖ξ q‖ := by
   classical
@@ -481,7 +481,7 @@ theorem inducedSpace_norm_le_sum_norm_apply
         (norm_sum_le Finset.univ
           (fun q : G ⧸ S ↦ PiLp.single 2 q (ξ q)))
 
-theorem inducedRepresentation_hasAlmostInvariantUnitVectors
+lemma inducedRepresentation_hasAlmostInvariantUnitVectors
     (π : UnitaryRepresentation S H)
     (hπ : π.HasAlmostInvariantUnitVectors) :
     (inducedRepresentation S π).HasAlmostInvariantUnitVectors := by
@@ -558,7 +558,7 @@ theorem inducedRepresentation_hasAlmostInvariantUnitVectors
       rw [show n * (ε / (n + 1)) = (n * ε) / (n + 1) by ring]
       exact (div_lt_iff₀ hden).2 (by nlinarith)
 
-theorem inducedInvariant_baseCoset_ne_zero
+lemma inducedInvariant_baseCoset_ne_zero
     (π : UnitaryRepresentation S H)
     (η : InducedSpace (H := H) S)
     (hη : η ≠ 0)
@@ -597,7 +597,7 @@ theorem inducedInvariant_baseCoset_ne_zero
 
 omit [S.FiniteIndex] in
 
-theorem correction_conjugate_at_baseCoset
+lemma correction_conjugate_at_baseCoset
     (s : S) :
     let r : S :=
       ⟨Quotient.out (QuotientGroup.mk 1 : G ⧸ S),
@@ -610,7 +610,7 @@ theorem correction_conjugate_at_baseCoset
   rw [subgroup_smul_baseCoset]
   simp [mul_assoc]
 
-theorem inducedInvariant_baseCoset_isInvariant
+lemma inducedInvariant_baseCoset_isInvariant
     (π : UnitaryRepresentation S H)
     (η : InducedSpace (H := H) S)
     (hinv : (inducedRepresentation S π).IsInvariant η) :
@@ -634,7 +634,7 @@ end Induced
 
 end FiniteIndex
 
-theorem hasKazhdanPropertyT_subgroup_of_finiteIndex
+lemma hasKazhdanPropertyT_subgroup_of_finiteIndex
     (G : CountableDiscreteGroup.{u}) (S : Subgroup G)
     [S.FiniteIndex]
     (hG : HasKazhdanPropertyT G) :
@@ -663,12 +663,12 @@ abbrev V := Fin 4 → R
 
 def e : V := fun i ↦ if i = 0 then 1 else 0
 
-@[simp] theorem e_zero : e 0 = 1 := by
+@[simp] lemma e_zero : e 0 = 1 := by
   simp [e]
 
-@[simp] theorem e_apply (i : Fin 4) : e i = if i = 0 then 1 else 0 := rfl
+@[simp] lemma e_apply (i : Fin 4) : e i = if i = 0 then 1 else 0 := rfl
 
-theorem e_ne_zero : e ≠ 0 := by
+lemma e_ne_zero : e ≠ 0 := by
   intro h
   have := congrFun h (0 : Fin 4)
   simp [e] at this
@@ -681,23 +681,23 @@ def B : Submodule F T := Submodule.span F (Set.range square)
 
 abbrev D := V × B
 
-@[simp] theorem square_zero : square 0 = 0 := by
+@[simp] lemma square_zero : square 0 = 0 := by
   simp [square]
 
-theorem square_add (u v : V) :
+lemma square_add (u v : V) :
     square (u + v) = square u + square v +
       (u ⊗ₜ[F] v + v ⊗ₜ[F] u) := by
   simp only [square, TensorProduct.add_tmul, TensorProduct.tmul_add]
   ac_rfl
 
-theorem square_mem (v : V) : square v ∈ B := by
+lemma square_mem (v : V) : square v ∈ B := by
   exact Submodule.subset_span ⟨v, rfl⟩
 
 def diagonal (v : V) : B := ⟨square v, square_mem v⟩
 
-@[simp] theorem diagonal_val (v : V) : (diagonal v : T) = square v := rfl
+@[simp] lemma diagonal_val (v : V) : (diagonal v : T) = square v := rfl
 
-theorem symmetric_tmul_mem (u v : V) :
+lemma symmetric_tmul_mem (u v : V) :
     u ⊗ₜ[F] v + v ⊗ₜ[F] u ∈ B := by
   have h := B.sub_mem (B.sub_mem (square_mem (u + v)) (square_mem u))
     (square_mem v)
@@ -707,21 +707,21 @@ theorem symmetric_tmul_mem (u v : V) :
 def polarization (u v : V) : B :=
   ⟨u ⊗ₜ[F] v + v ⊗ₜ[F] u, symmetric_tmul_mem u v⟩
 
-@[simp] theorem polarization_val (u v : V) :
+@[simp] lemma polarization_val (u v : V) :
     (polarization u v : T) = u ⊗ₜ[F] v + v ⊗ₜ[F] u := rfl
 
-theorem diagonal_add (u v : V) :
+lemma diagonal_add (u v : V) :
     diagonal (u + v) = diagonal u + diagonal v + polarization u v := by
   apply Subtype.ext
   exact square_add u v
 
-theorem add_self_eq_zero {M : Type*} [AddCommGroup M] [Module F M]
+lemma add_self_eq_zero {M : Type*} [AddCommGroup M] [Module F M]
     (x : M) : x + x = 0 := by
   calc
     x + x = ((1 : F) + 1) • x := by rw [add_smul, one_smul]
     _ = 0 := by rw [show (1 : F) + 1 = 0 by decide, zero_smul]
 
-theorem D_add_self (d : D) : d + d = 0 := add_self_eq_zero d
+lemma D_add_self (d : D) : d + d = 0 := add_self_eq_zero d
 
 end
 
@@ -752,7 +752,7 @@ def truncatePolynomial (n : ℕ) : R →ₗ[F] TruncatedPolynomial n :=
   (AdjoinRoot.mkₐ ((X : R) ^ n)).toLinearMap
 
 @[simp]
-theorem truncatePolynomial_apply (n : ℕ) (p : R) :
+lemma truncatePolynomial_apply (n : ℕ) (p : R) :
     truncatePolynomial n p = AdjoinRoot.mk ((X : R) ^ n) p :=
   rfl
 
@@ -760,15 +760,15 @@ def truncateVector (n : ℕ) : V →ₗ[F] TruncatedVector n :=
   (truncatePolynomial n).compLeft (Fin 4)
 
 @[simp]
-theorem truncateVector_apply (n : ℕ) (v : V) (i : Fin 4) :
+lemma truncateVector_apply (n : ℕ) (v : V) (i : Fin 4) :
     truncateVector n v i = AdjoinRoot.mk ((X : R) ^ n) (v i) :=
   rfl
 
-theorem truncatePolynomial_surjective (n : ℕ) :
+lemma truncatePolynomial_surjective (n : ℕ) :
     Function.Surjective (truncatePolynomial n) :=
   AdjoinRoot.mk_surjective
 
-theorem truncateVector_surjective (n : ℕ) :
+lemma truncateVector_surjective (n : ℕ) :
     Function.Surjective (truncateVector n) := by
   intro w
   choose v hv using fun i : Fin 4 => truncatePolynomial_surjective n (w i)
@@ -777,7 +777,7 @@ theorem truncateVector_surjective (n : ℕ) :
 def shiftedSubmodule (n : ℕ) : Submodule F V :=
   LinearMap.ker (truncateVector n)
 
-theorem mem_shiftedSubmodule_iff (n : ℕ) (v : V) :
+lemma mem_shiftedSubmodule_iff (n : ℕ) (v : V) :
     v ∈ shiftedSubmodule n ↔ ∀ i : Fin 4, (X : R) ^ n ∣ v i := by
   change truncateVector n v = 0 ↔ _
   simp only [funext_iff, Pi.zero_apply, truncateVector_apply,
@@ -794,12 +794,12 @@ noncomputable def shiftedQuotientCoeffEquiv (n : ℕ) :
     ShiftedQuotient n ≃ₗ[F] (Fin 4 → Fin n → F) :=
   (shiftedQuotientEquiv n).trans (truncatedVectorEquiv n)
 
-theorem truncatedVector_card (n : ℕ) :
+lemma truncatedVector_card (n : ℕ) :
     Nat.card (TruncatedVector n) = 2 ^ (4 * n) := by
   rw [Nat.card_congr (truncatedVectorEquiv n).toEquiv]
   simp [← pow_mul, Nat.mul_comm]
 
-theorem shiftedQuotient_card (n : ℕ) :
+lemma shiftedQuotient_card (n : ℕ) :
     Nat.card (ShiftedQuotient n) = 2 ^ (4 * n) := by
   rw [Nat.card_congr (shiftedQuotientEquiv n).toEquiv]
   exact truncatedVector_card n
@@ -852,21 +852,21 @@ instance : Countable Q := by
 def modThreeAtZero : IntegralPolynomial →+* ZMod 3 :=
   (Int.castRingHom (ZMod 3)).comp (Polynomial.evalRingHom (0 : ℤ))
 
-@[simp] theorem modThreeAtZero_apply (p : IntegralPolynomial) :
+@[simp] lemma modThreeAtZero_apply (p : IntegralPolynomial) :
     modThreeAtZero p = ((p.eval (0 : ℤ) : ℤ) : ZMod 3) := rfl
 
-@[simp] theorem modThreeAtZero_C (z : ℤ) :
+@[simp] lemma modThreeAtZero_C (z : ℤ) :
     modThreeAtZero (Polynomial.C z) = (z : ZMod 3) := by
   simp [modThreeAtZero]
 
-@[simp] theorem modThreeAtZero_X :
+@[simp] lemma modThreeAtZero_X :
     modThreeAtZero (Polynomial.X : IntegralPolynomial) = 0 := by
   simp [modThreeAtZero]
 
 def modThreeGroupHom : IntegralSpecialLinearGroup →* TernarySpecialLinearGroup :=
   Matrix.SpecialLinearGroup.map modThreeAtZero
 
-@[simp] theorem modThreeGroupHom_apply_entry
+@[simp] lemma modThreeGroupHom_apply_entry
     (g : IntegralSpecialLinearGroup) (i j : Index) :
     modThreeGroupHom g i j = modThreeAtZero (g i j) := rfl
 
@@ -891,37 +891,37 @@ instance : KSubgroup.FiniteIndex := Subgroup.finiteIndex_ker modThreeGroupHom
 def modTwoPolynomial : IntegralPolynomial →+* BinaryPolynomial :=
   Polynomial.mapRingHom (Int.castRingHom (ZMod 2))
 
-@[simp] theorem modTwoPolynomial_apply (p : IntegralPolynomial) :
+@[simp] lemma modTwoPolynomial_apply (p : IntegralPolynomial) :
     modTwoPolynomial p = p.map (Int.castRingHom (ZMod 2)) := rfl
 
-@[simp] theorem modTwoPolynomial_C (z : ℤ) :
+@[simp] lemma modTwoPolynomial_C (z : ℤ) :
     modTwoPolynomial (Polynomial.C z) = Polynomial.C (z : ZMod 2) := by
   simp [modTwoPolynomial]
 
-@[simp] theorem modTwoPolynomial_X :
+@[simp] lemma modTwoPolynomial_X :
     modTwoPolynomial (Polynomial.X : IntegralPolynomial) = Polynomial.X := by
   simp [modTwoPolynomial]
 
 def modTwoGroupHom : IntegralSpecialLinearGroup →* Q :=
   Matrix.SpecialLinearGroup.map modTwoPolynomial
 
-@[simp] theorem modTwoGroupHom_apply_entry
+@[simp] lemma modTwoGroupHom_apply_entry
     (g : IntegralSpecialLinearGroup) (i j : Index) :
     modTwoGroupHom g i j = modTwoPolynomial (g i j) := rfl
 
 def pi₂ : K →* Q := modTwoGroupHom.comp KSubgroup.subtype
 
-@[simp] theorem pi₂_apply (g : K) :
+@[simp] lemma pi₂_apply (g : K) :
     pi₂ g = modTwoGroupHom (g : IntegralSpecialLinearGroup) := rfl
 
-@[simp] theorem pi₂_apply_entry (g : K) (i j : Index) :
+@[simp] lemma pi₂_apply_entry (g : K) (i j : Index) :
     pi₂ g i j = modTwoPolynomial ((g : IntegralSpecialLinearGroup) i j) := rfl
 
-theorem modTwoPolynomial_surjective : Function.Surjective modTwoPolynomial := by
+lemma modTwoPolynomial_surjective : Function.Surjective modTwoPolynomial := by
   exact Polynomial.map_surjective _ (ZMod.ringHom_surjective _)
 
 set_option backward.isDefEq.respectTransparency false in
-theorem specialLinear_map_transvection_baseChange
+lemma specialLinear_map_transvection_baseChange
     {A B : Type*} [CommRing A] [CommRing B]
     (f : A →+* B) {i j : Index} (hij : i ≠ j) (a : A) :
     Matrix.SpecialLinearGroup.map f (Matrix.SpecialLinearGroup.transvection hij a) =
@@ -932,7 +932,7 @@ theorem specialLinear_map_transvection_baseChange
     Matrix.SpecialLinearGroup.transvection_coe, Matrix.single_apply, Matrix.one_apply]
   split <;> simp
 
-theorem integralTransvection_mem_KSubgroup
+lemma integralTransvection_mem_KSubgroup
     {i j : Index} (hij : i ≠ j) (a : IntegralPolynomial) :
     Matrix.SpecialLinearGroup.transvection hij ((3 : IntegralPolynomial) * a) ∈
       KSubgroup := by
@@ -955,7 +955,7 @@ def liftedIntegralTransvection {i j : Index} (hij : i ≠ j)
   ⟨Matrix.SpecialLinearGroup.transvection hij ((3 : IntegralPolynomial) * a),
     integralTransvection_mem_KSubgroup hij a⟩
 
-theorem pi₂_liftedIntegralTransvection {i j : Index} (hij : i ≠ j)
+lemma pi₂_liftedIntegralTransvection {i j : Index} (hij : i ≠ j)
     (a : IntegralPolynomial) :
     pi₂ (liftedIntegralTransvection hij a) =
       Matrix.SpecialLinearGroup.transvection hij (modTwoPolynomial a) := by
@@ -974,7 +974,7 @@ theorem pi₂_liftedIntegralTransvection {i j : Index} (hij : i ≠ j)
     rw [show (3 : ZMod 2) = 1 by decide, Polynomial.C_1]
   rw [hthree, one_mul]
 
-theorem exists_pi₂_eq_transvection {i j : Index} (hij : i ≠ j)
+lemma exists_pi₂_eq_transvection {i j : Index} (hij : i ≠ j)
     (b : BinaryPolynomial) :
     ∃ k : K, pi₂ k = Matrix.SpecialLinearGroup.transvection hij b := by
   obtain ⟨a, rfl⟩ := modTwoPolynomial_surjective b
@@ -985,19 +985,19 @@ def elementaryTransvections : Set Q :=
   {g | ∃ (i j : Index) (hij : i ≠ j) (a : BinaryPolynomial),
     g = Matrix.SpecialLinearGroup.transvection hij a}
 
-theorem elementaryTransvections_subset_pi₂_range :
+lemma elementaryTransvections_subset_pi₂_range :
     elementaryTransvections ⊆ pi₂.range := by
   rintro _ ⟨i, j, hij, a, rfl⟩
   exact exists_pi₂_eq_transvection hij a
 
-theorem elementaryClosure_le_pi₂_range :
+lemma elementaryClosure_le_pi₂_range :
     Subgroup.closure elementaryTransvections ≤ pi₂.range :=
   (Subgroup.closure_le _).2 elementaryTransvections_subset_pi₂_range
 
 def ElementaryGeneration : Prop :=
   Subgroup.closure elementaryTransvections = ⊤
 
-theorem pi₂_surjective_of_elementaryGeneration
+lemma pi₂_surjective_of_elementaryGeneration
     (h : ElementaryGeneration) : Function.Surjective pi₂ := by
   apply MonoidHom.range_eq_top.mp
   apply top_unique
@@ -1010,7 +1010,7 @@ noncomputable section
 
 open Finset Polynomial
 
-theorem polynomial_matrix_eq_one_of_pow_eq_one_of_eval_zero_eq_one
+lemma polynomial_matrix_eq_one_of_pow_eq_one_of_eval_zero_eq_one
     {n : Type*} [Fintype n] [DecidableEq n]
     (A : Matrix n n (Polynomial ℤ)) (m : ℕ) (hm : 0 < m)
     (hpow : A ^ m = 1)
@@ -1048,7 +1048,7 @@ abbrev IntegerSpecialLinearGroup := Matrix.SpecialLinearGroup Index ℤ
 def constantTermGroupHom : IntegralSpecialLinearGroup →* IntegerSpecialLinearGroup :=
   Matrix.SpecialLinearGroup.map (Polynomial.evalRingHom (0 : ℤ))
 
-@[simp] theorem constantTermGroupHom_apply_entry
+@[simp] lemma constantTermGroupHom_apply_entry
     (g : IntegralSpecialLinearGroup) (i j : Index) :
     constantTermGroupHom g i j = (g i j).eval 0 := rfl
 
@@ -1058,13 +1058,13 @@ def levelThreeIntegerReduction : IntegerSpecialLinearGroup →* TernarySpecialLi
 def levelThreeIntegerSubgroup : Subgroup IntegerSpecialLinearGroup :=
   levelThreeIntegerReduction.ker
 
-theorem levelThreeIntegerReduction_constantTerm (g : IntegralSpecialLinearGroup) :
+lemma levelThreeIntegerReduction_constantTerm (g : IntegralSpecialLinearGroup) :
     levelThreeIntegerReduction (constantTermGroupHom g) = modThreeGroupHom g := by
   apply Matrix.SpecialLinearGroup.ext
   intro i j
   rfl
 
-theorem constantTerm_mem_levelThreeIntegerSubgroup (g : K) :
+lemma constantTerm_mem_levelThreeIntegerSubgroup (g : K) :
     constantTermGroupHom (g : IntegralSpecialLinearGroup) ∈
       levelThreeIntegerSubgroup := by
   change levelThreeIntegerReduction
@@ -1084,11 +1084,11 @@ def constantTermToLevelThree : K →* levelThreeIntegerSubgroup where
     exact constantTermGroupHom.map_mul
       (g : IntegralSpecialLinearGroup) (h : IntegralSpecialLinearGroup)
 
-@[simp] theorem constantTermToLevelThree_apply_coe (g : K) :
+@[simp] lemma constantTermToLevelThree_apply_coe (g : K) :
     (constantTermToLevelThree g : IntegerSpecialLinearGroup) =
       constantTermGroupHom (g : IntegralSpecialLinearGroup) := rfl
 
-theorem integralSpecialLinear_eq_one_of_pow_eq_one_of_constantTerm_eq_one
+lemma integralSpecialLinear_eq_one_of_pow_eq_one_of_constantTerm_eq_one
     (g : IntegralSpecialLinearGroup) (m : ℕ) (hm : 0 < m)
     (hpow : g ^ m = 1)
     (hconst : constantTermGroupHom g = 1) :
@@ -1111,7 +1111,7 @@ theorem integralSpecialLinear_eq_one_of_pow_eq_one_of_constantTerm_eq_one
 def LevelThreeIntegerTorsionFree : Prop :=
   ∀ g : levelThreeIntegerSubgroup, IsOfFinOrder g → g = 1
 
-theorem K_eq_one_of_pow_eq_one_of_levelThree_torsionFree
+lemma K_eq_one_of_pow_eq_one_of_levelThree_torsionFree
     (hlevel : LevelThreeIntegerTorsionFree)
     (g : K) (m : ℕ) (hm : 0 < m) (hpow : g ^ m = 1) :
     g = 1 := by
@@ -1134,7 +1134,7 @@ theorem K_eq_one_of_pow_eq_one_of_levelThree_torsionFree
   apply Subtype.ext
   exact hpolynomial
 
-theorem K_no_nontrivial_torsion_of_levelThree_torsionFree
+lemma K_no_nontrivial_torsion_of_levelThree_torsionFree
     (hlevel : LevelThreeIntegerTorsionFree) :
     ∀ g : K, IsOfFinOrder g → g = 1 := by
   intro g hg
@@ -1147,7 +1147,7 @@ section
 
 variable {G : Type*} [Group G]
 
-theorem fg_of_finiteIndex_subgroup (H : Subgroup G) [H.FiniteIndex]
+lemma fg_of_finiteIndex_subgroup (H : Subgroup G) [H.FiniteIndex]
     (hH : Group.FG H) : Group.FG G := by
   classical
   obtain ⟨R, hR, _⟩ := H.exists_isComplement_right 1
@@ -1216,7 +1216,7 @@ noncomputable def finiteGeneratedCosetRepresentation
     simp [mul_smul]
 
 @[simp]
-theorem finiteGeneratedCosetRepresentation_apply
+lemma finiteGeneratedCosetRepresentation_apply
     (G : CountableDiscreteGroup.{u}) (g : G)
     (ξ : GroupL2 (finiteGeneratedCosetIndex G))
     (F : Finset G) (q : G ⧸ Subgroup.closure (F : Set G)) :
@@ -1226,7 +1226,7 @@ theorem finiteGeneratedCosetRepresentation_apply
       ξ ⟨F, g⁻¹ • q⟩ :=
   rfl
 
-theorem finiteGeneratedCoset_l2Reindex_single
+lemma finiteGeneratedCoset_l2Reindex_single
     {α β : Type u} (e : α ≃ β) [DecidableEq α] [DecidableEq β]
     (i : α) (z : ℂ) :
     l2Reindex e (lp.single 2 i z) = lp.single 2 (e i) z := by
@@ -1247,7 +1247,7 @@ noncomputable def finiteGeneratedCosetBasepoint
     finiteGeneratedCosetIndex G :=
   ⟨F, QuotientGroup.mk (1 : G)⟩
 
-theorem finiteGeneratedCosetEquiv_basepoint
+lemma finiteGeneratedCosetEquiv_basepoint
     (G : CountableDiscreteGroup.{u}) (F : Finset G)
     (g : G) (hg : g ∈ F) :
     finiteGeneratedCosetEquiv G g (finiteGeneratedCosetBasepoint G F) =
@@ -1270,13 +1270,13 @@ noncomputable def finiteGeneratedCosetBasis
   classical
   exact lp.single 2 (finiteGeneratedCosetBasepoint G F) (1 : ℂ)
 
-theorem finiteGeneratedCosetBasis_norm
+lemma finiteGeneratedCosetBasis_norm
     (G : CountableDiscreteGroup.{u}) (F : Finset G) :
     ‖finiteGeneratedCosetBasis G F‖ = 1 := by
   classical
   simp [finiteGeneratedCosetBasis]
 
-theorem finiteGeneratedCosetRepresentation_fixes_basis
+lemma finiteGeneratedCosetRepresentation_fixes_basis
     (G : CountableDiscreteGroup.{u}) (F : Finset G)
     (g : G) (hg : g ∈ F) :
     (finiteGeneratedCosetRepresentation G g :
@@ -1292,7 +1292,7 @@ theorem finiteGeneratedCosetRepresentation_fixes_basis
   rw [finiteGeneratedCoset_l2Reindex_single,
     finiteGeneratedCosetEquiv_basepoint G F g hg]
 
-theorem finiteGeneratedCosetRepresentation_hasAlmostInvariantUnitVectors
+lemma finiteGeneratedCosetRepresentation_hasAlmostInvariantUnitVectors
     (G : CountableDiscreteGroup.{u}) :
     (finiteGeneratedCosetRepresentation G).HasAlmostInvariantUnitVectors := by
   intro F ε hε
@@ -1302,7 +1302,7 @@ theorem finiteGeneratedCosetRepresentation_hasAlmostInvariantUnitVectors
   rw [finiteGeneratedCosetRepresentation_fixes_basis G F g hg]
   simpa using hε
 
-theorem finiteGeneratedCosetInvariant_constant
+lemma finiteGeneratedCosetInvariant_constant
     (G : CountableDiscreteGroup.{u})
     (ξ : GroupL2 (finiteGeneratedCosetIndex G))
     (hξ : (finiteGeneratedCosetRepresentation G).IsInvariant ξ)
@@ -1317,7 +1317,7 @@ theorem finiteGeneratedCosetInvariant_constant
     (hξ g)
   simpa [finiteGeneratedCosetRepresentation_apply, hmove] using h
 
-theorem finiteGeneratedCoset_component_summable
+lemma finiteGeneratedCoset_component_summable
     (G : CountableDiscreteGroup.{u})
     (ξ : GroupL2 (finiteGeneratedCosetIndex G))
     (F : Finset G) :
@@ -1332,7 +1332,7 @@ theorem finiteGeneratedCoset_component_summable
     simpa using hqr
   simpa [Function.comp_def] using hsum.comp_injective hinj
 
-theorem finiteGeneratedCosetInvariant_eq_zero
+lemma finiteGeneratedCosetInvariant_eq_zero
     (G : CountableDiscreteGroup.{u})
     (hinfinite : ∀ F : Finset G,
       Infinite (G ⧸ Subgroup.closure (F : Set G)))
@@ -1355,7 +1355,7 @@ theorem finiteGeneratedCosetInvariant_eq_zero
     rw [finiteGeneratedCosetInvariant_constant G ξ hξ F r q]
   exact (Finite.of_summable_const hpositive hconstant).false
 
-theorem finiteGeneratedCoset_infinite_of_not_fg
+lemma finiteGeneratedCoset_infinite_of_not_fg
     (G : CountableDiscreteGroup.{u})
     (hG : ¬Group.FG G) (F : Finset G) :
     Infinite (G ⧸ Subgroup.closure (F : Set G)) := by
@@ -1368,7 +1368,7 @@ theorem finiteGeneratedCoset_infinite_of_not_fg
     (fg_of_finiteIndex_subgroup (Subgroup.closure (F : Set G))
       (Group.closure_finset_fg F))
 
-theorem hasKazhdanPropertyT_finitelyGenerated
+lemma hasKazhdanPropertyT_finitelyGenerated
     (G : CountableDiscreteGroup.{u})
     (hT : HasKazhdanPropertyT G) :
     Group.FG G := by
@@ -1393,11 +1393,11 @@ open ConnesRigidity
 def ErshovJaikinUniversalLatticePropertyT : Prop :=
   HasKazhdanPropertyT integralGroup
 
-theorem actingGroup_eq_integralGroup_subgroup :
+lemma actingGroup_eq_integralGroup_subgroup :
     actingGroup = integralGroup.subgroup KSubgroup := by
   rfl
 
-theorem actingGroup_hasKazhdanPropertyT
+lemma actingGroup_hasKazhdanPropertyT
     (hUniversalLattice : ErshovJaikinUniversalLatticePropertyT) :
     HasKazhdanPropertyT actingGroup := by
   letI : (show Subgroup integralGroup from KSubgroup).FiniteIndex := by
@@ -1414,7 +1414,7 @@ noncomputable section
 open Matrix
 open scoped commutatorElement
 
-theorem specialLinear_transvection_commutator
+lemma specialLinear_transvection_commutator
     {ι A : Type*} [Fintype ι] [DecidableEq ι] [CommRing A]
     (i j k : ι) (hij : i ≠ j) (hjk : j ≠ k) (hik : i ≠ k)
     (a b : A) :
@@ -1448,7 +1448,7 @@ theorem specialLinear_transvection_commutator
     Matrix.single_mul_single_of_ne (c := a * b) i k i hik.symm (a * b)
   noncomm_ring [hxx, hyy, hyx, hxy, hzx, hzy, hzz]
 
-theorem transvection_mul_mem_of_two_step
+lemma transvection_mul_mem_of_two_step
     {ι A : Type*} [Fintype ι] [DecidableEq ι] [CommRing A]
     (H : Subgroup (Matrix.SpecialLinearGroup ι A))
     (i k j : ι) (hik : i ≠ k) (hkj : k ≠ j) (hij : i ≠ j)
@@ -1486,7 +1486,7 @@ def transvectionCoefficientSubring
     exact transvection_mul_mem_of_two_step H i k j hki.symm hkj hij a b
       (ha i k hki.symm) (hb k j hkj)
 
-theorem integralPolynomial_subring_eq_top_of_X_mem
+lemma integralPolynomial_subring_eq_top_of_X_mem
     (S : Subring IntegralPolynomial)
     (hX : (Polynomial.X : IntegralPolynomial) ∈ S) : S = ⊤ := by
   have hall : ∀ p : IntegralPolynomial, p ∈ S := by
@@ -1501,7 +1501,7 @@ theorem integralPolynomial_subring_eq_top_of_X_mem
         · exact S.pow_mem hX n
   exact top_unique fun p _ => hall p
 
-theorem integral_transvection_mem_of_one_and_X
+lemma integral_transvection_mem_of_one_and_X
     (H : Subgroup IntegralSpecialLinearGroup)
     (hone : ∀ (i j : Index) (h : i ≠ j),
       Matrix.SpecialLinearGroup.transvection h (1 : IntegralPolynomial) ∈ H)
@@ -1520,7 +1520,7 @@ def integralElementarySubgroup : Subgroup IntegralSpecialLinearGroup :=
     {g | ∃ (i j : Index) (h : i ≠ j) (p : IntegralPolynomial),
       g = Matrix.SpecialLinearGroup.transvection h p}
 
-theorem integral_transvection_mem_elementary_commutator
+lemma integral_transvection_mem_elementary_commutator
     (i j : Index) (hij : i ≠ j) (a : IntegralPolynomial) :
     Matrix.SpecialLinearGroup.transvection hij a ∈
       ⁅integralElementarySubgroup, integralElementarySubgroup⁆ := by
@@ -1538,7 +1538,7 @@ theorem integral_transvection_mem_elementary_commutator
     specialLinear_transvection_commutator i k j hik hkj hij a 1] at hc
   simpa only [mul_one] using hc
 
-theorem integralElementarySubgroup_isPerfect :
+lemma integralElementarySubgroup_isPerfect :
     Group.IsPerfect integralElementarySubgroup := by
   apply Subgroup.isPerfect_iff.mpr
   apply le_antisymm
@@ -1572,7 +1572,7 @@ def integralElementaryGroupEquivIntegralGroup
     integralElementaryGroup ≃* integralGroup :=
   (MulEquiv.subgroupCongr hSuslin).trans Subgroup.topEquiv
 
-theorem integralElementaryGroup_propertyT_iff_integralGroup
+lemma integralElementaryGroup_propertyT_iff_integralGroup
     (hSuslin : SuslinElementaryGeneration) :
     ErshovJaikinElementaryPropertyT ↔
       ErshovJaikinUniversalLatticePropertyT :=
@@ -1580,13 +1580,13 @@ theorem integralElementaryGroup_propertyT_iff_integralGroup
     integralElementaryGroup integralGroup
     (integralElementaryGroupEquivIntegralGroup hSuslin)
 
-theorem universalLatticePropertyT_of_elementary
+lemma universalLatticePropertyT_of_elementary
     (hSuslin : SuslinElementaryGeneration)
     (hElementary : ErshovJaikinElementaryPropertyT) :
     ErshovJaikinUniversalLatticePropertyT :=
   (integralElementaryGroup_propertyT_iff_integralGroup hSuslin).mp hElementary
 
-theorem integralElementaryGroup_isPerfect :
+lemma integralElementaryGroup_isPerfect :
     Group.IsPerfect integralElementaryGroup :=
   integralElementarySubgroup_isPerfect
 
@@ -1602,22 +1602,22 @@ def suslinEvaluation : IntegralSpecialLinearGroup →* IntegerSpecialLinearGroup
 def suslinConstantSection : IntegerSpecialLinearGroup →* IntegralSpecialLinearGroup :=
   Matrix.SpecialLinearGroup.map (Polynomial.C : ℤ →+* IntegralPolynomial)
 
-@[simp] theorem suslinEvaluation_entry
+@[simp] lemma suslinEvaluation_entry
     (g : IntegralSpecialLinearGroup) (i j : Index) :
     suslinEvaluation g i j = (g i j).eval 0 := rfl
 
-@[simp] theorem suslinConstantSection_entry
+@[simp] lemma suslinConstantSection_entry
     (g : IntegerSpecialLinearGroup) (i j : Index) :
     suslinConstantSection g i j = Polynomial.C (g i j) := rfl
 
-@[simp] theorem suslinEvaluation_constantSection
+@[simp] lemma suslinEvaluation_constantSection
     (g : IntegerSpecialLinearGroup) :
     suslinEvaluation (suslinConstantSection g) = g := by
   apply Matrix.SpecialLinearGroup.ext
   intro i j
   simp
 
-theorem suslinEvaluation_surjective :
+lemma suslinEvaluation_surjective :
     Function.Surjective suslinEvaluation :=
   fun g => ⟨suslinConstantSection g, suslinEvaluation_constantSection g⟩
 
@@ -1635,7 +1635,7 @@ def suslinAugmentationKernel : Subgroup IntegralSpecialLinearGroup :=
 def SuslinRelativeElementaryGeneration : Prop :=
   suslinAugmentationKernel ≤ integralElementarySubgroup
 
-theorem suslinEvaluation_map_elementary :
+lemma suslinEvaluation_map_elementary :
     integralElementarySubgroup.map suslinEvaluation =
       integerElementarySubgroup := by
   change
@@ -1659,7 +1659,7 @@ theorem suslinEvaluation_map_elementary :
       specialLinear_map_transvection_baseChange
         (Polynomial.evalRingHom (0 : ℤ)) h (Polynomial.C a)
 
-theorem suslinConstantSection_map_elementary_le :
+lemma suslinConstantSection_map_elementary_le :
     integerElementarySubgroup.map suslinConstantSection ≤
       integralElementarySubgroup := by
   change
@@ -1677,7 +1677,7 @@ theorem suslinConstantSection_map_elementary_le :
       (Polynomial.C : ℤ →+* IntegralPolynomial) h a]
   exact Subgroup.subset_closure ⟨i, j, h, Polynomial.C a, rfl⟩
 
-theorem suslin_constant_mul_augmentation
+lemma suslin_constant_mul_augmentation
     (g : IntegralSpecialLinearGroup) :
     ∃ (c : IntegerSpecialLinearGroup)
       (k : IntegralSpecialLinearGroup),
@@ -1691,7 +1691,7 @@ theorem suslin_constant_mul_augmentation
     simp
   · simp
 
-theorem suslinElementaryGeneration_iff_base_and_relative :
+lemma suslinElementaryGeneration_iff_base_and_relative :
     SuslinElementaryGeneration ↔
       IntegerElementaryGeneration ∧ SuslinRelativeElementaryGeneration := by
   constructor
@@ -1732,20 +1732,20 @@ def localGlobalElementarySubgroup (R : Type*) [CommRing R] :
     {g | ∃ (i j : Index) (h : i ≠ j) (r : R),
       g = Matrix.SpecialLinearGroup.transvection h r}
 
-theorem localGlobal_transvection_mem
+lemma localGlobal_transvection_mem
     {R : Type*} [CommRing R] (i j : Index) (h : i ≠ j) (r : R) :
     Matrix.SpecialLinearGroup.transvection h r ∈
       localGlobalElementarySubgroup R :=
   Subgroup.subset_closure ⟨i, j, h, r, rfl⟩
 
-@[simp] theorem localGlobalElementarySubgroup_integralPolynomial :
+@[simp] lemma localGlobalElementarySubgroup_integralPolynomial :
     localGlobalElementarySubgroup IntegralPolynomial =
       integralElementarySubgroup := rfl
 
-@[simp] theorem localGlobalElementarySubgroup_integer :
+@[simp] lemma localGlobalElementarySubgroup_integer :
     localGlobalElementarySubgroup ℤ = integerElementarySubgroup := rfl
 
-theorem map_localGlobalElementarySubgroup_le
+lemma map_localGlobalElementarySubgroup_le
     {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) :
     (localGlobalElementarySubgroup R).map
         (Matrix.SpecialLinearGroup.map f) ≤
@@ -1761,7 +1761,7 @@ theorem map_localGlobalElementarySubgroup_le
   rw [specialLinear_map_transvection_baseChange f h r]
   exact localGlobal_transvection_mem i j h (f r)
 
-theorem localization_comp_commonDenom_mul_X_mem_lifts
+lemma localization_comp_commonDenom_mul_X_mem_lifts
     (M : Submonoid A) [IsLocalization M B]
     (p : Polynomial B)
     (hzero : p.coeff 0 ∈ Set.range (algebraMap A B)) :
@@ -1803,7 +1803,7 @@ theorem localization_comp_commonDenom_mul_X_mem_lifts
     rw [hz, zero_mul]
     exact ⟨0, map_zero _⟩
 
-theorem exists_localization_dilated_polynomial_lift
+lemma exists_localization_dilated_polynomial_lift
     (M : Submonoid A) [IsLocalization M B]
     (p : Polynomial B) (hp : p.coeff 0 = 0) :
     ∃ (d : M) (q : Polynomial A),
@@ -1852,7 +1852,7 @@ def suslinDifferencePath (a : A)
     (Matrix.SpecialLinearGroup.map suslinBivariateConstantRingHom
       (suslinDifferenceDilation a g))⁻¹
 
-theorem suslinBivariateShift_eval_zero (a : A) :
+lemma suslinBivariateShift_eval_zero (a : A) :
     (Polynomial.evalRingHom (0 : Polynomial A)).comp
         (suslinBivariateShiftRingHom a) =
       suslinDifferenceDilationRingHom a := by
@@ -1863,7 +1863,7 @@ theorem suslinBivariateShift_eval_zero (a : A) :
   · simp [suslinBivariateShiftRingHom,
       suslinDifferenceDilationRingHom]
 
-theorem suslinDifferencePath_eval_zero (a : A)
+lemma suslinDifferencePath_eval_zero (a : A)
     (g : Matrix.SpecialLinearGroup Index (Polynomial A)) :
     Matrix.SpecialLinearGroup.map
         (Polynomial.evalRingHom (0 : Polynomial A))
@@ -1890,7 +1890,7 @@ theorem suslinDifferencePath_eval_zero (a : A)
     simp [suslinBivariateConstantRingHom]
   rw [hshift, hconstant, mul_inv_cancel]
 
-theorem suslinBivariateShift_eval_mul_X (a b : A) :
+lemma suslinBivariateShift_eval_mul_X (a b : A) :
     (Polynomial.evalRingHom (Polynomial.C b * Polynomial.X)).comp
         (suslinBivariateShiftRingHom a) =
       suslinDifferenceDilationRingHom (a + b) := by
@@ -1901,7 +1901,7 @@ theorem suslinBivariateShift_eval_mul_X (a b : A) :
   · simp [suslinBivariateShiftRingHom,
       suslinDifferenceDilationRingHom, add_mul]
 
-theorem suslinDifferencePath_eval_mul_X (a b : A)
+lemma suslinDifferencePath_eval_mul_X (a b : A)
     (g : Matrix.SpecialLinearGroup Index (Polynomial A)) :
     Matrix.SpecialLinearGroup.map
         (Polynomial.evalRingHom (Polynomial.C b * Polynomial.X))
@@ -1930,7 +1930,7 @@ theorem suslinDifferencePath_eval_mul_X (a b : A)
     simp [suslinBivariateConstantRingHom]
   rw [hshift, hconstant]
 
-theorem suslinDifferenceDilationRingHom_baseChange
+lemma suslinDifferenceDilationRingHom_baseChange
     {B : Type v} [CommRing B] (f : A →+* B) (a : A) :
     (Polynomial.mapRingHom f).comp
         (suslinDifferenceDilationRingHom a) =
@@ -1941,7 +1941,7 @@ theorem suslinDifferenceDilationRingHom_baseChange
     simp [suslinDifferenceDilationRingHom]
   · simp [suslinDifferenceDilationRingHom]
 
-theorem suslinDifferenceDilation_baseChange
+lemma suslinDifferenceDilation_baseChange
     {B : Type v} [CommRing B] (f : A →+* B) (a : A)
     (g : Matrix.SpecialLinearGroup Index (Polynomial A)) :
     Matrix.SpecialLinearGroup.map (Polynomial.mapRingHom f)
@@ -1953,7 +1953,7 @@ theorem suslinDifferenceDilation_baseChange
   exact RingHom.congr_fun
     (suslinDifferenceDilationRingHom_baseChange f a) (g i j)
 
-theorem suslinBivariateShiftRingHom_baseChange
+lemma suslinBivariateShiftRingHom_baseChange
     {B : Type v} [CommRing B] (f : A →+* B) (a : A) :
     (Polynomial.mapRingHom (Polynomial.mapRingHom f)).comp
         (suslinBivariateShiftRingHom a) =
@@ -1964,7 +1964,7 @@ theorem suslinBivariateShiftRingHom_baseChange
     simp [suslinBivariateShiftRingHom]
   · simp [suslinBivariateShiftRingHom]
 
-theorem suslinBivariateConstantRingHom_baseChange
+lemma suslinBivariateConstantRingHom_baseChange
     {B : Type v} [CommRing B] (f : A →+* B) :
     (Polynomial.mapRingHom (Polynomial.mapRingHom f)).comp
         (suslinBivariateConstantRingHom (A := A)) =
@@ -1975,7 +1975,7 @@ theorem suslinBivariateConstantRingHom_baseChange
     simp [suslinBivariateConstantRingHom]
   · simp [suslinBivariateConstantRingHom]
 
-theorem suslinDifferencePath_baseChange
+lemma suslinDifferencePath_baseChange
     {B : Type v} [CommRing B] (f : A →+* B) (a : A)
     (g : Matrix.SpecialLinearGroup Index (Polynomial A)) :
     Matrix.SpecialLinearGroup.map
@@ -2020,7 +2020,7 @@ universe u v
 
 variable {A : Type u} [CommRing A]
 
-theorem suslinDifferenceDilation_mem_elementary
+lemma suslinDifferenceDilation_mem_elementary
     (a : A) {g : Matrix.SpecialLinearGroup Index (Polynomial A)}
     (hg : g ∈ localGlobalElementarySubgroup (Polynomial A)) :
     suslinDifferenceDilation a g ∈
@@ -2029,7 +2029,7 @@ theorem suslinDifferenceDilation_mem_elementary
     (suslinDifferenceDilationRingHom a)
     ⟨g, hg, rfl⟩
 
-theorem suslinBivariateShift_mem_elementary
+lemma suslinBivariateShift_mem_elementary
     (a : A) {g : Matrix.SpecialLinearGroup Index (Polynomial A)}
     (hg : g ∈ localGlobalElementarySubgroup (Polynomial A)) :
     Matrix.SpecialLinearGroup.map (suslinBivariateShiftRingHom a) g ∈
@@ -2038,7 +2038,7 @@ theorem suslinBivariateShift_mem_elementary
     (suslinBivariateShiftRingHom a)
     ⟨g, hg, rfl⟩
 
-theorem suslinBivariateConstant_mem_elementary
+lemma suslinBivariateConstant_mem_elementary
     {g : Matrix.SpecialLinearGroup Index (Polynomial A)}
     (hg : g ∈ localGlobalElementarySubgroup (Polynomial A)) :
     Matrix.SpecialLinearGroup.map suslinBivariateConstantRingHom g ∈
@@ -2047,7 +2047,7 @@ theorem suslinBivariateConstant_mem_elementary
     (suslinBivariateConstantRingHom (A := A))
     ⟨g, hg, rfl⟩
 
-theorem suslinDifferencePath_mem_elementary
+lemma suslinDifferencePath_mem_elementary
     (a : A) {g : Matrix.SpecialLinearGroup Index (Polynomial A)}
     (hg : g ∈ localGlobalElementarySubgroup (Polynomial A)) :
     suslinDifferencePath a g ∈
@@ -2058,7 +2058,7 @@ theorem suslinDifferencePath_mem_elementary
   exact suslinBivariateConstant_mem_elementary
     (suslinDifferenceDilation_mem_elementary a hg)
 
-theorem suslinDifferencePath_relative_elementary_of_baseChange
+lemma suslinDifferencePath_relative_elementary_of_baseChange
     {B : Type v} [CommRing B] (f : A →+* B) (a : A)
     (g : Matrix.SpecialLinearGroup Index (Polynomial A))
     (hg : Matrix.SpecialLinearGroup.map (Polynomial.mapRingHom f) g ∈
@@ -2089,7 +2089,7 @@ def suslinElementarySubgroup (ι : Type u) (A : Type v)
     {g | ∃ (i j : ι) (h : i ≠ j) (a : A),
       g = Matrix.SpecialLinearGroup.transvection h a}
 
-theorem suslin_transvection_mem
+lemma suslin_transvection_mem
     {ι : Type u} {A : Type v}
     [Fintype ι] [DecidableEq ι] [CommRing A]
     (i j : ι) (h : i ≠ j) (a : A) :
@@ -2097,7 +2097,7 @@ theorem suslin_transvection_mem
       suslinElementarySubgroup ι A :=
   Subgroup.subset_closure ⟨i, j, h, a, rfl⟩
 
-theorem suslin_transvection_conj_noncomposable
+lemma suslin_transvection_conj_noncomposable
     {ι A : Type*} [Fintype ι] [DecidableEq ι] [CommRing A]
     {i j k l : ι} (hij : i ≠ j) (hkl : k ≠ l)
     (hjk : j ≠ k) (hli : l ≠ i) (a b : A) :
@@ -2120,7 +2120,7 @@ theorem suslin_transvection_conj_noncomposable
     Matrix.single_mul_single_of_ne (c := b) k l i hli a
   noncomm_ring [hxx, hxy, hyx]
 
-theorem suslin_transvection_conj_adjacent
+lemma suslin_transvection_conj_adjacent
     {ι A : Type*} [Fintype ι] [DecidableEq ι] [CommRing A]
     (i j k : ι) (hij : i ≠ j) (hjk : j ≠ k) (hik : i ≠ k)
     (a b : A) :
@@ -2140,7 +2140,7 @@ theorem suslin_transvection_conj_adjacent
     _ = _ := by
       rw [specialLinear_transvection_commutator i j k hij hjk hik a b]
 
-theorem suslin_transvection_conj_reverse_adjacent
+lemma suslin_transvection_conj_reverse_adjacent
     {ι A : Type*} [Fintype ι] [DecidableEq ι] [CommRing A]
     (i j k : ι) (hij : i ≠ j) (hjk : j ≠ k) (hik : i ≠ k)
     (a b : A) :
@@ -2165,7 +2165,7 @@ theorem suslin_transvection_conj_reverse_adjacent
     _ = _ := by
       rw [Matrix.SpecialLinearGroup.transvection_inv]
 
-theorem suslin_transvection_conj_opposite_factor
+lemma suslin_transvection_conj_opposite_factor
     {ι A : Type*} [Fintype ι] [DecidableEq ι] [CommRing A]
     (i j k : ι) (hij : i ≠ j) (hjk : j ≠ k) (hik : i ≠ k)
     (a u v : A) :
@@ -2205,7 +2205,7 @@ theorem suslin_transvection_conj_opposite_factor
     _ = _ := by rw [hadjacent, hreverse]
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp] theorem suslin_specialLinear_map_transvection
+@[simp] lemma suslin_specialLinear_map_transvection
     {ι : Type u} {A : Type v} {B : Type w}
     [Fintype ι] [DecidableEq ι] [CommRing A] [CommRing B]
     (f : A →+* B) {i j : ι} (hij : i ≠ j) (a : A) :
@@ -2219,7 +2219,7 @@ set_option backward.isDefEq.respectTransparency false in
     Matrix.single_apply, Matrix.one_apply]
   split <;> simp
 
-theorem exists_suslin_opposite_conjugate_elementary_lift
+lemma exists_suslin_opposite_conjugate_elementary_lift
     {ι : Type u} {A : Type v} {B : Type w}
     [Fintype ι] [DecidableEq ι] [CommRing A] [CommRing B]
     (f : A →+* B)
@@ -2269,7 +2269,7 @@ theorem exists_suslin_opposite_conjugate_elementary_lift
     i j k hij hjk hik a (f (d * p)) (f d)]
   simp [L, R, hcoeff', hreverse]
 
-theorem exists_localization_polynomial_common_denominator
+lemma exists_localization_polynomial_common_denominator
     {A : Type v} {B : Type w} [CommRing A] [CommRing B]
     [Algebra A B] (M : Submonoid A) [IsLocalization M B]
     (p : Polynomial B) :
@@ -2319,7 +2319,7 @@ def suslinPolynomialBaseChange :
   Matrix.SpecialLinearGroup.map
     (Polynomial.mapRingHom (algebraMap A B))
 
-theorem suslinDilation_mul (a b : A) (g : SuslinPolynomialSL A) :
+lemma suslinDilation_mul (a b : A) (g : SuslinPolynomialSL A) :
     suslinDilation A b (suslinDilation A a g) =
       suslinDilation A (a * b) g := by
   apply Matrix.SpecialLinearGroup.ext
@@ -2331,7 +2331,7 @@ theorem suslinDilation_mul (a b : A) (g : SuslinPolynomialSL A) :
   rw [Polynomial.comp_assoc]
   simp [Polynomial.mul_comp, Polynomial.C_mul, mul_assoc]
 
-theorem suslinPolynomialBaseChange_dilation (a : A)
+lemma suslinPolynomialBaseChange_dilation (a : A)
     (g : SuslinPolynomialSL A) :
     suslinPolynomialBaseChange (suslinDilation A a g) =
       suslinDilation B (algebraMap A B a)
@@ -2346,7 +2346,7 @@ theorem suslinPolynomialBaseChange_dilation (a : A)
   rw [Polynomial.map_comp]
   simp
 
-theorem suslinDilation_elementary_mem (a : A)
+lemma suslinDilation_elementary_mem (a : A)
     {g : SuslinPolynomialSL A}
     (hg : g ∈ localGlobalElementarySubgroup (Polynomial A)) :
     suslinDilation A a g ∈
@@ -2377,13 +2377,13 @@ def suslinEventuallyElementaryLift (M : Submonoid A) :
       suslinPolynomialBaseChange q =
         suslinDilation B (algebraMap A B (d : A)) g}
 
-theorem suslinEventuallyElementaryLift_one (M : Submonoid A) :
+lemma suslinEventuallyElementaryLift_one (M : Submonoid A) :
     (1 : SuslinPolynomialSL B) ∈
       suslinEventuallyElementaryLift (A := A) (B := B) M := by
   exact ⟨1, 1, (localGlobalElementarySubgroup (Polynomial A)).one_mem,
     by simp [suslinDilation]⟩
 
-theorem suslinEventuallyElementaryLift_inv (M : Submonoid A)
+lemma suslinEventuallyElementaryLift_inv (M : Submonoid A)
     {g : SuslinPolynomialSL B}
     (hg : g ∈ suslinEventuallyElementaryLift (A := A) (B := B) M) :
     g⁻¹ ∈ suslinEventuallyElementaryLift (A := A) (B := B) M := by
@@ -2392,7 +2392,7 @@ theorem suslinEventuallyElementaryLift_inv (M : Submonoid A)
     (localGlobalElementarySubgroup (Polynomial A)).inv_mem hq, ?_⟩
   simpa using congrArg Inv.inv heq
 
-theorem suslinEventuallyElementaryLift_mul (M : Submonoid A)
+lemma suslinEventuallyElementaryLift_mul (M : Submonoid A)
     {g h : SuslinPolynomialSL B}
     (hg : g ∈ suslinEventuallyElementaryLift (A := A) (B := B) M)
     (hh : h ∈ suslinEventuallyElementaryLift (A := A) (B := B) M) :
@@ -2421,7 +2421,7 @@ def suslinEventuallyElementarySubgroup (M : Submonoid A) :
   mul_mem' := suslinEventuallyElementaryLift_mul M
   inv_mem' := suslinEventuallyElementaryLift_inv M
 
-theorem suslin_eventual_of_dilation
+lemma suslin_eventual_of_dilation
     (M : Submonoid A) (d : M) (g : SuslinPolynomialSL B)
     (hg : suslinDilation B (algebraMap A B (d : A)) g ∈
       suslinEventuallyElementarySubgroup (A := A) (B := B) M) :
@@ -2435,7 +2435,7 @@ theorem suslin_eventual_of_dilation
       suslinDilation B (algebraMap A B ((d : A) * (e : A))) g
   rw [map_mul]
 
-theorem suslin_polynomial_conjugate_opposite_integral_mem_eventual
+lemma suslin_polynomial_conjugate_opposite_integral_mem_eventual
     (M : Submonoid A) [IsLocalization M B]
     (i j : Index) (hij : i ≠ j)
     (a : Polynomial B) (p : Polynomial A) :
@@ -2484,7 +2484,7 @@ theorem suslin_polynomial_conjugate_opposite_integral_mem_eventual
   simp [Polynomial.map_comp, Polynomial.mul_comp,
     Polynomial.C_mul, mul_assoc]
 
-theorem suslin_polynomial_conjugate_opposite_mem_eventual
+lemma suslin_polynomial_conjugate_opposite_mem_eventual
     (M : Submonoid A) [IsLocalization M B]
     (i j : Index) (hij : i ≠ j)
     (a p : Polynomial B) (hp : p.coeff 0 = 0) :
@@ -2517,7 +2517,7 @@ theorem suslin_polynomial_conjugate_opposite_mem_eventual
   simpa [suslinDilation, map_mul, map_inv,
     specialLinear_map_transvection_baseChange] using htarget
 
-theorem suslin_polynomial_relative_z_mem_eventual
+lemma suslin_polynomial_relative_z_mem_eventual
     (M : Submonoid A) [IsLocalization M B]
     (i j : Index) (hij : i ≠ j)
     (a p : Polynomial B) (hp : p.coeff 0 = 0) :
@@ -2545,7 +2545,7 @@ def quotientCoefficientMap (f : Polynomial A) :
     Polynomial.C
 
 omit [IsDomain A] [IsDiscreteValuationRing A] in
-theorem quotient_uniformizer_isUnit_of_relation
+lemma quotient_uniformizer_isUnit_of_relation
     (π : A) (f q : Polynomial A)
     (hf : f = 1 + Polynomial.C π * q) :
     IsUnit (quotientCoefficientMap f π) := by
@@ -2565,7 +2565,7 @@ theorem quotient_uniformizer_isUnit_of_relation
   refine isUnit_iff_exists_inv'.mpr ⟨-(ρ q), ?_⟩
   linear_combination -hrelation
 
-theorem quotient_nonzero_coefficient_isUnit
+lemma quotient_nonzero_coefficient_isUnit
     {π : A} (hπ : Irreducible π)
     (f q : Polynomial A)
     (hf : f = 1 + Polynomial.C π * q)
@@ -2588,7 +2588,7 @@ def quotientFractionLift
       quotient_nonzero_coefficient_isUnit hπ f q hf
         (nonZeroDivisors.ne_zero a.property))
 
-@[simp] theorem quotientFractionLift_algebraMap
+@[simp] lemma quotientFractionLift_algebraMap
     {π : A} (hπ : Irreducible π)
     (f q : Polynomial A)
     (hf : f = 1 + Polynomial.C π * q) (a : A) :
@@ -2597,7 +2597,7 @@ def quotientFractionLift
   exact IsLocalization.lift_eq _ a
 
 omit [IsDomain A] [IsDiscreteValuationRing A] in
-private theorem mapped_polynomial_eval₂_zero
+private lemma mapped_polynomial_eval₂_zero
     {K : Type*} [Field K] [Algebra A K]
     (f : Polynomial A)
     [Algebra K (Polynomial A ⧸ Ideal.span ({f} : Set (Polynomial A)))]
@@ -2621,7 +2621,7 @@ private def quotientFractionAlgebra
       (Polynomial A ⧸ Ideal.span ({f} : Set (Polynomial A))) :=
   (quotientFractionLift hπ f q hf).toAlgebra
 
-private theorem quotientFractionAlgebra_tower
+private lemma quotientFractionAlgebra_tower
     {π : A} (hπ : Irreducible π)
     (f q : Polynomial A) (hf : f = 1 + Polynomial.C π * q) :
     letI := quotientFractionAlgebra hπ f q hf
@@ -2652,7 +2652,7 @@ def dvrPolynomialQuotientFractionSurjection
       (Ideal.span ({f} : Set (Polynomial A)))) Polynomial.X)
     (mapped_polynomial_eval₂_zero f)).toRingHom
 
-@[simp] theorem dvrPolynomialQuotientFractionSurjection_root
+@[simp] lemma dvrPolynomialQuotientFractionSurjection_root
     {π : A} (hπ : Irreducible π)
     (f q : Polynomial A) (hf : f = 1 + Polynomial.C π * q) :
     dvrPolynomialQuotientFractionSurjection hπ f q hf
@@ -2672,7 +2672,7 @@ def dvrPolynomialQuotientFractionSurjection
     (mapped_polynomial_eval₂_zero f)
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp] theorem dvrPolynomialQuotientFractionSurjection_of_algebraMap
+@[simp] lemma dvrPolynomialQuotientFractionSurjection_of_algebraMap
     {π : A} (hπ : Irreducible π)
     (f q : Polynomial A) (hf : f = 1 + Polynomial.C π * q)
     (a : A) :
@@ -2701,7 +2701,7 @@ set_option backward.isDefEq.respectTransparency false in
   rw [quotientFractionLift_algebraMap]
   rfl
 
-theorem dvrPolynomialQuotientFractionSurjection_surjective
+lemma dvrPolynomialQuotientFractionSurjection_surjective
     {π : A} (hπ : Irreducible π)
     (f q : Polynomial A) (hf : f = 1 + Polynomial.C π * q) :
     Function.Surjective
@@ -2733,13 +2733,13 @@ def UnimodularRow {A : Type*} [CommRing A] {n : ℕ}
     (v : Fin n → A) : Prop :=
   ∃ c : Fin n → A, ∑ i, c i * v i = 1
 
-theorem unimodularRow_iff_span_range_eq_top
+lemma unimodularRow_iff_span_range_eq_top
     {A : Type*} [CommRing A] {n : ℕ} (v : Fin n → A) :
     UnimodularRow v ↔ Ideal.span (Set.range v) = ⊤ := by
   rw [Ideal.eq_top_iff_one, Ideal.mem_span_range_iff_exists_fun]
   rfl
 
-theorem unimodularRow_iff_avoids_maximalIdeals
+lemma unimodularRow_iff_avoids_maximalIdeals
     {A : Type*} [CommRing A] {n : ℕ} (v : Fin n → A) :
     UnimodularRow v ↔
       ∀ (M : Ideal A), M.IsMaximal → ∃ i : Fin n, v i ∉ M := by
@@ -2768,15 +2768,15 @@ def BassStableRangeAtMost (A : Type*) [CommRing A] (n : ℕ) : Prop :=
 abbrev IntegralPolynomialStableRangeThree : Prop :=
   BassStableRangeAtMost IntegralPolynomial 3
 
-theorem integer_ringKrullDim : ringKrullDim ℤ = 1 :=
+lemma integer_ringKrullDim : ringKrullDim ℤ = 1 :=
   IsPrincipalIdealRing.ringKrullDim_eq_one ℤ Int.not_isField
 
-theorem integralPolynomial_ringKrullDim :
+lemma integralPolynomial_ringKrullDim :
     ringKrullDim IntegralPolynomial = 2 := by
   rw [Polynomial.ringKrullDim_of_isNoetherianRing, integer_ringKrullDim]
   norm_num
 
-theorem specialLinear_column_unimodular
+lemma specialLinear_column_unimodular
     {A : Type*} [CommRing A] {n : ℕ}
     (g : Matrix.SpecialLinearGroup (Fin n) A) (j : Fin n) :
     UnimodularRow (fun i : Fin n => g i j) := by
@@ -2787,7 +2787,7 @@ theorem specialLinear_column_unimodular
   change ((g⁻¹).val * g.val) j j = (1 : Matrix (Fin n) (Fin n) A) j j at h
   simpa [Matrix.mul_apply, Matrix.one_apply] using h
 
-theorem integralSpecialLinear_lastColumn_stableRange_shorten
+lemma integralSpecialLinear_lastColumn_stableRange_shorten
     (hstable : IntegralPolynomialStableRangeThree)
     (g : IntegralSpecialLinearGroup) :
     ∃ c : Fin 3 → IntegralPolynomial,
@@ -2796,7 +2796,7 @@ theorem integralSpecialLinear_lastColumn_stableRange_shorten
   exact hstable (fun i : Index => g i 3)
     (specialLinear_column_unimodular g 3)
 
-theorem exists_add_mem_avoiding_finite_prime_antichain
+lemma exists_add_mem_avoiding_finite_prime_antichain
     {A : Type*} [CommRing A]
     (S : Set (Ideal A)) (hfinite : S.Finite)
     (hprime : ∀ p ∈ S, p.IsPrime)
@@ -2846,7 +2846,7 @@ theorem exists_add_mem_avoiding_finite_prime_antichain
     have hyp : y ∈ p := hproduct (Ideal.mul_le_left hy)
     exact hxp (by convert p.sub_mem hsum hyp using 1; ring)
 
-theorem exists_add_mul_isUnit_of_finite_maximalIdeals
+lemma exists_add_mul_isUnit_of_finite_maximalIdeals
     {A : Type*} [CommRing A]
     (hfinite : {p : Ideal A | p.IsMaximal}.Finite)
     {x z : A} (hcoprime : IsCoprime x z) :
@@ -2871,14 +2871,14 @@ theorem exists_add_mul_isUnit_of_finite_maximalIdeals
     exists_max_ideal_of_mem_nonunits (mem_nonunits_iff.mpr hunit)
   exact havoid p hp hmem
 
-theorem exists_add_mul_isUnit_of_artinian
+lemma exists_add_mul_isUnit_of_artinian
     {A : Type*} [CommRing A] [IsArtinianRing A]
     {x z : A} (hcoprime : IsCoprime x z) :
     ∃ t : A, IsUnit (x + t * z) :=
   exists_add_mul_isUnit_of_finite_maximalIdeals
     (IsArtinianRing.setOf_isMaximal_finite A) hcoprime
 
-theorem krullDimLE_zero_quotient_span_pair_of_avoids_minimalPrimes
+lemma krullDimLE_zero_quotient_span_pair_of_avoids_minimalPrimes
     {A : Type*} [CommRing A] [IsDomain A]
     (hdim : ringKrullDim A = 2)
     {a b : A} (ha : a ≠ 0)
@@ -2919,7 +2919,7 @@ theorem krullDimLE_zero_quotient_span_pair_of_avoids_minimalPrimes
   rw [hdim]
   exact WithBot.coe_le_coe.mpr htwo_le_p
 
-theorem exists_nonzero_elementary_first_coordinate
+lemma exists_nonzero_elementary_first_coordinate
     {A : Type*} [CommRing A] [Nontrivial A]
     (v : Fin 4 → A) (hv : UnimodularRow v) :
     ∃ u w z : A, v 0 + u * v 1 + w * v 2 + z * v 3 ≠ 0 := by
@@ -2938,7 +2938,7 @@ theorem exists_nonzero_elementary_first_coordinate
     · exact ⟨1, 0, 0, by simpa [h0] using h1⟩
   · exact ⟨0, 0, 0, by simpa using h0⟩
 
-theorem exists_second_coordinate_avoiding_minimalPrimes
+lemma exists_second_coordinate_avoiding_minimalPrimes
     {A : Type*} [CommRing A] [IsNoetherianRing A]
     (a b c d : A)
     (hrow : ∃ ra rb rc rd : A, ra * a + rb * b + rc * c + rd * d = 1) :
@@ -2978,7 +2978,7 @@ theorem exists_second_coordinate_avoiding_minimalPrimes
   rw [hrearrange]
   exact havoid p hp
 
-theorem exists_third_coordinate_unit_mod_span_pair
+lemma exists_third_coordinate_unit_mod_span_pair
     {A : Type*} [CommRing A] [IsDomain A] [IsNoetherianRing A]
     (hdim : ringKrullDim A = 2)
     (a b c d : A) (ha : a ≠ 0)
@@ -3009,7 +3009,7 @@ theorem exists_third_coordinate_unit_mod_span_pair
   refine ⟨t, ?_⟩
   simpa [π, map_add, map_mul] using hu
 
-theorem unimodularRow_three_of_isUnit_quotient
+lemma unimodularRow_three_of_isUnit_quotient
     {A : Type*} [CommRing A] (a b c : A)
     (hunit : IsUnit ((Ideal.Quotient.mk
       (Ideal.span ({a} : Set A) ⊔ Ideal.span ({b} : Set A))) c)) :
@@ -3037,7 +3037,7 @@ theorem unimodularRow_three_of_isUnit_quotient
     convert M.sub_mem (hIM hmem) hcr using 1; ring
   exact hM.ne_top (M.eq_top_of_isUnit_mem hnegone isUnit_neg_one)
 
-theorem bassStableRangeThree_of_noetherian_domain_dimension_two
+lemma bassStableRangeThree_of_noetherian_domain_dimension_two
     {A : Type*} [CommRing A] [IsDomain A] [IsNoetherianRing A]
     (hdim : ringKrullDim A = 2) :
     BassStableRangeAtMost A 3 := by
@@ -3101,7 +3101,7 @@ theorem bassStableRangeThree_of_noetherian_domain_dimension_two
   · exact hi hb
   · exact hi htwo
 
-theorem integralPolynomial_stableRangeThree : IntegralPolynomialStableRangeThree :=
+lemma integralPolynomial_stableRangeThree : IntegralPolynomialStableRangeThree :=
   bassStableRangeThree_of_noetherian_domain_dimension_two
     integralPolynomial_ringKrullDim
 
@@ -3109,7 +3109,7 @@ end
 
 noncomputable section
 
-theorem isUnit_quotient_span_singleton_iff_isCoprime
+lemma isUnit_quotient_span_singleton_iff_isCoprime
     {A : Type*} [CommRing A] (f g : A) :
     IsUnit ((Ideal.Quotient.mk (Ideal.span ({f} : Set A))) g) ↔
       IsCoprime f g := by
@@ -3132,7 +3132,7 @@ theorem isUnit_quotient_span_singleton_iff_isCoprime
     have hmap := congrArg q hab
     simpa [map_add, map_mul, hfzero] using hmap
 
-theorem dvr_one_add_uniformizer_mul_ne_zero
+lemma dvr_one_add_uniformizer_mul_ne_zero
     {A : Type*} [CommRing A] [IsDomain A]
     (π : A) (hπ : Irreducible π) (q : Polynomial A) :
     (1 + Polynomial.C π * q : Polynomial A) ≠ 0 := by
@@ -3144,7 +3144,7 @@ theorem dvr_one_add_uniformizer_mul_ne_zero
     linear_combination hconstant
   exact hπ.not_isUnit (isUnit_of_dvd_one hdiv)
 
-theorem dvr_fraction_polynomial_one_add_uniformizer_mul_ne_zero
+lemma dvr_fraction_polynomial_one_add_uniformizer_mul_ne_zero
     {A : Type*} [CommRing A] [IsDomain A]
     (π : A) (hπ : Irreducible π) (q : Polynomial A) :
     Polynomial.map (algebraMap A (FractionRing A))
@@ -3153,7 +3153,7 @@ theorem dvr_fraction_polynomial_one_add_uniformizer_mul_ne_zero
     (IsFractionRing.injective A (FractionRing A))).mpr
       (dvr_one_add_uniformizer_mul_ne_zero π hπ q)
 
-theorem dvr_polynomial_field_quotient_isArtinian_of_ne_zero
+lemma dvr_polynomial_field_quotient_isArtinian_of_ne_zero
     {K : Type*} [Field K] (f : Polynomial K) (hf : f ≠ 0) :
     IsArtinianRing (Polynomial K ⧸ Ideal.span ({f} : Set (Polynomial K))) := by
   let g : Polynomial K := f * Polynomial.C f.leadingCoeff⁻¹
@@ -3174,7 +3174,7 @@ theorem dvr_polynomial_field_quotient_isArtinian_of_ne_zero
   rw [← hspan]
   exact hart
 
-theorem dvr_maximalIdeals_finite_of_surjective_field_polynomial_quotient
+lemma dvr_maximalIdeals_finite_of_surjective_field_polynomial_quotient
     {K S : Type*} [Field K] [CommRing S]
     (f : Polynomial K) (hf : f ≠ 0)
     (φ : (Polynomial K ⧸ Ideal.span ({f} : Set (Polynomial K))) →+* S)
@@ -3186,7 +3186,7 @@ theorem dvr_maximalIdeals_finite_of_surjective_field_polynomial_quotient
   letI : IsArtinianRing S := hφ.isArtinianRing
   exact IsArtinianRing.setOf_isMaximal_finite S
 
-theorem dvr_mod_uniformizer_one_quotient_maximalIdeals_finite
+lemma dvr_mod_uniformizer_one_quotient_maximalIdeals_finite
     {A : Type*} [CommRing A] [IsDomain A] [IsDiscreteValuationRing A]
     (π : A) (hπ : Irreducible π) (f q : Polynomial A)
     (hf : f = 1 + Polynomial.C π * q) :
@@ -3207,7 +3207,7 @@ noncomputable section
 
 open Polynomial
 
-theorem suslin_residue_polynomial_isUnit_of_determinant
+lemma suslin_residue_polynomial_isUnit_of_determinant
     {A : Type*} [CommRing A] [IsLocalRing A]
     (π : A) (hπ : ¬ IsUnit π)
     (g p q : Polynomial A)
@@ -3226,7 +3226,7 @@ theorem suslin_residue_polynomial_isUnit_of_determinant
   exact isUnit_iff_exists_inv.mpr
     ⟨-(p.map (IsLocalRing.residue A)), hmul⟩
 
-theorem suslin_residue_polynomial_eq_C_of_determinant
+lemma suslin_residue_polynomial_eq_C_of_determinant
     {A : Type*} [CommRing A] [IsLocalRing A]
     (π : A) (hπ : ¬ IsUnit π)
     (g p q : Polynomial A)
@@ -3241,7 +3241,7 @@ theorem suslin_residue_polynomial_eq_C_of_determinant
     simpa using h
   simpa [hc0] using hcg.symm
 
-theorem suslin_residue_constantCoeff_isUnit_of_determinant
+lemma suslin_residue_constantCoeff_isUnit_of_determinant
     {A : Type*} [CommRing A] [IsLocalRing A]
     (π : A) (hπ : ¬ IsUnit π)
     (g p q : Polynomial A)
@@ -3253,7 +3253,7 @@ theorem suslin_residue_constantCoeff_isUnit_of_determinant
     π hπ g p q hdet, Polynomial.isUnit_C] at hunit
   exact hunit
 
-theorem suslin_dvr_polynomial_constant_add_uniformizer_mul
+lemma suslin_dvr_polynomial_constant_add_uniformizer_mul
     {A : Type*} [CommRing A] [IsDomain A]
     [IsDiscreteValuationRing A]
     {π : A} (hπ : Irreducible π) (g : Polynomial A)
@@ -3285,7 +3285,7 @@ theorem suslin_dvr_polynomial_constant_add_uniformizer_mul
     _ = Polynomial.C π * h + Polynomial.C (g.coeff 0) := by rw [hh]
     _ = Polynomial.C (g.coeff 0) + Polynomial.C π * h := by ring
 
-theorem suslin_dvr_uniformizer_polynomial_unit_decomposition_of_determinant
+lemma suslin_dvr_uniformizer_polynomial_unit_decomposition_of_determinant
     {A : Type*} [CommRing A] [IsDomain A]
     [IsDiscreteValuationRing A]
     {π : A} (hπ : Irreducible π)
@@ -3312,7 +3312,7 @@ open Polynomial
 variable {A : Type*} [CommRing A] [IsDomain A]
   [IsDiscreteValuationRing A]
 
-theorem dvr_uniformizer_span_isMaximal
+lemma dvr_uniformizer_span_isMaximal
     {π : A} (hπ : Irreducible π) :
     (Ideal.span ({π} : Set A)).IsMaximal := by
   rw [← hπ.maximalIdeal_eq]
@@ -3327,13 +3327,13 @@ noncomputable def dvrUniformizerQuotientField
   exact Ideal.Quotient.field _
 
 omit [IsDomain A] [IsDiscreteValuationRing A] in
-theorem dvr_uniformizer_quotient_eq_zero_iff_dvd
+lemma dvr_uniformizer_quotient_eq_zero_iff_dvd
     {π : A} (_hπ : Irreducible π) (a : A) :
     Ideal.Quotient.mk (Ideal.span ({π} : Set A)) a = 0 ↔ π ∣ a := by
   rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]
 
 omit [IsDomain A] [IsDiscreteValuationRing A] in
-theorem dvr_polynomial_map_uniformizer_zero_iff
+lemma dvr_polynomial_map_uniformizer_zero_iff
     {π : A} (hπ : Irreducible π) (f : Polynomial A) :
     f.map (Ideal.Quotient.mk (Ideal.span ({π} : Set A))) = 0 ↔
       ∀ n : ℕ, π ∣ f.coeff n := by
@@ -3348,7 +3348,7 @@ theorem dvr_polynomial_map_uniformizer_zero_iff
     simp [dvr_uniformizer_quotient_eq_zero_iff_dvd hπ, h n]
 
 omit [IsDomain A] [IsDiscreteValuationRing A] in
-theorem dvr_polynomial_map_uniformizer_zero_iff_C_dvd
+lemma dvr_polynomial_map_uniformizer_zero_iff_C_dvd
     {π : A} (hπ : Irreducible π) (f : Polynomial A) :
     f.map (Ideal.Quotient.mk (Ideal.span ({π} : Set A))) = 0 ↔
       Polynomial.C π ∣ f := by
@@ -3356,7 +3356,7 @@ theorem dvr_polynomial_map_uniformizer_zero_iff_C_dvd
     Polynomial.C_dvd_iff_dvd_coeff]
 
 omit [IsDomain A] [IsDiscreteValuationRing A] in
-theorem dvr_polynomial_eq_one_add_uniformizer_mul_of_residue_one
+lemma dvr_polynomial_eq_one_add_uniformizer_mul_of_residue_one
     {π : A} (hπ : Irreducible π) (f : Polynomial A)
     (hone : f.map (Ideal.Quotient.mk
       (Ideal.span ({π} : Set A))) = 1) :
@@ -3389,11 +3389,11 @@ def localElementarySubgroup (A : Type u) [CommRing A] :
     {g | ∃ (i j : Fin 4) (h : i ≠ j) (a : A),
       g = Matrix.SpecialLinearGroup.transvection h a}
 
-theorem transvection_mem (i j : Fin 4) (h : i ≠ j) (a : A) :
+lemma transvection_mem (i j : Fin 4) (h : i ≠ j) (a : A) :
     Matrix.SpecialLinearGroup.transvection h a ∈ localElementarySubgroup A :=
   Subgroup.subset_closure ⟨i, j, h, a, rfl⟩
 
-theorem transvection_smul_same (i j : Fin 4) (h : i ≠ j) (a : A)
+lemma transvection_smul_same (i j : Fin 4) (h : i ≠ j) (a : A)
     (v : Fin 4 → A) :
     (Matrix.SpecialLinearGroup.transvection h a • v) i =
       v i + a * v j := by
@@ -3402,7 +3402,7 @@ theorem transvection_smul_same (i j : Fin 4) (h : i ≠ j) (a : A)
     Matrix.one_mulVec, Matrix.single_mulVec]
   simp
 
-theorem transvection_smul_other (i j k : Fin 4) (h : i ≠ j)
+lemma transvection_smul_other (i j k : Fin 4) (h : i ≠ j)
     (hk : k ≠ i) (a : A) (v : Fin 4 → A) :
     (Matrix.SpecialLinearGroup.transvection h a • v) k = v k := by
   change ((Matrix.SpecialLinearGroup.transvection h a).val *ᵥ v) k = _
@@ -3416,14 +3416,14 @@ def coordinateRotation (i j : Fin 4) (h : i ≠ j) :
     Matrix.SpecialLinearGroup.transvection h.symm (-1) *
     Matrix.SpecialLinearGroup.transvection h 1
 
-theorem coordinateRotation_mem (i j : Fin 4) (h : i ≠ j) :
+lemma coordinateRotation_mem (i j : Fin 4) (h : i ≠ j) :
     coordinateRotation (A := A) i j h ∈ localElementarySubgroup A :=
   (localElementarySubgroup A).mul_mem
     ((localElementarySubgroup A).mul_mem (transvection_mem i j h 1)
       (transvection_mem j i h.symm (-1)))
     (transvection_mem i j h 1)
 
-theorem coordinateRotation_smul_left (i j : Fin 4) (h : i ≠ j)
+lemma coordinateRotation_smul_left (i j : Fin 4) (h : i ≠ j)
     (v : Fin 4 → A) :
     (coordinateRotation (A := A) i j h • v) i = v j := by
   simp only [coordinateRotation, mul_smul]
@@ -3434,7 +3434,7 @@ theorem coordinateRotation_smul_left (i j : Fin 4) (h : i ≠ j)
   rw [transvection_smul_other i j j h h.symm]
   ring
 
-theorem coordinateRotation_smul_right (i j : Fin 4) (h : i ≠ j)
+lemma coordinateRotation_smul_right (i j : Fin 4) (h : i ≠ j)
     (v : Fin 4 → A) :
     (coordinateRotation (A := A) i j h • v) j = -v i := by
   simp only [coordinateRotation, mul_smul]
@@ -3444,7 +3444,7 @@ theorem coordinateRotation_smul_right (i j : Fin 4) (h : i ≠ j)
   rw [transvection_smul_other i j j h h.symm]
   ring
 
-theorem coordinateRotation_smul_other (i j k : Fin 4) (h : i ≠ j)
+lemma coordinateRotation_smul_other (i j k : Fin 4) (h : i ≠ j)
     (hki : k ≠ i) (hkj : k ≠ j) (v : Fin 4 → A) :
     (coordinateRotation (A := A) i j h • v) k = v k := by
   simp only [coordinateRotation, mul_smul]
@@ -3460,7 +3460,7 @@ def unitPairNormalizer (i j : Fin 4) (h : i ≠ j)
     Matrix.SpecialLinearGroup.transvection h.symm
       ((↑hu.unit⁻¹ : A) * (1 - v j))
 
-theorem unitPairNormalizer_mem (i j : Fin 4) (h : i ≠ j)
+lemma unitPairNormalizer_mem (i j : Fin 4) (h : i ≠ j)
     (v : Fin 4 → A) (hu : IsUnit (v i)) :
     unitPairNormalizer i j h v hu ∈ localElementarySubgroup A :=
   (localElementarySubgroup A).mul_mem
@@ -3470,7 +3470,7 @@ theorem unitPairNormalizer_mem (i j : Fin 4) (h : i ≠ j)
     (transvection_mem j i h.symm
       ((↑hu.unit⁻¹ : A) * (1 - v j)))
 
-theorem unitPairNormalizer_smul_pivot (i j : Fin 4) (h : i ≠ j)
+lemma unitPairNormalizer_smul_pivot (i j : Fin 4) (h : i ≠ j)
     (v : Fin 4 → A) (hu : IsUnit (v i)) :
     (unitPairNormalizer i j h v hu • v) i = 1 := by
   let t := Matrix.SpecialLinearGroup.transvection h.symm
@@ -3493,7 +3493,7 @@ theorem unitPairNormalizer_smul_pivot (i j : Fin 4) (h : i ≠ j)
   rw [hti, htj]
   ring
 
-theorem unitPairNormalizer_smul_auxiliary (i j : Fin 4) (h : i ≠ j)
+lemma unitPairNormalizer_smul_auxiliary (i j : Fin 4) (h : i ≠ j)
     (v : Fin 4 → A) (hu : IsUnit (v i)) :
     (unitPairNormalizer i j h v hu • v) j = 0 := by
   let t := Matrix.SpecialLinearGroup.transvection h.symm
@@ -3524,7 +3524,7 @@ theorem unitPairNormalizer_smul_auxiliary (i j : Fin 4) (h : i ≠ j)
   rw [hsj, hsi]
   ring
 
-theorem unitPairNormalizer_smul_other (i j k : Fin 4) (h : i ≠ j)
+lemma unitPairNormalizer_smul_other (i j k : Fin 4) (h : i ≠ j)
     (hki : k ≠ i) (hkj : k ≠ j)
     (v : Fin 4 → A) (hu : IsUnit (v i)) :
     (unitPairNormalizer i j h v hu • v) k = v k := by
@@ -3534,7 +3534,7 @@ theorem unitPairNormalizer_smul_other (i j k : Fin 4) (h : i ≠ j)
     transvection_smul_other i j k h hki,
     transvection_smul_other j i k h.symm hkj]
 
-theorem unit_first_elementary_reduce
+lemma unit_first_elementary_reduce
     (v : Fin 4 → A) (hu : IsUnit (v 0)) :
     ∃ g : Matrix.SpecialLinearGroup (Fin 4) A,
       g ∈ localElementarySubgroup A ∧
@@ -3602,23 +3602,23 @@ def lowerBlockMatrix (b : Matrix (Fin 3) (Fin 3) R) :
     Fin.cases (Fin.cases 1 (fun _ => 0) j)
       (fun i' => Fin.cases 0 (fun j' => b i' j') j) i
 
-@[simp] theorem lowerBlockMatrix_zero_zero
+@[simp] lemma lowerBlockMatrix_zero_zero
     (b : Matrix (Fin 3) (Fin 3) R) :
     lowerBlockMatrix b 0 0 = 1 := rfl
 
-@[simp] theorem lowerBlockMatrix_succ_zero
+@[simp] lemma lowerBlockMatrix_succ_zero
     (b : Matrix (Fin 3) (Fin 3) R) (i : Fin 3) :
     lowerBlockMatrix b i.succ 0 = 0 := rfl
 
-@[simp] theorem lowerBlockMatrix_zero_succ
+@[simp] lemma lowerBlockMatrix_zero_succ
     (b : Matrix (Fin 3) (Fin 3) R) (j : Fin 3) :
     lowerBlockMatrix b 0 j.succ = 0 := rfl
 
-@[simp] theorem lowerBlockMatrix_succ_succ
+@[simp] lemma lowerBlockMatrix_succ_succ
     (b : Matrix (Fin 3) (Fin 3) R) (i j : Fin 3) :
     lowerBlockMatrix b i.succ j.succ = b i j := rfl
 
-theorem lowerBlockMatrix_det (b : Matrix (Fin 3) (Fin 3) R) :
+lemma lowerBlockMatrix_det (b : Matrix (Fin 3) (Fin 3) R) :
     (lowerBlockMatrix b).det = b.det := by
   rw [Matrix.det_succ_column_zero]
   simp [Fin.sum_univ_succ, lowerBlockMatrix, Matrix.submatrix]
@@ -3641,7 +3641,7 @@ def firstRowClear
     Matrix.SpecialLinearGroup.transvection
       (show (0 : Fin 4) ≠ 3 by decide) (-(g 0 3))
 
-theorem firstRowClear_mem
+lemma firstRowClear_mem
     (g : Matrix.SpecialLinearGroup (Fin 4) R) :
     firstRowClear g ∈ localGlobalElementarySubgroup R := by
   unfold firstRowClear
@@ -3651,7 +3651,7 @@ theorem firstRowClear_mem
       (localGlobal_transvection_mem 0 2 (by decide) (-(g 0 2))))
     (localGlobal_transvection_mem 0 3 (by decide) (-(g 0 3)))
 
-theorem firstRowClear_mul_apply
+lemma firstRowClear_mul_apply
     (g : Matrix.SpecialLinearGroup (Fin 4) R)
     (hcolumn : ∀ i : Fin 4, g i 0 = if i = 0 then 1 else 0)
     (i j : Fin 4) :
@@ -3671,7 +3671,7 @@ theorem firstRowClear_mul_apply
     simp [Matrix.mul_transvection_apply_same,
       Matrix.mul_transvection_apply_of_ne, h0, h1, h2, h3]
 
-theorem lowerRight_det_eq_one
+lemma lowerRight_det_eq_one
     (g : Matrix.SpecialLinearGroup (Fin 4) R)
     (hcolumn : ∀ i : Fin 4, g i 0 = if i = 0 then 1 else 0) :
     (g.val.submatrix Fin.succ Fin.succ).det = 1 := by
@@ -3690,7 +3690,7 @@ def lowerRightSpecialLinear
   ⟨g.val.submatrix Fin.succ Fin.succ,
     lowerRight_det_eq_one g hcolumn⟩
 
-theorem firstColumn_block_decomposition
+lemma firstColumn_block_decomposition
     (g : Matrix.SpecialLinearGroup (Fin 4) R)
     (hcolumn : ∀ i : Fin 4, g i 0 = if i = 0 then 1 else 0) :
     g * firstRowClear g =
@@ -3703,7 +3703,7 @@ theorem firstColumn_block_decomposition
   cases i using Fin.cases <;> cases j using Fin.cases <;>
     simp [Matrix.submatrix, hcolumn]
 
-theorem firstColumn_mem_elementary_iff_block
+lemma firstColumn_mem_elementary_iff_block
     (g : Matrix.SpecialLinearGroup (Fin 4) R)
     (hcolumn : ∀ i : Fin 4, g i 0 = if i = 0 then 1 else 0) :
     g ∈ localGlobalElementarySubgroup R ↔
@@ -3718,7 +3718,7 @@ theorem firstColumn_mem_elementary_iff_block
       ((localGlobalElementarySubgroup R).inv_mem (firstRowClear_mem g))
     simpa [mul_assoc] using h
 
-theorem specialLinear_mem_elementary_of_column_reduction
+lemma specialLinear_mem_elementary_of_column_reduction
     (g e : Matrix.SpecialLinearGroup (Fin 4) R)
     (he : e ∈ localGlobalElementarySubgroup R)
     (hcolumn : e • (fun i : Fin 4 => g i 0) = Pi.single 0 1)
@@ -3762,7 +3762,7 @@ def StabilizedThreeElementaryGeneration (R : Type u) [CommRing R] : Prop :=
   ∀ b : Matrix.SpecialLinearGroup (Fin 3) R,
     lowerBlockSpecialLinear b ∈ localGlobalElementarySubgroup R
 
-@[simp] theorem lowerBlockSpecialLinear_one :
+@[simp] lemma lowerBlockSpecialLinear_one :
     lowerBlockSpecialLinear (1 : Matrix.SpecialLinearGroup (Fin 3) R) =
       (1 : Matrix.SpecialLinearGroup (Fin 4) R) := by
   apply Matrix.SpecialLinearGroup.ext
@@ -3771,7 +3771,7 @@ def StabilizedThreeElementaryGeneration (R : Type u) [CommRing R] : Prop :=
     simp [lowerBlockSpecialLinear, Matrix.one_apply, eq_comm]
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp] theorem lowerBlockSpecialLinear_mul
+@[simp] lemma lowerBlockSpecialLinear_mul
     (b c : Matrix.SpecialLinearGroup (Fin 3) R) :
     lowerBlockSpecialLinear (b * c) =
       lowerBlockSpecialLinear b * lowerBlockSpecialLinear c := by
@@ -3788,7 +3788,7 @@ def lowerBlockHom :
   map_one' := lowerBlockSpecialLinear_one
   map_mul' := lowerBlockSpecialLinear_mul
 
-theorem lowerBlockHom_transvection (i j : Fin 3) (h : i ≠ j) (r : R) :
+lemma lowerBlockHom_transvection (i j : Fin 3) (h : i ≠ j) (r : R) :
     lowerBlockHom
         (Matrix.SpecialLinearGroup.transvection h r) =
       Matrix.SpecialLinearGroup.transvection
@@ -3801,17 +3801,17 @@ theorem lowerBlockHom_transvection (i j : Fin 3) (h : i ≠ j) (r : R) :
       Matrix.SpecialLinearGroup.transvection_coe,
       Matrix.single_apply, Matrix.one_apply, eq_comm]
 
-@[simp] theorem finTwoPlusOne_symm_castSucc (i : Fin 2) :
+@[simp] lemma finTwoPlusOne_symm_castSucc (i : Fin 2) :
     (finSumFinEquiv (m := 2) (n := 1)).symm i.castSucc =
       Sum.inl i := by
   fin_cases i <;> decide
 
-@[simp] theorem finTwoPlusOne_symm_last :
+@[simp] lemma finTwoPlusOne_symm_last :
     (finSumFinEquiv (m := 2) (n := 1)).symm (Fin.last 2) =
       Sum.inr (0 : Fin 1) := by
   decide
 
-@[simp] theorem finTwoPlusOne_symm_two :
+@[simp] lemma finTwoPlusOne_symm_two :
     (finSumFinEquiv (m := 2) (n := 1)).symm (2 : Fin 3) =
       Sum.inr (0 : Fin 1) := by
   decide
@@ -3822,27 +3822,27 @@ def stabilizedTwoMatrix (b : Matrix (Fin 2) (Fin 2) R) :
     (finSumFinEquiv (m := 2) (n := 1))
     (Matrix.fromBlocks b 0 0 (1 : Matrix (Fin 1) (Fin 1) R))
 
-@[simp] theorem stabilizedTwoMatrix_castSucc_castSucc
+@[simp] lemma stabilizedTwoMatrix_castSucc_castSucc
     (b : Matrix (Fin 2) (Fin 2) R) (i j : Fin 2) :
     stabilizedTwoMatrix b i.castSucc j.castSucc = b i j := by
   simp [stabilizedTwoMatrix, Matrix.reindex_apply, Matrix.fromBlocks]
 
-@[simp] theorem stabilizedTwoMatrix_castSucc_last
+@[simp] lemma stabilizedTwoMatrix_castSucc_last
     (b : Matrix (Fin 2) (Fin 2) R) (i : Fin 2) :
     stabilizedTwoMatrix b i.castSucc (Fin.last 2) = 0 := by
   simp [stabilizedTwoMatrix, Matrix.reindex_apply, Matrix.fromBlocks]
 
-@[simp] theorem stabilizedTwoMatrix_last_castSucc
+@[simp] lemma stabilizedTwoMatrix_last_castSucc
     (b : Matrix (Fin 2) (Fin 2) R) (j : Fin 2) :
     stabilizedTwoMatrix b (Fin.last 2) j.castSucc = 0 := by
   simp [stabilizedTwoMatrix, Matrix.reindex_apply, Matrix.fromBlocks]
 
-@[simp] theorem stabilizedTwoMatrix_last_last
+@[simp] lemma stabilizedTwoMatrix_last_last
     (b : Matrix (Fin 2) (Fin 2) R) :
     stabilizedTwoMatrix b (Fin.last 2) (Fin.last 2) = 1 := by
   simp [stabilizedTwoMatrix, Matrix.reindex_apply, Matrix.fromBlocks]
 
-theorem stabilizedTwoMatrix_det
+lemma stabilizedTwoMatrix_det
     (b : Matrix (Fin 2) (Fin 2) R) :
     (stabilizedTwoMatrix b).det = b.det := by
   unfold stabilizedTwoMatrix
@@ -3856,46 +3856,46 @@ def stabilizedTwoSpecialLinear
     rw [stabilizedTwoMatrix_det]
     exact b.property⟩
 
-@[simp] theorem stabilizedTwoSpecialLinear_castSucc_castSucc
+@[simp] lemma stabilizedTwoSpecialLinear_castSucc_castSucc
     (b : Matrix.SpecialLinearGroup (Fin 2) R) (i j : Fin 2) :
     stabilizedTwoSpecialLinear b i.castSucc j.castSucc = b i j :=
   stabilizedTwoMatrix_castSucc_castSucc b.val i j
 
-@[simp] theorem stabilizedTwoSpecialLinear_castSucc_last
+@[simp] lemma stabilizedTwoSpecialLinear_castSucc_last
     (b : Matrix.SpecialLinearGroup (Fin 2) R) (i : Fin 2) :
     stabilizedTwoSpecialLinear b i.castSucc (Fin.last 2) = 0 :=
   stabilizedTwoMatrix_castSucc_last b.val i
 
-@[simp] theorem stabilizedTwoSpecialLinear_last_castSucc
+@[simp] lemma stabilizedTwoSpecialLinear_last_castSucc
     (b : Matrix.SpecialLinearGroup (Fin 2) R) (j : Fin 2) :
     stabilizedTwoSpecialLinear b (Fin.last 2) j.castSucc = 0 :=
   stabilizedTwoMatrix_last_castSucc b.val j
 
-@[simp] theorem stabilizedTwoSpecialLinear_last_last
+@[simp] lemma stabilizedTwoSpecialLinear_last_last
     (b : Matrix.SpecialLinearGroup (Fin 2) R) :
     stabilizedTwoSpecialLinear b (Fin.last 2) (Fin.last 2) = 1 :=
   stabilizedTwoMatrix_last_last b.val
 
-@[simp] theorem finTwo_castSucc_ne_two (i : Fin 2) :
+@[simp] lemma finTwo_castSucc_ne_two (i : Fin 2) :
     i.castSucc ≠ (2 : Fin 3) :=
   Fin.castSucc_ne_last i
 
-@[simp] theorem stabilizedTwoSpecialLinear_castSucc_two
+@[simp] lemma stabilizedTwoSpecialLinear_castSucc_two
     (b : Matrix.SpecialLinearGroup (Fin 2) R) (i : Fin 2) :
     stabilizedTwoSpecialLinear b i.castSucc (2 : Fin 3) = 0 :=
   stabilizedTwoSpecialLinear_castSucc_last b i
 
-@[simp] theorem stabilizedTwoSpecialLinear_two_castSucc
+@[simp] lemma stabilizedTwoSpecialLinear_two_castSucc
     (b : Matrix.SpecialLinearGroup (Fin 2) R) (i : Fin 2) :
     stabilizedTwoSpecialLinear b (2 : Fin 3) i.castSucc = 0 :=
   stabilizedTwoSpecialLinear_last_castSucc b i
 
-@[simp] theorem stabilizedTwoSpecialLinear_two_two
+@[simp] lemma stabilizedTwoSpecialLinear_two_two
     (b : Matrix.SpecialLinearGroup (Fin 2) R) :
     stabilizedTwoSpecialLinear b (2 : Fin 3) (2 : Fin 3) = 1 :=
   stabilizedTwoSpecialLinear_last_last b
 
-@[simp] theorem stabilizedTwoSpecialLinear_one :
+@[simp] lemma stabilizedTwoSpecialLinear_one :
     stabilizedTwoSpecialLinear
         (1 : Matrix.SpecialLinearGroup (Fin 2) R) =
       (1 : Matrix.SpecialLinearGroup (Fin 3) R) := by
@@ -3904,7 +3904,7 @@ def stabilizedTwoSpecialLinear
   cases i using Fin.lastCases <;> cases j using Fin.lastCases <;>
     simp [Matrix.one_apply, eq_comm]
 
-@[simp] theorem stabilizedTwoSpecialLinear_mul
+@[simp] lemma stabilizedTwoSpecialLinear_mul
     (b c : Matrix.SpecialLinearGroup (Fin 2) R) :
     stabilizedTwoSpecialLinear (b * c) =
       stabilizedTwoSpecialLinear b * stabilizedTwoSpecialLinear c := by
@@ -3920,42 +3920,42 @@ def stabilizedTwoHom :
   map_one' := stabilizedTwoSpecialLinear_one
   map_mul' := stabilizedTwoSpecialLinear_mul
 
-@[simp] theorem stabilizedTwoHom_castSucc_castSucc
+@[simp] lemma stabilizedTwoHom_castSucc_castSucc
     (b : Matrix.SpecialLinearGroup (Fin 2) R) (i j : Fin 2) :
     stabilizedTwoHom b i.castSucc j.castSucc = b i j :=
   stabilizedTwoSpecialLinear_castSucc_castSucc b i j
 
-@[simp] theorem stabilizedTwoHom_castSucc_last
+@[simp] lemma stabilizedTwoHom_castSucc_last
     (b : Matrix.SpecialLinearGroup (Fin 2) R) (i : Fin 2) :
     stabilizedTwoHom b i.castSucc (Fin.last 2) = 0 :=
   stabilizedTwoSpecialLinear_castSucc_last b i
 
-@[simp] theorem stabilizedTwoHom_last_castSucc
+@[simp] lemma stabilizedTwoHom_last_castSucc
     (b : Matrix.SpecialLinearGroup (Fin 2) R) (j : Fin 2) :
     stabilizedTwoHom b (Fin.last 2) j.castSucc = 0 :=
   stabilizedTwoSpecialLinear_last_castSucc b j
 
-@[simp] theorem stabilizedTwoHom_last_last
+@[simp] lemma stabilizedTwoHom_last_last
     (b : Matrix.SpecialLinearGroup (Fin 2) R) :
     stabilizedTwoHom b (Fin.last 2) (Fin.last 2) = 1 :=
   stabilizedTwoSpecialLinear_last_last b
 
-@[simp] theorem stabilizedTwoHom_castSucc_two
+@[simp] lemma stabilizedTwoHom_castSucc_two
     (b : Matrix.SpecialLinearGroup (Fin 2) R) (i : Fin 2) :
     stabilizedTwoHom b i.castSucc (2 : Fin 3) = 0 :=
   stabilizedTwoSpecialLinear_castSucc_two b i
 
-@[simp] theorem stabilizedTwoHom_two_castSucc
+@[simp] lemma stabilizedTwoHom_two_castSucc
     (b : Matrix.SpecialLinearGroup (Fin 2) R) (i : Fin 2) :
     stabilizedTwoHom b (2 : Fin 3) i.castSucc = 0 :=
   stabilizedTwoSpecialLinear_two_castSucc b i
 
-@[simp] theorem stabilizedTwoHom_two_two
+@[simp] lemma stabilizedTwoHom_two_two
     (b : Matrix.SpecialLinearGroup (Fin 2) R) :
     stabilizedTwoHom b (2 : Fin 3) (2 : Fin 3) = 1 :=
   stabilizedTwoSpecialLinear_two_two b
 
-theorem stabilizedTwoHom_transvection
+lemma stabilizedTwoHom_transvection
     (i j : Fin 2) (h : i ≠ j) (r : R) :
     stabilizedTwoHom (Matrix.SpecialLinearGroup.transvection h r) =
       Matrix.SpecialLinearGroup.transvection
@@ -3973,7 +3973,7 @@ def elementaryThreeSubgroup (R : Type u) [CommRing R] :
     {g | ∃ (i j : Fin 3) (h : i ≠ j) (r : R),
       g = Matrix.SpecialLinearGroup.transvection h r}
 
-theorem stabilizedTwoHom_transvection_mem
+lemma stabilizedTwoHom_transvection_mem
     (i j : Fin 2) (h : i ≠ j) (r : R) :
     stabilizedTwoHom (Matrix.SpecialLinearGroup.transvection h r) ∈
       elementaryThreeSubgroup R := by
@@ -3982,7 +3982,7 @@ theorem stabilizedTwoHom_transvection_mem
     ⟨i.castSucc, j.castSucc,
       fun hs => h (Fin.castSucc_inj.mp hs), r, rfl⟩
 
-theorem map_elementaryThreeSubgroup_le :
+lemma map_elementaryThreeSubgroup_le :
     (elementaryThreeSubgroup R).map lowerBlockHom ≤
       localGlobalElementarySubgroup R := by
   unfold elementaryThreeSubgroup
@@ -3992,13 +3992,13 @@ theorem map_elementaryThreeSubgroup_le :
   exact localGlobal_transvection_mem i.succ j.succ
     (fun hs => h (Fin.succ_inj.mp hs)) r
 
-theorem lowerBlock_mem_of_elementaryThree
+lemma lowerBlock_mem_of_elementaryThree
     (b : Matrix.SpecialLinearGroup (Fin 3) R)
     (hb : b ∈ elementaryThreeSubgroup R) :
     lowerBlockSpecialLinear b ∈ localGlobalElementarySubgroup R :=
   map_elementaryThreeSubgroup_le ⟨b, hb, rfl⟩
 
-theorem elementary_eq_top_iff_columnTransitivity_and_stabilizedThree :
+lemma elementary_eq_top_iff_columnTransitivity_and_stabilizedThree :
     localGlobalElementarySubgroup R = ⊤ ↔
       ElementaryFirstColumnTransitivity R ∧
         StabilizedThreeElementaryGeneration R := by
@@ -4033,13 +4033,13 @@ universe u
 
 variable {R : Type u} [CommRing R]
 
-theorem elementaryThree_transvection_mem
+lemma elementaryThree_transvection_mem
     (i j : Fin 3) (h : i ≠ j) (r : R) :
     Matrix.SpecialLinearGroup.transvection h r ∈
       elementaryThreeSubgroup R :=
   Subgroup.subset_closure ⟨i, j, h, r, rfl⟩
 
-theorem elementaryThree_transvection_smul_same
+lemma elementaryThree_transvection_smul_same
     (i j : Fin 3) (h : i ≠ j) (r : R) (v : Fin 3 → R) :
     (Matrix.SpecialLinearGroup.transvection h r • v) i =
       v i + r * v j := by
@@ -4048,7 +4048,7 @@ theorem elementaryThree_transvection_smul_same
     Matrix.one_mulVec, Matrix.single_mulVec]
   simp
 
-theorem elementaryThree_transvection_smul_other
+lemma elementaryThree_transvection_smul_other
     (i j k : Fin 3) (h : i ≠ j) (hk : k ≠ i)
     (r : R) (v : Fin 3 → R) :
     (Matrix.SpecialLinearGroup.transvection h r • v) k = v k := by
@@ -4057,7 +4057,7 @@ theorem elementaryThree_transvection_smul_other
     Matrix.one_mulVec, Matrix.single_mulVec]
   simp [hk]
 
-theorem elementaryThree_coprime_pair_reduce
+lemma elementaryThree_coprime_pair_reduce
     (v : Fin 3 → R) (hcoprime : IsCoprime (v 0) (v 1)) :
     ∃ e : Matrix.SpecialLinearGroup (Fin 3) R,
       e ∈ elementaryThreeSubgroup R ∧ e • v = Pi.single 0 1 := by
@@ -4170,7 +4170,7 @@ private def rotation (i j : Fin 3) (h : i ≠ j) : G R :=
     Matrix.SpecialLinearGroup.transvection h.symm (-1) *
     Matrix.SpecialLinearGroup.transvection h 1
 
-private theorem rotation_mem (i j : Fin 3) (h : i ≠ j) :
+private lemma rotation_mem (i j : Fin 3) (h : i ≠ j) :
     rotation (R := R) i j h ∈ elementaryThreeSubgroup R :=
   (elementaryThreeSubgroup R).mul_mem
     ((elementaryThreeSubgroup R).mul_mem
@@ -4178,7 +4178,7 @@ private theorem rotation_mem (i j : Fin 3) (h : i ≠ j) :
       (elementaryThree_transvection_mem j i h.symm (-1)))
     (elementaryThree_transvection_mem i j h 1)
 
-private theorem rotation_left (i j : Fin 3) (h : i ≠ j)
+private lemma rotation_left (i j : Fin 3) (h : i ≠ j)
     (v : Fin 3 → R) :
     (rotation (R := R) i j h • v) i = v j := by
   simp only [rotation, mul_smul]
@@ -4190,7 +4190,7 @@ private theorem rotation_left (i j : Fin 3) (h : i ≠ j)
   rw [elementaryThree_transvection_smul_same]
   ring
 
-private theorem rotation_right (i j : Fin 3) (h : i ≠ j)
+private lemma rotation_right (i j : Fin 3) (h : i ≠ j)
     (v : Fin 3 → R) :
     (rotation (R := R) i j h • v) j = -v i := by
   simp only [rotation, mul_smul]
@@ -4200,7 +4200,7 @@ private theorem rotation_right (i j : Fin 3) (h : i ≠ j)
     elementaryThree_transvection_smul_other i j j h h.symm]
   ring
 
-private theorem rotation_other (i j k : Fin 3) (h : i ≠ j)
+private lemma rotation_other (i j k : Fin 3) (h : i ≠ j)
     (hki : k ≠ i) (hkj : k ≠ j) (v : Fin 3 → R) :
     (rotation (R := R) i j h • v) k = v k := by
   simp only [rotation, mul_smul]
@@ -4212,12 +4212,12 @@ private def step (i j : Fin 3) (h : i ≠ j) (a b : R) : G R :=
   rotation (R := R) i j h *
     Matrix.SpecialLinearGroup.transvection h.symm (-(b / a))
 
-private theorem step_mem (i j : Fin 3) (h : i ≠ j) (a b : R) :
+private lemma step_mem (i j : Fin 3) (h : i ≠ j) (a b : R) :
     step (R := R) i j h a b ∈ elementaryThreeSubgroup R :=
   (elementaryThreeSubgroup R).mul_mem (rotation_mem i j h)
     (elementaryThree_transvection_mem j i h.symm (-(b / a)))
 
-private theorem step_left (i j : Fin 3) (h : i ≠ j)
+private lemma step_left (i j : Fin 3) (h : i ≠ j)
     (v : Fin 3 → R) :
     (step (R := R) i j h (v i) (v j) • v) i = v j % v i := by
   rw [step, mul_smul, rotation_left,
@@ -4228,19 +4228,19 @@ private theorem step_left (i j : Fin 3) (h : i ≠ j)
     rw [← hd]
   ring
 
-private theorem step_right (i j : Fin 3) (h : i ≠ j)
+private lemma step_right (i j : Fin 3) (h : i ≠ j)
     (v : Fin 3 → R) :
     (step (R := R) i j h (v i) (v j) • v) j = -(v i) := by
   rw [step, mul_smul, rotation_right,
     elementaryThree_transvection_smul_other _ _ _ h.symm h]
 
-private theorem step_other (i j k : Fin 3) (h : i ≠ j)
+private lemma step_other (i j k : Fin 3) (h : i ≠ j)
     (hki : k ≠ i) (hkj : k ≠ j) (v : Fin 3 → R) :
     (step (R := R) i j h (v i) (v j) • v) k = v k := by
   rw [step, mul_smul, rotation_other i j k h hki hkj,
     elementaryThree_transvection_smul_other _ _ _ h.symm hkj]
 
-theorem euclideanThree_pair_reduce
+lemma euclideanThree_pair_reduce
     (i j : Fin 3) (h : i ≠ j) (v : Fin 3 → R) :
     ∃ g : G R, g ∈ elementaryThreeSubgroup R ∧
       (g • v) j = 0 ∧
@@ -4283,7 +4283,7 @@ theorem euclideanThree_pair_reduce
           exact step_other i j k h hki hkj w
   exact hp (v i) (v j) v rfl rfl
 
-theorem euclideanThree_reduce_last_preserving_first
+lemma euclideanThree_reduce_last_preserving_first
     (v : Fin 3 → R) :
     ∃ g : G R, g ∈ elementaryThreeSubgroup R ∧
       (g • v) 2 = 0 ∧ (g • v) 0 = v 0 := by
@@ -4297,7 +4297,7 @@ open Matrix
 open StabilizedBlockReduction
 open scoped BigOperators
 
-theorem unimodularRow_smul_specialLinear_three
+lemma unimodularRow_smul_specialLinear_three
     {R : Type*} [CommRing R]
     (e : Matrix.SpecialLinearGroup (Fin 3) R)
     (v : Fin 3 → R) (hv : UnimodularRow v) :
@@ -4313,7 +4313,7 @@ theorem unimodularRow_smul_specialLinear_three
   change ∑ k : Fin 3, (e⁻¹) j k * (e • v) k ∈ M
   exact M.sum_mem fun k _ => M.mul_mem_left _ (hnone k)
 
-theorem unimodularThree_isCoprime_of_last_zero
+lemma unimodularThree_isCoprime_of_last_zero
     {R : Type*} [CommRing R]
     (v : Fin 3 → R) (hv : UnimodularRow v) (hz : v 2 = 0) :
     IsCoprime (v 0) (v 1) := by
@@ -4321,7 +4321,7 @@ theorem unimodularThree_isCoprime_of_last_zero
   refine ⟨r 0, r 1, ?_⟩
   simpa [Fin.sum_univ_succ, hz, add_assoc] using hr
 
-theorem euclideanElementaryThree_unimodular_reduce
+lemma euclideanElementaryThree_unimodular_reduce
     {R : Type*} [EuclideanDomain R]
     (v : Fin 3 → R) (hv : UnimodularRow v) :
     ∃ e : Matrix.SpecialLinearGroup (Fin 3) R,
@@ -4336,7 +4336,7 @@ theorem euclideanElementaryThree_unimodular_reduce
   exact ⟨p * g, (elementaryThreeSubgroup R).mul_mem hp hg,
     by simpa [mul_smul] using hreduce⟩
 
-theorem fieldPolynomialElementaryThree_unimodular_reduce
+lemma fieldPolynomialElementaryThree_unimodular_reduce
     {k : Type*} [Field k]
     (v : Fin 3 → Polynomial k) (hv : UnimodularRow v) :
     ∃ e : Matrix.SpecialLinearGroup (Fin 3) (Polynomial k),
@@ -4357,7 +4357,7 @@ open scoped BigOperators
 universe u v
 
 set_option backward.isDefEq.respectTransparency false in
-theorem specialLinearThree_map_transvection
+lemma specialLinearThree_map_transvection
     {A : Type u} {B : Type v} [CommRing A] [CommRing B]
     (φ : A →+* B) {i j : Fin 3} (hij : i ≠ j) (a : A) :
     Matrix.SpecialLinearGroup.map φ
@@ -4370,7 +4370,7 @@ theorem specialLinearThree_map_transvection
     Matrix.single_apply, Matrix.one_apply]
   split <;> simp
 
-theorem map_elementaryThreeSubgroup_eq_of_surjective
+lemma map_elementaryThreeSubgroup_eq_of_surjective
     {A : Type u} {B : Type v} [CommRing A] [CommRing B]
     (φ : A →+* B) (hφ : Function.Surjective φ) :
     (elementaryThreeSubgroup A).map
@@ -4391,7 +4391,7 @@ theorem map_elementaryThreeSubgroup_eq_of_surjective
       Subgroup.subset_closure ⟨i, j, hij, a, rfl⟩, ?_⟩
     rw [specialLinearThree_map_transvection, ha]
 
-theorem exists_elementaryThree_lift_of_surjective
+lemma exists_elementaryThree_lift_of_surjective
     {A : Type u} {B : Type v} [CommRing A] [CommRing B]
     (φ : A →+* B) (hφ : Function.Surjective φ)
     (e : Matrix.SpecialLinearGroup (Fin 3) B)
@@ -4405,7 +4405,7 @@ theorem exists_elementaryThree_lift_of_surjective
     exact he
   exact hmap
 
-theorem exists_elementaryThree_polynomial_lift_of_surjective
+lemma exists_elementaryThree_polynomial_lift_of_surjective
     {A : Type u} {B : Type v} [CommRing A] [CommRing B]
     (φ : A →+* B) (hφ : Function.Surjective φ)
     (e : Matrix.SpecialLinearGroup (Fin 3) (Polynomial B))
@@ -4416,7 +4416,7 @@ theorem exists_elementaryThree_polynomial_lift_of_surjective
   exists_elementaryThree_lift_of_surjective
     (Polynomial.mapRingHom φ) (Polynomial.map_surjective φ hφ) e he
 
-theorem unimodularRow_ringHom_map
+lemma unimodularRow_ringHom_map
     {A : Type u} {B : Type v} [CommRing A] [CommRing B]
     (φ : A →+* B) {n : ℕ} (row : Fin n → A)
     (hrow : UnimodularRow row) :
@@ -4426,7 +4426,7 @@ theorem unimodularRow_ringHom_map
   have hmapped := congrArg φ hcoefficients
   simpa only [map_sum, map_mul, map_one] using hmapped
 
-theorem unimodularRow_polynomial_uniformizer_map
+lemma unimodularRow_polynomial_uniformizer_map
     {A : Type u} [CommRing A] [IsDomain A] [IsDiscreteValuationRing A]
     (π : A) (row : Fin 3 → Polynomial A)
     (hrow : UnimodularRow row) :
@@ -4437,7 +4437,7 @@ theorem unimodularRow_polynomial_uniformizer_map
     (Polynomial.mapRingHom
       (Ideal.Quotient.mk (Ideal.span ({π} : Set A)))) row hrow
 
-theorem specialLinearThree_baseChange_smul_apply
+lemma specialLinearThree_baseChange_smul_apply
     {A : Type u} {B : Type v} [CommRing A] [CommRing B]
     (φ : A →+* B)
     (g : Matrix.SpecialLinearGroup (Fin 3) A)
@@ -4450,7 +4450,7 @@ theorem specialLinearThree_baseChange_smul_apply
       φ (∑ j, g.val i j * row j)
   simp only [map_sum, map_mul]
 
-theorem specialLinearThree_polynomial_baseChange_smul_apply
+lemma specialLinearThree_polynomial_baseChange_smul_apply
     {A : Type u} {B : Type v} [CommRing A] [CommRing B]
     (φ : A →+* B)
     (g : Matrix.SpecialLinearGroup (Fin 3) (Polynomial A))
@@ -4461,7 +4461,7 @@ theorem specialLinearThree_polynomial_baseChange_smul_apply
   specialLinearThree_baseChange_smul_apply
     (Polynomial.mapRingHom φ) g row i
 
-theorem exists_elementaryThree_polynomial_uniformizer_normal_form
+lemma exists_elementaryThree_polynomial_uniformizer_normal_form
     {A : Type u} [CommRing A] (π : A)
     (row : Fin 3 → Polynomial A)
     (e : Matrix.SpecialLinearGroup (Fin 3)
@@ -4488,7 +4488,7 @@ theorem exists_elementaryThree_polynomial_uniformizer_normal_form
   rw [← specialLinearThree_polynomial_baseChange_smul_apply,
     hmap, hreduced]
 
-theorem exists_elementaryThree_polynomial_uniformizer_reduction
+lemma exists_elementaryThree_polynomial_uniformizer_reduction
     {A : Type u} [CommRing A] [IsDomain A] [IsDiscreteValuationRing A]
     {π : A} (hπ : Irreducible π)
     (row : Fin 3 → Polynomial A) (hrow : UnimodularRow row) :
@@ -4523,7 +4523,7 @@ universe u
 
 variable {A : Type u} [CommRing A]
 
-theorem suslin_span_denominators_eq_top_of_maximal
+lemma suslin_span_denominators_eq_top_of_maximal
     (P : A → Prop)
     (hlocal : ∀ m : Ideal A, m.IsMaximal →
       ∃ d : A, d ∉ m ∧ P d) :
@@ -4534,7 +4534,7 @@ theorem suslin_span_denominators_eq_top_of_maximal
   obtain ⟨d, hd, hP⟩ := hlocal m hm
   exact hd (hle (Ideal.subset_span hP))
 
-theorem suslin_exists_finset_denominators_of_maximal
+lemma suslin_exists_finset_denominators_of_maximal
     (P : A → Prop)
     (hlocal : ∀ m : Ideal A, m.IsMaximal →
       ∃ d : A, d ∉ m ∧ P d) :
@@ -4545,7 +4545,7 @@ theorem suslin_exists_finset_denominators_of_maximal
       (suslin_span_denominators_eq_top_of_maximal P hlocal)
   exact ⟨s, fun d hd => hs hd, hspan⟩
 
-theorem suslin_exists_finset_denominators_of_primeCompl
+lemma suslin_exists_finset_denominators_of_primeCompl
     (P : A → Prop)
     (hlocal : ∀ (m : Ideal A) [m.IsMaximal],
       ∃ d : m.primeCompl, P (d : A)) :
@@ -4563,7 +4563,7 @@ def suslinAwayToAtPrime (m : Ideal A) [m.IsPrime]
   IsLocalization.Away.lift (d : A)
     (IsLocalization.map_units (Localization.AtPrime m) d)
 
-@[simp] theorem suslinAwayToAtPrime_algebraMap
+@[simp] lemma suslinAwayToAtPrime_algebraMap
     (m : Ideal A) [m.IsPrime] (d : m.primeCompl) (a : A) :
     suslinAwayToAtPrime m d
       (algebraMap A (Localization.Away (d : A)) a) =
@@ -4588,7 +4588,7 @@ def suslinAwayToProductRight (m : Ideal A) [m.IsPrime]
     (P := Localization.Away ((d * e : m.primeCompl) : A))
     (e : A) (d : A)
 
-@[simp] theorem suslinAwayToProductLeft_algebraMap
+@[simp] lemma suslinAwayToProductLeft_algebraMap
     (m : Ideal A) [m.IsPrime] (d e : m.primeCompl) (a : A) :
     suslinAwayToProductLeft m d e
       (algebraMap A (Localization.Away (d : A)) a) =
@@ -4596,7 +4596,7 @@ def suslinAwayToProductRight (m : Ideal A) [m.IsPrime]
           (Localization.Away ((d * e : m.primeCompl) : A)) a :=
   IsLocalization.Away.awayToAwayRight_eq (d : A) (e : A) a
 
-@[simp] theorem suslinAwayToProductRight_algebraMap
+@[simp] lemma suslinAwayToProductRight_algebraMap
     (m : Ideal A) [m.IsPrime] (d e : m.primeCompl) (a : A) :
     suslinAwayToProductRight m d e
       (algebraMap A (Localization.Away (e : A)) a) =
@@ -4604,7 +4604,7 @@ def suslinAwayToProductRight (m : Ideal A) [m.IsPrime]
           (Localization.Away ((d * e : m.primeCompl) : A)) a :=
   IsLocalization.Away.awayToAwayLeft_eq (e : A) (d : A) a
 
-theorem suslinAwayToAtPrime_comp_productLeft
+lemma suslinAwayToAtPrime_comp_productLeft
     (m : Ideal A) [m.IsPrime] (d e : m.primeCompl) :
     (suslinAwayToAtPrime m (d * e)).comp
         (suslinAwayToProductLeft m d e) =
@@ -4616,7 +4616,7 @@ theorem suslinAwayToAtPrime_comp_productLeft
     suslinAwayToAtPrime_algebraMap,
     suslinAwayToAtPrime_algebraMap]
 
-theorem suslinAwayToAtPrime_comp_productRight
+lemma suslinAwayToAtPrime_comp_productRight
     (m : Ideal A) [m.IsPrime] (d e : m.primeCompl) :
     (suslinAwayToAtPrime m (d * e)).comp
         (suslinAwayToProductRight m d e) =
@@ -4628,7 +4628,7 @@ theorem suslinAwayToAtPrime_comp_productRight
     suslinAwayToAtPrime_algebraMap,
     suslinAwayToAtPrime_algebraMap]
 
-theorem suslin_exists_away_polynomial_lift_atPrime
+lemma suslin_exists_away_polynomial_lift_atPrime
     (m : Ideal A) [m.IsPrime]
     (p : Polynomial (Localization.AtPrime m)) :
     ∃ (d : m.primeCompl)
@@ -4690,7 +4690,7 @@ def suslinPolynomialSpecialLinearMap
       Matrix.SpecialLinearGroup Index (Polynomial S) :=
   Matrix.SpecialLinearGroup.map (Polynomial.mapRingHom f)
 
-theorem suslinPolynomialSpecialLinearMap_comp
+lemma suslinPolynomialSpecialLinearMap_comp
     {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
     (f : R →+* S) (g : S →+* T)
     (x : Matrix.SpecialLinearGroup Index (Polynomial R)) :
@@ -4703,7 +4703,7 @@ theorem suslinPolynomialSpecialLinearMap_comp
     Polynomial.map (g.comp f) (x.1 i j)
   exact Polynomial.map_map f g (x.1 i j)
 
-theorem suslin_exists_away_elementary_word_lift_atPrime
+lemma suslin_exists_away_elementary_word_lift_atPrime
     (m : Ideal A) [m.IsPrime]
     (g : Matrix.SpecialLinearGroup Index
       (Polynomial (Localization.AtPrime m)))
@@ -4796,7 +4796,7 @@ def elementaryThreeCoordinateRotation (i j : Fin 3) (h : i ≠ j) :
     Matrix.SpecialLinearGroup.transvection h.symm (-1) *
     Matrix.SpecialLinearGroup.transvection h 1
 
-theorem elementaryThreeCoordinateRotation_mem
+lemma elementaryThreeCoordinateRotation_mem
     (i j : Fin 3) (h : i ≠ j) :
     elementaryThreeCoordinateRotation (R := R) i j h ∈
       elementaryThreeSubgroup R := by
@@ -4806,7 +4806,7 @@ theorem elementaryThreeCoordinateRotation_mem
       (Subgroup.subset_closure ⟨j, i, h.symm, -1, rfl⟩))
     (Subgroup.subset_closure ⟨i, j, h, 1, rfl⟩)
 
-private theorem elementaryThreeTransvection_smul_same
+private lemma elementaryThreeTransvection_smul_same
     (i j : Fin 3) (h : i ≠ j) (a : R) (v : Fin 3 → R) :
     (Matrix.SpecialLinearGroup.transvection h a • v) i =
       v i + a * v j := by
@@ -4815,7 +4815,7 @@ private theorem elementaryThreeTransvection_smul_same
     Matrix.one_mulVec, Matrix.single_mulVec]
   simp
 
-private theorem elementaryThreeTransvection_smul_other
+private lemma elementaryThreeTransvection_smul_other
     (i j k : Fin 3) (h : i ≠ j) (hk : k ≠ i)
     (a : R) (v : Fin 3 → R) :
     (Matrix.SpecialLinearGroup.transvection h a • v) k = v k := by
@@ -4824,7 +4824,7 @@ private theorem elementaryThreeTransvection_smul_other
     Matrix.one_mulVec, Matrix.single_mulVec]
   simp [hk]
 
-theorem elementaryThreeCoordinateRotation_smul_left
+lemma elementaryThreeCoordinateRotation_smul_left
     (i j : Fin 3) (h : i ≠ j) (v : Fin 3 → R) :
     (elementaryThreeCoordinateRotation (R := R) i j h • v) i = v j := by
   simp only [elementaryThreeCoordinateRotation, mul_smul]
@@ -4835,7 +4835,7 @@ theorem elementaryThreeCoordinateRotation_smul_left
   rw [elementaryThreeTransvection_smul_other i j j h h.symm]
   ring
 
-theorem elementaryThreeCoordinateRotation_smul_right
+lemma elementaryThreeCoordinateRotation_smul_right
     (i j : Fin 3) (h : i ≠ j) (v : Fin 3 → R) :
     (elementaryThreeCoordinateRotation (R := R) i j h • v) j = -v i := by
   simp only [elementaryThreeCoordinateRotation, mul_smul]
@@ -4845,7 +4845,7 @@ theorem elementaryThreeCoordinateRotation_smul_right
   rw [elementaryThreeTransvection_smul_other i j j h h.symm]
   ring
 
-theorem elementaryThreeCoordinateRotation_smul_other
+lemma elementaryThreeCoordinateRotation_smul_other
     (i j k : Fin 3) (h : i ≠ j) (hki : k ≠ i) (hkj : k ≠ j)
     (v : Fin 3 → R) :
     (elementaryThreeCoordinateRotation (R := R) i j h • v) k = v k := by
@@ -4854,7 +4854,7 @@ theorem elementaryThreeCoordinateRotation_smul_other
     elementaryThreeTransvection_smul_other j i k h.symm hkj,
     elementaryThreeTransvection_smul_other i j k h hki]
 
-theorem elementaryThreeCoordinateRotation_two_zero_smul_single_zero :
+lemma elementaryThreeCoordinateRotation_two_zero_smul_single_zero :
     elementaryThreeCoordinateRotation (R := R)
         2 0 (by decide) •
           (Pi.single (0 : Fin 3) (1 : R) : Fin 3 → R) =
@@ -4878,7 +4878,7 @@ theorem elementaryThreeCoordinateRotation_two_zero_smul_single_zero :
     rw [elementaryThreeCoordinateRotation_smul_left]
     simp
 
-theorem elementaryThree_reduce_last_of_reduce_zero
+lemma elementaryThree_reduce_last_of_reduce_zero
     (v : Fin 3 → R)
     (h : ∃ e : Matrix.SpecialLinearGroup (Fin 3) R,
       e ∈ elementaryThreeSubgroup R ∧
@@ -4907,7 +4907,7 @@ universe u
 
 variable {R : Type u} [CommRing R]
 
-theorem suslin_stableRangeThree_elementary_row_transitive
+lemma suslin_stableRangeThree_elementary_row_transitive
     (hstable : BassStableRangeAtMost R 3)
     (v : Fin 4 → R) (hv : UnimodularRow v) :
     ∃ g : Matrix.SpecialLinearGroup (Fin 4) R,
@@ -5028,7 +5028,7 @@ theorem suslin_stableRangeThree_elementary_row_transitive
         hcreate) hshorten
   · simpa [mul_smul, w] using hreduce
 
-theorem suslin_elementary_eq_top_of_stableRangeThree_of_stabilizedThree
+lemma suslin_elementary_eq_top_of_stableRangeThree_of_stabilizedThree
     (hstable : BassStableRangeAtMost R 3)
     (hblock : StabilizedBlockReduction.StabilizedThreeElementaryGeneration R) :
     localGlobalElementarySubgroup R = ⊤ := by
@@ -5038,7 +5038,7 @@ theorem suslin_elementary_eq_top_of_stableRangeThree_of_stabilizedThree
   exact suslin_stableRangeThree_elementary_row_transitive hstable
     (fun i : Fin 4 => g i 0) (specialLinear_column_unimodular g 0)
 
-theorem suslin_specialLinear_elementary_of_stableRangeThree_of_stabilizedThree
+lemma suslin_specialLinear_elementary_of_stableRangeThree_of_stabilizedThree
     (hstable : BassStableRangeAtMost R 3)
     (hblock : StabilizedBlockReduction.StabilizedThreeElementaryGeneration R)
     (g : Matrix.SpecialLinearGroup (Fin 4) R) :
@@ -5065,7 +5065,7 @@ def mennickeBlock (a b c d : R) (hdet : a * d - b * c = 1) :
     rw [Matrix.det_fin_three]
     simpa using hdet⟩
 
-@[simp] theorem mennickeBlock_val
+@[simp] lemma mennickeBlock_val
     (a b c d : R) (hdet : a * d - b * c = 1) :
     (mennickeBlock a b c d hdet).val =
       !![a, b, 0; c, d, 0; 0, 0, 1] := rfl
@@ -5075,12 +5075,12 @@ def ContainsElementaryRoots
   ∀ (i j : Fin 3) (hij : i ≠ j) (r : R),
     Matrix.SpecialLinearGroup.transvection hij r ∈ E
 
-theorem mennicke_left_factor_det
+lemma mennicke_left_factor_det
     (a ap b c d : R) (hdet : a * ap * d - b * c = 1) :
     a * (ap * d) - b * c = 1 := by
   linear_combination hdet
 
-theorem mennicke_right_factor_det
+lemma mennicke_right_factor_det
     (a ap b c d : R) (hdet : a * ap * d - b * c = 1) :
     ap * (a * d) - b * c = 1 := by
   linear_combination hdet
@@ -5122,7 +5122,7 @@ set_option maxRecDepth 2048 in
 set_option maxHeartbeats 1200000 in
 
 set_option backward.isDefEq.respectTransparency false in
-theorem parkWoodburn_mennicke_identity
+lemma parkWoodburn_mennicke_identity
     (a ap b c d : R) (hdet : a * ap * d - b * c = 1) :
     mennickeBlock (a * ap) b c d hdet =
       mennickeWord a ap b c d hdet := by
@@ -5143,7 +5143,7 @@ theorem parkWoodburn_mennicke_identity
   · linear_combination (ap * d) * hdet
   · linear_combination (-1) * hdet
 
-theorem mennickeWord_mem
+lemma mennickeWord_mem
     (E : Subgroup (Matrix.SpecialLinearGroup (Fin 3) R))
     (hE : ContainsElementaryRoots E)
     (a ap b c d : R) (hdet : a * ap * d - b * c = 1)
@@ -5155,7 +5155,7 @@ theorem mennickeWord_mem
   unfold mennickeWord
   repeat' first | assumption | apply E.mul_mem | apply hE
 
-theorem mennicke_block_mem_of_factors
+lemma mennicke_block_mem_of_factors
     (E : Subgroup (Matrix.SpecialLinearGroup (Fin 3) R))
     (hE : ContainsElementaryRoots E)
     (a ap b c d : R) (hdet : a * ap * d - b * c = 1)
@@ -5175,7 +5175,7 @@ def mennickeRotation : Matrix.SpecialLinearGroup (Fin 3) R :=
     Matrix.SpecialLinearGroup.transvection
       (show (0 : Fin 3) ≠ 1 by decide) 1
 
-theorem mennickeRotation_mem
+lemma mennickeRotation_mem
     (E : Subgroup (Matrix.SpecialLinearGroup (Fin 3) R))
     (hE : ContainsElementaryRoots E) :
     mennickeRotation (R := R) ∈ E := by
@@ -5186,12 +5186,12 @@ theorem mennickeRotation_mem
       (hE 1 0 (by decide) (-1)))
     (hE 0 1 (by decide) 1)
 
-private theorem mennicke_source_det
+private lemma mennicke_source_det
     (a b c d : R) (hdet : a * d - b * c = 1) :
     a * d - (-c) * (-b) = 1 := by
   linear_combination hdet
 
-private theorem mennicke_target_det
+private lemma mennicke_target_det
     (a b c d : R) (hdet : a * d - b * c = 1) :
     d * a - b * c = 1 := by
   linear_combination hdet
@@ -5200,7 +5200,7 @@ set_option maxRecDepth 2048 in
 set_option maxHeartbeats 400000 in
 
 set_option backward.isDefEq.respectTransparency false in
-theorem mennickeBlock_rotation_conjugate
+lemma mennickeBlock_rotation_conjugate
     (a b c d : R) (hdet : a * d - b * c = 1) :
     mennickeRotation *
         mennickeBlock a (-c) (-b) d
@@ -5216,22 +5216,22 @@ theorem mennickeBlock_rotation_conjugate
       Matrix.SpecialLinearGroup.transvection_inv, Matrix.one_apply,
       Matrix.single_apply]
 
-theorem mennicke_swapped_left_factor_det
+lemma mennicke_swapped_left_factor_det
     (a ap b c d : R) (hdet : a * ap * d - b * c = 1) :
     (ap * d) * a - b * c = 1 := by
   linear_combination hdet
 
-theorem mennicke_swapped_right_factor_det
+lemma mennicke_swapped_right_factor_det
     (a ap b c d : R) (hdet : a * ap * d - b * c = 1) :
     (a * d) * ap - b * c = 1 := by
   linear_combination hdet
 
-theorem mennicke_swapped_target_det
+lemma mennicke_swapped_target_det
     (a ap b c d : R) (hdet : a * ap * d - b * c = 1) :
     d * (a * ap) - b * c = 1 := by
   linear_combination hdet
 
-theorem mennicke_swapped_block_mem_of_factors
+lemma mennicke_swapped_block_mem_of_factors
     (E : Subgroup (Matrix.SpecialLinearGroup (Fin 3) R))
     (hE : ContainsElementaryRoots E)
     (a ap b c d : R) (hdet : a * ap * d - b * c = 1)
@@ -5274,7 +5274,7 @@ noncomputable section
 
 open Polynomial
 
-theorem suslin_horrocks_truncated_remainder_aux
+lemma suslin_horrocks_truncated_remainder_aux
     {A : Type*} [CommRing A]
     (e : Polynomial A) (he0 : IsUnit (e.coeff 0))
     (hn : 0 < e.natDegree)
@@ -5333,12 +5333,12 @@ noncomputable section
 
 universe u
 
-theorem valuation_dvd_total
+lemma valuation_dvd_total
     {A : Type u} [CommRing A] [IsDomain A] [ValuationRing A]
     (a b : A) : a ∣ b ∨ b ∣ a :=
   ValuationRing.dvd_total a b
 
-theorem valuation_leadingCoeff_dvd_total
+lemma valuation_leadingCoeff_dvd_total
     {A : Type u} [CommRing A] [IsDomain A] [ValuationRing A]
     (f g : A[X]) :
     f.leadingCoeff ∣ g.leadingCoeff ∨
@@ -5353,7 +5353,7 @@ def shiftedLeadingCancellationQuotient (f g : A[X]) (c : A) : A[X] :=
   Polynomial.C c * Polynomial.X ^ (g.natDegree - f.natDegree)
 
 omit [IsDomain A] in
-@[simp] theorem shiftedLeadingCancellationQuotient_leadingCoeff
+@[simp] lemma shiftedLeadingCancellationQuotient_leadingCoeff
     (f g : A[X]) (c : A) :
     (shiftedLeadingCancellationQuotient f g c).leadingCoeff = c := by
   unfold shiftedLeadingCancellationQuotient
@@ -5361,21 +5361,21 @@ omit [IsDomain A] in
     (g.natDegree - f.natDegree)
 
 omit [IsDomain A] in
-theorem shiftedLeadingCancellationQuotient_natDegree
+lemma shiftedLeadingCancellationQuotient_natDegree
     (f g : A[X]) (c : A) (hc : c ≠ 0) :
     (shiftedLeadingCancellationQuotient f g c).natDegree =
       g.natDegree - f.natDegree := by
   unfold shiftedLeadingCancellationQuotient
   exact Polynomial.natDegree_C_mul_X_pow _ c hc
 
-theorem shiftedLeadingCancellationQuotient_ne_zero
+lemma shiftedLeadingCancellationQuotient_ne_zero
     (f g : A[X]) (c : A) (hc : c ≠ 0) :
     shiftedLeadingCancellationQuotient f g c ≠ 0 := by
   unfold shiftedLeadingCancellationQuotient
   exact mul_ne_zero (Polynomial.C_ne_zero.mpr hc)
     (pow_ne_zero _ Polynomial.X_ne_zero)
 
-theorem shiftedLeadingCancellationQuotient_mul_natDegree
+lemma shiftedLeadingCancellationQuotient_mul_natDegree
     (f g : A[X]) (hf : f ≠ 0)
     (hdeg : f.natDegree ≤ g.natDegree)
     (c : A) (hc : c ≠ 0) :
@@ -5386,7 +5386,7 @@ theorem shiftedLeadingCancellationQuotient_mul_natDegree
     shiftedLeadingCancellationQuotient_natDegree f g c hc]
   exact Nat.sub_add_cancel hdeg
 
-theorem degree_sub_shiftedLeadingCancellationQuotient_mul_lt
+lemma degree_sub_shiftedLeadingCancellationQuotient_mul_lt
     (f g : A[X]) (hf : f ≠ 0) (hg : g ≠ 0)
     (hdeg : f.natDegree ≤ g.natDegree)
     (c : A) (hc : g.leadingCoeff = f.leadingCoeff * c) :
@@ -5408,7 +5408,7 @@ theorem degree_sub_shiftedLeadingCancellationQuotient_mul_lt
       shiftedLeadingCancellationQuotient_leadingCoeff]
     exact hc.trans (mul_comm _ _)
 
-theorem natDegree_sub_shiftedLeadingCancellationQuotient_mul_lt
+lemma natDegree_sub_shiftedLeadingCancellationQuotient_mul_lt
     (f g : A[X]) (hf : f ≠ 0) (hg : g ≠ 0)
     (hdeg : f.natDegree ≤ g.natDegree)
     (hgpos : 0 < g.natDegree)
@@ -5441,25 +5441,25 @@ universe u
 
 variable {A : Type u} [CommRing A]
 
-theorem constant_factor_det
+lemma constant_factor_det
     (a : A) (s : ℕ) (r g p q : Polynomial A)
     (hdet : (C a * (X ^ s * r)) * q - g * p = 1) :
     C a * ((X ^ s * r) * q) - g * p = 1 := by
   linear_combination hdet
 
-theorem monomial_factor_det
+lemma monomial_factor_det
     (a : A) (s : ℕ) (r g p q : Polynomial A)
     (hdet : (C a * (X ^ s * r)) * q - g * p = 1) :
     X ^ s * (r * (C a * q)) - g * p = 1 := by
   linear_combination hdet
 
-theorem primitive_factor_det
+lemma primitive_factor_det
     (a : A) (s : ℕ) (r g p q : Polynomial A)
     (hdet : (C a * (X ^ s * r)) * q - g * p = 1) :
     r * (X ^ s * (C a * q)) - g * p = 1 := by
   linear_combination hdet
 
-theorem mennicke_block_mem_of_constant_monomial_primitive
+lemma mennicke_block_mem_of_constant_monomial_primitive
     (E : Subgroup (Matrix.SpecialLinearGroup (Fin 3) (Polynomial A)))
     (hE : ContainsElementaryRoots E)
     (a : A) (s : ℕ) (r g p q : Polynomial A)
@@ -5481,7 +5481,7 @@ theorem mennicke_block_mem_of_constant_monomial_primitive
     · exact hmonomial
     · exact hprimitive
 
-theorem elementaryThree_mennicke_block_mem_of_three_factors
+lemma elementaryThree_mennicke_block_mem_of_three_factors
     (a : A) (s : ℕ) (r g p q : Polynomial A)
     (hdet : (C a * (X ^ s * r)) * q - g * p = 1)
     (hconstant : mennickeBlock (C a) g p ((X ^ s * r) * q)
@@ -5509,7 +5509,7 @@ noncomputable section
 open Matrix
 open scoped BigOperators
 
-private theorem unitEntry_root_mem
+private lemma unitEntry_root_mem
     {R : Type*} [CommRing R]
     (i j : Fin 3) (h : i ≠ j) (r : R) :
     Matrix.SpecialLinearGroup.transvection h r ∈
@@ -5532,7 +5532,7 @@ private def unitEntry_diagonalUnitPair
     Matrix.SpecialLinearGroup.transvection
       (show (0 : Fin 3) ≠ 1 by decide) (-1)
 
-private theorem unitEntry_diagonalUnitPair_mem
+private lemma unitEntry_diagonalUnitPair_mem
     {R : Type*} [CommRing R] (a : Rˣ) :
     unitEntry_diagonalUnitPair a ∈
       StabilizedBlockReduction.elementaryThreeSubgroup R := by
@@ -5549,7 +5549,7 @@ private theorem unitEntry_diagonalUnitPair_mem
       (unitEntry_root_mem 1 0 (by decide) 1))
     (unitEntry_root_mem 0 1 (by decide) (-1))
 
-private theorem unitEntry_diagonalUnitPair_apply
+private lemma unitEntry_diagonalUnitPair_apply
     {R : Type*} [CommRing R] (a : Rˣ) (i j : Fin 3) :
     (unitEntry_diagonalUnitPair a) i j =
       if i = j then
@@ -5561,7 +5561,7 @@ private theorem unitEntry_diagonalUnitPair_apply
       Matrix.mul_apply, Fin.sum_univ_succ,
       Matrix.single_apply, Matrix.one_apply]
 
-theorem stabilizedTwoByTwo_mem_elementaryThree_of_topLeft_isUnit
+lemma stabilizedTwoByTwo_mem_elementaryThree_of_topLeft_isUnit
     {R : Type*} [CommRing R]
     (b : Matrix.SpecialLinearGroup (Fin 3) R)
     (hrow : ∀ j : Fin 3, b 2 j = if j = 2 then 1 else 0)
@@ -5626,7 +5626,7 @@ theorem stabilizedTwoByTwo_mem_elementaryThree_of_topLeft_isUnit
   exact (StabilizedBlockReduction.elementaryThreeSubgroup R).mul_mem
     ((StabilizedBlockReduction.elementaryThreeSubgroup R).mul_mem hl hd) hu'
 
-theorem mennickeBlock_mem_of_isUnit_topLeft
+lemma mennickeBlock_mem_of_isUnit_topLeft
     {R : Type*} [CommRing R]
     (a b c d : R) (hdet : a * d - b * c = 1) (ha : IsUnit a) :
     MennickeIdentity.mennickeBlock a b c d hdet ∈
@@ -5640,7 +5640,7 @@ theorem mennickeBlock_mem_of_isUnit_topLeft
   · exact ha
 
 set_option backward.isDefEq.respectTransparency false in
-theorem mennickeBlock_mem_of_isUnit_topRight
+lemma mennickeBlock_mem_of_isUnit_topRight
     {R : Type*} [CommRing R]
     (a b c d : R) (hdet : a * d - b * c = 1) (hb : IsUnit b) :
     MennickeIdentity.mennickeBlock a b c d hdet ∈
@@ -5694,7 +5694,7 @@ open MennickeIdentity StabilizedBlockReduction
 
 universe u
 
-theorem mennickeBlock_X_topRight_constant_isUnit
+lemma mennickeBlock_X_topRight_constant_isUnit
     {A : Type u} [CommRing A]
     (a g p : Polynomial A)
     (hdet : a * X - g * p = 1) :
@@ -5706,7 +5706,7 @@ theorem mennickeBlock_X_topRight_constant_isUnit
   refine ⟨-(p.coeff 0), ?_⟩
   simpa [mul_neg] using hproduct
 
-theorem mennickeBlock_X_constant_shear_det
+lemma mennickeBlock_X_constant_shear_det
     {A : Type u} [CommRing A]
     (a g p : Polynomial A)
     (hdet : a * X - g * p = 1) :
@@ -5718,7 +5718,7 @@ set_option maxRecDepth 2048 in
 set_option maxHeartbeats 400000 in
 
 set_option backward.isDefEq.respectTransparency false in
-theorem mennickeBlock_X_constant_shear_mul
+lemma mennickeBlock_X_constant_shear_mul
     {A : Type u} [CommRing A]
     (a g p : Polynomial A)
     (hdet : a * X - g * p = 1) :
@@ -5738,7 +5738,7 @@ theorem mennickeBlock_X_constant_shear_mul
   · have hdivide := Polynomial.divX_mul_X_add g
     linear_combination hdivide
 
-theorem mennickeBlock_X_mem
+lemma mennickeBlock_X_mem
     {A : Type u} [CommRing A]
     (a g p : Polynomial A)
     (hdet : a * X - g * p = 1) :
@@ -5764,7 +5764,7 @@ theorem mennickeBlock_X_mem
   exact (elementaryThreeSubgroup (Polynomial A)).mul_mem_cancel_left
     hroot |>.mp hnormalized
 
-theorem mennickeBlock_mem_of_isUnit_bottomRight
+lemma mennickeBlock_mem_of_isUnit_bottomRight
     {R : Type*} [CommRing R]
     (a b c d : R) (hdet : a * d - b * c = 1) (hd : IsUnit d) :
     mennickeBlock a b c d hdet ∈
@@ -5786,7 +5786,7 @@ theorem mennickeBlock_mem_of_isUnit_bottomRight
   have hmem := E.mul_mem (E.mul_mem hJ hunit) (E.inv_mem hJ)
   simpa [J, hconjugate] using hmem
 
-theorem mennickeBlock_mem_of_bottomRight_X_pow
+lemma mennickeBlock_mem_of_bottomRight_X_pow
     {A : Type u} [CommRing A]
     (a b c : Polynomial A) (n : ℕ)
     (hdet : a * (Polynomial.X : Polynomial A) ^ n - b * c = 1) :
@@ -5825,7 +5825,7 @@ theorem mennickeBlock_mem_of_bottomRight_X_pow
         hleft hright
       simpa [pow_succ, mul_comm] using htarget
 
-theorem mennickeBlock_mem_of_topLeft_X_pow
+lemma mennickeBlock_mem_of_topLeft_X_pow
     {A : Type u} [CommRing A]
     (n : ℕ) (b c d : Polynomial A)
     (hdet : (Polynomial.X : Polynomial A) ^ n * d - b * c = 1) :
@@ -5870,7 +5870,7 @@ def suslinSignedSwap : Matrix.SpecialLinearGroup (Fin 2) R :=
     Matrix.SpecialLinearGroup.transvection
       (show (0 : Fin 2) ≠ 1 by decide) 1
 
-theorem suslin_stabilized_signedSwap_mem :
+lemma suslin_stabilized_signedSwap_mem :
     stabilizedTwoHom (suslinSignedSwap (R := R)) ∈
       elementaryThreeSubgroup R := by
   unfold suslinSignedSwap
@@ -5881,7 +5881,7 @@ theorem suslin_stabilized_signedSwap_mem :
       (stabilizedTwoHom_transvection_mem 1 0 (by decide) (-1)))
     (stabilizedTwoHom_transvection_mem 0 1 (by decide) 1)
 
-theorem suslinSignedSwap_inv_eq :
+lemma suslinSignedSwap_inv_eq :
     (suslinSignedSwap (R := R))⁻¹ =
       Matrix.SpecialLinearGroup.transvection
           (show (0 : Fin 2) ≠ 1 by decide) (-1) *
@@ -5891,64 +5891,64 @@ theorem suslinSignedSwap_inv_eq :
           (show (0 : Fin 2) ≠ 1 by decide) (-1) := by
   simp [suslinSignedSwap, Matrix.SpecialLinearGroup.transvection_inv, mul_assoc]
 
-@[simp] theorem suslinSignedSwap_zero_zero : suslinSignedSwap (R := R) 0 0 = 0 := by
+@[simp] lemma suslinSignedSwap_zero_zero : suslinSignedSwap (R := R) 0 0 = 0 := by
   simp [suslinSignedSwap, Matrix.mul_apply, Fin.sum_univ_succ,
     Matrix.SpecialLinearGroup.transvection_coe, Matrix.one_apply,
     Matrix.single_apply]
 
-@[simp] theorem suslinSignedSwap_zero_one : suslinSignedSwap (R := R) 0 1 = 1 := by
+@[simp] lemma suslinSignedSwap_zero_one : suslinSignedSwap (R := R) 0 1 = 1 := by
   simp [suslinSignedSwap, Matrix.mul_apply, Fin.sum_univ_succ,
     Matrix.SpecialLinearGroup.transvection_coe, Matrix.one_apply,
     Matrix.single_apply]
 
-@[simp] theorem suslinSignedSwap_one_zero : suslinSignedSwap (R := R) 1 0 = -1 := by
+@[simp] lemma suslinSignedSwap_one_zero : suslinSignedSwap (R := R) 1 0 = -1 := by
   simp [suslinSignedSwap, Matrix.mul_apply,
     Matrix.SpecialLinearGroup.transvection_coe, Matrix.one_apply,
     Matrix.single_apply]
 
-@[simp] theorem suslinSignedSwap_one_one : suslinSignedSwap (R := R) 1 1 = 0 := by
+@[simp] lemma suslinSignedSwap_one_one : suslinSignedSwap (R := R) 1 1 = 0 := by
   simp [suslinSignedSwap, Matrix.mul_apply, Fin.sum_univ_succ,
     Matrix.SpecialLinearGroup.transvection_coe, Matrix.one_apply,
     Matrix.single_apply]
 
-@[simp] theorem suslin_mul_signedSwap_zero_one
+@[simp] lemma suslin_mul_signedSwap_zero_one
     (b : Matrix.SpecialLinearGroup (Fin 2) R) :
     (b * suslinSignedSwap (R := R)) 0 1 = b 0 0 := by
   simp [Matrix.mul_apply, Fin.sum_univ_succ]
 
-@[simp] theorem suslin_mul_signedSwap_one_zero
+@[simp] lemma suslin_mul_signedSwap_one_zero
     (b : Matrix.SpecialLinearGroup (Fin 2) R) :
     (b * suslinSignedSwap (R := R)) 1 0 = -(b 1 1) := by
   simp [Matrix.mul_apply, Fin.sum_univ_succ]
 
-@[simp] theorem suslinSignedSwap_inv_zero_zero :
+@[simp] lemma suslinSignedSwap_inv_zero_zero :
     (suslinSignedSwap (R := R))⁻¹ 0 0 = 0 := by
   simp [suslinSignedSwap, Matrix.SpecialLinearGroup.transvection_inv,
     Matrix.mul_apply, Fin.sum_univ_succ,
     Matrix.SpecialLinearGroup.transvection_coe, Matrix.one_apply,
     Matrix.single_apply]
 
-@[simp] theorem suslinSignedSwap_inv_zero_one :
+@[simp] lemma suslinSignedSwap_inv_zero_one :
     (suslinSignedSwap (R := R))⁻¹ 0 1 = -1 := by
   simp [suslinSignedSwap, Matrix.SpecialLinearGroup.transvection_inv,
     Matrix.mul_apply, Fin.sum_univ_succ,
     Matrix.SpecialLinearGroup.transvection_coe, Matrix.one_apply,
     Matrix.single_apply]
 
-@[simp] theorem suslinSignedSwap_inv_one_zero :
+@[simp] lemma suslinSignedSwap_inv_one_zero :
     (suslinSignedSwap (R := R))⁻¹ 1 0 = 1 := by
   simp [suslinSignedSwap, Matrix.SpecialLinearGroup.transvection_inv,
     Matrix.mul_apply, Matrix.SpecialLinearGroup.transvection_coe, Matrix.one_apply,
     Matrix.single_apply]
 
-@[simp] theorem suslinSignedSwap_inv_one_one :
+@[simp] lemma suslinSignedSwap_inv_one_one :
     (suslinSignedSwap (R := R))⁻¹ 1 1 = 0 := by
   simp [suslinSignedSwap, Matrix.SpecialLinearGroup.transvection_inv,
     Matrix.mul_apply, Fin.sum_univ_succ,
     Matrix.SpecialLinearGroup.transvection_coe, Matrix.one_apply,
     Matrix.single_apply]
 
-@[simp] theorem suslinSignedSwap_conjugate_zero_one
+@[simp] lemma suslinSignedSwap_conjugate_zero_one
     (b : Matrix.SpecialLinearGroup (Fin 2) R) :
     (suslinSignedSwap (R := R) * b * (suslinSignedSwap (R := R))⁻¹) 0 1 =
       -(b 1 0) := by
@@ -5957,7 +5957,7 @@ theorem suslinSignedSwap_inv_eq :
     Matrix.SpecialLinearGroup.transvection_coe, Matrix.one_apply,
     Matrix.single_apply]
 
-@[simp] theorem suslinSignedSwap_conjugate_one_zero
+@[simp] lemma suslinSignedSwap_conjugate_one_zero
     (b : Matrix.SpecialLinearGroup (Fin 2) R) :
     (suslinSignedSwap (R := R) * b * (suslinSignedSwap (R := R))⁻¹) 1 0 =
       -(b 0 1) := by
@@ -5966,7 +5966,7 @@ theorem suslinSignedSwap_inv_eq :
     Matrix.SpecialLinearGroup.transvection_coe, Matrix.one_apply,
     Matrix.single_apply]
 
-theorem suslin_local_polynomial_specialLinear_constant_unit_dichotomy
+lemma suslin_local_polynomial_specialLinear_constant_unit_dichotomy
     {A : Type u} [CommRing A] [IsLocalRing A]
     (b : Matrix.SpecialLinearGroup (Fin 2) (Polynomial A)) :
     (IsUnit ((b 0 0).coeff 0) ∧ IsUnit ((b 1 1).coeff 0)) ∨
@@ -5993,7 +5993,7 @@ theorem suslin_local_polynomial_specialLinear_constant_unit_dichotomy
       ⟨isUnit_of_mul_isUnit_left hprod,
         isUnit_of_mul_isUnit_right hprod⟩
 
-theorem suslin_local_stabilizedTwo_unit_offdiag_normalization
+lemma suslin_local_stabilizedTwo_unit_offdiag_normalization
     {A : Type u} [CommRing A] [IsLocalRing A]
     (b : Matrix.SpecialLinearGroup (Fin 2) (Polynomial A)) :
     ∃ (b' : Matrix.SpecialLinearGroup (Fin 2) (Polynomial A))
@@ -6026,7 +6026,7 @@ open Polynomial
 
 universe u v
 
-theorem valuation_finset_exists_dvd_all
+lemma valuation_finset_exists_dvd_all
     {R : Type u} [CommRing R] [PreValuationRing R]
     {ι : Type v} (s : Finset ι) (x : ι → R)
     (hs : s.Nonempty) :
@@ -6052,7 +6052,7 @@ theorem valuation_finset_exists_dvd_all
         subst s
         exact ⟨a, by simp, by simp⟩
 
-theorem valuation_polynomial_exists_primitive_factor
+lemma valuation_polynomial_exists_primitive_factor
     {R : Type u} [CommRing R] [IsDomain R] [PreValuationRing R]
     (f : Polynomial R) (hf : f ≠ 0) :
     ∃ (c : R) (g : Polynomial R) (i : ℕ),
@@ -6089,7 +6089,7 @@ theorem valuation_polynomial_exists_primitive_factor
   refine ⟨c, g, i, hc, heq, hcoeff, hprimitive, ?_⟩
   rw [heq, Polynomial.natDegree_C_mul hc]
 
-theorem dvr_uniformizer_factor_with_classification
+lemma dvr_uniformizer_factor_with_classification
     {R : Type u} [CommRing R] [IsDomain R]
     [IsDiscreteValuationRing R]
     {ϖ : R} (hϖ : Irreducible ϖ)
@@ -6118,7 +6118,7 @@ open MennickeIdentity StabilizedBlockReduction
 universe u
 
 set_option backward.isDefEq.respectTransparency false in
-private theorem suslin_uniformizer_column_shear
+private lemma suslin_uniformizer_column_shear
     {R : Type u} [CommRing R]
     (a b c d r : R) (hdet : a * d - b * c = 1) :
     let hdet' : a * (d - r * c) - (b - r * a) * c = 1 := by
@@ -6136,7 +6136,7 @@ private theorem suslin_uniformizer_column_shear
       Matrix.mul_apply, Fin.sum_univ_succ, Matrix.one_apply,
       Matrix.single_apply] <;> ring
 
-theorem suslin_uniformizer_mennickeBlock_mem_elementary
+lemma suslin_uniformizer_mennickeBlock_mem_elementary
     {A : Type u} [CommRing A] [IsDomain A]
     [IsDiscreteValuationRing A]
     {π : A} (hπ : Irreducible π)
@@ -6194,13 +6194,13 @@ open StabilizedBlockReduction
 
 universe u
 
-theorem elementaryThree_containsElementaryRoots
+lemma elementaryThree_containsElementaryRoots
     (R : Type u) [CommRing R] :
     ContainsElementaryRoots (elementaryThreeSubgroup R) := by
   intro i j hij r
   exact Subgroup.subset_closure ⟨i, j, hij, r, rfl⟩
 
-theorem nonzero_eq_unit_mul_uniformizer_pow
+lemma nonzero_eq_unit_mul_uniformizer_pow
     {A : Type u} [CommRing A] [IsDomain A]
     [IsDiscreteValuationRing A]
     {π a : A} (hπ : Irreducible π) (ha : a ≠ 0) :
@@ -6209,7 +6209,7 @@ theorem nonzero_eq_unit_mul_uniformizer_pow
     dvr_uniformizer_factor_with_classification hπ ha
   exact ⟨n, u, hu⟩
 
-theorem mennickeBlock_mem_of_unit_mul_uniformizer_pow
+lemma mennickeBlock_mem_of_unit_mul_uniformizer_pow
     {A : Type u} [CommRing A] [IsDomain A]
     [IsDiscreteValuationRing A]
     {π : A} (_hπ : Irreducible π)
@@ -6279,7 +6279,7 @@ theorem mennickeBlock_mem_of_unit_mul_uniformizer_pow
       rw [hblocks]
       exact h
 
-theorem mennickeBlock_zero_constant_mem
+lemma mennickeBlock_zero_constant_mem
     {A : Type u} [CommRing A]
     (g p q : Polynomial A)
     (hdet : Polynomial.C (0 : A) * q - g * p = 1) :
@@ -6292,7 +6292,7 @@ theorem mennickeBlock_zero_constant_mem
   exact mennickeBlock_mem_of_isUnit_topRight
     (Polynomial.C (0 : A)) g p q hdet hg
 
-theorem mennickeBlock_constant_mem_of_uniformizer_case
+lemma mennickeBlock_constant_mem_of_uniformizer_case
     {A : Type u} [CommRing A] [IsDomain A]
     [IsDiscreteValuationRing A]
     {π : A} (hπ : Irreducible π)
@@ -6316,7 +6316,7 @@ theorem mennickeBlock_constant_mem_of_uniformizer_case
         (Polynomial.C (w : A)) b c d hdet'
         (Polynomial.isUnit_C.mpr w.isUnit)
 
-theorem mennickeBlock_constant_mem
+lemma mennickeBlock_constant_mem
     {A : Type u} [CommRing A] [IsDomain A]
     [IsDiscreteValuationRing A]
     (a : A) (g p q : Polynomial A)
@@ -6337,7 +6337,7 @@ noncomputable section
 
 open Polynomial
 
-theorem isUnit_sub_mul_of_isLocalRing
+lemma isUnit_sub_mul_of_isLocalRing
     {A : Type*} [CommRing A] [IsLocalRing A]
     {u c : A} (hu : IsUnit u) (hc : ¬ IsUnit c) (b : A) :
     IsUnit (u - c * b) := by
@@ -6348,7 +6348,7 @@ theorem isUnit_sub_mul_of_isLocalRing
   apply hsum
   simpa [sub_add_cancel] using hu
 
-theorem polynomial_valuation_coefficient_ascent
+lemma polynomial_valuation_coefficient_ascent
     {A : Type*} [CommRing A] [IsLocalRing A]
     (f g : Polynomial A) (c : A) (m : ℕ)
     (hdeg : f.natDegree < g.natDegree)
@@ -6430,13 +6430,13 @@ def valuationPrimitiveAscentStep
     f.leadingCoeff = c * g.leadingCoeff ∧
     f' = X ^ (g.natDegree - f.natDegree) * f - C c * g
 
-theorem polynomial_unit_coefficient_ascent_measure_lt
+lemma polynomial_unit_coefficient_ascent_measure_lt
     (degree m m' : ℕ)
     (hascent : m < m') (hbound : m' ≤ degree) :
     degree - m' < degree - m := by
   omega
 
-theorem valuation_primitive_ascent_terminates
+lemma valuation_primitive_ascent_terminates
     {A : Type*} [CommRing A] [IsDomain A] [ValuationRing A]
     (g f : Polynomial A) (m : ℕ)
     (hdeg : f.natDegree < g.natDegree)
@@ -6511,12 +6511,12 @@ universe u
 
 variable {R : Type u} [CommRing R]
 
-theorem mennicke_rowSecond_sub_det
+lemma mennicke_rowSecond_sub_det
     (a b c d q : R) (hdet : a * d - b * c = 1) :
     a * (d - q * b) - b * (c - q * a) = 1 := by
   linear_combination hdet
 
-theorem mennicke_columnFirst_sub_det
+lemma mennicke_columnFirst_sub_det
     (a b c d q : R) (hdet : a * d - b * c = 1) :
     (a - q * b) * d - b * (c - q * d) = 1 := by
   linear_combination hdet
@@ -6524,7 +6524,7 @@ theorem mennicke_columnFirst_sub_det
 set_option backward.isDefEq.respectTransparency false in
 set_option maxRecDepth 2048 in
 set_option maxHeartbeats 400000 in
-theorem mennickeBlock_rowSecond_sub_mul
+lemma mennickeBlock_rowSecond_sub_mul
     (a b c d q : R) (hdet : a * d - b * c = 1) :
     mennickeBlock a b (c - q * a) (d - q * b)
         (mennicke_rowSecond_sub_det a b c d q hdet) =
@@ -6541,7 +6541,7 @@ theorem mennickeBlock_rowSecond_sub_mul
 set_option backward.isDefEq.respectTransparency false in
 set_option maxRecDepth 2048 in
 set_option maxHeartbeats 400000 in
-theorem mennickeBlock_columnFirst_sub_mul
+lemma mennickeBlock_columnFirst_sub_mul
     (a b c d q : R) (hdet : a * d - b * c = 1) :
     mennickeBlock (a - q * b) b (c - q * d) d
         (mennicke_columnFirst_sub_det a b c d q hdet) =
@@ -6555,12 +6555,12 @@ theorem mennickeBlock_columnFirst_sub_mul
       Matrix.mul_apply, Fin.sum_univ_succ, Matrix.one_apply,
       Matrix.single_apply] <;> ring
 
-theorem elementaryThree_contains_roots :
+lemma elementaryThree_contains_roots :
     ContainsElementaryRoots (elementaryThreeSubgroup R) := by
   intro i j h r
   exact Subgroup.subset_closure ⟨i, j, h, r, rfl⟩
 
-theorem mennickeBlock_rowSecond_sub_mem_iff
+lemma mennickeBlock_rowSecond_sub_mem_iff
     (a b c d q : R) (hdet : a * d - b * c = 1) :
     mennickeBlock a b (c - q * a) (d - q * b)
         (mennicke_rowSecond_sub_det a b c d q hdet) ∈
@@ -6570,7 +6570,7 @@ theorem mennickeBlock_rowSecond_sub_mem_iff
   exact (elementaryThreeSubgroup R).mul_mem_cancel_left
     (elementaryThree_contains_roots 1 0 (by decide) (-q))
 
-theorem mennickeBlock_columnFirst_sub_mem_iff
+lemma mennickeBlock_columnFirst_sub_mem_iff
     (a b c d q : R) (hdet : a * d - b * c = 1) :
     mennickeBlock (a - q * b) b (c - q * d) d
         (mennicke_columnFirst_sub_det a b c d q hdet) ∈
@@ -6580,7 +6580,7 @@ theorem mennickeBlock_columnFirst_sub_mem_iff
   exact (elementaryThreeSubgroup R).mul_mem_cancel_right
     (elementaryThree_contains_roots 1 0 (by decide) (-q))
 
-theorem mennicke_ascent_row_det
+lemma mennicke_ascent_row_det
     {A : Type u} [CommRing A]
     (f g p q t r : Polynomial A) (s : ℕ)
     (hdet : f * q - g * p = 1)
@@ -6589,7 +6589,7 @@ theorem mennicke_ascent_row_det
   rw [hq] at hdet
   linear_combination hdet
 
-theorem mennicke_ascent_good_det
+lemma mennicke_ascent_good_det
     {A : Type u} [CommRing A]
     (f g p q t r : Polynomial A) (s : ℕ) (c : A)
     (hdet : f * q - g * p = 1)
@@ -6599,7 +6599,7 @@ theorem mennicke_ascent_good_det
   have h := mennicke_ascent_row_det f g p q t r s hdet hq
   linear_combination h
 
-theorem mennicke_ascent_monic_det
+lemma mennicke_ascent_monic_det
     {A : Type u} [CommRing A]
     (f g p q t r : Polynomial A) (s : ℕ)
     (hdet : f * q - g * p = 1)
@@ -6608,7 +6608,7 @@ theorem mennicke_ascent_monic_det
   have h := mennicke_ascent_row_det f g p q t r s hdet hq
   linear_combination h
 
-theorem mennickeBlock_mem_of_primitive_ascent
+lemma mennickeBlock_mem_of_primitive_ascent
     {A : Type u} [CommRing A]
     (f g p q t r : Polynomial A) (s : ℕ) (c : A)
     (hdet : f * q - g * p = 1)
@@ -6683,7 +6683,7 @@ open StabilizedBlockReduction MennickeIdentity
 
 universe w
 
-private theorem scratch_shifted_remainder_alignment
+private lemma scratch_shifted_remainder_alignment
     {A : Type w} [CommRing A]
     (f g p q : Polynomial A)
     (hg0 : IsUnit (g.coeff 0))
@@ -6723,7 +6723,7 @@ universe u
 variable {A : Type u} [CommRing A] [IsDomain A]
 
 omit [IsDomain A] in
-theorem shiftedLeadingCancellationQuotient_coeff_zero
+lemma shiftedLeadingCancellationQuotient_coeff_zero
     (f g : Polynomial A) (c : A)
     (hdegree : f.natDegree < g.natDegree) :
     (shiftedLeadingCancellationQuotient f g c).coeff 0 = 0 := by
@@ -6736,7 +6736,7 @@ theorem shiftedLeadingCancellationQuotient_coeff_zero
   · rfl
 
 omit [IsDomain A] in
-theorem shiftedLeadingCancellation_remainder_coeff_zero
+lemma shiftedLeadingCancellation_remainder_coeff_zero
     (f g : Polynomial A) (c : A)
     (hdegree : f.natDegree < g.natDegree) :
     (g - shiftedLeadingCancellationQuotient f g c * f).coeff 0 =
@@ -6746,7 +6746,7 @@ theorem shiftedLeadingCancellation_remainder_coeff_zero
     zero_mul, sub_zero]
 
 omit [IsDomain A] in
-theorem secondColumnSub_det
+lemma secondColumnSub_det
     (f g p q t : Polynomial A)
     (hdet : f * q - g * p = 1) :
     f * (q - t * p) - (g - t * f) * p = 1 := by
@@ -6754,7 +6754,7 @@ theorem secondColumnSub_det
 
 omit [IsDomain A] in
 set_option backward.isDefEq.respectTransparency false in
-theorem mennickeBlock_secondColumnSub_mem_iff
+lemma mennickeBlock_secondColumnSub_mem_iff
     (f g p q t : Polynomial A)
     (hdet : f * q - g * p = 1) :
     mennickeBlock f g p q hdet ∈
@@ -6781,7 +6781,7 @@ theorem mennickeBlock_secondColumnSub_mem_iff
   rw [← hmul]
   exact (E.mul_mem_cancel_right hroot).symm
 
-theorem mennickeBlock_mem_of_dividing_outerIH
+lemma mennickeBlock_mem_of_dividing_outerIH
     (f g p q : Polynomial A)
     (hdet : f * q - g * p = 1)
     (hf : f ≠ 0)
@@ -6824,7 +6824,7 @@ open StabilizedBlockReduction MennickeIdentity
 
 universe w
 
-theorem valuationPrimitiveAscentStep_mennicke_transport_of_powers
+lemma valuationPrimitiveAscentStep_mennicke_transport_of_powers
     {A : Type w} [CommRing A]
     (g f f' p q : Polynomial A)
     (hstep : valuationPrimitiveAscentStep g f f')
@@ -6875,7 +6875,7 @@ open Matrix Polynomial MennickeIdentity StabilizedBlockReduction
 
 universe u
 
-theorem mennicke_transport_of_valuationPrimitiveAscentChain
+lemma mennicke_transport_of_valuationPrimitiveAscentChain
     {A : Type u} [CommRing A] [IsLocalRing A]
     (g : Polynomial A)
     (hstep : ∀ (f f' p q : Polynomial A)
@@ -6925,7 +6925,7 @@ theorem mennicke_transport_of_valuationPrimitiveAscentChain
       exact ⟨p₂, q₂, hdet₂, fun hfinal =>
         hback₁ (hback₂ hfinal)⟩
 
-theorem mennickeBlock_mem_of_valuation_primitive_outerIH
+lemma mennickeBlock_mem_of_valuation_primitive_outerIH
     {A : Type u} [CommRing A] [IsDomain A] [ValuationRing A]
     (f g p q : Polynomial A)
     (hdet : f * q - g * p = 1)
@@ -6968,14 +6968,14 @@ open MennickeIdentity
 
 universe u
 
-theorem mennickeBlock_columnSubtract_det
+lemma mennickeBlock_columnSubtract_det
     {R : Type u} [CommRing R]
     (f g p q t : R) (hdet : f * q - g * p = 1) :
     (f - t * g) * q - g * (p - t * q) = 1 := by
   linear_combination hdet
 
 set_option backward.isDefEq.respectTransparency false in
-theorem mennickeBlock_mul_columnSubtract
+lemma mennickeBlock_mul_columnSubtract
     {R : Type u} [CommRing R]
     (f g p q t : R) (hdet : f * q - g * p = 1) :
     mennickeBlock f g p q hdet *
@@ -6990,7 +6990,7 @@ theorem mennickeBlock_mul_columnSubtract
       Matrix.SpecialLinearGroup.transvection_coe,
       Matrix.one_apply, Matrix.single_apply] <;> ring
 
-theorem mennickeBlock_columnSubtract_mem_iff
+lemma mennickeBlock_columnSubtract_mem_iff
     {R : Type u} [CommRing R]
     (E : Subgroup (Matrix.SpecialLinearGroup (Fin 3) R))
     (hE : ContainsElementaryRoots E)
@@ -7010,7 +7010,7 @@ theorem mennickeBlock_columnSubtract_mem_iff
     have h' := E.mul_mem h (E.inv_mem hz)
     simpa [z, mul_assoc] using h'
 
-theorem mennickeBlock_shifted_det
+lemma mennickeBlock_shifted_det
     {A : Type u} [CommRing A]
     (f g p q f₁ t : Polynomial A) (s : ℕ)
     (hdet : f * q - g * p = 1)
@@ -7018,7 +7018,7 @@ theorem mennickeBlock_shifted_det
     (X ^ s * f₁) * q - g * (p - t * q) = 1 := by
   linear_combination hdet - q * hshift
 
-theorem mennickeBlock_shifted_mem_iff
+lemma mennickeBlock_shifted_mem_iff
     {A : Type u} [CommRing A]
     (E : Subgroup (Matrix.SpecialLinearGroup (Fin 3) (Polynomial A)))
     (hE : ContainsElementaryRoots E)
@@ -7043,7 +7043,7 @@ theorem mennickeBlock_shifted_mem_iff
   rw [hblock] at h
   exact h
 
-theorem exists_mennickeBlock_shifted_remainder
+lemma exists_mennickeBlock_shifted_remainder
     {A : Type u} [CommRing A]
     (E : Subgroup (Matrix.SpecialLinearGroup (Fin 3) (Polynomial A)))
     (hE : ContainsElementaryRoots E)
@@ -7073,7 +7073,7 @@ open StabilizedBlockReduction
 
 universe u
 
-theorem stabilizedTwoHom_eq_mennickeBlock
+lemma stabilizedTwoHom_eq_mennickeBlock
     {A : Type u} [CommRing A]
     (b : Matrix.SpecialLinearGroup (Fin 2) A) :
     stabilizedTwoHom b =
@@ -7096,7 +7096,7 @@ theorem stabilizedTwoHom_eq_mennickeBlock
   · exact stabilizedTwoHom_two_castSucc b 1
   · exact stabilizedTwoHom_two_two b
 
-theorem valuation_mennicke_outer_induction
+lemma valuation_mennicke_outer_induction
     {A : Type u} [CommRing A] [IsDomain A]
     [IsDiscreteValuationRing A]
     (hmonomial : ∀ (s : ℕ) (g p q : Polynomial A)
@@ -7215,7 +7215,7 @@ theorem valuation_mennicke_outer_induction
     intro f g p q hdet hg₀
     exact hall g.natDegree f g p q rfl hdet hg₀
 
-theorem suslin_dvr_stabilized_two_mem_of_primitive
+lemma suslin_dvr_stabilized_two_mem_of_primitive
     {A : Type u} [CommRing A] [IsDomain A]
     [IsDiscreteValuationRing A]
     (hprimitive : ∀ (f g p q : Polynomial A)
@@ -7245,7 +7245,7 @@ theorem suslin_dvr_stabilized_two_mem_of_primitive
   rw [stabilizedTwoHom_eq_mennickeBlock]
   exact hcore _ _ _ _ _ hg
 
-theorem suslin_dvr_stabilized_two_mem
+lemma suslin_dvr_stabilized_two_mem
     {A : Type u} [CommRing A] [IsDomain A]
     [IsDiscreteValuationRing A]
     (b : Matrix.SpecialLinearGroup (Fin 2) (Polynomial A)) :
@@ -7259,7 +7259,7 @@ end
 
 noncomputable section
 
-theorem suslin_semilocalTriple_exists_coprime
+lemma suslin_semilocalTriple_exists_coprime
     {R : Type*} [CommRing R]
     (f g h : R)
     (hfinite :
@@ -7282,7 +7282,7 @@ theorem suslin_semilocalTriple_exists_coprime
     f (g + t * h)).mp ?_⟩
   simpa [q, map_add, map_mul] using htq
 
-theorem suslin_unimodularTriple_exists_coprime
+lemma suslin_unimodularTriple_exists_coprime
     {A : Type*} [CommRing A]
     (f g h : Polynomial A)
     (hfinite :
@@ -7299,7 +7299,7 @@ noncomputable section
 open Matrix Polynomial
 open StabilizedBlockReduction
 
-theorem elementaryThree_second_add_third
+lemma elementaryThree_second_add_third
     {R : Type*} [CommRing R] (v : Fin 3 → R) (t : R) :
     ∃ e : Matrix.SpecialLinearGroup (Fin 3) R,
       e ∈ elementaryThreeSubgroup R ∧
@@ -7312,7 +7312,7 @@ theorem elementaryThree_second_add_third
       1 2 0 (by decide) (by decide) t v
   · exact elementaryThree_transvection_smul_same 1 2 (by decide) t v
 
-theorem elementaryThree_reduce_of_coprime_second_add_third
+lemma elementaryThree_reduce_of_coprime_second_add_third
     {R : Type*} [CommRing R] (v : Fin 3 → R)
     (hpair : ∃ t : R, IsCoprime (v 0) (v 1 + t * v 2)) :
     ∃ e : Matrix.SpecialLinearGroup (Fin 3) R,
@@ -7325,7 +7325,7 @@ theorem elementaryThree_reduce_of_coprime_second_add_third
   exact ⟨q * p, (elementaryThreeSubgroup R).mul_mem hq hp,
     by simpa [mul_smul] using hqaction⟩
 
-theorem elementaryThree_reduce_of_semilocal_first_quotient
+lemma elementaryThree_reduce_of_semilocal_first_quotient
     {A : Type*} [CommRing A]
     (v : Fin 3 → Polynomial A) (hv : UnimodularRow v)
     (hfinite : {I : Ideal (Polynomial A ⧸
@@ -7342,7 +7342,7 @@ theorem elementaryThree_reduce_of_semilocal_first_quotient
     (suslin_unimodularTriple_exists_coprime
       (v 0) (v 1) (v 2) hfinite hrow)
 
-theorem dvr_elementaryThree_first_coordinate_one_add_uniformizer
+lemma dvr_elementaryThree_first_coordinate_one_add_uniformizer
     {A : Type*} [CommRing A] [IsDomain A] [IsDiscreteValuationRing A]
     {π : A} (hπ : Irreducible π)
     (v : Fin 3 → Polynomial A) (hv : UnimodularRow v) :
@@ -7362,7 +7362,7 @@ theorem dvr_elementaryThree_first_coordinate_one_add_uniformizer
       hπ ((e • v) 0) hfirst
   exact ⟨e, q, he, hq⟩
 
-theorem suslin_valuation_unimodular_three_elementary_reduce
+lemma suslin_valuation_unimodular_three_elementary_reduce
     {A : Type*} [CommRing A] [IsDomain A]
     [IsDiscreteValuationRing A]
     (v : Fin 3 → Polynomial A) (hv : UnimodularRow v) :
@@ -7407,7 +7407,7 @@ def lastRowClear
     Matrix.SpecialLinearGroup.transvection
       (show (2 : Fin 3) ≠ 1 by decide) (-(g 2 1))
 
-theorem lastRowClear_mem
+lemma lastRowClear_mem
     (g : Matrix.SpecialLinearGroup (Fin 3) R) :
     lastRowClear g ∈ elementaryThreeSubgroup R := by
   apply (elementaryThreeSubgroup R).mul_mem
@@ -7416,7 +7416,7 @@ theorem lastRowClear_mem
   · exact Subgroup.subset_closure
       ⟨2, 1, (by decide), -(g 2 1), rfl⟩
 
-theorem lastRowClear_mul_apply
+lemma lastRowClear_mul_apply
     (g : Matrix.SpecialLinearGroup (Fin 3) R)
     (hcolumn : ∀ i : Fin 3, g i 2 = if i = 2 then 1 else 0)
     (i j : Fin 3) :
@@ -7434,7 +7434,7 @@ theorem lastRowClear_mul_apply
     simp [Matrix.mul_transvection_apply_same,
       Matrix.mul_transvection_apply_of_ne, h0, h1, h2]
 
-theorem upperLeft_det_eq_one
+lemma upperLeft_det_eq_one
     (g : Matrix.SpecialLinearGroup (Fin 3) R)
     (hcolumn : ∀ i : Fin 3, g i 2 = if i = 2 then 1 else 0) :
     (g.val.submatrix Fin.castSucc Fin.castSucc).det = 1 := by
@@ -7454,7 +7454,7 @@ def upperLeftSpecialLinear
     upperLeft_det_eq_one g hcolumn⟩
 
 set_option backward.isDefEq.respectTransparency false in
-theorem lastColumn_block_decomposition
+lemma lastColumn_block_decomposition
     (g : Matrix.SpecialLinearGroup (Fin 3) R)
     (hcolumn : ∀ i : Fin 3, g i 2 = if i = 2 then 1 else 0) :
     g * lastRowClear g =
@@ -7465,7 +7465,7 @@ theorem lastColumn_block_decomposition
   cases i using Fin.lastCases <;> cases j using Fin.lastCases <;>
     simp [upperLeftSpecialLinear, Matrix.submatrix, hcolumn]
 
-theorem specialLinearThree_mem_of_lastColumnTransitivity_and_stabilizedTwo
+lemma specialLinearThree_mem_of_lastColumnTransitivity_and_stabilizedTwo
     (htrans : ∀ v : Fin 3 → R, UnimodularRow v →
       ∃ e : Matrix.SpecialLinearGroup (Fin 3) R,
         e ∈ elementaryThreeSubgroup R ∧
@@ -7510,11 +7510,11 @@ def elementary : Subgroup IGroup :=
     {g | ∃ (i j : Index) (h : i ≠ j) (a : ℤ),
       g = Matrix.SpecialLinearGroup.transvection h a}
 
-theorem transvection_mem (i j : Index) (h : i ≠ j) (a : ℤ) :
+lemma transvection_mem (i j : Index) (h : i ≠ j) (a : ℤ) :
     Matrix.SpecialLinearGroup.transvection h a ∈ elementary :=
   Subgroup.subset_closure ⟨i, j, h, a, rfl⟩
 
-theorem transvection_smul_same (i j : Index) (h : i ≠ j) (c : ℤ)
+lemma transvection_smul_same (i j : Index) (h : i ≠ j) (c : ℤ)
     (v : IVec) :
     (Matrix.SpecialLinearGroup.transvection h c • v) i = v i + c * v j := by
   change ((Matrix.SpecialLinearGroup.transvection h c).val *ᵥ v) i = _
@@ -7522,7 +7522,7 @@ theorem transvection_smul_same (i j : Index) (h : i ≠ j) (c : ℤ)
       Matrix.one_mulVec, Matrix.single_mulVec]
   simp
 
-theorem transvection_smul_other (i j k : Index) (h : i ≠ j)
+lemma transvection_smul_other (i j k : Index) (h : i ≠ j)
     (hk : k ≠ i) (c : ℤ) (v : IVec) :
     (Matrix.SpecialLinearGroup.transvection h c • v) k = v k := by
   change ((Matrix.SpecialLinearGroup.transvection h c).val *ᵥ v) k = _
@@ -7535,14 +7535,14 @@ def coordinateRotation (i j : Index) (h : i ≠ j) : IGroup :=
     Matrix.SpecialLinearGroup.transvection h.symm (-1) *
     Matrix.SpecialLinearGroup.transvection h 1
 
-theorem coordinateRotation_mem (i j : Index) (h : i ≠ j) :
+lemma coordinateRotation_mem (i j : Index) (h : i ≠ j) :
     coordinateRotation i j h ∈ elementary :=
   elementary.mul_mem
     (elementary.mul_mem (transvection_mem i j h 1)
       (transvection_mem j i h.symm (-1)))
     (transvection_mem i j h 1)
 
-theorem coordinateRotation_smul_left (i j : Index) (h : i ≠ j) (v : IVec) :
+lemma coordinateRotation_smul_left (i j : Index) (h : i ≠ j) (v : IVec) :
     (coordinateRotation i j h • v) i = v j := by
   simp only [coordinateRotation, mul_smul]
   rw [transvection_smul_same]
@@ -7552,7 +7552,7 @@ theorem coordinateRotation_smul_left (i j : Index) (h : i ≠ j) (v : IVec) :
   rw [transvection_smul_other i j j h h.symm]
   ring
 
-theorem coordinateRotation_smul_right (i j : Index) (h : i ≠ j) (v : IVec) :
+lemma coordinateRotation_smul_right (i j : Index) (h : i ≠ j) (v : IVec) :
     (coordinateRotation i j h • v) j = -v i := by
   simp only [coordinateRotation, mul_smul]
   rw [transvection_smul_other i j j h h.symm]
@@ -7561,7 +7561,7 @@ theorem coordinateRotation_smul_right (i j : Index) (h : i ≠ j) (v : IVec) :
   rw [transvection_smul_other i j j h h.symm]
   ring
 
-theorem coordinateRotation_smul_other (i j k : Index) (h : i ≠ j)
+lemma coordinateRotation_smul_other (i j k : Index) (h : i ≠ j)
     (hki : k ≠ i) (hkj : k ≠ j) (v : IVec) :
     (coordinateRotation i j h • v) k = v k := by
   simp only [coordinateRotation, mul_smul]
@@ -7573,12 +7573,12 @@ def euclideanStep (i j : Index) (h : i ≠ j) (a b : ℤ) : IGroup :=
   coordinateRotation i j h *
     Matrix.SpecialLinearGroup.transvection h.symm (-(b / a))
 
-theorem euclideanStep_mem (i j : Index) (h : i ≠ j) (a b : ℤ) :
+lemma euclideanStep_mem (i j : Index) (h : i ≠ j) (a b : ℤ) :
     euclideanStep i j h a b ∈ elementary :=
   elementary.mul_mem (coordinateRotation_mem i j h)
     (transvection_mem j i h.symm (-(b / a)))
 
-theorem euclideanStep_smul_left (i j : Index) (h : i ≠ j) (v : IVec) :
+lemma euclideanStep_smul_left (i j : Index) (h : i ≠ j) (v : IVec) :
     (euclideanStep i j h (v i) (v j) • v) i = v j % v i := by
   rw [euclideanStep, mul_smul, coordinateRotation_smul_left,
     transvection_smul_same]
@@ -7588,19 +7588,19 @@ theorem euclideanStep_smul_left (i j : Index) (h : i ≠ j) (v : IVec) :
     rw [← hd]
   ring
 
-theorem euclideanStep_smul_right (i j : Index) (h : i ≠ j) (v : IVec) :
+lemma euclideanStep_smul_right (i j : Index) (h : i ≠ j) (v : IVec) :
     (euclideanStep i j h (v i) (v j) • v) j = -(v i) := by
   rw [euclideanStep, mul_smul, coordinateRotation_smul_right,
     transvection_smul_other _ _ _ h.symm h]
 
-theorem euclideanStep_smul_other (i j k : Index) (h : i ≠ j)
+lemma euclideanStep_smul_other (i j k : Index) (h : i ≠ j)
     (hki : k ≠ i) (hkj : k ≠ j) (v : IVec) :
     (euclideanStep i j h (v i) (v j) • v) k = v k := by
   rw [euclideanStep, mul_smul,
     coordinateRotation_smul_other i j k h hki hkj,
     transvection_smul_other _ _ _ h.symm hkj]
 
-theorem pair_reduce (i j : Index) (h : i ≠ j) (v : IVec) :
+lemma pair_reduce (i j : Index) (h : i ≠ j) (v : IVec) :
     ∃ g : IGroup, g ∈ elementary ∧
       (g • v) j = 0 ∧
       (∀ k : Index, k ≠ i → k ≠ j → (g • v) k = v k) ∧
@@ -7675,7 +7675,7 @@ theorem pair_reduce (i j : Index) (h : i ≠ j) (v : IVec) :
           rw [hsz, hgfix z hzi hzj]
   exact hp (v i) (v j) v rfl rfl
 
-theorem first_column_reduce (A : IGroup) :
+lemma first_column_reduce (A : IGroup) :
     ∃ g : IGroup, g ∈ elementary ∧
       (g * A) 1 0 = 0 ∧ (g * A) 2 0 = 0 ∧ (g * A) 3 0 = 0 := by
   let v : IVec := fun i => A i 0
@@ -7700,7 +7700,7 @@ theorem first_column_reduce (A : IGroup) :
     dsimp [g]
     rw [mul_smul, mul_smul, hg₃3]
 
-theorem second_column_reduce (A : IGroup)
+lemma second_column_reduce (A : IGroup)
     (h₁₀ : A (1 : Index) 0 = 0)
     (h₂₀ : A (2 : Index) 0 = 0)
     (h₃₀ : A (3 : Index) 0 = 0) :
@@ -7743,7 +7743,7 @@ theorem second_column_reduce (A : IGroup)
     exact h₃₀
   exact ⟨p, hp, h10, h20, h30, h21, h31⟩
 
-theorem third_column_reduce (A : IGroup)
+lemma third_column_reduce (A : IGroup)
     (h10 : A 1 0 = 0) (h20 : A 2 0 = 0) (h30 : A 3 0 = 0)
     (h21 : A 2 1 = 0) (h31 : A 3 1 = 0) :
     ∃ p : IGroup, p ∈ elementary ∧
@@ -7774,7 +7774,7 @@ theorem third_column_reduce (A : IGroup)
     exact h31
   · exact hz32
 
-theorem fin_four_upperTriangular_of_six (A : IGroup)
+lemma fin_four_upperTriangular_of_six (A : IGroup)
     (h10 : A (1 : Index) 0 = 0)
     (h20 : A (2 : Index) 0 = 0)
     (h30 : A (3 : Index) 0 = 0)
@@ -7810,7 +7810,7 @@ theorem fin_four_upperTriangular_of_six (A : IGroup)
     · exact h31
     · exact h32
 
-theorem upper_triangularize (A : IGroup) :
+lemma upper_triangularize (A : IGroup) :
     ∃ g : IGroup, g ∈ elementary ∧
       ∀ i j : Index, j < i → (g * A) i j = 0 := by
   obtain ⟨p₀, hp₀, h10, h20, h30⟩ := first_column_reduce A
@@ -7828,7 +7828,7 @@ theorem upper_triangularize (A : IGroup) :
   exact fin_four_upperTriangular_of_six _
     h10'' h20'' h30'' h21' h31' h32
 
-theorem upperTriangular_diag_unit (g : IGroup)
+lemma upperTriangular_diag_unit (g : IGroup)
     (htri : ∀ i j : Index, j < i → g i j = 0) (i : Index) :
     g i i = 1 ∨ g i i = -1 := by
   have hblock : (g : Matrix Index Index ℤ).BlockTriangular id := by
@@ -7853,29 +7853,29 @@ theorem upperTriangular_diag_unit (g : IGroup)
 def signFlip (i j : Index) (h : i ≠ j) : IGroup :=
   coordinateRotation i j h * coordinateRotation i j h
 
-theorem signFlip_mem (i j : Index) (h : i ≠ j) :
+lemma signFlip_mem (i j : Index) (h : i ≠ j) :
     signFlip i j h ∈ elementary :=
   elementary.mul_mem (coordinateRotation_mem i j h)
     (coordinateRotation_mem i j h)
 
-theorem signFlip_smul_same_left (i j : Index) (h : i ≠ j) (v : IVec) :
+lemma signFlip_smul_same_left (i j : Index) (h : i ≠ j) (v : IVec) :
     (signFlip i j h • v) i = -v i := by
   rw [signFlip, mul_smul, coordinateRotation_smul_left,
     coordinateRotation_smul_right]
 
-theorem signFlip_smul_same_right (i j : Index) (h : i ≠ j) (v : IVec) :
+lemma signFlip_smul_same_right (i j : Index) (h : i ≠ j) (v : IVec) :
     (signFlip i j h • v) j = -v j := by
   rw [signFlip, mul_smul, coordinateRotation_smul_right,
     coordinateRotation_smul_left]
 
-theorem signFlip_smul_other (i j k : Index) (h : i ≠ j)
+lemma signFlip_smul_other (i j k : Index) (h : i ≠ j)
     (hki : k ≠ i) (hkj : k ≠ j) (v : IVec) :
     (signFlip i j h • v) k = v k := by
   rw [signFlip, mul_smul,
     coordinateRotation_smul_other i j k h hki hkj,
     coordinateRotation_smul_other i j k h hki hkj]
 
-theorem signFlip_mul_apply (i j : Index) (h : i ≠ j)
+lemma signFlip_mul_apply (i j : Index) (h : i ≠ j)
     (g : IGroup) (a b : Index) :
     (signFlip i j h * g) a b =
       if a = i ∨ a = j then -(g a b) else g a b := by
@@ -7888,7 +7888,7 @@ theorem signFlip_mul_apply (i j : Index) (h : i ≠ j)
       simp [signFlip_smul_same_right]
     · simp [hai, haj, signFlip_smul_other i j a h hai haj]
 
-theorem signFlip_preserves_upper (i j : Index) (h : i ≠ j)
+lemma signFlip_preserves_upper (i j : Index) (h : i ≠ j)
     (g : IGroup) (hg : ∀ a b : Index, b < a → g a b = 0) :
     ∀ a b : Index, b < a → (signFlip i j h * g) a b = 0 := by
   intro a b hab
@@ -7900,7 +7900,7 @@ def normalizeSigns (g : IGroup) : IGroup :=
     (if g 2 2 = -1 then signFlip 0 2 (by decide) else 1) *
     (if g 1 1 = -1 then signFlip 0 1 (by decide) else 1)
 
-theorem normalizeSigns_mem (g : IGroup) : normalizeSigns g ∈ elementary := by
+lemma normalizeSigns_mem (g : IGroup) : normalizeSigns g ∈ elementary := by
   unfold normalizeSigns
   apply elementary.mul_mem
   · apply elementary.mul_mem
@@ -7908,7 +7908,7 @@ theorem normalizeSigns_mem (g : IGroup) : normalizeSigns g ∈ elementary := by
     · split_ifs <;> simp [signFlip_mem]
   · split_ifs <;> simp [signFlip_mem]
 
-theorem normalizeSigns_preserves_upper (g : IGroup)
+lemma normalizeSigns_preserves_upper (g : IGroup)
     (hg : ∀ i j : Index, j < i → g i j = 0) :
     ∀ i j : Index, j < i → (normalizeSigns g * g) i j = 0 := by
   let f₁ : IGroup := if g 1 1 = -1 then signFlip 0 1 (by decide) else 1
@@ -7931,7 +7931,7 @@ theorem normalizeSigns_preserves_upper (g : IGroup)
     · simpa using h₂
   simpa [normalizeSigns, f₁, f₂, f₃, mul_assoc] using h₃
 
-theorem normalizeSigns_diag_one (g : IGroup)
+lemma normalizeSigns_diag_one (g : IGroup)
     (hg : ∀ i j : Index, j < i → g i j = 0) :
     ∀ i : Index, (normalizeSigns g * g) i i = 1 := by
   have h1 := upperTriangular_diag_unit g hg 1
@@ -7991,7 +7991,7 @@ theorem normalizeSigns_diag_one (g : IGroup)
       rcases h3 with h3 | h3 <;>
       simp [h1, h2, h3, signFlip_mul_apply]
 
-theorem upperUnitriangular_factorization (g : IGroup)
+lemma upperUnitriangular_factorization (g : IGroup)
     (hu : ∀ i j : Index, j < i → g i j = 0)
     (hd : ∀ i : Index, g i i = 1) :
     g =
@@ -8025,7 +8025,7 @@ theorem upperUnitriangular_factorization (g : IGroup)
       Matrix.single_apply, Matrix.one_apply,
       h00, h11, h22, h33, h10, h20, h21, h30, h31, h32]
 
-theorem upperUnitriangular_mem (g : IGroup)
+lemma upperUnitriangular_mem (g : IGroup)
     (hu : ∀ i j : Index, j < i → g i j = 0)
     (hd : ∀ i : Index, g i i = 1) :
     g ∈ elementary := by
@@ -8042,7 +8042,7 @@ theorem upperUnitriangular_mem (g : IGroup)
       (transvection_mem 0 2 (by decide) (g 0 2)))
     (transvection_mem 0 1 (by decide) (g 0 1))
 
-theorem elementary_eq_top : elementary = ⊤ := by
+lemma elementary_eq_top : elementary = ⊤ := by
   apply top_unique
   intro A _
   obtain ⟨p, hp, htri⟩ := upper_triangularize A
@@ -8062,11 +8062,11 @@ end
 
 section
 
-theorem integerElementaryGeneration : IntegerElementaryGeneration := by
+lemma integerElementaryGeneration : IntegerElementaryGeneration := by
   change IntegerElementaryProof.elementary = ⊤
   exact IntegerElementaryProof.elementary_eq_top
 
-theorem suslinElementaryGeneration_iff_relative :
+lemma suslinElementaryGeneration_iff_relative :
     SuslinElementaryGeneration ↔ SuslinRelativeElementaryGeneration := by
   rw [suslinElementaryGeneration_iff_base_and_relative]
   exact and_iff_right integerElementaryGeneration
@@ -8087,7 +8087,7 @@ def suslinAwayToLocalization (M : Submonoid A) (d : M) :
   IsLocalization.Away.lift (d : A)
     (IsLocalization.map_units (Localization M) d)
 
-@[simp] theorem suslinAwayToLocalization_algebraMap
+@[simp] lemma suslinAwayToLocalization_algebraMap
     (M : Submonoid A) (d : M) (a : A) :
     suslinAwayToLocalization M d
         (algebraMap A (Localization.Away (d : A)) a) =
@@ -8102,14 +8102,14 @@ def suslinAwayToProduct (M : Submonoid A) (d e : M) :
     (P := Localization.Away ((d * e : M) : A))
     (d : A) (e : A)
 
-@[simp] theorem suslinAwayToProduct_algebraMap
+@[simp] lemma suslinAwayToProduct_algebraMap
     (M : Submonoid A) (d e : M) (a : A) :
     suslinAwayToProduct M d e
         (algebraMap A (Localization.Away (d : A)) a) =
       algebraMap A (Localization.Away ((d * e : M) : A)) a :=
   IsLocalization.Away.awayToAwayRight_eq (d : A) (e : A) a
 
-theorem suslin_exists_away_eq_of_localization_eq
+lemma suslin_exists_away_eq_of_localization_eq
     (M : Submonoid A) (d : M)
     (x y : Localization.Away (d : A))
     (hxy : suslinAwayToLocalization M d x =
@@ -8161,14 +8161,14 @@ def suslinAwayMapOfDvd {r s : A} (hrs : r ∣ s) :
   IsLocalization.Away.lift r
     (IsLocalization.Away.isUnit_of_dvd s hrs)
 
-@[simp] theorem suslinAwayMapOfDvd_algebraMap
+@[simp] lemma suslinAwayMapOfDvd_algebraMap
     {r s : A} (hrs : r ∣ s) (a : A) :
     suslinAwayMapOfDvd hrs
         (algebraMap A (Localization.Away r) a) =
       algebraMap A (Localization.Away s) a :=
   IsLocalization.Away.lift_eq r _ a
 
-theorem suslinAwayMapOfDvd_comp_product
+lemma suslinAwayMapOfDvd_comp_product
     (M : Submonoid A) (d e E : M)
     (hden : ((d * e : M) : A) ∣ ((d * E : M) : A)) :
     (suslinAwayMapOfDvd hden).comp
@@ -8181,7 +8181,7 @@ theorem suslinAwayMapOfDvd_comp_product
     suslinAwayMapOfDvd_algebraMap,
     suslinAwayToProduct_algebraMap]
 
-theorem suslin_exists_away_finite_eq_of_localization_eq
+lemma suslin_exists_away_finite_eq_of_localization_eq
     (M : Submonoid A) (d : M)
     {ι : Type*} [Fintype ι]
     (x y : ι → Localization.Away (d : A))
@@ -8213,7 +8213,7 @@ theorem suslin_exists_away_finite_eq_of_localization_eq
   rw [hcomp] at hi
   exact hi
 
-theorem suslin_exists_away_specialLinear_eq_of_localization_eq
+lemma suslin_exists_away_specialLinear_eq_of_localization_eq
     (M : Submonoid A) (d : M)
     (x y : Matrix.SpecialLinearGroup Index
       (Polynomial (Localization.Away (d : A))))
@@ -8279,7 +8279,7 @@ universe u
 
 variable {A : Type u} [CommRing A]
 
-theorem suslin_exists_away_elementary_of_atPrime
+lemma suslin_exists_away_elementary_of_atPrime
     (m : Ideal A) [m.IsPrime]
     (g : Matrix.SpecialLinearGroup Index (Polynomial A))
     (hg : Matrix.SpecialLinearGroup.map
@@ -8363,7 +8363,7 @@ noncomputable section
 
 open scoped BigOperators
 
-theorem exists_powered_partition_of_unity
+lemma exists_powered_partition_of_unity
     {A : Type*} [CommRing A]
     {ι : Type*} [Fintype ι] (s : ι → A)
     (hcover : Ideal.span (Set.range s) = ⊤) (N : ℕ) :
@@ -8387,18 +8387,18 @@ def suslinPoweredPrefix
     (s c : ℕ → A) (N j : ℕ) : A :=
   ∑ i ∈ Finset.range j, c i * s i ^ N
 
-@[simp] theorem suslinPoweredPrefix_zero
+@[simp] lemma suslinPoweredPrefix_zero
     {A : Type*} [CommRing A] (s c : ℕ → A) (N : ℕ) :
     suslinPoweredPrefix s c N 0 = 0 := by
   simp [suslinPoweredPrefix]
 
-theorem suslinPoweredPrefix_succ
+lemma suslinPoweredPrefix_succ
     {A : Type*} [CommRing A] (s c : ℕ → A) (N j : ℕ) :
     suslinPoweredPrefix s c N (j + 1) =
       suslinPoweredPrefix s c N j + c j * s j ^ N := by
   simp [suslinPoweredPrefix, Finset.sum_range_succ]
 
-theorem suslin_reverse_telescope
+lemma suslin_reverse_telescope
     {G : Type*} [Group G] (f : ℕ → G) (n : ℕ) :
     (((List.range n).map fun j => f (j + 1) * (f j)⁻¹).reverse).prod =
       f n * (f 0)⁻¹ := by
@@ -8408,7 +8408,7 @@ theorem suslin_reverse_telescope
       simp [List.range_succ, List.map_append, List.reverse_append,
         ih, mul_assoc]
 
-theorem subgroup_mem_of_powered_partition_patches
+lemma subgroup_mem_of_powered_partition_patches
     {A : Type*} [CommRing A]
     {G : Type*} [Group G] (H : Subgroup G)
     (α : A → G) (hzero : α 0 = 1)
@@ -8443,19 +8443,19 @@ def suslinPolynomialDilate (a : ℤ) :
     IntegralSpecialLinearGroup →* IntegralSpecialLinearGroup :=
   Matrix.SpecialLinearGroup.map (suslinPolynomialDilationRingHom a)
 
-@[simp] theorem suslinPolynomialDilate_entry
+@[simp] lemma suslinPolynomialDilate_entry
     (a : ℤ) (g : IntegralSpecialLinearGroup) (i j : Index) :
     suslinPolynomialDilate a g i j =
       (g i j).eval₂ Polynomial.C (Polynomial.C a * Polynomial.X) := rfl
 
-@[simp] theorem suslinPolynomialDilate_one
+@[simp] lemma suslinPolynomialDilate_one
     (g : IntegralSpecialLinearGroup) :
     suslinPolynomialDilate 1 g = g := by
   apply Matrix.SpecialLinearGroup.ext
   intro i j
   simp [suslinPolynomialDilate_entry, Polynomial.eval₂_C_X]
 
-theorem suslinPolynomialDilate_zero
+lemma suslinPolynomialDilate_zero
     (g : IntegralSpecialLinearGroup) :
     suslinPolynomialDilate 0 g =
       suslinConstantSection (suslinEvaluation g) := by
@@ -8464,14 +8464,14 @@ theorem suslinPolynomialDilate_zero
   simp [suslinPolynomialDilate_entry, suslinConstantSection,
     suslinEvaluation, Polynomial.coeff_zero_eq_eval_zero]
 
-theorem suslinPolynomialDilate_zero_of_mem_augmentation
+lemma suslinPolynomialDilate_zero_of_mem_augmentation
     {g : IntegralSpecialLinearGroup} (hg : g ∈ suslinAugmentationKernel) :
     suslinPolynomialDilate 0 g = 1 := by
   rw [suslinPolynomialDilate_zero]
   rw [show suslinEvaluation g = 1 from hg]
   exact map_one _
 
-theorem suslin_augmentation_mem_elementary_of_powered_patches
+lemma suslin_augmentation_mem_elementary_of_powered_patches
     (g : IntegralSpecialLinearGroup)
     (hg : g ∈ suslinAugmentationKernel)
     (s c : ℕ → ℤ) (n N : ℕ)
@@ -8512,7 +8512,7 @@ def relativeZSubgroup (I : Ideal R) : Subgroup (SL R) :=
         Matrix.SpecialLinearGroup.transvection h b *
         (Matrix.SpecialLinearGroup.transvection h.symm a)⁻¹}
 
-theorem relativeZ_mem (I : Ideal R) (i j : Fin 4) (h : i ≠ j)
+lemma relativeZ_mem (I : Ideal R) (i j : Fin 4) (h : i ≠ j)
     (a b : R) (hb : b ∈ I) :
     Matrix.SpecialLinearGroup.transvection h.symm a *
         Matrix.SpecialLinearGroup.transvection h b *
@@ -8520,17 +8520,17 @@ theorem relativeZ_mem (I : Ideal R) (i j : Fin 4) (h : i ≠ j)
       relativeZSubgroup I :=
   Subgroup.subset_closure ⟨i, j, h, a, b, hb, rfl⟩
 
-theorem relativeRoot_mem_Z (I : Ideal R) (i j : Fin 4) (h : i ≠ j)
+lemma relativeRoot_mem_Z (I : Ideal R) (i j : Fin 4) (h : i ≠ j)
     (b : R) (hb : b ∈ I) :
     Matrix.SpecialLinearGroup.transvection h b ∈ relativeZSubgroup I := by
   simpa using relativeZ_mem I i j h 0 b hb
 
-theorem relativeRoot_mem_F (I : Ideal R) (i j : Fin 4) (h : i ≠ j)
+lemma relativeRoot_mem_F (I : Ideal R) (i j : Fin 4) (h : i ≠ j)
     (b : R) (hb : b ∈ I) :
     Matrix.SpecialLinearGroup.transvection h b ∈ relativeRootSubgroup I :=
   Subgroup.subset_closure ⟨i, j, h, b, hb, rfl⟩
 
-theorem conjugate_relative_root_mem_Z
+lemma conjugate_relative_root_mem_Z
     (I : Ideal R) (k l i j : Fin 4)
     (hkl : k ≠ l) (hij : i ≠ j)
     (a b : R) (hb : b ∈ I) :
@@ -8557,7 +8557,7 @@ theorem conjugate_relative_root_mem_Z
     · rw [suslin_transvection_conj_noncomposable hkl hij hli hjk a b]
       exact relativeRoot_mem_Z I i j hij b hb
 
-theorem conjugate_relative_root_mem_F_of_not_opposite
+lemma conjugate_relative_root_mem_F_of_not_opposite
     (I : Ideal R) (k l i j : Fin 4)
     (hkl : k ≠ l) (hij : i ≠ j)
     (a b : R) (hb : b ∈ I)
@@ -8583,7 +8583,7 @@ theorem conjugate_relative_root_mem_F_of_not_opposite
     · rw [suslin_transvection_conj_noncomposable hkl hij hli hjk a b]
       exact relativeRoot_mem_F I i j hij b hb
 
-theorem conjugate_relative_F_mem_Z
+lemma conjugate_relative_F_mem_Z
     (I : Ideal R) (k l : Fin 4) (hkl : k ≠ l) (a : R)
     {g : SL R} (hg : g ∈ relativeRootSubgroup I) :
     Matrix.SpecialLinearGroup.transvection hkl a * g *
@@ -8602,7 +8602,7 @@ theorem conjugate_relative_F_mem_Z
       have h := (relativeZSubgroup I).inv_mem ih
       simpa [mul_assoc] using h
 
-private theorem conjugate_Z_generator_of_commute_outer
+private lemma conjugate_Z_generator_of_commute_outer
     (I : Ideal R) (k l i j : Fin 4)
     (hkl : k ≠ l) (hij : i ≠ j)
     (c a b : R) (hb : b ∈ I)
@@ -8640,7 +8640,7 @@ private theorem conjugate_Z_generator_of_commute_outer
       _ = y * (x * z * x⁻¹) * y⁻¹ := by simp [mul_assoc]]
   exact hy
 
-theorem conjugate_mul_relative_root_mem_Z
+lemma conjugate_mul_relative_root_mem_Z
     (I : Ideal R) (k l m n i j : Fin 4)
     (hkl : k ≠ l) (hmn : m ≠ n) (hij : i ≠ j)
     (a c b : R) (hb : b ∈ I)
@@ -8661,7 +8661,7 @@ theorem conjugate_mul_relative_root_mem_Z
   have houter := conjugate_relative_F_mem_Z I k l hkl a hinner
   simpa [mul_assoc] using houter
 
-theorem hard_commutator_mem_relativeZ
+lemma hard_commutator_mem_relativeZ
     (I : Ideal R) (i j k : Fin 4)
     (hij : i ≠ j) (hik : i ≠ k) (hjk : j ≠ k)
     (a b c : R) (hb : b ∈ I) :
@@ -8715,7 +8715,7 @@ theorem hard_commutator_mem_relativeZ
   have h := (relativeZSubgroup I).mul_mem huv hconjInv
   simpa [mul_assoc] using h
 
-theorem conjugate_Z_generator_of_not_same_inner
+lemma conjugate_Z_generator_of_not_same_inner
     (I : Ideal R) (k l i j : Fin 4)
     (hkl : k ≠ l) (hij : i ≠ j)
     (c a b : R) (hb : b ∈ I)
@@ -8796,7 +8796,7 @@ theorem conjugate_Z_generator_of_not_same_inner
             hkl hij c a b hb hlj (Ne.symm hki)
             (fun h => hkj h.1)
 
-theorem suslin_bak_vavilov_opposite_conjugate_factor
+lemma suslin_bak_vavilov_opposite_conjugate_factor
     {ι : Type u} {A : Type v}
     [Fintype ι] [DecidableEq ι] [CommRing A]
     (i j k : ι) (hij : i ≠ j) (hjk : j ≠ k) (hik : i ≠ k)
@@ -8947,7 +8947,7 @@ theorem suslin_bak_vavilov_opposite_conjugate_factor
             simp [mul_assoc]
     _ = U * V * U⁻¹ * V⁻¹ := by rw [hxyu, hxyv]
 
-theorem conjugate_Z_generator
+lemma conjugate_Z_generator
     (I : Ideal R) (k l i j : Fin 4)
     (hkl : k ≠ l) (hij : i ≠ j)
     (c a b : R) (hb : b ∈ I) :
@@ -8970,7 +8970,7 @@ theorem conjugate_Z_generator
   · exact conjugate_Z_generator_of_not_same_inner
       I k l i j hkl hij c a b hb hsame
 
-theorem relativeZ_conjugate_by_root
+lemma relativeZ_conjugate_by_root
     (I : Ideal R) (k l : Fin 4) (hkl : k ≠ l) (c : R)
     {z : SL R} (hz : z ∈ relativeZSubgroup I) :
     Matrix.SpecialLinearGroup.transvection hkl c * z *
@@ -8989,7 +8989,7 @@ theorem relativeZ_conjugate_by_root
       have h := (relativeZSubgroup I).inv_mem ih
       simpa [mul_assoc] using h
 
-theorem elementary_le_normalizer_relativeZ (I : Ideal R) :
+lemma elementary_le_normalizer_relativeZ (I : Ideal R) :
     suslinElementarySubgroup (Fin 4) R ≤
       Subgroup.normalizer (relativeZSubgroup I : Set (SL R)) := by
   change Subgroup.closure _ ≤ _
@@ -9007,7 +9007,7 @@ theorem elementary_le_normalizer_relativeZ (I : Ideal R) :
     rw [← Matrix.SpecialLinearGroup.transvection_inv hij a] at h
     simpa [mul_assoc] using h
 
-theorem relativeZ_normalized_by_elementary
+lemma relativeZ_normalized_by_elementary
     (I : Ideal R) {g : SL R}
     (hg : g ∈ suslinElementarySubgroup (Fin 4) R)
     {z : SL R} (hz : z ∈ relativeZSubgroup I) :
@@ -9031,7 +9031,7 @@ def suslinPolynomialConstantRetraction (A : Type*) [CommRing A] :
   (Matrix.SpecialLinearGroup.map (Polynomial.C : A →+* Polynomial A)).comp
     (Matrix.SpecialLinearGroup.map (Polynomial.evalRingHom (0 : A)))
 
-@[simp] theorem suslinPolynomialConstantRetraction_transvection
+@[simp] lemma suslinPolynomialConstantRetraction_transvection
     (i j : Index) (hij : i ≠ j) (p : Polynomial A) :
     suslinPolynomialConstantRetraction A
         (Matrix.SpecialLinearGroup.transvection hij p) =
@@ -9046,12 +9046,12 @@ def suslinPolynomialConstantRetraction (A : Type*) [CommRing A] :
     specialLinear_map_transvection_baseChange]
   rfl
 
-@[simp] theorem suslinPolynomial_sub_C_eval_coeff_zero
+@[simp] lemma suslinPolynomial_sub_C_eval_coeff_zero
     (p : Polynomial A) :
     (p - Polynomial.C (p.eval 0)).coeff 0 = 0 := by
   simp [Polynomial.coeff_zero_eq_eval_zero]
 
-theorem suslinPolynomialRoot_deviation
+lemma suslinPolynomialRoot_deviation
     (i j : Index) (hij : i ≠ j) (p : Polynomial A) :
     Matrix.SpecialLinearGroup.transvection hij p *
         (suslinPolynomialConstantRetraction A
@@ -9062,7 +9062,7 @@ theorem suslinPolynomialRoot_deviation
     Matrix.SpecialLinearGroup.transvection_inv,
     ← Matrix.SpecialLinearGroup.transvection_add, sub_eq_add_neg]
 
-theorem suslinElementary_deviation_mem_of_normalized
+lemma suslinElementary_deviation_mem_of_normalized
     (H : Subgroup (Matrix.SpecialLinearGroup Index (Polynomial A)))
     (hroot : ∀ (i j : Index) (hij : i ≠ j) (p : Polynomial A),
       p.coeff 0 = 0 → Matrix.SpecialLinearGroup.transvection hij p ∈ H)
@@ -9099,7 +9099,7 @@ theorem suslinElementary_deviation_mem_of_normalized
         hnormal x⁻¹ hxe _ (H.inv_mem ih)
       simpa [map_inv, mul_assoc] using hc
 
-theorem suslinRelativePolynomialKernel_le_of_normalized
+lemma suslinRelativePolynomialKernel_le_of_normalized
     (H : Subgroup (Matrix.SpecialLinearGroup Index (Polynomial A)))
     (hroot : ∀ (i j : Index) (hij : i ≠ j) (p : Polynomial A),
       p.coeff 0 = 0 → Matrix.SpecialLinearGroup.transvection hij p ∈ H)
@@ -9121,7 +9121,7 @@ theorem suslinRelativePolynomialKernel_le_of_normalized
     rw [hzero, map_one]
   simpa [hretract] using hdev
 
-theorem suslin_relative_elementary_mem_eventual
+lemma suslin_relative_elementary_mem_eventual
     {B : Type v} [CommRing B] [Algebra A B]
     (M : Submonoid A) [IsLocalization M B]
     {g : Matrix.SpecialLinearGroup Index (Polynomial B)}
@@ -9161,7 +9161,7 @@ theorem suslin_relative_elementary_mem_eventual
     exact suslin_polynomial_relative_z_mem_eventual M i j hij a p hpzero
   exact hle hZ
 
-theorem exists_localization_dilated_relative_elementary_word_lift
+lemma exists_localization_dilated_relative_elementary_word_lift
     {B : Type v} [CommRing B] [Algebra A B]
     (M : Submonoid A) [IsLocalization M B]
     (g : Matrix.SpecialLinearGroup Index (Polynomial B))
@@ -9186,7 +9186,7 @@ def suslinSymbolicLift (g : IntegralSpecialLinearGroup) :
   Matrix.SpecialLinearGroup.map
     (Polynomial.mapRingHom (Polynomial.C : ℤ →+* Polynomial ℤ)) g
 
-@[simp] theorem suslinSymbolicLift_eval
+@[simp] lemma suslinSymbolicLift_eval
     (a : ℤ) (g : IntegralSpecialLinearGroup) :
     Matrix.SpecialLinearGroup.map
         (Polynomial.mapRingHom (Polynomial.evalRingHom a))
@@ -9203,7 +9203,7 @@ def suslinSymbolicLift (g : IntegralSpecialLinearGroup) :
     simp
   rw [h, Polynomial.map_id]
 
-theorem suslinSymbolicDifference_eval
+lemma suslinSymbolicDifference_eval
     (a : ℤ) (g : IntegralSpecialLinearGroup) :
     Matrix.SpecialLinearGroup.map
         (Polynomial.mapRingHom
@@ -9214,14 +9214,14 @@ theorem suslinSymbolicDifference_eval
   rw [suslinDifferencePath_baseChange]
   simp [suslinSymbolicLift_eval]
 
-theorem suslinSymbolicDifferenceDilation_integer
+lemma suslinSymbolicDifferenceDilation_integer
     (a : ℤ) (g : IntegralSpecialLinearGroup) :
     suslinDifferenceDilation a g = suslinPolynomialDilate a g := by
   apply Matrix.SpecialLinearGroup.ext
   intro i j
   rfl
 
-theorem suslinSymbolic_outer_dilation_eval_mul_X
+lemma suslinSymbolic_outer_dilation_eval_mul_X
     (c d : ℤ) :
     (Polynomial.evalRingHom
         (Polynomial.C c * (Polynomial.X : Polynomial ℤ))).comp
@@ -9235,7 +9235,7 @@ theorem suslinSymbolic_outer_dilation_eval_mul_X
   · simp [suslinDifferenceDilationRingHom, mul_assoc,
       mul_left_comm]
 
-theorem suslinSymbolicPoweredIncrement_of_elementary_dilation
+lemma suslinSymbolicPoweredIncrement_of_elementary_dilation
     (g : IntegralSpecialLinearGroup) (d : ℤ) (N : ℕ)
     (hpath :
       suslinDilation (Polynomial (Polynomial ℤ))
@@ -9337,7 +9337,7 @@ universe u v
 
 attribute [local instance] Polynomial.algebra
 
-theorem suslin_symbolic_double_denominator
+lemma suslin_symbolic_double_denominator
     (d : ℤ)
     (s : ((Submonoid.powers d).map
       (Polynomial.C : ℤ →+* Polynomial ℤ)).map
@@ -9353,7 +9353,7 @@ theorem suslin_symbolic_double_denominator
   refine ⟨N, hst.symm.trans ?_⟩
   rw [← htr, ← hNr]
 
-theorem suslin_uniform_symbolic_differencePath_elementary
+lemma suslin_uniform_symbolic_differencePath_elementary
     (g : IntegralSpecialLinearGroup) (d : ℤ) (hd : d ≠ 0)
     (hg : suslinAwayElementary g d) :
     ∃ N : ℕ,
@@ -9460,7 +9460,7 @@ theorem suslin_uniform_symbolic_differencePath_elementary
   rw [← hδ, ← hqeq]
   exact hq
 
-theorem suslin_away_elementary_implies_powered_local_increment
+lemma suslin_away_elementary_implies_powered_local_increment
     (g : IntegralSpecialLinearGroup) (d : ℤ)
     (hg : suslinAwayElementary g d) :
     ∃ N : ℕ, ∀ a c : ℤ,
@@ -9484,7 +9484,7 @@ noncomputable section
 
 open scoped BigOperators
 
-theorem suslin_augmentation_mem_elementary_of_finite_away_powered_increments
+lemma suslin_augmentation_mem_elementary_of_finite_away_powered_increments
     (g : IntegralSpecialLinearGroup)
     (hg : g ∈ suslinAugmentationKernel)
     (s : Finset ℤ)
@@ -9574,7 +9574,7 @@ theorem suslin_augmentation_mem_elementary_of_finite_away_powered_increments
   rw [hsn j hj, hcn j hj]
   exact hlocalFin ⟨j, hj⟩ (suslinPoweredPrefix sn cn N j)
 
-theorem suslinRelativeElementaryGeneration_of_maximal_away_powered_increments
+lemma suslinRelativeElementaryGeneration_of_maximal_away_powered_increments
     (hlocal : ∀ (g : IntegralSpecialLinearGroup),
       g ∈ suslinAugmentationKernel →
         ∀ (m : Ideal ℤ) [m.IsMaximal],
@@ -9595,7 +9595,7 @@ theorem suslinRelativeElementaryGeneration_of_maximal_away_powered_increments
     g hg s hspan
   exact fun d hd => hincrement g hg d (hs d hd)
 
-theorem suslinRelativeElementaryGeneration_of_maximal_local_powered_increments
+lemma suslinRelativeElementaryGeneration_of_maximal_local_powered_increments
     (hlocal : ∀ (g : IntegralSpecialLinearGroup),
       g ∈ suslinAugmentationKernel →
         ∀ (m : Ideal ℤ) [m.IsMaximal],
@@ -9617,7 +9617,7 @@ theorem suslinRelativeElementaryGeneration_of_maximal_local_powered_increments
   intro g hg m inst
   exact suslin_exists_away_elementary_of_atPrime m g (hlocal g hg m)
 
-theorem suslinRelativeElementaryGeneration_of_maximal_local_elementary
+lemma suslinRelativeElementaryGeneration_of_maximal_local_elementary
     (hlocal : ∀ (g : IntegralSpecialLinearGroup),
       g ∈ suslinAugmentationKernel →
         ∀ (m : Ideal ℤ) [m.IsMaximal],
@@ -9645,7 +9645,7 @@ def cornulierRoot (i j : Index) (h : i ≠ j)
   ⟨Matrix.SpecialLinearGroup.transvection h a,
     Subgroup.subset_closure ⟨i, j, h, a, rfl⟩⟩
 
-@[simp] theorem cornulierRoot_val (i j : Index) (h : i ≠ j)
+@[simp] lemma cornulierRoot_val (i j : Index) (h : i ≠ j)
     (a : IntegralPolynomial) :
     (cornulierRoot i j h a).val =
       Matrix.SpecialLinearGroup.transvection h a := rfl
@@ -9660,17 +9660,17 @@ def cornulierK₂ : Subgroup integralElementaryGroup :=
     {g | ∃ (j : Index) (h : cornulierLast ≠ j)
       (a : IntegralPolynomial), g = cornulierRoot cornulierLast j h a}
 
-theorem cornulierRoot_mem_K₁ (i : Index) (h : i ≠ cornulierLast)
+lemma cornulierRoot_mem_K₁ (i : Index) (h : i ≠ cornulierLast)
     (a : IntegralPolynomial) :
     cornulierRoot i cornulierLast h a ∈ cornulierK₁ :=
   Subgroup.subset_closure ⟨i, h, a, rfl⟩
 
-theorem cornulierRoot_mem_K₂ (j : Index) (h : cornulierLast ≠ j)
+lemma cornulierRoot_mem_K₂ (j : Index) (h : cornulierLast ≠ j)
     (a : IntegralPolynomial) :
     cornulierRoot cornulierLast j h a ∈ cornulierK₂ :=
   Subgroup.subset_closure ⟨j, h, a, rfl⟩
 
-theorem cornulierRoot_mem_K₁_sup_K₂
+lemma cornulierRoot_mem_K₁_sup_K₂
     (i j : Index) (hij : i ≠ j) (a : IntegralPolynomial) :
     cornulierRoot i j hij a ∈ cornulierK₁ ⊔ cornulierK₂ := by
   by_cases hi : i = cornulierLast
@@ -9706,7 +9706,7 @@ theorem cornulierRoot_mem_K₁_sup_K₂
   rw [← hroot]
   exact hcomm
 
-theorem cornulierK₁_sup_cornulierK₂_eq_top :
+lemma cornulierK₁_sup_cornulierK₂_eq_top :
     cornulierK₁ ⊔ cornulierK₂ = ⊤ := by
   let S : Subgroup integralElementaryGroup := cornulierK₁ ⊔ cornulierK₂
   have hcover : integralElementarySubgroup ≤
@@ -9769,14 +9769,14 @@ def CornulierBoundedFactorization : Prop :=
     ∃ (y₂ : integralElementaryGroup), y₂ ∈ cornulierK₂ ∧
       g = x₁ * x₂ * y₁ * b * y₂
 
-theorem cornulier_conjugate_single_apply
+lemma cornulier_conjugate_single_apply
     (g : IntegralSpecialLinearGroup)
     (i j p q : Index) (a : IntegralPolynomial) :
     (g.val * Matrix.single i j a * (g⁻¹).val) p q =
       g p i * a * (g⁻¹) j q := by
   simp [Matrix.mul_apply, Matrix.single_apply, mul_ite, ite_and, mul_assoc]
 
-theorem cornulier_conjugate_root_apply
+lemma cornulier_conjugate_root_apply
     (g : IntegralSpecialLinearGroup)
     (i j : Index) (hij : i ≠ j) (a : IntegralPolynomial)
     (p q : Index) :
@@ -9797,7 +9797,7 @@ def cornulierColumnRootProduct (v : Index → IntegralPolynomial) :
     cornulierRoot 1 cornulierLast (by decide) (v 1) *
     cornulierRoot 2 cornulierLast (by decide) (v 2)
 
-theorem cornulierColumnRootProduct_mem (v : Index → IntegralPolynomial) :
+lemma cornulierColumnRootProduct_mem (v : Index → IntegralPolynomial) :
     cornulierColumnRootProduct v ∈ cornulierK₁ := by
   exact cornulierK₁.mul_mem
     (cornulierK₁.mul_mem
@@ -9805,7 +9805,7 @@ theorem cornulierColumnRootProduct_mem (v : Index → IntegralPolynomial) :
       (cornulierRoot_mem_K₁ 1 (by decide) (v 1)))
     (cornulierRoot_mem_K₁ 2 (by decide) (v 2))
 
-theorem cornulierColumnRootProduct_apply (v : Index → IntegralPolynomial)
+lemma cornulierColumnRootProduct_apply (v : Index → IntegralPolynomial)
     (p q : Index) :
     (cornulierColumnRootProduct v).val p q =
       (if p = q then 1 else 0) +
@@ -9830,7 +9830,7 @@ def cornulierRowRootProduct (v : Index → IntegralPolynomial) :
     cornulierRoot cornulierLast 1 (by decide) (v 1) *
     cornulierRoot cornulierLast 2 (by decide) (v 2)
 
-theorem cornulierRowRootProduct_mem (v : Index → IntegralPolynomial) :
+lemma cornulierRowRootProduct_mem (v : Index → IntegralPolynomial) :
     cornulierRowRootProduct v ∈ cornulierK₂ := by
   exact cornulierK₂.mul_mem
     (cornulierK₂.mul_mem
@@ -9838,7 +9838,7 @@ theorem cornulierRowRootProduct_mem (v : Index → IntegralPolynomial) :
       (cornulierRoot_mem_K₂ 1 (by decide) (v 1)))
     (cornulierRoot_mem_K₂ 2 (by decide) (v 2))
 
-theorem cornulierRowRootProduct_apply (v : Index → IntegralPolynomial)
+lemma cornulierRowRootProduct_apply (v : Index → IntegralPolynomial)
     (p q : Index) :
     (cornulierRowRootProduct v).val p q =
       (if p = q then 1 else 0) +
@@ -9858,7 +9858,7 @@ theorem cornulierRowRootProduct_apply (v : Index → IntegralPolynomial)
       Matrix.mul_apply, Fin.sum_univ_succ,
       Matrix.single_apply, Matrix.one_apply]
 
-theorem cornulier_conjugate_K₁_root_mem
+lemma cornulier_conjugate_K₁_root_mem
     (h : integralElementaryGroup) (hh : h ∈ cornulierH)
     (i : Index) (hi : i ≠ cornulierLast) (a : IntegralPolynomial) :
     h * cornulierRoot i cornulierLast hi a * h⁻¹ ∈ cornulierK₁ := by
@@ -9890,7 +9890,7 @@ theorem cornulier_conjugate_K₁_root_mem
   rw [heq]
   exact cornulierColumnRootProduct_mem v
 
-theorem cornulier_conjugate_K₂_root_mem
+lemma cornulier_conjugate_K₂_root_mem
     (h : integralElementaryGroup) (hh : h ∈ cornulierH)
     (j : Index) (hj : cornulierLast ≠ j) (a : IntegralPolynomial) :
     h * cornulierRoot cornulierLast j hj a * h⁻¹ ∈ cornulierK₂ := by
@@ -9922,7 +9922,7 @@ theorem cornulier_conjugate_K₂_root_mem
   rw [heq]
   exact cornulierRowRootProduct_mem v
 
-theorem cornulier_conjugate_K₁_mem
+lemma cornulier_conjugate_K₁_mem
     (h : integralElementaryGroup) (hh : h ∈ cornulierH)
     (k : integralElementaryGroup) (hk : k ∈ cornulierK₁) :
     h * k * h⁻¹ ∈ cornulierK₁ := by
@@ -9936,7 +9936,7 @@ theorem cornulier_conjugate_K₁_mem
     exact cornulier_conjugate_K₁_root_mem h hh i hi a
   exact hle hk
 
-theorem cornulier_conjugate_K₂_mem
+lemma cornulier_conjugate_K₂_mem
     (h : integralElementaryGroup) (hh : h ∈ cornulierH)
     (k : integralElementaryGroup) (hk : k ∈ cornulierK₂) :
     h * k * h⁻¹ ∈ cornulierK₂ := by
@@ -9950,7 +9950,7 @@ theorem cornulier_conjugate_K₂_mem
     exact cornulier_conjugate_K₂_root_mem h hh j hj a
   exact hle hk
 
-theorem cornulierH_le_normalizer_K₁ :
+lemma cornulierH_le_normalizer_K₁ :
     cornulierH ≤ Subgroup.normalizer (cornulierK₁ : Set integralElementaryGroup) := by
   intro h hh
   apply Subgroup.mem_normalizer_iff.mpr
@@ -9962,7 +9962,7 @@ theorem cornulierH_le_normalizer_K₁ :
       (cornulierH.inv_mem hh) (h * k * h⁻¹) hk
     simpa [mul_assoc] using hback
 
-theorem cornulierH_le_normalizer_K₂ :
+lemma cornulierH_le_normalizer_K₂ :
     cornulierH ≤ Subgroup.normalizer (cornulierK₂ : Set integralElementaryGroup) := by
   intro h hh
   apply Subgroup.mem_normalizer_iff.mpr
@@ -9983,7 +9983,7 @@ open StabilizedBlockReduction
 
 universe u
 
-theorem suslin_stabilizedThreeElementaryGeneration_of_elementaryThreeGeneration
+lemma suslin_stabilizedThreeElementaryGeneration_of_elementaryThreeGeneration
     {R : Type u} [CommRing R]
     (hthree : ∀ b : Matrix.SpecialLinearGroup (Fin 3) R,
       b ∈ elementaryThreeSubgroup R) :
@@ -9991,7 +9991,7 @@ theorem suslin_stabilizedThreeElementaryGeneration_of_elementaryThreeGeneration
   intro b
   exact lowerBlock_mem_of_elementaryThree b (hthree b)
 
-theorem suslin_stabilizedThreeElementaryGeneration_of_lastColumnTransitivity_and_stabilizedTwo
+lemma suslin_stabilizedThreeElementaryGeneration_of_lastColumnTransitivity_and_stabilizedTwo
     {R : Type u} [CommRing R]
     (htrans : ∀ v : Fin 3 → R, UnimodularRow v →
       ∃ e : Matrix.SpecialLinearGroup (Fin 3) R,
@@ -10004,7 +10004,7 @@ theorem suslin_stabilizedThreeElementaryGeneration_of_lastColumnTransitivity_and
     (HorrocksValuationInduction.specialLinearThree_mem_of_lastColumnTransitivity_and_stabilizedTwo
       htrans hblock)
 
-theorem suslin_integer_atPrime_isDiscreteValuationRing
+lemma suslin_integer_atPrime_isDiscreteValuationRing
     (p : Ideal ℤ) [p.IsMaximal] :
     IsDiscreteValuationRing (Localization.AtPrime p) := by
   have hp : p ≠ ⊥ :=
@@ -10019,7 +10019,7 @@ noncomputable section
 
 universe u
 
-theorem suslin_dvr_polynomial_ringKrullDim
+lemma suslin_dvr_polynomial_ringKrullDim
     {A : Type u} [CommRing A] [IsDomain A]
     [IsDiscreteValuationRing A] :
     ringKrullDim (Polynomial A) = 2 := by
@@ -10028,14 +10028,14 @@ theorem suslin_dvr_polynomial_ringKrullDim
       (IsDiscreteValuationRing.not_isField A)]
   norm_num
 
-theorem suslin_dvr_polynomial_stableRangeThree
+lemma suslin_dvr_polynomial_stableRangeThree
     {A : Type u} [CommRing A] [IsDomain A]
     [IsDiscreteValuationRing A] :
     BassStableRangeAtMost (Polynomial A) 3 :=
   bassStableRangeThree_of_noetherian_domain_dimension_two
     suslin_dvr_polynomial_ringKrullDim
 
-theorem suslin_dvr_stabilizedThreeElementaryGeneration_of_stabilizedTwo
+lemma suslin_dvr_stabilizedThreeElementaryGeneration_of_stabilizedTwo
     {A : Type u} [CommRing A] [IsDomain A]
     [IsDiscreteValuationRing A]
     (hblock : ∀ b : Matrix.SpecialLinearGroup (Fin 2) (Polynomial A),
@@ -10046,7 +10046,7 @@ theorem suslin_dvr_stabilizedThreeElementaryGeneration_of_stabilizedTwo
   suslin_stabilizedThreeElementaryGeneration_of_lastColumnTransitivity_and_stabilizedTwo
     suslin_valuation_unimodular_three_elementary_reduce hblock
 
-theorem suslin_dvr_polynomial_elementary
+lemma suslin_dvr_polynomial_elementary
     {A : Type u} [CommRing A] [IsDomain A]
     [IsDiscreteValuationRing A]
     (g : Matrix.SpecialLinearGroup (Fin 4) (Polynomial A)) :
@@ -10057,7 +10057,7 @@ theorem suslin_dvr_polynomial_elementary
       suslin_dvr_stabilized_two_mem)
     g
 
-theorem suslin_atPrime_polynomial_elementary
+lemma suslin_atPrime_polynomial_elementary
     (p : Ideal ℤ) [p.IsMaximal]
     (g : Matrix.SpecialLinearGroup (Fin 4)
       (Polynomial (Localization.AtPrime p))) :
@@ -10077,7 +10077,7 @@ section MatrixLemmas
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
-private theorem minkowski_matrix_mul_eq_zero_of_det_ne_zero
+private lemma minkowski_matrix_mul_eq_zero_of_det_ne_zero
     {A B : Matrix ι ι ℤ} (h : A * B = 0) (hdet : B.det ≠ 0) : A = 0 := by
   have hzero : A * (B * B.adjugate) = 0 := by
     rw [← Matrix.mul_assoc, h, Matrix.zero_mul]
@@ -10089,7 +10089,7 @@ private theorem minkowski_matrix_mul_eq_zero_of_det_ne_zero
 private def minkowskiModThree : Matrix ι ι ℤ →+* Matrix ι ι (ZMod 3) :=
   (Int.castRingHom (ZMod 3)).mapMatrix
 
-private theorem minkowski_det_ne_zero_of_modThree_eq_smul_one
+private lemma minkowski_det_ne_zero_of_modThree_eq_smul_one
     (A : Matrix ι ι ℤ) (c : ZMod 3) (hc : c ≠ 0)
     (hA : minkowskiModThree A = c • (1 : Matrix ι ι (ZMod 3))) :
     A.det ≠ 0 := by
@@ -10100,20 +10100,20 @@ private theorem minkowski_det_ne_zero_of_modThree_eq_smul_one
   rw [hA, Matrix.det_smul, Matrix.det_one, mul_one] at hmap
   exact pow_ne_zero _ hc hmap.symm
 
-private theorem minkowski_geom_sum_modThree
+private lemma minkowski_geom_sum_modThree
     (A : Matrix ι ι ℤ) (hA : minkowskiModThree A = 1) (m : ℕ) :
     minkowskiModThree (∑ i ∈ Finset.range m, A ^ i) =
       (m : ZMod 3) • (1 : Matrix ι ι (ZMod 3)) := by
   simp [map_sum, map_pow, hA, Nat.cast_smul_eq_nsmul]
 
-private theorem minkowski_prime_ne_three_modThree
+private lemma minkowski_prime_ne_three_modThree
     {p : ℕ} (hp : p.Prime) (hp3 : p ≠ 3) :
     (p : ZMod 3) ≠ 0 := by
   intro hzero
   have hdvd : 3 ∣ p := (CharP.cast_eq_zero_iff (ZMod 3) 3 p).mp hzero
   exact hp3 ((hp.dvd_iff_eq (by decide : 3 ≠ 1)).mp hdvd)
 
-private theorem minkowski_prime_ne_three_matrix
+private lemma minkowski_prime_ne_three_matrix
     (A : Matrix ι ι ℤ) (hA : minkowskiModThree A = 1)
     {p : ℕ} (hp : p.Prime) (hp3 : p ≠ 3) (hpow : A ^ p = 1) :
     A = 1 := by
@@ -10129,7 +10129,7 @@ private theorem minkowski_prime_ne_three_matrix
     (minkowski_matrix_mul_eq_zero_of_det_ne_zero hzero hdet)
 
 set_option backward.isDefEq.respectTransparency false in
-private theorem minkowski_exists_sub_one_eq_three_smul
+private lemma minkowski_exists_sub_one_eq_three_smul
     (A : Matrix ι ι ℤ) (hA : minkowskiModThree A = 1) :
     ∃ B : Matrix ι ι ℤ, A - 1 = (3 : ℤ) • B := by
   have hzero : minkowskiModThree (A - 1) = 0 := by
@@ -10144,7 +10144,7 @@ private theorem minkowski_exists_sub_one_eq_three_smul
   ext i j
   simpa [smul_eq_mul] using hB i j
 
-private theorem minkowski_prime_three_matrix
+private lemma minkowski_prime_three_matrix
     (A : Matrix ι ι ℤ) (hA : minkowskiModThree A = 1)
     (hpow : A ^ 3 = 1) :
     A = 1 := by
@@ -10181,7 +10181,7 @@ private theorem minkowski_prime_three_matrix
   exact sub_eq_zero.mp
     (minkowski_matrix_mul_eq_zero_of_det_ne_zero hzero hdet)
 
-theorem minkowski_prime_order_matrix
+lemma minkowski_prime_order_matrix
     (A : Matrix ι ι ℤ)
     (hA : (Int.castRingHom (ZMod 3)).mapMatrix A = 1)
     {p : ℕ} (hp : p.Prime) (hpow : A ^ p = 1) :
@@ -10192,7 +10192,7 @@ theorem minkowski_prime_order_matrix
     exact minkowski_prime_three_matrix A hA hpow
   · exact minkowski_prime_ne_three_matrix A hA hp hp3 hpow
 
-theorem specialLinear_eq_one_of_modThree_eq_one_of_isOfFinOrder
+lemma specialLinear_eq_one_of_modThree_eq_one_of_isOfFinOrder
     (g : Matrix.SpecialLinearGroup ι ℤ)
     (hmod : Matrix.SpecialLinearGroup.map (Int.castRingHom (ZMod 3)) g = 1)
     (hfinite : IsOfFinOrder g) : g = 1 := by
@@ -10235,14 +10235,14 @@ theorem specialLinear_eq_one_of_modThree_eq_one_of_isOfFinOrder
 
 end MatrixLemmas
 
-theorem levelThreeInteger_torsionFree : LevelThreeIntegerTorsionFree := by
+lemma levelThreeInteger_torsionFree : LevelThreeIntegerTorsionFree := by
   intro g hg
   apply Subtype.ext
   exact specialLinear_eq_one_of_modThree_eq_one_of_isOfFinOrder
     (g : IntegerSpecialLinearGroup) g.property
     (levelThreeIntegerSubgroup.subtype.isOfFinOrder hg)
 
-theorem K_no_nontrivial_torsion :
+lemma K_no_nontrivial_torsion :
     ∀ g : K, IsOfFinOrder g → g = 1 :=
   K_no_nontrivial_torsion_of_levelThree_torsionFree
     levelThreeInteger_torsionFree
@@ -10253,7 +10253,7 @@ section GeneralTransvections
 
 variable {ι A : Type*} [Fintype ι] [DecidableEq ι] [CommRing A]
 
-theorem conjugates_eq_iff_quotient_commutes
+lemma conjugates_eq_iff_quotient_commutes
     {G : Type*} [Group G] (u v g : G) :
     u * g * u⁻¹ = v * g * v⁻¹ ↔ Commute (v⁻¹ * u) g := by
   constructor
@@ -10270,7 +10270,7 @@ theorem conjugates_eq_iff_quotient_commutes
       _ = v * (g * (v⁻¹ * u)) * u⁻¹ := by rw [h]
       _ = v * g * v⁻¹ := by group
 
-theorem transvection_conjugates_eq_iff_commutes
+lemma transvection_conjugates_eq_iff_commutes
     {i j : ι} (hij : i ≠ j) (a b : A)
     (g : Matrix.SpecialLinearGroup ι A) :
     Matrix.SpecialLinearGroup.transvection hij a * g *
@@ -10283,7 +10283,7 @@ theorem transvection_conjugates_eq_iff_commutes
     ← Matrix.SpecialLinearGroup.transvection_add]
   simp [sub_eq_add_neg, add_comm]
 
-theorem commute_matrixUnit_of_commute_nonzero_transvection
+lemma commute_matrixUnit_of_commute_nonzero_transvection
     [IsDomain A] {i j : ι} (hij : i ≠ j) (a : A) (ha : a ≠ 0)
     (g : Matrix.SpecialLinearGroup ι A)
     (h : Commute (Matrix.SpecialLinearGroup.transvection hij a) g) :
@@ -10306,7 +10306,7 @@ theorem commute_matrixUnit_of_commute_nonzero_transvection
   simpa only [Matrix.smul_apply, smul_eq_mul] using
     (mul_left_cancel₀ ha hentry)
 
-theorem transvection_conjugates_injective_of_not_commute_matrixUnit
+lemma transvection_conjugates_injective_of_not_commute_matrixUnit
     [IsDomain A] {i j : ι} (hij : i ≠ j)
     (g : Matrix.SpecialLinearGroup ι A)
     (hnot : ¬Commute (Matrix.single i j (1 : A)) (g : Matrix ι ι A)) :
@@ -10320,7 +10320,7 @@ theorem transvection_conjugates_injective_of_not_commute_matrixUnit
     (sub_ne_zero.mpr hne) g
   exact (transvection_conjugates_eq_iff_commutes hij a b g).mp hab
 
-theorem scaled_transvection_conjugates_injective
+lemma scaled_transvection_conjugates_injective
     [IsDomain A] {i j : ι} (hij : i ≠ j)
     (g : Matrix.SpecialLinearGroup ι A)
     (hnot : ¬Commute (Matrix.single i j (1 : A)) (g : Matrix ι ι A))
@@ -10333,7 +10333,7 @@ theorem scaled_transvection_conjugates_injective
   exact transvection_conjugates_injective_of_not_commute_matrixUnit
     hij g hnot hab
 
-theorem specialLinear_scalar_pow_card_eq_one
+lemma specialLinear_scalar_pow_card_eq_one
     (g : Matrix.SpecialLinearGroup ι A)
     (hscalar : (g : Matrix ι ι A) ∈ Set.range (Matrix.scalar ι)) :
     g ^ Fintype.card ι = 1 := by
@@ -10346,7 +10346,7 @@ theorem specialLinear_scalar_pow_card_eq_one
     (1 : Matrix ι ι A) i j
   rw [← ha, ← map_pow (Matrix.scalar ι), hroot, map_one]
 
-theorem specialLinear_transvection_injective
+lemma specialLinear_transvection_injective
     {i j : ι} (hij : i ≠ j) :
     Function.Injective (Matrix.SpecialLinearGroup.transvection hij :
       A → Matrix.SpecialLinearGroup ι A) := by
@@ -10355,7 +10355,7 @@ theorem specialLinear_transvection_injective
   simpa [Matrix.SpecialLinearGroup.transvection_coe, Matrix.single_apply,
     Matrix.one_apply, hij] using hentry
 
-theorem specialLinear_subgroup_conjugacy_infinite
+lemma specialLinear_subgroup_conjugacy_infinite
     [IsDomain A] [Infinite A] [Nonempty ι]
     (H : Subgroup (Matrix.SpecialLinearGroup ι A))
     (c : A) (hc : c ≠ 0)
@@ -10393,7 +10393,7 @@ theorem specialLinear_subgroup_conjugacy_infinite
 
 end GeneralTransvections
 
-theorem liftedIntegralTransvection_injective
+lemma liftedIntegralTransvection_injective
     {i j : Index} (hij : i ≠ j) :
     Function.Injective (liftedIntegralTransvection hij) := by
   intro a b hab
@@ -10401,12 +10401,12 @@ theorem liftedIntegralTransvection_injective
   apply specialLinear_transvection_injective hij
   exact congrArg (fun g : K => (g : IntegralSpecialLinearGroup)) hab
 
-theorem actingGroup_infinite : Infinite K :=
+lemma actingGroup_infinite : Infinite K :=
   Infinite.of_injective
     (liftedIntegralTransvection (show (0 : Index) ≠ 1 by decide))
     (liftedIntegralTransvection_injective (show (0 : Index) ≠ 1 by decide))
 
-theorem actingGroup_conjugacyClass_infinite (g : K) (hg : g ≠ 1) :
+lemma actingGroup_conjugacyClass_infinite (g : K) (hg : g ≠ 1) :
     (ConnesRigidity.conjugacyClass actingGroup g).Infinite := by
   have hclass := specialLinear_subgroup_conjugacy_infinite
     (ι := Index) (A := IntegralPolynomial)
@@ -10417,7 +10417,7 @@ theorem actingGroup_conjugacyClass_infinite (g : K) (hg : g ≠ 1) :
   rintro _ ⟨h, rfl⟩
   exact ⟨h, rfl⟩
 
-theorem actingGroup_isICC : ConnesRigidity.IsICC actingGroup :=
+lemma actingGroup_isICC : ConnesRigidity.IsICC actingGroup :=
   ⟨actingGroup_infinite, actingGroup_conjugacyClass_infinite⟩
 
 noncomputable section
@@ -10429,45 +10429,45 @@ abbrev Y := B →ₗ[F] F
 def tensorFunctional (ℓ ℓ' : X) : T →ₗ[F] F :=
   TensorProduct.lift ((LinearMap.mul F F).compl₁₂ ℓ ℓ')
 
-@[simp] theorem tensorFunctional_tmul (ℓ ℓ' : X) (v w : V) :
+@[simp] lemma tensorFunctional_tmul (ℓ ℓ' : X) (v w : V) :
     tensorFunctional ℓ ℓ' (v ⊗ₜ[F] w) = ℓ v * ℓ' w := rfl
 
 def carry (ℓ ℓ' : X) : Y :=
   (tensorFunctional ℓ ℓ').comp B.subtype
 
-@[simp] theorem carry_apply (ℓ ℓ' : X) (w : B) :
+@[simp] lemma carry_apply (ℓ ℓ' : X) (w : B) :
     carry ℓ ℓ' w = tensorFunctional ℓ ℓ' (w : T) := rfl
 
-@[simp] theorem carry_apply_diagonal (ℓ ℓ' : X) (v : V) :
+@[simp] lemma carry_apply_diagonal (ℓ ℓ' : X) (v : V) :
     carry ℓ ℓ' (diagonal v) = ℓ v * ℓ' v := rfl
 
-theorem tensorFunctional_add_left (ℓ₁ ℓ₂ ℓ' : X) :
+lemma tensorFunctional_add_left (ℓ₁ ℓ₂ ℓ' : X) :
     tensorFunctional (ℓ₁ + ℓ₂) ℓ' =
       tensorFunctional ℓ₁ ℓ' + tensorFunctional ℓ₂ ℓ' := by
   apply TensorProduct.ext'
   intro v w
   simp [add_mul]
 
-theorem tensorFunctional_add_right (ℓ ℓ₁ ℓ₂ : X) :
+lemma tensorFunctional_add_right (ℓ ℓ₁ ℓ₂ : X) :
     tensorFunctional ℓ (ℓ₁ + ℓ₂) =
       tensorFunctional ℓ ℓ₁ + tensorFunctional ℓ ℓ₂ := by
   apply TensorProduct.ext'
   intro v w
   simp [mul_add]
 
-theorem tensorFunctional_smul_left (a : F) (ℓ ℓ' : X) :
+lemma tensorFunctional_smul_left (a : F) (ℓ ℓ' : X) :
     tensorFunctional (a • ℓ) ℓ' = a • tensorFunctional ℓ ℓ' := by
   apply TensorProduct.ext'
   intro v w
   simp [smul_eq_mul, mul_assoc]
 
-theorem tensorFunctional_smul_right (a : F) (ℓ ℓ' : X) :
+lemma tensorFunctional_smul_right (a : F) (ℓ ℓ' : X) :
     tensorFunctional ℓ (a • ℓ') = a • tensorFunctional ℓ ℓ' := by
   apply TensorProduct.ext'
   intro v w
   simp [smul_eq_mul, mul_left_comm]
 
-@[simp] theorem carry_zero_left (ℓ : X) : carry 0 ℓ = 0 := by
+@[simp] lemma carry_zero_left (ℓ : X) : carry 0 ℓ = 0 := by
   apply LinearMap.ext
   intro w
   change tensorFunctional 0 ℓ (w : T) = 0
@@ -10478,7 +10478,7 @@ theorem tensorFunctional_smul_right (a : F) (ℓ ℓ' : X) :
   rw [h]
   rfl
 
-@[simp] theorem carry_zero_right (ℓ : X) : carry ℓ 0 = 0 := by
+@[simp] lemma carry_zero_right (ℓ : X) : carry ℓ 0 = 0 := by
   apply LinearMap.ext
   intro w
   change tensorFunctional ℓ 0 (w : T) = 0
@@ -10489,7 +10489,7 @@ theorem tensorFunctional_smul_right (a : F) (ℓ ℓ' : X) :
   rw [h]
   rfl
 
-theorem carry_add_left (ℓ₁ ℓ₂ ℓ' : X) :
+lemma carry_add_left (ℓ₁ ℓ₂ ℓ' : X) :
     carry (ℓ₁ + ℓ₂) ℓ' = carry ℓ₁ ℓ' + carry ℓ₂ ℓ' := by
   apply LinearMap.ext
   intro w
@@ -10498,7 +10498,7 @@ theorem carry_add_left (ℓ₁ ℓ₂ ℓ' : X) :
   rw [tensorFunctional_add_left]
   rfl
 
-theorem carry_add_right (ℓ ℓ₁ ℓ₂ : X) :
+lemma carry_add_right (ℓ ℓ₁ ℓ₂ : X) :
     carry ℓ (ℓ₁ + ℓ₂) = carry ℓ ℓ₁ + carry ℓ ℓ₂ := by
   apply LinearMap.ext
   intro w
@@ -10507,7 +10507,7 @@ theorem carry_add_right (ℓ ℓ₁ ℓ₂ : X) :
   rw [tensorFunctional_add_right]
   rfl
 
-theorem carry_smul_left (a : F) (ℓ ℓ' : X) :
+lemma carry_smul_left (a : F) (ℓ ℓ' : X) :
     carry (a • ℓ) ℓ' = a • carry ℓ ℓ' := by
   apply LinearMap.ext
   intro w
@@ -10516,7 +10516,7 @@ theorem carry_smul_left (a : F) (ℓ ℓ' : X) :
   rw [tensorFunctional_smul_left]
   rfl
 
-theorem carry_smul_right (a : F) (ℓ ℓ' : X) :
+lemma carry_smul_right (a : F) (ℓ ℓ' : X) :
     carry ℓ (a • ℓ') = a • carry ℓ ℓ' := by
   apply LinearMap.ext
   intro w
@@ -10539,10 +10539,10 @@ def carryBilinear : X →ₗ[F] X →ₗ[F] Y where
     intro ℓ'
     exact carry_smul_left a ℓ ℓ'
 
-@[simp] theorem carryBilinear_apply (ℓ ℓ' : X) :
+@[simp] lemma carryBilinear_apply (ℓ ℓ' : X) :
     carryBilinear ℓ ℓ' = carry ℓ ℓ' := rfl
 
-theorem carry_comm (ℓ ℓ' : X) : carry ℓ ℓ' = carry ℓ' ℓ := by
+lemma carry_comm (ℓ ℓ' : X) : carry ℓ ℓ' = carry ℓ' ℓ := by
   apply LinearMap.ext
   rintro ⟨w, hw⟩
   change tensorFunctional ℓ ℓ' w = tensorFunctional ℓ' ℓ w
@@ -10561,7 +10561,7 @@ theorem carry_comm (ℓ ℓ' : X) : carry ℓ ℓ' = carry ℓ' ℓ := by
 def shiftVector (n : ℕ) : V →ₗ[F] V :=
   (LinearMap.lsmul R V (Polynomial.X ^ n)).restrictScalars F
 
-@[simp] theorem shiftVector_apply (n : ℕ) (v : V) (i : Fin 4) :
+@[simp] lemma shiftVector_apply (n : ℕ) (v : V) (i : Fin 4) :
     shiftVector n v i = Polynomial.X ^ n * v i := rfl
 
 def shift (n : ℕ) : X →ₗ[F] X where
@@ -10575,37 +10575,37 @@ def shift (n : ℕ) : X →ₗ[F] X where
     intro v
     rfl
 
-@[simp] theorem shift_apply (n : ℕ) (ℓ : X) (v : V) :
+@[simp] lemma shift_apply (n : ℕ) (ℓ : X) (v : V) :
     shift n ℓ v = ℓ (shiftVector n v) := rfl
 
-@[simp] theorem shift_zero (n : ℕ) : shift n 0 = 0 := by
+@[simp] lemma shift_zero (n : ℕ) : shift n 0 = 0 := by
   exact (shift n).map_zero
 
-@[simp] theorem shift_add (n : ℕ) (ℓ ℓ' : X) :
+@[simp] lemma shift_add (n : ℕ) (ℓ ℓ' : X) :
     shift n (ℓ + ℓ') = shift n ℓ + shift n ℓ' := by
   exact (shift n).map_add ℓ ℓ'
 
 def shiftedCarry (n : ℕ) (ℓ ℓ' : X) : Y :=
   carry (shift n ℓ) (shift n ℓ')
 
-@[simp] theorem shiftedCarry_zero_left (n : ℕ) (ℓ : X) :
+@[simp] lemma shiftedCarry_zero_left (n : ℕ) (ℓ : X) :
     shiftedCarry n 0 ℓ = 0 := by
   simp [shiftedCarry]
 
-@[simp] theorem shiftedCarry_zero_right (n : ℕ) (ℓ : X) :
+@[simp] lemma shiftedCarry_zero_right (n : ℕ) (ℓ : X) :
     shiftedCarry n ℓ 0 = 0 := by
   simp [shiftedCarry]
 
-theorem shiftedCarry_comm (n : ℕ) (ℓ ℓ' : X) :
+lemma shiftedCarry_comm (n : ℕ) (ℓ ℓ' : X) :
     shiftedCarry n ℓ ℓ' = shiftedCarry n ℓ' ℓ :=
   carry_comm _ _
 
-theorem shiftedCarry_add_left (n : ℕ) (ℓ₁ ℓ₂ ℓ' : X) :
+lemma shiftedCarry_add_left (n : ℕ) (ℓ₁ ℓ₂ ℓ' : X) :
     shiftedCarry n (ℓ₁ + ℓ₂) ℓ' =
       shiftedCarry n ℓ₁ ℓ' + shiftedCarry n ℓ₂ ℓ' := by
   simp only [shiftedCarry, shift_add, carry_add_left]
 
-theorem shiftedCarry_add_right (n : ℕ) (ℓ ℓ₁ ℓ₂ : X) :
+lemma shiftedCarry_add_right (n : ℕ) (ℓ ℓ₁ ℓ₂ : X) :
     shiftedCarry n ℓ (ℓ₁ + ℓ₂) =
       shiftedCarry n ℓ ℓ₁ + shiftedCarry n ℓ ℓ₂ := by
   simp only [shiftedCarry, shift_add, carry_add_right]
@@ -10619,7 +10619,7 @@ namespace CarryGroup
 variable {n : ℕ}
 
 @[ext]
-theorem ext {x y : CarryGroup n}
+lemma ext {x y : CarryGroup n}
     (hlinear : x.linear = y.linear)
     (hquadratic : x.quadratic = y.quadratic) : x = y := by
   cases x
@@ -10636,24 +10636,24 @@ instance : Add (CarryGroup n) where
 instance : Neg (CarryGroup n) where
   neg x := ⟨x.linear, x.quadratic + shiftedCarry n x.linear x.linear⟩
 
-@[simp] theorem zero_linear : (0 : CarryGroup n).linear = 0 := rfl
+@[simp] lemma zero_linear : (0 : CarryGroup n).linear = 0 := rfl
 
-@[simp] theorem zero_quadratic : (0 : CarryGroup n).quadratic = 0 := rfl
+@[simp] lemma zero_quadratic : (0 : CarryGroup n).quadratic = 0 := rfl
 
-@[simp] theorem add_linear (x y : CarryGroup n) :
+@[simp] lemma add_linear (x y : CarryGroup n) :
     (x + y).linear = x.linear + y.linear := rfl
 
-@[simp] theorem add_quadratic (x y : CarryGroup n) :
+@[simp] lemma add_quadratic (x y : CarryGroup n) :
     (x + y).quadratic =
       x.quadratic + y.quadratic + shiftedCarry n x.linear y.linear := rfl
 
-@[simp] theorem neg_linear (x : CarryGroup n) :
+@[simp] lemma neg_linear (x : CarryGroup n) :
     (-x).linear = x.linear := rfl
 
-@[simp] theorem neg_quadratic (x : CarryGroup n) :
+@[simp] lemma neg_quadratic (x : CarryGroup n) :
     (-x).quadratic = x.quadratic + shiftedCarry n x.linear x.linear := rfl
 
-private theorem add_assoc' (x y z : CarryGroup n) :
+private lemma add_assoc' (x y z : CarryGroup n) :
     (x + y) + z = x + (y + z) := by
   apply ext
   · exact add_assoc _ _ _
@@ -10661,12 +10661,12 @@ private theorem add_assoc' (x y z : CarryGroup n) :
     rw [shiftedCarry_add_left, shiftedCarry_add_right]
     abel
 
-private theorem zero_add' (x : CarryGroup n) : 0 + x = x := by
+private lemma zero_add' (x : CarryGroup n) : 0 + x = x := by
   apply ext
   · simp
   · simp
 
-private theorem neg_add_cancel' (x : CarryGroup n) : -x + x = 0 := by
+private lemma neg_add_cancel' (x : CarryGroup n) : -x + x = 0 := by
   apply ext
   · simp [add_self_eq_zero]
   · change (x.quadratic + shiftedCarry n x.linear x.linear) +
@@ -10688,15 +10688,15 @@ instance : AddCommGroup (CarryGroup n) :=
       rw [shiftedCarry_comm n x.linear y.linear]
       abel
 
-@[simp] theorem two_nsmul_linear (x : CarryGroup n) :
+@[simp] lemma two_nsmul_linear (x : CarryGroup n) :
     ((2 : ℕ) • x).linear = 0 := by
   rw [two_nsmul, add_linear, add_self_eq_zero]
 
-@[simp] theorem two_nsmul_quadratic (x : CarryGroup n) :
+@[simp] lemma two_nsmul_quadratic (x : CarryGroup n) :
     ((2 : ℕ) • x).quadratic = shiftedCarry n x.linear x.linear := by
   rw [two_nsmul, add_quadratic, add_self_eq_zero, zero_add]
 
-theorem four_nsmul_eq_zero (x : CarryGroup n) : (4 : ℕ) • x = 0 := by
+lemma four_nsmul_eq_zero (x : CarryGroup n) : (4 : ℕ) • x = 0 := by
   change (2 * 2 : ℕ) • x = 0
   rw [mul_nsmul]
   apply ext
@@ -10706,20 +10706,20 @@ theorem four_nsmul_eq_zero (x : CarryGroup n) : (4 : ℕ) • x = 0 := by
 def coefficientFunctional (n : ℕ) : X :=
   (Polynomial.lcoeff F n).comp (LinearMap.proj (R := F) (0 : Fin 4))
 
-@[simp] theorem coefficientFunctional_apply (n : ℕ) (v : V) :
+@[simp] lemma coefficientFunctional_apply (n : ℕ) (v : V) :
     coefficientFunctional n v = (v 0).coeff n := rfl
 
-@[simp] theorem shift_coefficientFunctional_e (n : ℕ) :
+@[simp] lemma shift_coefficientFunctional_e (n : ℕ) :
     shift n (coefficientFunctional n) e = 1 := by
   simp [shift, coefficientFunctional, shiftVector]
 
 def orderFourElement (n : ℕ) : CarryGroup n :=
   ⟨coefficientFunctional n, 0⟩
 
-@[simp] theorem orderFourElement_linear (n : ℕ) :
+@[simp] lemma orderFourElement_linear (n : ℕ) :
     (orderFourElement n).linear = coefficientFunctional n := rfl
 
-@[simp] theorem orderFourElement_quadratic (n : ℕ) :
+@[simp] lemma orderFourElement_quadratic (n : ℕ) :
     (orderFourElement n).quadratic = 0 := rfl
 
 end CarryGroup
@@ -10738,12 +10738,12 @@ instance instXTopologicalSpace : TopologicalSpace X := pointwiseDualTopology V
 
 instance instYTopologicalSpace : TopologicalSpace Y := pointwiseDualTopology B
 
-theorem xClosedEmbedding :
+lemma xClosedEmbedding :
     Topology.IsClosedEmbedding ((↑) : X → V → F) :=
   ⟨Function.Injective.isEmbedding_induced DFunLike.coe_injective,
     LinearMap.isClosed_range_coe V F (RingHom.id F)⟩
 
-theorem yClosedEmbedding :
+lemma yClosedEmbedding :
     Topology.IsClosedEmbedding ((↑) : Y → B → F) :=
   ⟨Function.Injective.isEmbedding_induced DFunLike.coe_injective,
     LinearMap.isClosed_range_coe B F (RingHom.id F)⟩
@@ -10769,27 +10769,27 @@ instance instYSecondCountableTopology : SecondCountableTopology Y := by
     infer_instance
   exact yClosedEmbedding.toIsEmbedding.secondCountableTopology
 
-theorem continuous_X_eval (v : V) : Continuous (fun ℓ : X => ℓ v) :=
+lemma continuous_X_eval (v : V) : Continuous (fun ℓ : X => ℓ v) :=
   (continuous_apply v).comp continuous_induced_dom
 
-theorem continuous_Y_eval (w : B) : Continuous (fun q : Y => q w) :=
+lemma continuous_Y_eval (w : B) : Continuous (fun q : Y => q w) :=
   (continuous_apply w).comp continuous_induced_dom
 
-theorem continuous_X_iff {A : Type*} [TopologicalSpace A] {f : A → X} :
+lemma continuous_X_iff {A : Type*} [TopologicalSpace A] {f : A → X} :
     Continuous f ↔ ∀ v : V, Continuous (fun a => f a v) := by
   rw [continuous_induced_rng, continuous_pi_iff]
   rfl
 
-theorem continuous_Y_iff {A : Type*} [TopologicalSpace A] {f : A → Y} :
+lemma continuous_Y_iff {A : Type*} [TopologicalSpace A] {f : A → Y} :
     Continuous f ↔ ∀ w : B, Continuous (fun a => f a w) := by
   rw [continuous_induced_rng, continuous_pi_iff]
   rfl
 
-theorem continuous_X_precomp (f : V →ₗ[F] V) :
+lemma continuous_X_precomp (f : V →ₗ[F] V) :
     Continuous (fun ℓ : X => ℓ.comp f) :=
   continuous_X_iff.mpr fun v => continuous_X_eval (f v)
 
-theorem continuous_Y_precomp (f : B →ₗ[F] B) :
+lemma continuous_Y_precomp (f : B →ₗ[F] B) :
     Continuous (fun q : Y => q.comp f) :=
   continuous_Y_iff.mpr fun w => continuous_Y_eval (f w)
 
@@ -10815,7 +10815,7 @@ instance instYTopologicalAddGroup : IsTopologicalAddGroup Y where
     intro w
     exact (continuous_Y_eval w).neg
 
-theorem continuous_shift (n : ℕ) : Continuous (shift n : X → X) :=
+lemma continuous_shift (n : ℕ) : Continuous (shift n : X → X) :=
   continuous_X_precomp (shiftVector n)
 
 def carryCoordinates (n : ℕ) (z : CarryGroup n) : X × Y :=
@@ -10832,26 +10832,26 @@ def carryHomeomorph (n : ℕ) : CarryGroup n ≃ₜ X × Y where
   continuous_toFun := continuous_induced_dom
   continuous_invFun := continuous_induced_rng.mpr continuous_id
 
-theorem continuous_carryCoordinates (n : ℕ) :
+lemma continuous_carryCoordinates (n : ℕ) :
     Continuous (carryCoordinates n) := (carryHomeomorph n).continuous
 
-theorem continuous_linear (n : ℕ) :
+lemma continuous_linear (n : ℕ) :
     Continuous (CarryGroup.linear : CarryGroup n → X) :=
   continuous_fst.comp (continuous_carryCoordinates n)
 
-theorem continuous_quadratic (n : ℕ) :
+lemma continuous_quadratic (n : ℕ) :
     Continuous (CarryGroup.quadratic : CarryGroup n → Y) :=
   continuous_snd.comp (continuous_carryCoordinates n)
 
-theorem continuous_linear_eval (n : ℕ) (v : V) :
+lemma continuous_linear_eval (n : ℕ) (v : V) :
     Continuous (fun z : CarryGroup n => z.linear v) :=
   (continuous_X_eval v).comp (continuous_linear n)
 
-theorem continuous_quadratic_eval (n : ℕ) (w : B) :
+lemma continuous_quadratic_eval (n : ℕ) (w : B) :
     Continuous (fun z : CarryGroup n => z.quadratic w) :=
   (continuous_Y_eval w).comp (continuous_quadratic n)
 
-theorem continuous_CarryGroup_iff {A : Type*} [TopologicalSpace A]
+lemma continuous_CarryGroup_iff {A : Type*} [TopologicalSpace A]
     {n : ℕ} {f : A → CarryGroup n} :
     Continuous f ↔
       (∀ v : V, Continuous (fun a => (f a).linear v)) ∧
@@ -10880,18 +10880,18 @@ def binaryRootsEquiv : Multiplicative F ≃* rootsOfUnity 2 Circle :=
     (AddChar.toMonoidHomEquiv (ZMod.rootsOfUnityAddChar 2))
     (by simpa using (bijective_rootsOfUnityAddChar (n := 2)))
 
-@[simp] theorem binaryRootsEquiv_apply (a : F) :
+@[simp] lemma binaryRootsEquiv_apply (a : F) :
     binaryRootsEquiv (Multiplicative.ofAdd a) =
       ZMod.rootsOfUnityAddChar 2 a := rfl
 
-@[simp] theorem binaryRootsEquiv_val (a : Multiplicative F) :
+@[simp] lemma binaryRootsEquiv_val (a : Multiplicative F) :
     ((binaryRootsEquiv a).val : Circle) =
       ZMod.toCircle (Multiplicative.toAdd a) := rfl
 
 variable (M : Type*) [AddCommGroup M] [Module F M]
   [TopologicalSpace M]
 
-theorem character_sq (χ : PontryaginDual (Multiplicative M))
+lemma character_sq (χ : PontryaginDual (Multiplicative M))
     (x : Multiplicative M) : χ x ^ (2 : ℕ) = 1 := by
   have hx : x ^ (2 : ℕ) = (1 : Multiplicative M) := by
     apply Multiplicative.toAdd.injective
@@ -10938,7 +10938,7 @@ def characterLinear
     (χ : PontryaginDual (Multiplicative M)) : M →ₗ[F] F :=
   (characterAdd M χ).toZModLinearMap 2
 
-@[simp] theorem characterLinear_circle
+@[simp] lemma characterLinear_circle
     (χ : PontryaginDual (Multiplicative M)) (x : M) :
     ZMod.toCircle (characterLinear M χ x) =
       χ (Multiplicative.ofAdd x) := by
@@ -10955,7 +10955,7 @@ def characterLinear
         congrArg (fun z : rootsOfUnity 2 Circle => (z.val : Circle)) h
     _ = _ := rfl
 
-theorem continuous_characterLinear
+lemma continuous_characterLinear
     (χ : PontryaginDual (Multiplicative M)) :
     Continuous (characterLinear M χ) := by
   rw [continuous_def]
@@ -10991,7 +10991,7 @@ noncomputable section
 
 set_option maxHeartbeats 800000
 
-theorem continuous_binaryDual_eq_evaluation
+lemma continuous_binaryDual_eq_evaluation
     (M : Type*) [AddCommGroup M] [Module F M]
     (φ : (M →ₗ[F] F) →ₗ[F] F)
     (hφ : @Continuous (M →ₗ[F] F) F
@@ -11066,7 +11066,7 @@ def continuousBinaryBidualEvaluation (M : Type*) [AddCommGroup M] [Module F M] :
       apply Subtype.ext
       exact map_smul (Module.Dual.eval F M) c m }
 
-@[simp] theorem continuousBinaryBidualEvaluation_apply
+@[simp] lemma continuousBinaryBidualEvaluation_apply
     (M : Type*) [AddCommGroup M] [Module F M]
     (m : M) (ℓ : M →ₗ[F] F) :
     (continuousBinaryBidualEvaluation M m : (M →ₗ[F] F) →ₗ[F] F) ℓ = ℓ m := rfl
@@ -11082,7 +11082,7 @@ def continuousBinaryBidualEquiv (M : Type*) [AddCommGroup M] [Module F M] :
     refine ⟨m, Subtype.ext ?_⟩
     exact LinearMap.ext fun ℓ ↦ (hm ℓ).symm⟩
 
-@[simp] theorem continuousBinaryBidualEquiv_apply
+@[simp] lemma continuousBinaryBidualEquiv_apply
     (M : Type*) [AddCommGroup M] [Module F M]
     (m : M) (ℓ : M →ₗ[F] F) :
     ((continuousBinaryBidualEquiv M m : continuousBinaryBidual M) :
@@ -11106,7 +11106,7 @@ def pointwiseEvaluationCharacter (m : M) :
     exact continuous_of_discreteTopology.comp
       ((continuous_apply m).comp continuous_induced_dom)
 
-@[simp] theorem pointwiseEvaluationCharacter_apply (m : M)
+@[simp] lemma pointwiseEvaluationCharacter_apply (m : M)
     (ℓ : M →ₗ[F] F) :
     pointwiseEvaluationCharacter M m (Multiplicative.ofAdd ℓ) =
       ZMod.toCircle (ℓ m) := rfl
@@ -11129,7 +11129,7 @@ def pointwiseEvaluationHom :
         ZMod.toCircle ((Multiplicative.toAdd ℓ) n)
     rw [map_add, AddChar.map_add_eq_mul]
 
-@[simp] theorem pointwiseEvaluationHom_apply (m : M)
+@[simp] lemma pointwiseEvaluationHom_apply (m : M)
     (ℓ : M →ₗ[F] F) :
     Additive.toMul (pointwiseEvaluationHom M m) (Multiplicative.ofAdd ℓ) =
       ZMod.toCircle (ℓ m) := rfl
@@ -11159,11 +11159,11 @@ def pointwisePontryaginDualEquiv :
     exact characterLinear_circle (M →ₗ[F] F)
       (Additive.toMul χ) (Multiplicative.toAdd ℓ)
 
-@[simp] theorem pointwisePontryaginDualEquiv_symm_apply (m : M) :
+@[simp] lemma pointwisePontryaginDualEquiv_symm_apply (m : M) :
     (pointwisePontryaginDualEquiv M).symm m =
       pointwiseEvaluationHom M m := rfl
 
-@[simp] theorem pointwisePontryaginDualEquiv_apply_character
+@[simp] lemma pointwisePontryaginDualEquiv_apply_character
     (χ : Additive (PontryaginDual (Multiplicative (M →ₗ[F] F))))
     (ℓ : M →ₗ[F] F) :
     ZMod.toCircle (ℓ (pointwisePontryaginDualEquiv M χ)) =
@@ -11187,28 +11187,28 @@ abbrev Point := Bit × Bit
 
 def carry (x x' : Bit) : Bit := x * x'
 
-@[simp] theorem carry_zero_left (x : Bit) : carry 0 x = 0 := by
+@[simp] lemma carry_zero_left (x : Bit) : carry 0 x = 0 := by
   simp [carry]
 
-@[simp] theorem carry_zero_right (x : Bit) : carry x 0 = 0 := by
+@[simp] lemma carry_zero_right (x : Bit) : carry x 0 = 0 := by
   simp [carry]
 
-theorem carry_comm (x y : Bit) : carry x y = carry y x := by
+lemma carry_comm (x y : Bit) : carry x y = carry y x := by
   simp [carry, mul_comm]
 
-theorem carry_add_left (x y z : Bit) :
+lemma carry_add_left (x y z : Bit) :
     carry (x + y) z = carry x z + carry y z := by
   simp [carry, add_mul]
 
-theorem carry_add_right (x y z : Bit) :
+lemma carry_add_right (x y z : Bit) :
     carry x (y + z) = carry x y + carry x z := by
   simp [carry, mul_add]
 
 def liftBit (x : Bit) : ZMod 4 := (x.val : ZMod 4)
 
-@[simp] theorem liftBit_zero : liftBit 0 = 0 := by decide
+@[simp] lemma liftBit_zero : liftBit 0 = 0 := by decide
 
-@[simp] theorem liftBit_one : liftBit 1 = 1 := by decide
+@[simp] lemma liftBit_one : liftBit 1 = 1 := by decide
 
 @[ext] structure Carry where
   low : Bit
@@ -11234,19 +11234,19 @@ instance : AddCommGroup Carry where
   nsmul := nsmulRec
   zsmul := zsmulRec
 
-@[simp] theorem zero_low : (0 : Carry).low = 0 := rfl
+@[simp] lemma zero_low : (0 : Carry).low = 0 := rfl
 
-@[simp] theorem zero_high : (0 : Carry).high = 0 := rfl
+@[simp] lemma zero_high : (0 : Carry).high = 0 := rfl
 
-@[simp] theorem add_low (p q : Carry) :
+@[simp] lemma add_low (p q : Carry) :
     (p + q).low = p.low + q.low := rfl
 
-@[simp] theorem add_high (p q : Carry) :
+@[simp] lemma add_high (p q : Carry) :
     (p + q).high = p.high + q.high + carry p.low q.low := rfl
 
-@[simp] theorem neg_low (p : Carry) : (-p).low = p.low := rfl
+@[simp] lemma neg_low (p : Carry) : (-p).low = p.low := rfl
 
-@[simp] theorem neg_high (p : Carry) :
+@[simp] lemma neg_high (p : Carry) :
     (-p).high = p.high + p.low := rfl
 
 def pointEquiv : Carry ≃ Point where
@@ -11255,7 +11255,7 @@ def pointEquiv : Carry ≃ Point where
   left_inv _ := rfl
   right_inv _ := rfl
 
-@[simp] theorem pointEquiv_apply (p : Carry) :
+@[simp] lemma pointEquiv_apply (p : Carry) :
     pointEquiv p = (p.low, p.high) := rfl
 
 def code (p : Carry) : ZMod 4 :=
@@ -11271,14 +11271,14 @@ def codeEquiv : Carry ≃+ ZMod 4 where
   right_inv := by decide
   map_add' := by decide
 
-@[simp] theorem codeEquiv_apply (p : Carry) : codeEquiv p = code p := rfl
+@[simp] lemma codeEquiv_apply (p : Carry) : codeEquiv p = code p := rfl
 
-@[simp] theorem codeEquiv_symm_apply (z : ZMod 4) :
+@[simp] lemma codeEquiv_symm_apply (z : ZMod 4) :
     codeEquiv.symm z = decode z := rfl
 
-theorem exponent_four : ∀ p : Carry, 4 • p = 0 := by decide
+lemma exponent_four : ∀ p : Carry, 4 • p = 0 := by decide
 
-@[simp] theorem card : Fintype.card Carry = 4 := by decide
+@[simp] lemma card : Fintype.card Carry = 4 := by decide
 
 end Carry
 
@@ -11307,27 +11307,27 @@ def pointEvaluation (n : ℕ) (v : V) : CarryGroup n →+ FiniteCarry.Carry wher
           (shift n x.linear v * shift n y.linear v)
       congr 1
 
-@[simp] theorem pointEvaluation_low (n : ℕ) (v : V) (x : CarryGroup n) :
+@[simp] lemma pointEvaluation_low (n : ℕ) (v : V) (x : CarryGroup n) :
     (pointEvaluation n v x).low = shift n x.linear v := rfl
 
-@[simp] theorem pointEvaluation_high (n : ℕ) (v : V) (x : CarryGroup n) :
+@[simp] lemma pointEvaluation_high (n : ℕ) (v : V) (x : CarryGroup n) :
     (pointEvaluation n v x).high = x.quadratic (diagonal v) := rfl
 
 def evalFour (n : ℕ) (v : V) : CarryGroup n →+ ZMod 4 :=
   FiniteCarry.Carry.codeEquiv.toAddMonoidHom.comp (pointEvaluation n v)
 
-@[simp] theorem evalFour_apply (n : ℕ) (v : V) (x : CarryGroup n) :
+@[simp] lemma evalFour_apply (n : ℕ) (v : V) (x : CarryGroup n) :
     evalFour n v x =
       FiniteCarry.liftBit (shift n x.linear v) +
         2 * FiniteCarry.liftBit (x.quadratic (diagonal v)) := rfl
 
-@[simp] theorem evalFour_orderFourElement (n : ℕ) :
+@[simp] lemma evalFour_orderFourElement (n : ℕ) :
     evalFour n e (orderFourElement n) = 1 := by
   simp
 
 end CarryGroup
 
-private theorem continuous_shiftedCarry_linear_pair_apply (n : ℕ) (b : B) :
+private lemma continuous_shiftedCarry_linear_pair_apply (n : ℕ) (b : B) :
     Continuous (fun z : CarryGroup n × CarryGroup n =>
       shiftedCarry n z.1.linear z.2.linear b) := by
   rcases b with ⟨w, hw⟩
@@ -11357,7 +11357,7 @@ private theorem continuous_shiftedCarry_linear_pair_apply (n : ℕ) (b : B) :
       (fun _ : CarryGroup n × CarryGroup n => a)).mul hv using 1
     all_goals rfl
 
-private theorem continuous_shiftedCarry_linear_self_apply (n : ℕ) (b : B) :
+private lemma continuous_shiftedCarry_linear_self_apply (n : ℕ) (b : B) :
     Continuous (fun z : CarryGroup n => shiftedCarry n z.linear z.linear b) := by
   rcases b with ⟨w, hw⟩
   change Continuous
@@ -11433,39 +11433,39 @@ def fourthRootCharacter : PontryaginDual (Multiplicative (ZMod 4)) where
   toMonoidHom := fourthRootMonoidCharacter
   continuous_toFun := continuous_of_discreteTopology
 
-@[simp] theorem fourthRootCharacter_apply (a : ZMod 4) :
+@[simp] lemma fourthRootCharacter_apply (a : ZMod 4) :
     fourthRootCharacter (Multiplicative.ofAdd a) =
       ZMod.toCircle a := rfl
 
-@[simp] theorem fourthRootCharacter_zero :
+@[simp] lemma fourthRootCharacter_zero :
     fourthRootCharacter (Multiplicative.ofAdd (0 : ZMod 4)) = 1 := by
   exact map_one fourthRootCharacter
 
-theorem fourthRootCharacter_injective :
+lemma fourthRootCharacter_injective :
     Function.Injective fourthRootCharacter := by
   intro a b hab
   apply Multiplicative.toAdd.injective
   apply ZMod.injective_toCircle
   exact hab
 
-@[simp] theorem pontryaginDual_mul_apply {A : Type*} [Monoid A]
+@[simp] lemma pontryaginDual_mul_apply {A : Type*} [Monoid A]
     [TopologicalSpace A] (φ ψ : PontryaginDual A) (a : A) :
     (φ * ψ) a = φ a * ψ a := by
   rfl
 
-@[simp] theorem pontryaginDual_one_apply {A : Type*} [Monoid A]
+@[simp] lemma pontryaginDual_one_apply {A : Type*} [Monoid A]
     [TopologicalSpace A] (a : A) :
     (1 : PontryaginDual A) a = 1 := by
   rfl
 
-@[simp] theorem pontryaginDual_pow_apply {A : Type*} [Monoid A]
+@[simp] lemma pontryaginDual_pow_apply {A : Type*} [Monoid A]
     [TopologicalSpace A] (φ : PontryaginDual A) (m : ℕ) (a : A) :
     (φ ^ m) a = (φ a) ^ m := by
   induction m with
   | zero => simp
   | succ m ih => simp [pow_succ, ih]
 
-theorem E_four_nsmul (n : ℕ) (η : E n) : 4 • η = 0 := by
+lemma E_four_nsmul (n : ℕ) (η : E n) : 4 • η = 0 := by
   change (Additive.toMul η) ^ 4 = 1
   apply PontryaginDual.ext
   intro z
@@ -11476,7 +11476,7 @@ theorem E_four_nsmul (n : ℕ) (η : E n) : 4 • η = 0 := by
   simpa using congrArg
     (fun w : Multiplicative (CarryGroup n) => (Additive.toMul η) w) hz
 
-theorem continuous_evalFour (n : ℕ) (v : V) :
+lemma continuous_evalFour (n : ℕ) (v : V) :
     Continuous (CarryGroup.evalFour n v : CarryGroup n → ZMod 4) := by
   have hlift : Continuous (FiniteCarry.liftBit : F → ZMod 4) :=
     continuous_of_discreteTopology
@@ -11496,7 +11496,7 @@ def evalFourContinuous (n : ℕ) (v : V) :
   toMonoidHom := (CarryGroup.evalFour n v).toMultiplicative
   continuous_toFun := continuous_evalFour n v
 
-@[simp] theorem evalFourContinuous_apply (n : ℕ) (v : V)
+@[simp] lemma evalFourContinuous_apply (n : ℕ) (v : V)
     (z : CarryGroup n) :
     evalFourContinuous n v (Multiplicative.ofAdd z) =
       Multiplicative.ofAdd (CarryGroup.evalFour n v z) := rfl
@@ -11506,13 +11506,13 @@ def fourthRootCharacter.comp {A : Type*} [AddMonoid A] [TopologicalSpace A]
     PontryaginDual (Multiplicative A) :=
   PontryaginDual.map f fourthRootCharacter
 
-@[simp] theorem fourthRootCharacter.comp_apply
+@[simp] lemma fourthRootCharacter.comp_apply
     {A : Type*} [AddMonoid A] [TopologicalSpace A]
     (f : Multiplicative A →ₜ* Multiplicative (ZMod 4))
     (a : Multiplicative A) :
     fourthRootCharacter.comp f a = fourthRootCharacter (f a) := rfl
 
-theorem fourthRootCharacter_comp_sq_ne_one_of_apply
+lemma fourthRootCharacter_comp_sq_ne_one_of_apply
     {A : Type*} [AddMonoid A] [TopologicalSpace A]
     (f : Multiplicative A →ₜ* Multiplicative (ZMod 4))
     (a : Multiplicative A)
@@ -11534,11 +11534,11 @@ theorem fourthRootCharacter_comp_sq_ne_one_of_apply
 def epsilon (n : ℕ) (v : V) : E n :=
   Additive.ofMul (fourthRootCharacter.comp (evalFourContinuous n v))
 
-@[simp] theorem epsilon_apply (n : ℕ) (v : V) (z : CarryGroup n) :
+@[simp] lemma epsilon_apply (n : ℕ) (v : V) (z : CarryGroup n) :
     Additive.toMul (epsilon n v) (Multiplicative.ofAdd z) =
       ZMod.toCircle (CarryGroup.evalFour n v z) := rfl
 
-theorem epsilon_two_nsmul_ne_zero (n : ℕ) :
+lemma epsilon_two_nsmul_ne_zero (n : ℕ) :
     2 • epsilon n e ≠ 0 := by
   change (fourthRootCharacter.comp (evalFourContinuous n e)) ^ 2 ≠ 1
   apply fourthRootCharacter_comp_sq_ne_one_of_apply
@@ -11551,7 +11551,7 @@ theorem epsilon_two_nsmul_ne_zero (n : ℕ) :
   simpa using
     (by decide : (1 : ZMod 4) + (1 : ZMod 4) ≠ 0)
 
-theorem epsilon_addOrderOf (n : ℕ) :
+lemma epsilon_addOrderOf (n : ℕ) :
     addOrderOf (epsilon n e) = 4 := by
   exact addOrderOf_eq_prime_pow (p := 2) (n := 1)
     (by simpa using epsilon_two_nsmul_ne_zero n)
@@ -11561,7 +11561,7 @@ section GeneralPontryaginDual
 
 variable (A : Type*) [CommGroup A] [TopologicalSpace A] [IsTopologicalGroup A]
 
-theorem pontryaginDual_countable [CompactSpace A]
+lemma pontryaginDual_countable [CompactSpace A]
     [SecondCountableTopology A] : Countable (PontryaginDual A) := by
   letI : SecondCountableTopology C(A, Circle) := inferInstance
   letI : SecondCountableTopology (PontryaginDual A) :=
@@ -11612,7 +11612,7 @@ def dualAction (ρ : K →* MulAut A)
     simp [map_mul, MulAut.mul_apply]
 
 omit [IsTopologicalGroup A] in
-@[simp] theorem dualAction_apply
+@[simp] lemma dualAction_apply
     (ρ : K →* MulAut A)
     (hcont : ∀ k : K, Continuous (ρ k : A → A))
     (k : K) (χ : PontryaginDual A) (a : A) :
@@ -11629,14 +11629,14 @@ noncomputable instance instECountable (n : ℕ) : Countable (E n) := by
   change Countable (PontryaginDual (Multiplicative (CarryGroup n)))
   exact pontryaginDual_countable (Multiplicative (CarryGroup n))
 
-theorem shiftVector_injective (n : ℕ) :
+lemma shiftVector_injective (n : ℕ) :
     Function.Injective (shiftVector n) := by
   intro v w h
   funext i
   exact mul_left_cancel₀
     (pow_ne_zero n Polynomial.X_ne_zero) (congrFun h i)
 
-theorem shiftVector_range (n : ℕ) :
+lemma shiftVector_range (n : ℕ) :
     LinearMap.range (shiftVector n) = shiftedSubmodule n := by
   ext v
   rw [LinearMap.mem_range, mem_shiftedSubmodule_iff]
@@ -11652,7 +11652,7 @@ theorem shiftVector_range (n : ℕ) :
 def shiftKernel (n : ℕ) : Submodule F X :=
   LinearMap.ker (shift n)
 
-theorem shiftKernel_eq_dualAnnihilator (n : ℕ) :
+lemma shiftKernel_eq_dualAnnihilator (n : ℕ) :
     shiftKernel n = (shiftedSubmodule n).dualAnnihilator := by
   change LinearMap.ker (shiftVector n).dualMap = _
   rw [LinearMap.ker_dualMap_eq_dualAnnihilator_range, shiftVector_range]
@@ -11673,7 +11673,7 @@ noncomputable def shiftKernelEquivQuotient (n : ℕ) :
   (shiftKernelEquivDualQuotient n).trans
     (shiftedQuotientBasis n).toDualEquiv.symm
 
-theorem shiftKernel_card (n : ℕ) :
+lemma shiftKernel_card (n : ℕ) :
     Nat.card (shiftKernel n) = 2 ^ (4 * n) := by
   rw [Nat.card_congr (shiftKernelEquivQuotient n).toEquiv]
   exact shiftedQuotient_card n
@@ -11683,7 +11683,7 @@ def rho (n : ℕ) : CarryGroup n →+ X where
   map_zero' := rfl
   map_add' _ _ := rfl
 
-@[simp] theorem rho_apply (n : ℕ) (z : CarryGroup n) :
+@[simp] lemma rho_apply (n : ℕ) (z : CarryGroup n) :
     rho n z = z.linear := rfl
 
 def carryKernelInclusion (n : ℕ) : Y →+ CarryGroup n where
@@ -11694,13 +11694,13 @@ def carryKernelInclusion (n : ℕ) : Y →+ CarryGroup n where
     · simp
     · simp
 
-@[simp] theorem carryKernelInclusion_linear (n : ℕ) (q : Y) :
+@[simp] lemma carryKernelInclusion_linear (n : ℕ) (q : Y) :
     (carryKernelInclusion n q).linear = 0 := rfl
 
-@[simp] theorem carryKernelInclusion_quadratic (n : ℕ) (q : Y) :
+@[simp] lemma carryKernelInclusion_quadratic (n : ℕ) (q : Y) :
     (carryKernelInclusion n q).quadratic = q := rfl
 
-@[simp] theorem shift_zero_apply (ℓ : X) : shift 0 ℓ = ℓ := by
+@[simp] lemma shift_zero_apply (ℓ : X) : shift 0 ℓ = ℓ := by
   apply LinearMap.ext
   intro v
   simp [shift, shiftVector]
@@ -11717,13 +11717,13 @@ def carryPullback (n : ℕ) : CarryGroup n →+ CarryGroup 0 where
           shiftedCarry 0 (shift n z.linear) (shift n w.linear)
       simp [shiftedCarry]
 
-@[simp] theorem carryPullback_linear (n : ℕ) (z : CarryGroup n) :
+@[simp] lemma carryPullback_linear (n : ℕ) (z : CarryGroup n) :
     (carryPullback n z).linear = shift n z.linear := rfl
 
-@[simp] theorem carryPullback_quadratic (n : ℕ) (z : CarryGroup n) :
+@[simp] lemma carryPullback_quadratic (n : ℕ) (z : CarryGroup n) :
     (carryPullback n z).quadratic = z.quadratic := rfl
 
-theorem continuous_carryPullback (n : ℕ) :
+lemma continuous_carryPullback (n : ℕ) :
     Continuous (carryPullback n : CarryGroup n → CarryGroup 0) := by
   apply continuous_induced_rng.mpr
   exact ((continuous_shift n).comp (continuous_linear n)).prodMk
@@ -11739,13 +11739,13 @@ def shiftKernelInclusion (n : ℕ) : shiftKernel n →+ CarryGroup n where
       have hℓ : shift n ℓ.1 = 0 := ℓ.property
       simp [shiftedCarry, hℓ]
 
-@[simp] theorem shiftKernelInclusion_linear (n : ℕ) (ℓ : shiftKernel n) :
+@[simp] lemma shiftKernelInclusion_linear (n : ℕ) (ℓ : shiftKernel n) :
     (shiftKernelInclusion n ℓ).linear = ℓ.1 := rfl
 
-@[simp] theorem shiftKernelInclusion_quadratic (n : ℕ) (ℓ : shiftKernel n) :
+@[simp] lemma shiftKernelInclusion_quadratic (n : ℕ) (ℓ : shiftKernel n) :
     (shiftKernelInclusion n ℓ).quadratic = 0 := rfl
 
-theorem continuous_shiftKernelInclusion (n : ℕ) :
+lemma continuous_shiftKernelInclusion (n : ℕ) :
     Continuous (shiftKernelInclusion n : shiftKernel n → CarryGroup n) := by
   apply continuous_CarryGroup_iff.mpr
   exact ⟨fun v => (continuous_X_eval v).comp continuous_subtype_val,
@@ -11754,7 +11754,7 @@ theorem continuous_shiftKernelInclusion (n : ℕ) :
 def shiftVectorLeftInverse (n : ℕ) : V →ₗ[F] V :=
   (shiftVector n).leftInverse
 
-@[simp] theorem shiftVectorLeftInverse_shiftVector (n : ℕ) (v : V) :
+@[simp] lemma shiftVectorLeftInverse_shiftVector (n : ℕ) (v : V) :
     shiftVectorLeftInverse n (shiftVector n v) = v := by
   exact LinearMap.leftInverse_apply_of_inj
     (LinearMap.ker_eq_bot.mpr (shiftVector_injective n)) v
@@ -11770,14 +11770,14 @@ def shiftSection (n : ℕ) : X →ₗ[F] X where
     intro v
     rfl
 
-@[simp] theorem shiftSection_apply (n : ℕ) (ℓ : X) (v : V) :
+@[simp] lemma shiftSection_apply (n : ℕ) (ℓ : X) (v : V) :
     shiftSection n ℓ v = ℓ (shiftVectorLeftInverse n v) := rfl
 
-theorem continuous_shiftSection (n : ℕ) :
+lemma continuous_shiftSection (n : ℕ) :
     Continuous (shiftSection n : X → X) :=
   continuous_X_precomp (shiftVectorLeftInverse n)
 
-@[simp] theorem shift_shiftSection (n : ℕ) (ℓ : X) :
+@[simp] lemma shift_shiftSection (n : ℕ) (ℓ : X) :
     shift n (shiftSection n ℓ) = ℓ := by
   apply LinearMap.ext
   intro v
@@ -11796,19 +11796,19 @@ def carryPullbackSection (n : ℕ) : CarryGroup 0 →+ CarryGroup n where
           shiftedCarry n (shiftSection n z.linear) (shiftSection n w.linear)
       simp [shiftedCarry]
 
-@[simp] theorem carryPullbackSection_linear (n : ℕ) (z : CarryGroup 0) :
+@[simp] lemma carryPullbackSection_linear (n : ℕ) (z : CarryGroup 0) :
     (carryPullbackSection n z).linear = shiftSection n z.linear := rfl
 
-@[simp] theorem carryPullbackSection_quadratic (n : ℕ) (z : CarryGroup 0) :
+@[simp] lemma carryPullbackSection_quadratic (n : ℕ) (z : CarryGroup 0) :
     (carryPullbackSection n z).quadratic = z.quadratic := rfl
 
-theorem continuous_carryPullbackSection (n : ℕ) :
+lemma continuous_carryPullbackSection (n : ℕ) :
     Continuous (carryPullbackSection n : CarryGroup 0 → CarryGroup n) := by
   apply continuous_induced_rng.mpr
   exact ((continuous_shiftSection n).comp (continuous_linear 0)).prodMk
     (continuous_quadratic 0)
 
-@[simp] theorem carryPullback_carryPullbackSection
+@[simp] lemma carryPullback_carryPullbackSection
     (n : ℕ) (z : CarryGroup 0) :
     carryPullback n (carryPullbackSection n z) = z := by
   apply CarryGroup.ext
@@ -11821,7 +11821,7 @@ def carryPullbackContinuous (n : ℕ) :
     (AddMonoidHom.toMultiplicative (carryPullback n))
     (continuous_carryPullback n)
 
-@[simp] theorem carryPullbackContinuous_apply (n : ℕ) (z : CarryGroup n) :
+@[simp] lemma carryPullbackContinuous_apply (n : ℕ) (z : CarryGroup n) :
     carryPullbackContinuous n (Multiplicative.ofAdd z) =
       Multiplicative.ofAdd (carryPullback n z) := rfl
 
@@ -11831,12 +11831,12 @@ def carryPullbackSectionContinuous (n : ℕ) :
     (AddMonoidHom.toMultiplicative (carryPullbackSection n))
     (continuous_carryPullbackSection n)
 
-@[simp] theorem carryPullbackSectionContinuous_apply
+@[simp] lemma carryPullbackSectionContinuous_apply
     (n : ℕ) (z : CarryGroup 0) :
     carryPullbackSectionContinuous n (Multiplicative.ofAdd z) =
       Multiplicative.ofAdd (carryPullbackSection n z) := rfl
 
-@[simp] theorem carryPullbackContinuous_section_apply
+@[simp] lemma carryPullbackContinuous_section_apply
     (n : ℕ) (z : Multiplicative (CarryGroup 0)) :
     carryPullbackContinuous n (carryPullbackSectionContinuous n z) = z := by
   apply Multiplicative.toAdd.injective
@@ -11859,11 +11859,11 @@ def kernelProjection (n : ℕ) : CarryGroup n →+ shiftKernel n where
     rw [(shift n).map_add, (shiftSection n).map_add]
     abel
 
-@[simp] theorem kernelProjection_apply_coe (n : ℕ) (z : CarryGroup n) :
+@[simp] lemma kernelProjection_apply_coe (n : ℕ) (z : CarryGroup n) :
     (kernelProjection n z : X) =
       z.linear - shiftSection n (shift n z.linear) := rfl
 
-theorem continuous_kernelProjection (n : ℕ) :
+lemma continuous_kernelProjection (n : ℕ) :
     Continuous (kernelProjection n : CarryGroup n → shiftKernel n) := by
   exact ((continuous_linear n).sub
     ((continuous_shiftSection n).comp
@@ -11875,7 +11875,7 @@ def kernelProjectionContinuous (n : ℕ) :
     (AddMonoidHom.toMultiplicative (kernelProjection n))
     (continuous_kernelProjection n)
 
-@[simp] theorem kernelProjectionContinuous_apply
+@[simp] lemma kernelProjectionContinuous_apply
     (n : ℕ) (z : CarryGroup n) :
     kernelProjectionContinuous n (Multiplicative.ofAdd z) =
       Multiplicative.ofAdd (kernelProjection n z) := rfl
@@ -11886,12 +11886,12 @@ def shiftKernelInclusionContinuous (n : ℕ) :
     (AddMonoidHom.toMultiplicative (shiftKernelInclusion n))
     (continuous_shiftKernelInclusion n)
 
-@[simp] theorem shiftKernelInclusionContinuous_apply
+@[simp] lemma shiftKernelInclusionContinuous_apply
     (n : ℕ) (ℓ : shiftKernel n) :
     shiftKernelInclusionContinuous n (Multiplicative.ofAdd ℓ) =
       Multiplicative.ofAdd (shiftKernelInclusion n ℓ) := rfl
 
-@[simp] theorem kernelProjection_shiftKernelInclusion
+@[simp] lemma kernelProjection_shiftKernelInclusion
     (n : ℕ) (ℓ : shiftKernel n) :
     kernelProjection n (shiftKernelInclusion n ℓ) = ℓ := by
   apply Subtype.ext
@@ -11899,13 +11899,13 @@ def shiftKernelInclusionContinuous (n : ℕ) :
   have hℓ : shift n ℓ.1 = 0 := ℓ.property
   rw [hℓ, map_zero, sub_zero]
 
-@[simp] theorem kernelProjectionContinuous_inclusion_apply
+@[simp] lemma kernelProjectionContinuous_inclusion_apply
     (n : ℕ) (ℓ : Multiplicative (shiftKernel n)) :
     kernelProjectionContinuous n (shiftKernelInclusionContinuous n ℓ) = ℓ := by
   apply Multiplicative.toAdd.injective
   exact kernelProjection_shiftKernelInclusion n (Multiplicative.toAdd ℓ)
 
-@[simp] theorem kernelProjection_carryPullbackSection
+@[simp] lemma kernelProjection_carryPullbackSection
     (n : ℕ) (z : CarryGroup 0) :
     kernelProjection n (carryPullbackSection n z) = 0 := by
   apply Subtype.ext
@@ -11984,10 +11984,10 @@ private def coordinateProduct : V →ₗ[F] V →ₗ[F] V where
 private def tensorDiagonal : T →ₗ[F] V := TensorProduct.lift coordinateProduct
 
 set_option backward.isDefEq.respectTransparency false in
-private theorem scalar_mul_self (c : F) : c * c = c := by
+private lemma scalar_mul_self (c : F) : c * c = c := by
   fin_cases c <;> decide
 
-private theorem tensorDiagonal_square (v : V) : tensorDiagonal (square v) = v := by
+private lemma tensorDiagonal_square (v : V) : tensorDiagonal (square v) = v := by
   apply auxiliaryBasis.repr.injective
   ext i
   simp [tensorDiagonal, square, coordinateProduct, Finsupp.mul_apply,
@@ -11995,21 +11995,21 @@ private theorem tensorDiagonal_square (v : V) : tensorDiagonal (square v) = v :=
 
 def d : B →ₗ[F] V := tensorDiagonal.comp B.subtype
 
-@[simp] theorem d_diagonal (v : V) : d (diagonal v) = v :=
+@[simp] lemma d_diagonal (v : V) : d (diagonal v) = v :=
   tensorDiagonal_square v
 
-@[simp] theorem d_polarization (u v : V) : d (polarization u v) = 0 := by
+@[simp] lemma d_polarization (u v : V) : d (polarization u v) = 0 := by
   have h : u + v + d (polarization u v) = u + v := by
     symm
     simpa only [map_add, d_diagonal] using congrArg d (diagonal_add u v)
   apply add_left_cancel (a := u + v)
   simpa using h
 
-theorem d_surjective : Function.Surjective d := by
+lemma d_surjective : Function.Surjective d := by
   intro v
   exact ⟨diagonal v, d_diagonal v⟩
 
-theorem linearMap_ext_on_diagonal {W : Type*}
+lemma linearMap_ext_on_diagonal {W : Type*}
     [AddCommGroup W] [Module F W] {f g : B →ₗ[F] W}
     (h : ∀ v : V, f (diagonal v) = g (diagonal v)) : f = g := by
   apply LinearMap.ext
@@ -12039,7 +12039,7 @@ def binaryRootCharacter : PontryaginDual (Multiplicative F) where
   toMonoidHom := AddChar.toMonoidHomEquiv (ZMod.toCircle (N := 2))
   continuous_toFun := continuous_of_discreteTopology
 
-@[simp] theorem binaryRootCharacter_apply (a : F) :
+@[simp] lemma binaryRootCharacter_apply (a : F) :
     binaryRootCharacter (Multiplicative.ofAdd a) =
       ZMod.toCircle a := rfl
 
@@ -12048,7 +12048,7 @@ def carryLinearEvaluation (n : ℕ) (v : V) : CarryGroup n →+ F where
   map_zero' := rfl
   map_add' _ _ := rfl
 
-@[simp] theorem carryLinearEvaluation_apply (n : ℕ) (v : V)
+@[simp] lemma carryLinearEvaluation_apply (n : ℕ) (v : V)
     (z : CarryGroup n) :
     carryLinearEvaluation n v z = z.linear v := rfl
 
@@ -12057,7 +12057,7 @@ def carryLinearEvaluationContinuous (n : ℕ) (v : V) :
   toMonoidHom := (carryLinearEvaluation n v).toMultiplicative
   continuous_toFun := continuous_linear_eval n v
 
-@[simp] theorem carryLinearEvaluationContinuous_apply (n : ℕ) (v : V)
+@[simp] lemma carryLinearEvaluationContinuous_apply (n : ℕ) (v : V)
     (z : CarryGroup n) :
     carryLinearEvaluationContinuous n v (Multiplicative.ofAdd z) =
       Multiplicative.ofAdd (z.linear v) := rfl
@@ -12067,7 +12067,7 @@ def iotaCharacter (n : ℕ) (v : V) : E n :=
     (PontryaginDual.map (carryLinearEvaluationContinuous n v)
       binaryRootCharacter)
 
-@[simp] theorem iotaCharacter_apply (n : ℕ) (v : V) (z : CarryGroup n) :
+@[simp] lemma iotaCharacter_apply (n : ℕ) (v : V) (z : CarryGroup n) :
     Additive.toMul (iotaCharacter n v) (Multiplicative.ofAdd z) =
       ZMod.toCircle (z.linear v) := rfl
 
@@ -12088,11 +12088,11 @@ def iota (n : ℕ) : V →+ E n where
         ZMod.toCircle ((Multiplicative.toAdd z).linear w)
     rw [map_add, AddChar.map_add_eq_mul]
 
-@[simp] theorem iota_apply (n : ℕ) (v : V) (z : CarryGroup n) :
+@[simp] lemma iota_apply (n : ℕ) (v : V) (z : CarryGroup n) :
     Additive.toMul (iota n v) (Multiplicative.ofAdd z) =
       ZMod.toCircle (z.linear v) := rfl
 
-theorem iota_injective (n : ℕ) : Function.Injective (iota n) := by
+lemma iota_injective (n : ℕ) : Function.Injective (iota n) := by
   intro v w h
   apply Module.eval_apply_injective F
   apply LinearMap.ext
@@ -12102,7 +12102,7 @@ theorem iota_injective (n : ℕ) : Function.Injective (iota n) := by
     (Multiplicative.ofAdd (⟨ℓ, 0⟩ : CarryGroup n))
   exact ZMod.injective_toCircle hpoint
 
-theorem circle_four_square_liftBit (a : F) :
+lemma circle_four_square_liftBit (a : F) :
     (ZMod.toCircle (FiniteCarry.liftBit a) : Circle) ^ 2 =
       ZMod.toCircle a := by
   fin_cases a
@@ -12130,7 +12130,7 @@ def quadraticInclusionContinuous (n : ℕ) :
     · intro w
       exact continuous_Y_eval w
 
-@[simp] theorem quadraticInclusionContinuous_apply (n : ℕ) (q : Y) :
+@[simp] lemma quadraticInclusionContinuous_apply (n : ℕ) (q : Y) :
     quadraticInclusionContinuous n (Multiplicative.ofAdd q) =
       Multiplicative.ofAdd (⟨0, q⟩ : CarryGroup n) := rfl
 
@@ -12138,11 +12138,11 @@ def quadraticRestriction (n : ℕ) :
     E n →+ Additive (PontryaginDual (Multiplicative Y)) :=
   (PontryaginDual.map (quadraticInclusionContinuous n)).toMonoidHom.toAdditive
 
-@[simp] theorem quadraticRestriction_apply (n : ℕ) (η : E n) (q : Y) :
+@[simp] lemma quadraticRestriction_apply (n : ℕ) (η : E n) (q : Y) :
     Additive.toMul (quadraticRestriction n η) (Multiplicative.ofAdd q) =
       Additive.toMul η (Multiplicative.ofAdd (⟨0, q⟩ : CarryGroup n)) := rfl
 
-theorem iota_range_le_ker_quadraticRestriction (n : ℕ) :
+lemma iota_range_le_ker_quadraticRestriction (n : ℕ) :
     (iota n).range ≤ (quadraticRestriction n).ker := by
   rintro _ ⟨v, rfl⟩
   change quadraticRestriction n (iota n v) = 0
@@ -12167,7 +12167,7 @@ def quadraticCharacter (b : B) :
   Additive.ofMul (PontryaginDual.map (quadraticEvaluationContinuous b)
     binaryRootCharacter)
 
-@[simp] theorem quadraticCharacter_apply (b : B) (q : Y) :
+@[simp] lemma quadraticCharacter_apply (b : B) (q : Y) :
     Additive.toMul (quadraticCharacter b) (Multiplicative.ofAdd q) =
       ZMod.toCircle (q b) := rfl
 
@@ -12188,11 +12188,11 @@ def quadraticPairing : B →+ Additive (PontryaginDual (Multiplicative Y)) where
         ZMod.toCircle ((Multiplicative.toAdd q) c)
     rw [map_add, AddChar.map_add_eq_mul]
 
-@[simp] theorem quadraticPairing_apply (b : B) (q : Y) :
+@[simp] lemma quadraticPairing_apply (b : B) (q : Y) :
     Additive.toMul (quadraticPairing b) (Multiplicative.ofAdd q) =
       ZMod.toCircle (q b) := rfl
 
-theorem circle_four_twice_liftBit (a : F) :
+lemma circle_four_twice_liftBit (a : F) :
     ZMod.toCircle (2 * FiniteCarry.liftBit a : ZMod 4) =
       ZMod.toCircle a := by
   calc
@@ -12202,7 +12202,7 @@ theorem circle_four_twice_liftBit (a : F) :
       simp [two_mul]
     _ = ZMod.toCircle a := circle_four_square_liftBit a
 
-theorem quadraticRestriction_epsilon (n : ℕ) (v : V) :
+lemma quadraticRestriction_epsilon (n : ℕ) (v : V) :
     quadraticRestriction n (epsilon n v) = quadraticPairing (diagonal v) := by
   apply Additive.toMul.injective
   apply PontryaginDual.ext
@@ -12214,7 +12214,7 @@ theorem quadraticRestriction_epsilon (n : ℕ) (v : V) :
   simpa [shift] using
     circle_four_twice_liftBit ((Multiplicative.toAdd q) (diagonal v))
 
-theorem quadraticPairing_range_le_quadraticRestriction_range (n : ℕ) :
+lemma quadraticPairing_range_le_quadraticRestriction_range (n : ℕ) :
     quadraticPairing.range ≤ (quadraticRestriction n).range := by
   rintro _ ⟨b, rfl⟩
   rcases b with ⟨b, hb⟩
@@ -12258,10 +12258,10 @@ theorem quadraticPairing_range_le_quadraticRestriction_range (n : ℕ) :
         exact ih
 
 set_option backward.isDefEq.respectTransparency false in
-private theorem binary_sq_eq_self (a : F) : a * a = a := by
+private lemma binary_sq_eq_self (a : F) : a * a = a := by
   fin_cases a <;> decide
 
-theorem carry_self_eq_evaluate_d (ℓ : X) (b : B) :
+lemma carry_self_eq_evaluate_d (ℓ : X) (b : B) :
     carry ℓ ℓ b = ℓ (d b) := by
   let lhs : B →ₗ[F] F := carry ℓ ℓ
   let rhs : B →ₗ[F] F := ℓ.comp d
@@ -12273,26 +12273,26 @@ theorem carry_self_eq_evaluate_d (ℓ : X) (b : B) :
     exact binary_sq_eq_self (ℓ v)
   exact DFunLike.congr_fun h b
 
-theorem shiftedCarry_self_eq_evaluate_d (n : ℕ) (ℓ : X) (b : B) :
+lemma shiftedCarry_self_eq_evaluate_d (n : ℕ) (ℓ : X) (b : B) :
     shiftedCarry n ℓ ℓ b = ℓ (shiftVector n (d b)) := by
   exact carry_self_eq_evaluate_d (shift n ℓ) b
 
 def linearSection (n : ℕ) (ℓ : X) : CarryGroup n := ⟨ℓ, 0⟩
 
-@[simp] theorem linearSection_linear (n : ℕ) (ℓ : X) :
+@[simp] lemma linearSection_linear (n : ℕ) (ℓ : X) :
     (linearSection n ℓ).linear = ℓ := rfl
 
-@[simp] theorem linearSection_quadratic (n : ℕ) (ℓ : X) :
+@[simp] lemma linearSection_quadratic (n : ℕ) (ℓ : X) :
     (linearSection n ℓ).quadratic = 0 := rfl
 
-@[simp] theorem linearSection_zero (n : ℕ) : linearSection n 0 = 0 := rfl
+@[simp] lemma linearSection_zero (n : ℕ) : linearSection n 0 = 0 := rfl
 
-theorem continuous_linearSection (n : ℕ) :
+lemma continuous_linearSection (n : ℕ) :
     Continuous (linearSection n) := by
   apply continuous_CarryGroup_iff.mpr
   exact ⟨fun v => continuous_X_eval v, fun _ => continuous_const⟩
 
-theorem linearSection_add (n : ℕ) (ℓ ℓ' : X) :
+lemma linearSection_add (n : ℕ) (ℓ ℓ' : X) :
     linearSection n ℓ + linearSection n ℓ' =
       linearSection n (ℓ + ℓ') +
         carryKernelInclusion n (shiftedCarry n ℓ ℓ') := by
@@ -12303,10 +12303,10 @@ theorem linearSection_add (n : ℕ) (ℓ ℓ' : X) :
 def evalEta {n : ℕ} (η : E n) (z : CarryGroup n) : Circle :=
   Additive.toMul η (Multiplicative.ofAdd z)
 
-@[simp] theorem evalEta_zero {n : ℕ} (η : E n) : evalEta η 0 = 1 :=
+@[simp] lemma evalEta_zero {n : ℕ} (η : E n) : evalEta η 0 = 1 :=
   map_one (Additive.toMul η)
 
-theorem evalEta_add {n : ℕ} (η : E n) (z w : CarryGroup n) :
+lemma evalEta_add {n : ℕ} (η : E n) (z w : CarryGroup n) :
     evalEta η (z + w) = evalEta η z * evalEta η w := by
   change (Additive.toMul η)
       (Multiplicative.ofAdd z * Multiplicative.ofAdd w) =
@@ -12315,14 +12315,14 @@ theorem evalEta_add {n : ℕ} (η : E n) (z w : CarryGroup n) :
   exact map_mul (Additive.toMul η)
     (Multiplicative.ofAdd z) (Multiplicative.ofAdd w)
 
-theorem evalEta_kernel {n : ℕ} (η : E n)
+lemma evalEta_kernel {n : ℕ} (η : E n)
     (h : quadraticRestriction n η = 0) (q : Y) :
     evalEta η (carryKernelInclusion n q) = 1 := by
   have hpoint := DFunLike.congr_fun (congrArg Additive.toMul h)
     (Multiplicative.ofAdd q)
   exact hpoint
 
-theorem evalEta_linearSection_add {n : ℕ} (η : E n)
+lemma evalEta_linearSection_add {n : ℕ} (η : E n)
     (h : quadraticRestriction n η = 0) (ℓ ℓ' : X) :
     evalEta η (linearSection n (ℓ + ℓ')) =
       evalEta η (linearSection n ℓ) *
@@ -12345,12 +12345,12 @@ def kernelCharacter (n : ℕ) (η : E n)
   continuous_toFun :=
     (Additive.toMul η).continuous.comp (continuous_linearSection n)
 
-@[simp] theorem kernelCharacter_apply (n : ℕ) (η : E n)
+@[simp] lemma kernelCharacter_apply (n : ℕ) (η : E n)
     (h : quadraticRestriction n η = 0) (ℓ : X) :
     kernelCharacter n η h (Multiplicative.ofAdd ℓ) =
       evalEta η (linearSection n ℓ) := rfl
 
-theorem evalEta_eq_kernelCharacter_linear {n : ℕ} (η : E n)
+lemma evalEta_eq_kernelCharacter_linear {n : ℕ} (η : E n)
     (h : quadraticRestriction n η = 0) (z : CarryGroup n) :
     evalEta η z =
       kernelCharacter n η h (Multiplicative.ofAdd z.linear) := by
@@ -12365,14 +12365,14 @@ def sigma (n : ℕ) : E n →+ B :=
   (pointwisePontryaginDualEquiv B).toAddMonoidHom.comp
     (quadraticRestriction n)
 
-theorem sigma_characterization (n : ℕ) (η : E n) (q : Y) :
+lemma sigma_characterization (n : ℕ) (η : E n) (q : Y) :
     ZMod.toCircle (q (sigma n η)) =
       Additive.toMul η
         (Multiplicative.ofAdd (⟨0, q⟩ : CarryGroup n)) := by
   exact pointwisePontryaginDualEquiv_apply_character B
     (quadraticRestriction n η) q
 
-@[simp] theorem sigma_epsilon (n : ℕ) (v : V) :
+@[simp] lemma sigma_epsilon (n : ℕ) (v : V) :
     sigma n (epsilon n v) = diagonal v := by
   change pointwisePontryaginDualEquiv B
     (quadraticRestriction n (epsilon n v)) = diagonal v
@@ -12381,7 +12381,7 @@ theorem sigma_characterization (n : ℕ) (η : E n) (q : Y) :
     (pointwiseEvaluationHom B (diagonal v)) = diagonal v
   exact (pointwisePontryaginDualEquiv B).apply_symm_apply (diagonal v)
 
-theorem sigma_surjective (n : ℕ) : Function.Surjective (sigma n) := by
+lemma sigma_surjective (n : ℕ) : Function.Surjective (sigma n) := by
   intro b
   have hb : quadraticPairing b ∈ quadraticPairing.range := ⟨b, rfl⟩
   obtain ⟨η, hη⟩ :=
@@ -12394,12 +12394,12 @@ theorem sigma_surjective (n : ℕ) : Function.Surjective (sigma n) := by
     (pointwiseEvaluationHom B b) = b
   exact (pointwisePontryaginDualEquiv B).apply_symm_apply b
 
-theorem sigma_eq_zero_iff (n : ℕ) (η : E n) :
+lemma sigma_eq_zero_iff (n : ℕ) (η : E n) :
     sigma n η = 0 ↔ quadraticRestriction n η = 0 := by
   change pointwisePontryaginDualEquiv B (quadraticRestriction n η) = 0 ↔ _
   exact (pointwisePontryaginDualEquiv B).map_eq_zero_iff
 
-theorem sigma_ker (n : ℕ) : (sigma n).ker = (iota n).range := by
+lemma sigma_ker (n : ℕ) : (sigma n).ker = (iota n).range := by
   ext η
   constructor
   · intro hη
@@ -12421,7 +12421,7 @@ theorem sigma_ker (n : ℕ) : (sigma n).ker = (iota n).range := by
     exact (sigma_eq_zero_iff n (iota n v)).mpr
       (iota_range_le_ker_quadraticRestriction n ⟨v, rfl⟩)
 
-theorem two_nsmul_eta (n : ℕ) (η : E n) :
+lemma two_nsmul_eta (n : ℕ) (η : E n) :
     (2 : ℕ) • η = iota n (shiftVector n (d (sigma n η))) := by
   apply Additive.toMul.injective
   apply PontryaginDual.ext
@@ -12509,7 +12509,7 @@ instance normalizedAddHaar_isAddHaarMeasure
   unfold normalizedAddHaar
   infer_instance
 
-theorem normalizedAddHaar_unique
+lemma normalizedAddHaar_unique
     (A : Type u) [AddGroup A] [TopologicalSpace A] [CompactSpace A]
     [IsTopologicalAddGroup A] [SecondCountableTopology A]
     [MeasurableSpace A] [BorelSpace A]
@@ -12522,7 +12522,7 @@ theorem normalizedAddHaar_unique
   change μ = μ Set.univ • normalizedAddHaar A at h
   simpa using h
 
-theorem normalizedAddHaar_preserving_addEquiv
+lemma normalizedAddHaar_preserving_addEquiv
     (A : Type u) [AddCommGroup A] [TopologicalSpace A] [CompactSpace A]
     [IsTopologicalAddGroup A] [SecondCountableTopology A]
     [MeasurableSpace A] [BorelSpace A]
@@ -12536,7 +12536,7 @@ theorem normalizedAddHaar_preserving_addEquiv
   refine ⟨he.measurable, ?_⟩
   exact normalizedAddHaar_unique A (μ.map e)
 
-theorem skew_add_translation_measurePreserving
+lemma skew_add_translation_measurePreserving
     {P Q : Type*} [AddCommGroup P] [AddCommGroup Q]
     [TopologicalSpace P] [TopologicalSpace Q]
     [IsTopologicalAddGroup P] [IsTopologicalAddGroup Q]
@@ -12580,7 +12580,7 @@ instance productHaar_isAddLeftInvariant :
         (normalizedAddHaar X).prod (normalizedAddHaar Y)
     exact (hx.prod hy).map_eq
 
-theorem productHaar_eq_normalizedAddHaar :
+lemma productHaar_eq_normalizedAddHaar :
     productHaar = normalizedAddHaar (X × Y) :=
   normalizedAddHaar_unique (X × Y) productHaar
 
@@ -12589,14 +12589,14 @@ instance productHaar_isAddHaarMeasure :
   rw [productHaar_eq_normalizedAddHaar]
   infer_instance
 
-theorem productHaar_preserving_addEquiv
+lemma productHaar_preserving_addEquiv
     (e : (X × Y) ≃+ (X × Y))
     (he : Continuous e) (heinv : Continuous e.symm) :
     MeasurePreserving e productHaar productHaar := by
   rw [productHaar_eq_normalizedAddHaar]
   exact normalizedAddHaar_preserving_addEquiv (X × Y) e he heinv
 
-private theorem continuous_shiftedCarry_right (n : ℕ) (ℓ : X) :
+private lemma continuous_shiftedCarry_right (n : ℕ) (ℓ : X) :
     Continuous (fun x : X ↦ shiftedCarry n ℓ x) := by
   apply continuous_Y_iff.mpr
   rintro ⟨w, hw⟩
@@ -12623,7 +12623,7 @@ private theorem continuous_shiftedCarry_right (n : ℕ) (ℓ : X) :
     convert (continuous_const : Continuous (fun _ : X => r)).mul hv using 1
     rfl
 
-theorem carryTranslation_measurePreserving (n : ℕ) (a : CarryGroup n) :
+lemma carryTranslation_measurePreserving (n : ℕ) (a : CarryGroup n) :
     MeasurePreserving
       (fun z : X × Y ↦
         (a.linear + z.1,
@@ -12682,7 +12682,7 @@ instance carryHaar_isAddLeftInvariant (n : ℕ) :
           (Measure.map_map he ht).symm
     _ = productHaar.map (carryHomeomorph n).symm := by rw [hpres]
 
-theorem carryHaar_eq_normalizedAddHaar (n : ℕ) :
+lemma carryHaar_eq_normalizedAddHaar (n : ℕ) :
     carryHaar n = normalizedAddHaar (CarryGroup n) :=
   normalizedAddHaar_unique (CarryGroup n) (carryHaar n)
 
@@ -12691,7 +12691,7 @@ instance carryHaar_isAddHaarMeasure (n : ℕ) :
   rw [carryHaar_eq_normalizedAddHaar n]
   infer_instance
 
-theorem carryHaar_preserving_addEquiv (n : ℕ)
+lemma carryHaar_preserving_addEquiv (n : ℕ)
     (e : CarryGroup n ≃+ CarryGroup n)
     (he : Continuous e) (heinv : Continuous e.symm) :
     MeasurePreserving e (carryHaar n) (carryHaar n) := by
@@ -12702,11 +12702,11 @@ def carryCoordinatesMeasurableEquiv (n : ℕ) :
     CarryGroup n ≃ᵐ X × Y :=
   (carryHomeomorph n).toMeasurableEquiv
 
-@[simp] theorem carryCoordinatesMeasurableEquiv_apply
+@[simp] lemma carryCoordinatesMeasurableEquiv_apply
     (n : ℕ) (z : CarryGroup n) :
     carryCoordinatesMeasurableEquiv n z = (z.linear, z.quadratic) := rfl
 
-theorem carryCoordinates_measurePreserving (n : ℕ) :
+lemma carryCoordinates_measurePreserving (n : ℕ) :
     MeasurePreserving (carryCoordinatesMeasurableEquiv n)
       (carryHaar n) productHaar := by
   refine ⟨(carryHomeomorph n).continuous.measurable, ?_⟩
@@ -12736,12 +12736,12 @@ private def linearEvaluationCharacter (n : ℕ) (v : V) : E n :=
           Continuous (fun x : F => (ZMod.toCircle x : Circle))).comp
           (continuous_linear_eval n v) }
 
-@[simp] private theorem linearEvaluationCharacter_apply
+@[simp] private lemma linearEvaluationCharacter_apply
     (n : ℕ) (v : V) (z : CarryGroup n) :
     Additive.toMul (linearEvaluationCharacter n v) (Multiplicative.ofAdd z) =
       ZMod.toCircle (z.linear v) := rfl
 
-theorem carry_pontryagin_characters_separate
+lemma carry_pontryagin_characters_separate
     (n : ℕ) (x y : CarryGroup n) (hxy : x ≠ y) :
     ∃ χ : E n,
       Additive.toMul χ (Multiplicative.ofAdd x) ≠
@@ -12770,24 +12770,24 @@ def carryComplexCharacter (n : ℕ) (η : E n) : C(CarryGroup n, ℂ) where
   toFun z := (Additive.toMul η (Multiplicative.ofAdd z) : ℂ)
   continuous_toFun := continuous_subtype_val.comp (Additive.toMul η).continuous
 
-@[simp] theorem carryComplexCharacter_apply
+@[simp] lemma carryComplexCharacter_apply
     (n : ℕ) (η : E n) (z : CarryGroup n) :
     carryComplexCharacter n η z =
       (Additive.toMul η (Multiplicative.ofAdd z) : ℂ) := rfl
 
-@[simp] theorem carryComplexCharacter_zero (n : ℕ) :
+@[simp] lemma carryComplexCharacter_zero (n : ℕ) :
     carryComplexCharacter n 0 = 1 := by
   ext z
   rfl
 
-@[simp] theorem carryComplexCharacter_add
+@[simp] lemma carryComplexCharacter_add
     (n : ℕ) (η θ : E n) :
     carryComplexCharacter n (η + θ) =
       carryComplexCharacter n η * carryComplexCharacter n θ := by
   ext z
   rfl
 
-theorem carryComplexCharacter_star (n : ℕ) (η : E n) :
+lemma carryComplexCharacter_star (n : ℕ) (η : E n) :
     star (carryComplexCharacter n η) = carryComplexCharacter n (-η) := by
   ext z
   exact (Circle.coe_inv_eq_conj
@@ -12803,7 +12803,7 @@ def carryCharacterSubalgebra (n : ℕ) :
     rintro _ ⟨η, rfl⟩
     exact Algebra.subset_adjoin ⟨-η, (carryComplexCharacter_star n η).symm⟩
 
-theorem carryCharacterSubalgebra_toSubmodule (n : ℕ) :
+lemma carryCharacterSubalgebra_toSubmodule (n : ℕ) :
     (carryCharacterSubalgebra n).toSubalgebra.toSubmodule =
       span ℂ (range (carryComplexCharacter n)) := by
   apply Algebra.adjoin_eq_span_of_subset
@@ -12814,7 +12814,7 @@ theorem carryCharacterSubalgebra_toSubmodule (n : ℕ) :
   · rintro _ _ _ _ ⟨η, rfl⟩ ⟨θ, rfl⟩
     exact ⟨η + θ, carryComplexCharacter_add n η θ⟩
 
-theorem carryComplexCharacter_span_closure_eq_top (n : ℕ) :
+lemma carryComplexCharacter_span_closure_eq_top (n : ℕ) :
     (span ℂ (range (carryComplexCharacter n))).topologicalClosure = ⊤ := by
   have hsep : (carryCharacterSubalgebra n).SeparatesPoints := by
     intro x y hxy
@@ -12831,7 +12831,7 @@ theorem carryComplexCharacter_span_closure_eq_top (n : ℕ) :
 def carryCharacterL2 (n : ℕ) (η : E n) : Lp ℂ 2 (carryHaar n) :=
   ContinuousMap.toLp 2 (carryHaar n) ℂ (carryComplexCharacter n η)
 
-theorem carryCharacterL2_span_closure_eq_top (n : ℕ) :
+lemma carryCharacterL2_span_closure_eq_top (n : ℕ) :
     (span ℂ (range (carryCharacterL2 n))).topologicalClosure = ⊤ := by
   convert!
     (ContinuousMap.toLp_denseRange (p := (2 : ℝ≥0∞))
@@ -12842,7 +12842,7 @@ theorem carryCharacterL2_span_closure_eq_top (n : ℕ) :
   rw [range_comp']
   simp only [ContinuousLinearMap.coe_coe]
 
-private theorem integral_add_character_eq_zero
+private lemma integral_add_character_eq_zero
     {G : Type*} [AddCommGroup G] [TopologicalSpace G]
     [IsTopologicalAddGroup G] [MeasurableSpace G] [BorelSpace G]
     (μ : Measure G) [μ.IsAddLeftInvariant]
@@ -12884,7 +12884,7 @@ private theorem integral_add_character_eq_zero
     exact Circle.coe_eq_one.mp (sub_eq_zero.mp h)
   · exact h
 
-theorem carryCharacterL2_orthonormal (n : ℕ) :
+lemma carryCharacterL2_orthonormal (n : ℕ) :
     Orthonormal ℂ (carryCharacterL2 n) := by
   classical
   rw [orthonormal_iff_ite]
@@ -12937,7 +12937,7 @@ def carryFourierBasis (n : ℕ) :
   HilbertBasis.mk (carryCharacterL2_orthonormal n)
     (carryCharacterL2_span_closure_eq_top n).ge
 
-@[simp] theorem carryFourierBasis_coe (n : ℕ) :
+@[simp] lemma carryFourierBasis_coe (n : ℕ) :
     ⇑(carryFourierBasis n) = carryCharacterL2 n :=
   HilbertBasis.coe_mk _ _
 
@@ -12949,13 +12949,13 @@ abbrev carryFourierEquiv (n : ℕ) :
     (lp (fun _ : E n => ℂ) 2) ≃ₗᵢ[ℂ] Lp ℂ 2 (carryHaar n) :=
   carryFourierTransform n
 
-theorem carryFourierTransform_single (n : ℕ) [DecidableEq (E n)] (η : E n) :
+lemma carryFourierTransform_single (n : ℕ) [DecidableEq (E n)] (η : E n) :
     carryFourierTransform n (lp.single 2 η 1) = carryCharacterL2 n η := by
   exact Orthonormal.linearIsometryEquiv_symm_apply_single_one
     (carryCharacterL2_orthonormal n)
     (carryCharacterL2_span_closure_eq_top n).ge η
 
-theorem carryFourierEquiv_single (n : ℕ) [DecidableEq (E n)] (η : E n) :
+lemma carryFourierEquiv_single (n : ℕ) [DecidableEq (E n)] (η : E n) :
     carryFourierEquiv n (lp.single 2 η 1) = carryCharacterL2 n η :=
   carryFourierTransform_single n η
 
@@ -12973,12 +12973,12 @@ def carryBidualEvaluation (n : ℕ) (z : CarryGroup n) :
       map_mul' _ _ := rfl }
   continuous_toFun := continuous_of_discreteTopology
 
-@[simp] theorem carryBidualEvaluation_apply
+@[simp] lemma carryBidualEvaluation_apply
     (n : ℕ) (z : CarryGroup n) (η : E n) :
     carryBidualEvaluation n z (Multiplicative.ofAdd η) =
       Additive.toMul η (Multiplicative.ofAdd z) := rfl
 
-theorem continuous_carryBidualEvaluation (n : ℕ) :
+lemma continuous_carryBidualEvaluation (n : ℕ) :
     Continuous (carryBidualEvaluation n) := by
   change Continuous
     (fun z : CarryGroup n =>
@@ -12989,7 +12989,7 @@ theorem continuous_carryBidualEvaluation (n : ℕ) :
   intro η
   exact (η : PontryaginDual (Multiplicative (CarryGroup n))).continuous
 
-theorem carryBidualEvaluation_injective (n : ℕ) :
+lemma carryBidualEvaluation_injective (n : ℕ) :
     Function.Injective (carryBidualEvaluation n) := by
   intro x y hxy
   by_contra hne
@@ -13013,7 +13013,7 @@ def linearCoord (n : ℕ)
     (φ : PontryaginDual (Multiplicative (E n))) : X :=
   characterLinear V (restrictIota n φ)
 
-theorem linearCoord_spec (n : ℕ)
+lemma linearCoord_spec (n : ℕ)
     (φ : PontryaginDual (Multiplicative (E n))) (v : V) :
     ZMod.toCircle (linearCoord n φ v) =
       φ (Multiplicative.ofAdd (iota n v)) :=
@@ -13028,7 +13028,7 @@ def residualCharacter (n : ℕ)
     PontryaginDual (Multiplicative (E n)) :=
   φ * (carryBidualEvaluation n (linearCandidate n φ))⁻¹
 
-theorem residual_iota (n : ℕ)
+lemma residual_iota (n : ℕ)
     (φ : PontryaginDual (Multiplicative (E n))) (v : V) :
     residualCharacter n φ (Multiplicative.ofAdd (iota n v)) = 1 := by
   change φ (Multiplicative.ofAdd (iota n v)) *
@@ -13040,14 +13040,14 @@ def sigmaMultiplicative (n : ℕ) :
     Multiplicative (E n) →* Multiplicative B :=
   (sigma n).toMultiplicative
 
-theorem sigmaMultiplicative_surjective (n : ℕ) :
+lemma sigmaMultiplicative_surjective (n : ℕ) :
     Function.Surjective (sigmaMultiplicative n) := by
   intro b
   obtain ⟨η, hη⟩ := sigma_surjective n (Multiplicative.toAdd b)
   exact ⟨Multiplicative.ofAdd η,
     Multiplicative.toAdd.injective hη⟩
 
-theorem residual_ker (n : ℕ)
+lemma residual_ker (n : ℕ)
     (φ : PontryaginDual (Multiplicative (E n))) :
     (sigmaMultiplicative n).ker ≤ (residualCharacter n φ).toMonoidHom.ker := by
   intro η hη
@@ -13072,7 +13072,7 @@ def residualOnB (n : ℕ)
     (residual_ker n φ)
 
 set_option maxHeartbeats 600000 in
-@[simp] theorem residualOnB_sigma (n : ℕ)
+@[simp] lemma residualOnB_sigma (n : ℕ)
     (φ : PontryaginDual (Multiplicative (E n))) (η : E n) :
     residualOnB n φ (Multiplicative.ofAdd (sigma n η)) =
       residualCharacter n φ (Multiplicative.ofAdd η) := by
@@ -13096,7 +13096,7 @@ def quadraticCoord (n : ℕ)
     (φ : PontryaginDual (Multiplicative (E n))) : Y :=
   characterLinear B (residualBCharacter n φ)
 
-theorem quadraticCoord_spec (n : ℕ)
+lemma quadraticCoord_spec (n : ℕ)
     (φ : PontryaginDual (Multiplicative (E n))) (η : E n) :
     ZMod.toCircle (quadraticCoord n φ (sigma n η)) =
       residualCharacter n φ (Multiplicative.ofAdd η) := by
@@ -13105,7 +13105,7 @@ theorem quadraticCoord_spec (n : ℕ)
   rw [characterLinear_circle]
   exact residualOnB_sigma n φ η
 
-theorem evaluation_surjective (n : ℕ) :
+lemma evaluation_surjective (n : ℕ) :
     Function.Surjective (carryBidualEvaluation n) := by
   intro φ
   let l : X := linearCoord n φ
@@ -13138,7 +13138,7 @@ theorem evaluation_surjective (n : ℕ) :
 
 end CarryBidualInternal
 
-theorem carryBidualEvaluation_surjective (n : ℕ) :
+lemma carryBidualEvaluation_surjective (n : ℕ) :
     Function.Surjective (carryBidualEvaluation n) :=
   CarryBidualInternal.evaluation_surjective n
 
@@ -13152,7 +13152,7 @@ noncomputable def carryBidualHomeomorph (n : ℕ) :
   (continuous_carryBidualEvaluation n).homeoOfEquivCompactToT2
     (f := carryBidualEquiv n)
 
-@[simp] theorem carryBidualHomeomorph_apply
+@[simp] lemma carryBidualHomeomorph_apply
     (n : ℕ) (z : CarryGroup n) (η : E n) :
     carryBidualHomeomorph n z (Multiplicative.ofAdd η) =
       Additive.toMul η (Multiplicative.ofAdd z) := rfl
@@ -13172,10 +13172,10 @@ def splitBinaryEvaluation (d : D) : (X × Y) →+ F where
       (z.1 d.1 + z.2 d.2) + (w.1 d.1 + w.2 d.2)
     ac_rfl
 
-@[simp] theorem splitBinaryEvaluation_apply (d : D) (z : X × Y) :
+@[simp] lemma splitBinaryEvaluation_apply (d : D) (z : X × Y) :
     splitBinaryEvaluation d z = z.1 d.1 + z.2 d.2 := rfl
 
-theorem continuous_splitBinaryEvaluation (d : D) :
+lemma continuous_splitBinaryEvaluation (d : D) :
     Continuous (splitBinaryEvaluation d : X × Y → F) :=
   ((continuous_X_eval d.1).comp continuous_fst).add
     ((continuous_Y_eval d.2).comp continuous_snd)
@@ -13190,11 +13190,11 @@ def splitPontryaginCharacter (d : D) :
       Continuous (fun a : F => (ZMod.toCircle a : Circle))).comp
         (continuous_splitBinaryEvaluation d)
 
-@[simp] theorem splitPontryaginCharacter_apply (d : D) (z : X × Y) :
+@[simp] lemma splitPontryaginCharacter_apply (d : D) (z : X × Y) :
     splitPontryaginCharacter d (Multiplicative.ofAdd z) =
       ZMod.toCircle (z.1 d.1 + z.2 d.2) := rfl
 
-theorem splitPontryaginCharacter_injective :
+lemma splitPontryaginCharacter_injective :
     Function.Injective splitPontryaginCharacter := by
   intro d d' h
   apply Prod.ext
@@ -13213,7 +13213,7 @@ theorem splitPontryaginCharacter_injective :
       (Multiplicative.ofAdd ((0 : X), q))
     simpa using hpoint
 
-theorem splitPontryaginCharacter_separates
+lemma splitPontryaginCharacter_separates
     (z w : X × Y) (hzw : z ≠ w) :
     ∃ d : D,
       splitPontryaginCharacter d (Multiplicative.ofAdd z) ≠
@@ -13236,15 +13236,15 @@ def splitComplexCharacter (d : D) : C(X × Y, ℂ) where
   continuous_toFun := continuous_subtype_val.comp
     (splitPontryaginCharacter d).continuous
 
-@[simp] theorem splitComplexCharacter_apply (d : D) (z : X × Y) :
+@[simp] lemma splitComplexCharacter_apply (d : D) (z : X × Y) :
     splitComplexCharacter d z =
       (ZMod.toCircle (z.1 d.1 + z.2 d.2) : ℂ) := rfl
 
-@[simp] theorem splitComplexCharacter_zero : splitComplexCharacter 0 = 1 := by
+@[simp] lemma splitComplexCharacter_zero : splitComplexCharacter 0 = 1 := by
   ext z
   simp [splitComplexCharacter]
 
-@[simp] theorem splitComplexCharacter_add (d e : D) :
+@[simp] lemma splitComplexCharacter_add (d e : D) :
     splitComplexCharacter (d + e) =
       splitComplexCharacter d * splitComplexCharacter e := by
   ext z
@@ -13256,7 +13256,7 @@ def splitComplexCharacter (d : D) : C(X × Y, ℂ) where
   rw [AddChar.map_add_eq_mul]
   rfl
 
-theorem splitComplexCharacter_star (d : D) :
+lemma splitComplexCharacter_star (d : D) :
     star (splitComplexCharacter d) = splitComplexCharacter (-d) := by
   ext z
   change star (ZMod.toCircle (z.1 d.1 + z.2 d.2) : ℂ) =
@@ -13275,7 +13275,7 @@ def splitCharacterSubalgebra : StarSubalgebra ℂ C(X × Y, ℂ) where
     rintro _ ⟨d, rfl⟩
     exact Algebra.subset_adjoin ⟨-d, (splitComplexCharacter_star d).symm⟩
 
-theorem splitCharacterSubalgebra_toSubmodule :
+lemma splitCharacterSubalgebra_toSubmodule :
     splitCharacterSubalgebra.toSubalgebra.toSubmodule =
       span ℂ (range splitComplexCharacter) := by
   apply Algebra.adjoin_eq_span_of_subset
@@ -13286,7 +13286,7 @@ theorem splitCharacterSubalgebra_toSubmodule :
   · rintro _ _ _ _ ⟨d, rfl⟩ ⟨e, rfl⟩
     exact ⟨d + e, splitComplexCharacter_add d e⟩
 
-theorem splitComplexCharacter_span_closure_eq_top :
+lemma splitComplexCharacter_span_closure_eq_top :
     (span ℂ (range splitComplexCharacter)).topologicalClosure = ⊤ := by
   have hsep : splitCharacterSubalgebra.SeparatesPoints := by
     intro z w hzw
@@ -13303,7 +13303,7 @@ theorem splitComplexCharacter_span_closure_eq_top :
 def splitCharacterL2 (d : D) : Lp ℂ 2 productHaar :=
   ContinuousMap.toLp 2 productHaar ℂ (splitComplexCharacter d)
 
-theorem splitCharacterL2_span_closure_eq_top :
+lemma splitCharacterL2_span_closure_eq_top :
     (span ℂ (range splitCharacterL2)).topologicalClosure = ⊤ := by
   convert!
     (ContinuousMap.toLp_denseRange (p := (2 : ℝ≥0∞))
@@ -13314,7 +13314,7 @@ theorem splitCharacterL2_span_closure_eq_top :
   rw [range_comp']
   simp only [ContinuousLinearMap.coe_coe]
 
-private theorem split_integral_character_eq_zero
+private lemma split_integral_character_eq_zero
     {G : Type*} [AddCommGroup G] [TopologicalSpace G]
     [IsTopologicalAddGroup G] [MeasurableSpace G] [BorelSpace G]
     (μ : Measure G) [μ.IsAddLeftInvariant]
@@ -13354,7 +13354,7 @@ private theorem split_integral_character_eq_zero
     exact Circle.coe_eq_one.mp (sub_eq_zero.mp h)
   · exact h
 
-theorem splitCharacterL2_orthonormal : Orthonormal ℂ splitCharacterL2 := by
+lemma splitCharacterL2_orthonormal : Orthonormal ℂ splitCharacterL2 := by
   classical
   rw [orthonormal_iff_ite]
   intro d e
@@ -13406,7 +13406,7 @@ def splitFourierBasis : HilbertBasis D ℂ (Lp ℂ 2 productHaar) :=
   HilbertBasis.mk splitCharacterL2_orthonormal
     splitCharacterL2_span_closure_eq_top.ge
 
-@[simp] theorem splitFourierBasis_coe :
+@[simp] lemma splitFourierBasis_coe :
     ⇑splitFourierBasis = splitCharacterL2 :=
   HilbertBasis.coe_mk _ _
 
@@ -13418,7 +13418,7 @@ abbrev splitFourierEquiv :
     (lp (fun _ : D => ℂ) 2) ≃ₗᵢ[ℂ] Lp ℂ 2 productHaar :=
   splitFourierTransform
 
-theorem splitFourierEquiv_single [DecidableEq D] (d : D) :
+lemma splitFourierEquiv_single [DecidableEq D] (d : D) :
     splitFourierEquiv (lp.single 2 d 1) = splitCharacterL2 d := by
   exact Orthonormal.linearIsometryEquiv_symm_apply_single_one
     splitCharacterL2_orthonormal splitCharacterL2_span_closure_eq_top.ge d
@@ -13480,7 +13480,7 @@ def groupFactorEquivTrans
         canonicalTrace G x
     rw [f.trace_preserving, e.trace_preserving]
 
-theorem groupFactorsIsomorphic_symm
+lemma groupFactorsIsomorphic_symm
     {G : CountableDiscreteGroup.{u}}
     {H : CountableDiscreteGroup.{v}}
     (h : TracialGroupFactorsIsomorphic G H) :
@@ -13488,7 +13488,7 @@ theorem groupFactorsIsomorphic_symm
   obtain ⟨e⟩ := h
   exact ⟨groupFactorEquivSymm e⟩
 
-theorem groupFactorsIsomorphic_trans
+lemma groupFactorsIsomorphic_trans
     {G : CountableDiscreteGroup.{u}}
     {H : CountableDiscreteGroup.{v}}
     {J : CountableDiscreteGroup.{w}}
@@ -13629,7 +13629,7 @@ def kLinear : K →* (V ≃ₗ[F] V) where
     rw [map_mul, map_mul]
     rfl
 
-@[simp] theorem kLinear_apply (k : K) (v : V) :
+@[simp] lemma kLinear_apply (k : K) (v : V) :
     kLinear k v = Matrix.SpecialLinearGroup.toLin' (pi₂ k) v := rfl
 
 def kTensorLinear : K →* (T ≃ₗ[F] T) where
@@ -13642,13 +13642,13 @@ def kTensorLinear : K →* (T ≃ₗ[F] T) where
   map_mul' k l := by
     rw [map_mul, TensorProduct.congr_mul]
 
-@[simp] theorem kTensorLinear_tmul (k : K) (u v : V) :
+@[simp] lemma kTensorLinear_tmul (k : K) (u v : V) :
     kTensorLinear k (u ⊗ₜ[F] v) = kLinear k u ⊗ₜ[F] kLinear k v := rfl
 
-@[simp] theorem kTensorLinear_square (k : K) (v : V) :
+@[simp] lemma kTensorLinear_square (k : K) (v : V) :
     kTensorLinear k (square v) = square (kLinear k v) := rfl
 
-theorem kTensorLinear_map_B (k : K) :
+lemma kTensorLinear_map_B (k : K) :
     B.map (kTensorLinear k).toLinearMap = B := by
   rw [B, Submodule.map_span]
   apply le_antisymm
@@ -13674,15 +13674,15 @@ def kDividedSquareLinear : K →* (B ≃ₗ[F] B) where
     rw [map_mul]
     rfl
 
-@[simp] theorem kDividedSquareLinear_val (k : K) (b : B) :
+@[simp] lemma kDividedSquareLinear_val (k : K) (b : B) :
     (kDividedSquareLinear k b : T) = kTensorLinear k (b : T) := rfl
 
-@[simp] theorem kDividedSquareLinear_diagonal (k : K) (v : V) :
+@[simp] lemma kDividedSquareLinear_diagonal (k : K) (v : V) :
     kDividedSquareLinear k (diagonal v) = diagonal (kLinear k v) := by
   apply Subtype.ext
   exact kTensorLinear_square k v
 
-@[simp] theorem kDividedSquareLinear_polarization (k : K) (u v : V) :
+@[simp] lemma kDividedSquareLinear_polarization (k : K) (u v : V) :
     kDividedSquareLinear k (polarization u v) =
       polarization (kLinear k u) (kLinear k v) := by
   apply Subtype.ext
@@ -13697,7 +13697,7 @@ def kDLinear : K →* (D ≃ₗ[F] D) where
   map_mul' k l := by
     ext d <;> simp
 
-@[simp] theorem kDLinear_apply (k : K) (d : D) :
+@[simp] lemma kDLinear_apply (k : K) (d : D) :
     kDLinear k d = (kLinear k d.1, kDividedSquareLinear k d.2) := rfl
 
 def kDAction : K →* MulAut (Multiplicative D) where
@@ -13715,7 +13715,7 @@ def kDAction : K →* MulAut (Multiplicative D) where
     rw [map_mul]
     rfl
 
-@[simp] theorem kDAction_toAdd (k : K) (d : Multiplicative D) :
+@[simp] lemma kDAction_toAdd (k : K) (d : Multiplicative D) :
     Multiplicative.toAdd (kDAction k d) = kDLinear k (Multiplicative.toAdd d) := rfl
 
 abbrev Lambda := SemidirectProduct (Multiplicative D) K kDAction
@@ -13727,7 +13727,7 @@ def lambdaGroup : ConnesRigidity.CountableDiscreteGroup where
   group := inferInstance
   countable := inferInstance
 
-@[simp] theorem Lambda_mul_right (g h : Lambda) :
+@[simp] lemma Lambda_mul_right (g h : Lambda) :
     (g * h).right = g.right * h.right := rfl
 
 abbrev lambdaInl : Multiplicative D →* Lambda := SemidirectProduct.inl
@@ -13736,17 +13736,17 @@ abbrev lambdaInr : K →* Lambda := SemidirectProduct.inr
 
 abbrev lambdaProjection : Lambda →* K := SemidirectProduct.rightHom
 
-@[simp] theorem lambdaProjection_inl (d : Multiplicative D) :
+@[simp] lemma lambdaProjection_inl (d : Multiplicative D) :
     lambdaProjection (lambdaInl d) = 1 := by
   exact SemidirectProduct.rightHom_inl d
 
-@[simp] theorem lambdaProjection_inr (k : K) :
+@[simp] lemma lambdaProjection_inr (k : K) :
     lambdaProjection (lambdaInr k) = k := by
   exact SemidirectProduct.rightHom_inr k
 
 set_option maxHeartbeats 800000 in
 
-theorem lambda_conjugation (k : K) (d : Multiplicative D) :
+lemma lambda_conjugation (k : K) (d : Multiplicative D) :
     lambdaInl (kDAction k d) = lambdaInr k * lambdaInl d * (lambdaInr k)⁻¹ := by
   simpa only [map_inv] using (SemidirectProduct.inl_aut (φ := kDAction) k d)
 
@@ -13769,14 +13769,14 @@ noncomputable def value (I : GroupCardinalInvariant.{u})
     (G : CountableDiscreteGroup.{u}) : ℕ :=
   Nat.card (I.carrier G)
 
-theorem value_mulEquiv (I : GroupCardinalInvariant.{u})
+lemma value_mulEquiv (I : GroupCardinalInvariant.{u})
     {G H : CountableDiscreteGroup.{u}} (e : G ≃* H) :
     I.value G = I.value H :=
   Nat.card_congr (I.map_mulEquiv e)
 
 end GroupCardinalInvariant
 
-theorem paperInvariantCard_injective {m n : ℕ}
+lemma paperInvariantCard_injective {m n : ℕ}
     (h : 2 ^ (4 * m) = 2 ^ (4 * n)) : m = n := by
   have hmul : 4 * m = 4 * n :=
     Nat.pow_right_injective (by decide : 2 ≤ (2 : ℕ)) h
@@ -13796,7 +13796,7 @@ noncomputable def rangeEquiv (f : ExactIndexEmbedding G H index) :
     G ≃* f.hom.range :=
   MonoidHom.ofInjective f.injective
 
-theorem range_finiteIndex (f : ExactIndexEmbedding G H index)
+lemma range_finiteIndex (f : ExactIndexEmbedding G H index)
     (hindex : index ≠ 0) : f.hom.range.FiniteIndex :=
   Subgroup.finiteIndex_iff.mpr (by simpa [f.index_eq] using hindex)
 
@@ -13807,7 +13807,7 @@ def AbstractlyCommensurable
   ∃ (S : Subgroup G) (T : Subgroup H),
     S.FiniteIndex ∧ T.FiniteIndex ∧ Nonempty (S ≃* T)
 
-theorem abstractlyCommensurable_of_common_embedding
+lemma abstractlyCommensurable_of_common_embedding
     {A G H : CountableDiscreteGroup.{u}} {i j : ℕ}
     (f : ExactIndexEmbedding A G i) (g : ExactIndexEmbedding A H j)
     (hi : i ≠ 0) (hj : j ≠ 0) :
@@ -13816,7 +13816,7 @@ theorem abstractlyCommensurable_of_common_embedding
     f.range_finiteIndex hi, g.range_finiteIndex hj, ?_⟩
   exact ⟨f.rangeEquiv.symm.trans g.rangeEquiv⟩
 
-theorem not_groupsIsomorphic_of_orderFour
+lemma not_groupsIsomorphic_of_orderFour
     {G H : CountableDiscreteGroup.{u}}
     (hG : ∃ g : G, orderOf g = 4)
     (hH : ∀ h : H, orderOf h ≠ 4) :
@@ -13845,7 +13845,7 @@ namespace PaperFamilyInput
 
 variable (F : PaperFamilyInput.{u})
 
-theorem parameter_eq_of_mulEquiv {m n : ℕ}
+lemma parameter_eq_of_mulEquiv {m n : ℕ}
     (e : F.Gamma m ≃* F.Gamma n) : m = n := by
   apply paperInvariantCard_injective
   calc
@@ -13854,22 +13854,22 @@ theorem parameter_eq_of_mulEquiv {m n : ℕ}
     _ = F.invariant.value (F.Gamma n) := F.invariant.value_mulEquiv e
     _ = 2 ^ (4 * n) := F.invariant_card n
 
-theorem gamma_not_isomorphic {m n : ℕ} (hmn : m ≠ n) :
+lemma gamma_not_isomorphic {m n : ℕ} (hmn : m ≠ n) :
     ¬GroupsIsomorphic (F.Gamma m) (F.Gamma n) := by
   rintro ⟨e⟩
   exact hmn (F.parameter_eq_of_mulEquiv e)
 
-theorem gamma_not_isomorphic_lambda (n : ℕ) :
+lemma gamma_not_isomorphic_lambda (n : ℕ) :
     ¬GroupsIsomorphic (F.Gamma n) F.Lambda :=
   not_groupsIsomorphic_of_orderFour (F.gamma_order_four n)
     F.lambda_no_order_four
 
-theorem lambda_not_isomorphic_gamma (n : ℕ) :
+lemma lambda_not_isomorphic_gamma (n : ℕ) :
     ¬GroupsIsomorphic F.Lambda (F.Gamma n) := by
   rintro ⟨e⟩
   exact F.gamma_not_isomorphic_lambda n ⟨e.symm⟩
 
-theorem gamma_commensurable (m n : ℕ) :
+lemma gamma_commensurable (m n : ℕ) :
     AbstractlyCommensurable (F.Gamma m) (F.Gamma n) := by
   apply abstractlyCommensurable_of_common_embedding
     (F.embeddings m) (F.embeddings n)
@@ -13932,7 +13932,7 @@ def kXLinear : K →* (X ≃ₗ[F] X) where
     intro v
     simp [map_mul]
 
-@[simp] theorem kXLinear_apply (k : K) (ℓ : X) (v : V) :
+@[simp] lemma kXLinear_apply (k : K) (ℓ : X) (v : V) :
     kXLinear k ℓ v = ℓ (kLinear k⁻¹ v) := rfl
 
 def kYLinear : K →* (Y ≃ₗ[F] Y) where
@@ -13950,28 +13950,28 @@ def kYLinear : K →* (Y ≃ₗ[F] Y) where
     intro b
     simp [map_mul]
 
-@[simp] theorem kYLinear_apply (k : K) (q : Y) (b : B) :
+@[simp] lemma kYLinear_apply (k : K) (q : Y) (b : B) :
     kYLinear k q b = q (kDividedSquareLinear k⁻¹ b) := rfl
 
-theorem continuous_kXLinear (k : K) :
+lemma continuous_kXLinear (k : K) :
     Continuous (kXLinear k : X → X) := by
   change Continuous
     (fun ℓ : X => ℓ.comp (kLinear k⁻¹).toLinearMap)
   exact continuous_X_precomp (kLinear k⁻¹).toLinearMap
 
-theorem continuous_kYLinear (k : K) :
+lemma continuous_kYLinear (k : K) :
     Continuous (kYLinear k : Y → Y) := by
   change Continuous
     (fun q : Y => q.comp (kDividedSquareLinear k⁻¹).toLinearMap)
   exact continuous_Y_precomp (kDividedSquareLinear k⁻¹).toLinearMap
 
-theorem kLinear_shiftVector (k : K) (n : ℕ) (v : V) :
+lemma kLinear_shiftVector (k : K) (n : ℕ) (v : V) :
     kLinear k (shiftVector n v) = shiftVector n (kLinear k v) := by
   simp only [kLinear_apply, shiftVector, LinearMap.restrictScalars_apply,
     LinearMap.lsmul_apply]
   exact (Matrix.SpecialLinearGroup.toLin' (pi₂ k)).map_smul _ _
 
-theorem kXLinear_shift (k : K) (n : ℕ) (ℓ : X) :
+lemma kXLinear_shift (k : K) (n : ℕ) (ℓ : X) :
     shift n (kXLinear k ℓ) = kXLinear k (shift n ℓ) := by
   apply LinearMap.ext
   intro v
@@ -13979,7 +13979,7 @@ theorem kXLinear_shift (k : K) (n : ℕ) (ℓ : X) :
     ℓ (shiftVector n (kLinear k⁻¹ v))
   rw [kLinear_shiftVector]
 
-theorem kYLinear_carry (k : K) (ℓ ℓ' : X) :
+lemma kYLinear_carry (k : K) (ℓ ℓ' : X) :
     kYLinear k (carry ℓ ℓ') =
       carry (kXLinear k ℓ) (kXLinear k ℓ') := by
   apply linearMap_ext_on_diagonal
@@ -13989,7 +13989,7 @@ theorem kYLinear_carry (k : K) (ℓ ℓ' : X) :
   rw [kDividedSquareLinear_diagonal]
   simp only [carry_apply_diagonal, kXLinear_apply]
 
-theorem kYLinear_shiftedCarry (k : K) (n : ℕ) (ℓ ℓ' : X) :
+lemma kYLinear_shiftedCarry (k : K) (n : ℕ) (ℓ ℓ' : X) :
     kYLinear k (shiftedCarry n ℓ ℓ') =
       shiftedCarry n (kXLinear k ℓ) (kXLinear k ℓ') := by
   unfold shiftedCarry
@@ -14011,10 +14011,10 @@ def kCarryAddAut (n : ℕ) (k : K) : AddAut (CarryGroup n) where
             shiftedCarry n (kXLinear k z.linear) (kXLinear k w.linear)
       rw [map_add, map_add, kYLinear_shiftedCarry]
 
-@[simp] theorem kCarryAddAut_linear (n : ℕ) (k : K) (z : CarryGroup n) :
+@[simp] lemma kCarryAddAut_linear (n : ℕ) (k : K) (z : CarryGroup n) :
     (kCarryAddAut n k z).linear = kXLinear k z.linear := rfl
 
-@[simp] theorem kCarryAddAut_quadratic (n : ℕ) (k : K) (z : CarryGroup n) :
+@[simp] lemma kCarryAddAut_quadratic (n : ℕ) (k : K) (z : CarryGroup n) :
     (kCarryAddAut n k z).quadratic = kYLinear k z.quadratic := rfl
 
 def kCarryAction (n : ℕ) : K →* MulAut (Multiplicative (CarryGroup n)) where
@@ -14044,17 +14044,17 @@ def kCarryAction (n : ℕ) : K →* MulAut (Multiplicative (CarryGroup n)) where
       rw [map_mul]
       rfl
 
-@[simp] theorem kCarryAction_linear (n : ℕ) (k : K)
+@[simp] lemma kCarryAction_linear (n : ℕ) (k : K)
     (z : Multiplicative (CarryGroup n)) :
     (Multiplicative.toAdd (kCarryAction n k z)).linear =
       kXLinear k (Multiplicative.toAdd z).linear := rfl
 
-@[simp] theorem kCarryAction_quadratic (n : ℕ) (k : K)
+@[simp] lemma kCarryAction_quadratic (n : ℕ) (k : K)
     (z : Multiplicative (CarryGroup n)) :
     (Multiplicative.toAdd (kCarryAction n k z)).quadratic =
       kYLinear k (Multiplicative.toAdd z).quadratic := rfl
 
-theorem continuous_kCarryAddAut (n : ℕ) (k : K) :
+lemma continuous_kCarryAddAut (n : ℕ) (k : K) :
     Continuous (kCarryAddAut n k : CarryGroup n → CarryGroup n) := by
   apply continuous_CarryGroup_iff.mpr
   constructor
@@ -14063,7 +14063,7 @@ theorem continuous_kCarryAddAut (n : ℕ) (k : K) :
   · intro b
     exact continuous_quadratic_eval n (kDividedSquareLinear k⁻¹ b)
 
-theorem continuous_kCarryAction (n : ℕ) (k : K) :
+lemma continuous_kCarryAction (n : ℕ) (k : K) :
     Continuous (kCarryAction n k :
       Multiplicative (CarryGroup n) → Multiplicative (CarryGroup n)) := by
   change Continuous
@@ -14075,7 +14075,7 @@ def kEAction (n : ℕ) : K →* MulAut (Multiplicative (E n)) := by
   exact dualAction (Multiplicative (CarryGroup n)) K (kCarryAction n)
     (continuous_kCarryAction n)
 
-@[simp] theorem kEAction_apply (n : ℕ) (k : K)
+@[simp] lemma kEAction_apply (n : ℕ) (k : K)
     (η : Multiplicative (E n)) (z : Multiplicative (CarryGroup n)) :
     (kEAction n k η : PontryaginDual (Multiplicative (CarryGroup n))) z =
       (η : PontryaginDual (Multiplicative (CarryGroup n)))
@@ -14099,14 +14099,14 @@ def gammaGroup (n : ℕ) : CountableDiscreteGroup where
 def gammaOrderFourElement (n : ℕ) : Gamma n :=
   SemidirectProduct.inl (Multiplicative.ofAdd (epsilon n e))
 
-theorem gammaOrderFourElement_orderOf (n : ℕ) :
+lemma gammaOrderFourElement_orderOf (n : ℕ) :
     orderOf (gammaOrderFourElement n) = 4 := by
   rw [gammaOrderFourElement,
     orderOf_injective (SemidirectProduct.inl :
       Multiplicative (E n) →* Gamma n) SemidirectProduct.inl_injective]
   exact epsilon_addOrderOf n
 
-theorem gamma_has_order_four (n : ℕ) :
+lemma gamma_has_order_four (n : ℕ) :
     ∃ g : gammaGroup n, orderOf g = 4 :=
   ⟨gammaOrderFourElement n, gammaOrderFourElement_orderOf n⟩
 
@@ -14121,7 +14121,7 @@ noncomputable section
 def paperSplitAddAut (k : K) : (X × Y) ≃+ (X × Y) :=
   (kXLinear k).toAddEquiv.prodCongr (kYLinear k).toAddEquiv
 
-@[simp] theorem paperSplitAddAut_apply (k : K) (z : X × Y) :
+@[simp] lemma paperSplitAddAut_apply (k : K) (z : X × Y) :
     paperSplitAddAut k z = (kXLinear k z.1, kYLinear k z.2) := rfl
 
 def paperSplitPerm : K →* Equiv.Perm (X × Y) where
@@ -14140,11 +14140,11 @@ def paperSplitPerm : K →* Equiv.Perm (X × Y) where
           kYLinear k (kYLinear h z.2))
     simp [map_mul]
 
-theorem continuous_paperSplitAddAut (k : K) :
+lemma continuous_paperSplitAddAut (k : K) :
     Continuous (paperSplitAddAut k : X × Y → X × Y) :=
   (continuous_kXLinear k).prodMap (continuous_kYLinear k)
 
-@[simp] theorem paperSplitAddAut_symm_apply (k : K) (z : X × Y) :
+@[simp] lemma paperSplitAddAut_symm_apply (k : K) (z : X × Y) :
     (paperSplitAddAut k).symm z =
       (kXLinear k⁻¹ z.1, kYLinear k⁻¹ z.2) := by
   apply Prod.ext
@@ -14155,17 +14155,17 @@ theorem continuous_paperSplitAddAut (k : K) :
     rw [map_inv]
     rfl
 
-private theorem paper_kXLinear_symm (k : K) :
+private lemma paper_kXLinear_symm (k : K) :
     (kXLinear k).symm = kXLinear k⁻¹ := by
   rw [map_inv]
   rfl
 
-private theorem paper_kYLinear_symm (k : K) :
+private lemma paper_kYLinear_symm (k : K) :
     (kYLinear k).symm = kYLinear k⁻¹ := by
   rw [map_inv]
   rfl
 
-theorem continuous_paperSplitAddAut_symm (k : K) :
+lemma continuous_paperSplitAddAut_symm (k : K) :
     Continuous ((paperSplitAddAut k).symm : X × Y → X × Y) := by
   change Continuous
     (fun z : X × Y ↦ ((kXLinear k).symm z.1, (kYLinear k).symm z.2))
@@ -14199,28 +14199,28 @@ def paperCarryPerm (n : ℕ) : K →* Equiv.Perm (CarryGroup n) where
     intro z
     apply CarryGroup.ext <;> simp [map_mul]
 
-@[simp] theorem kCarryAddAut_symm_apply (n : ℕ) (k : K)
+@[simp] lemma kCarryAddAut_symm_apply (n : ℕ) (k : K)
     (z : CarryGroup n) :
     (kCarryAddAut n k).symm z = kCarryAddAut n k⁻¹ z := rfl
 
-theorem kCarryAddAut_symm_eq (n : ℕ) (k : K) :
+lemma kCarryAddAut_symm_eq (n : ℕ) (k : K) :
     (kCarryAddAut n k).symm = kCarryAddAut n k⁻¹ := by
   apply AddEquiv.ext
   intro z
   rfl
 
-theorem continuous_kCarryAddAut_symm (n : ℕ) (k : K) :
+lemma continuous_kCarryAddAut_symm (n : ℕ) (k : K) :
     Continuous ((kCarryAddAut n k).symm : CarryGroup n → CarryGroup n) := by
   rw [kCarryAddAut_symm_eq]
   exact continuous_kCarryAddAut n k⁻¹
 
-theorem paperCarryPerm_add (n : ℕ) (k : K)
+lemma paperCarryPerm_add (n : ℕ) (k : K)
     (z z' : CarryGroup n) :
     paperCarryPerm n k (z + z') =
       paperCarryPerm n k z + paperCarryPerm n k z' :=
   (kCarryAddAut n k).map_add z z'
 
-theorem paperCarryAddAut_preserves_measure (n : ℕ) (k : K) :
+lemma paperCarryAddAut_preserves_measure (n : ℕ) (k : K) :
     MeasurePreserving (kCarryAddAut n k : CarryGroup n → CarryGroup n)
       (carryHaar n) (carryHaar n) :=
   carryHaar_preserving_addEquiv n (kCarryAddAut n k)
@@ -14279,7 +14279,7 @@ def crossedBaseMultiplier (X : HaarProbabilityAction K Ω)
     crossedBaseHilbert X →L[ℂ] crossedBaseHilbert X :=
   (ContinuousLinearMap.mul ℂ ℂ).holderL X.measure ⊤ 2 2 f
 
-theorem crossedBaseMultiplier_apply_ae (X : HaarProbabilityAction K Ω)
+lemma crossedBaseMultiplier_apply_ae (X : HaarProbabilityAction K Ω)
     (f : crossedCoefficient X) (ξ : crossedBaseHilbert X) :
     crossedBaseMultiplier X f ξ =ᵐ[X.measure]
       fun z ↦ f z * ξ z :=
@@ -14316,7 +14316,7 @@ def crossedFiberwiseOperator
         simp)
 
 omit [Group K] in
-@[simp] theorem crossedFiberwiseOperator_apply
+@[simp] lemma crossedFiberwiseOperator_apply
     {H : Type v} [NormedAddCommGroup H] [NormedSpace ℂ H]
     (T : H →L[ℂ] H) (ξ : lp (fun _ : K ↦ H) 2) (k : K) :
     crossedFiberwiseOperator (K := K) T ξ k = T (ξ k) := rfl
@@ -14325,7 +14325,7 @@ def crossedMultiplier (X : HaarProbabilityAction K Ω)
     (f : crossedCoefficient X) : crossedHilbert X →L[ℂ] crossedHilbert X :=
   crossedFiberwiseOperator (K := K) (crossedBaseMultiplier X f)
 
-@[simp] theorem crossedMultiplier_apply
+@[simp] lemma crossedMultiplier_apply
     (X : HaarProbabilityAction K Ω) (f : crossedCoefficient X)
     (ξ : crossedHilbert X) (k : K) :
     crossedMultiplier X f ξ k = crossedBaseMultiplier X f (ξ k) := rfl
@@ -14377,7 +14377,7 @@ def crossedFiberwiseEquiv
     simp only [LinearIsometryEquiv.norm_map]
 
 omit [Group K] in
-@[simp] theorem crossedFiberwiseEquiv_apply
+@[simp] lemma crossedFiberwiseEquiv_apply
     {H : Type v} {J : Type w}
     [NormedAddCommGroup H] [NormedSpace ℂ H]
     [NormedAddCommGroup J] [NormedSpace ℂ J]
@@ -14425,7 +14425,7 @@ def crossedIndexEquiv
     exact e.symm.tsum_eq (fun k ↦ ‖ξ k‖ ^ (2 : ℝ≥0∞).toReal)
 
 omit [Group K] in
-@[simp] theorem crossedIndexEquiv_apply
+@[simp] lemma crossedIndexEquiv_apply
     {H : Type v} [NormedAddCommGroup H] [NormedSpace ℂ H]
     (e : K ≃ K) (ξ : lp (fun _ : K ↦ H) 2) (k : K) :
     crossedIndexEquiv e ξ k = ξ (e.symm k) := rfl
@@ -14467,7 +14467,7 @@ def crossedBaseHaarEquiv
   norm_map' := fun f ↦ Lp.norm_compMeasurePreserving f
     (EquivariantHaarEquiv.symm e).measure_preserving
 
-@[simp] theorem crossedBaseHaarEquiv_apply
+@[simp] lemma crossedBaseHaarEquiv_apply
     {X : HaarProbabilityAction K Ω}
     {Y : HaarProbabilityAction K Ξ}
     (e : EquivariantHaarEquiv X Y) (f : crossedBaseHilbert X) :
@@ -14507,7 +14507,7 @@ def crossedActionL2Equiv (X : HaarProbabilityAction K Ω) (k : K) :
   norm_map' := fun f ↦ Lp.norm_compMeasurePreserving f
     (X.action_preserves_measure k⁻¹)
 
-@[simp] theorem crossedActionL2Equiv_apply
+@[simp] lemma crossedActionL2Equiv_apply
     (X : HaarProbabilityAction K Ω) (k : K) (f : crossedBaseHilbert X) :
     crossedActionL2Equiv X k f =
       Lp.compMeasurePreserving (X.action k⁻¹)
@@ -14518,7 +14518,7 @@ def crossedGroupUnitary (X : HaarProbabilityAction K Ω) (k : K) :
   (crossedIndexEquiv (H := crossedBaseHilbert X) (Equiv.mulLeft k)).trans
     (crossedFiberwiseEquiv (K := K) (crossedActionL2Equiv X k))
 
-@[simp] theorem crossedGroupUnitary_apply
+@[simp] lemma crossedGroupUnitary_apply
     (X : HaarProbabilityAction K Ω) (k : K)
     (ξ : crossedHilbert X) (h : K) :
     crossedGroupUnitary X k ξ h =
@@ -14548,14 +14548,14 @@ def crossedHaarHilbertEquiv
     crossedHilbert X ≃ₗᵢ[ℂ] crossedHilbert Y :=
   crossedFiberwiseEquiv (K := K) (crossedBaseHaarEquiv e)
 
-@[simp] theorem crossedHaarHilbertEquiv_apply
+@[simp] lemma crossedHaarHilbertEquiv_apply
     {X : HaarProbabilityAction K Ω}
     {Y : HaarProbabilityAction K Ξ}
     (e : EquivariantHaarEquiv X Y)
     (ξ : crossedHilbert X) (k : K) :
     crossedHaarHilbertEquiv e ξ k = crossedBaseHaarEquiv e (ξ k) := rfl
 
-theorem crossedBaseHaarEquiv_const_one
+lemma crossedBaseHaarEquiv_const_one
     {X : HaarProbabilityAction K Ω}
     {Y : HaarProbabilityAction K Ξ}
     (e : EquivariantHaarEquiv X Y) :
@@ -14586,7 +14586,7 @@ theorem crossedBaseHaarEquiv_const_one
     _ = 1 := hsource'
     _ = _ := htarget.symm
 
-theorem crossedHaarHilbertEquiv_vacuum
+lemma crossedHaarHilbertEquiv_vacuum
     {X : HaarProbabilityAction K Ω}
     {Y : HaarProbabilityAction K Ξ}
     (e : EquivariantHaarEquiv X Y) :
@@ -14602,7 +14602,7 @@ theorem crossedHaarHilbertEquiv_vacuum
       crossedBaseHaarEquiv_const_one e
   · simp [crossedVacuum, lp.single_apply, hk]
 
-theorem crossedBaseHaarEquiv_multiplier_apply
+lemma crossedBaseHaarEquiv_multiplier_apply
     {X : HaarProbabilityAction K Ω}
     {Y : HaarProbabilityAction K Ξ}
     (e : EquivariantHaarEquiv X Y)
@@ -14642,7 +14642,7 @@ theorem crossedBaseHaarEquiv_multiplier_apply
         · exact hξ.symm
     _ = _ := hright.symm
 
-theorem crossedBaseHaarEquiv_action
+lemma crossedBaseHaarEquiv_action
     {X : HaarProbabilityAction K Ω}
     {Y : HaarProbabilityAction K Ξ}
     (e : EquivariantHaarEquiv X Y) (k : K) (ξ : crossedBaseHilbert X) :
@@ -14694,7 +14694,7 @@ theorem crossedBaseHaarEquiv_action
           _ = _ := by simpa only [Function.comp_apply] using hzR.symm
     _ = _ := hright
 
-theorem crossedHaarHilbertEquiv_group_apply
+lemma crossedHaarHilbertEquiv_group_apply
     {X : HaarProbabilityAction K Ω}
     {Y : HaarProbabilityAction K Ξ}
     (e : EquivariantHaarEquiv X Y) (k : K) (ξ : crossedHilbert X) :
@@ -14704,7 +14704,7 @@ theorem crossedHaarHilbertEquiv_group_apply
   funext h
   exact crossedBaseHaarEquiv_action e k (ξ (k⁻¹ * h))
 
-theorem crossedHaarHilbertEquiv_group_conj
+lemma crossedHaarHilbertEquiv_group_conj
     {X : HaarProbabilityAction K Ω}
     {Y : HaarProbabilityAction K Ξ}
     (e : EquivariantHaarEquiv X Y) (k : K) :
@@ -14730,11 +14730,11 @@ noncomputable section
 def carryCharacterFunction (n : ℕ) (η : E n) : CarryGroup n → ℂ :=
   fun z => (Additive.toMul η (Multiplicative.ofAdd z) : ℂ)
 
-theorem measurable_carryCharacterFunction (n : ℕ) (η : E n) :
+lemma measurable_carryCharacterFunction (n : ℕ) (η : E n) :
     Measurable (carryCharacterFunction n η) :=
   (carryComplexCharacter n η).continuous.measurable
 
-theorem norm_carryCharacterFunction (n : ℕ) (η : E n)
+lemma norm_carryCharacterFunction (n : ℕ) (η : E n)
     (z : CarryGroup n) :
     ‖carryCharacterFunction n η z‖ = 1 :=
   Circle.norm_coe (Additive.toMul η (Multiplicative.ofAdd z))
@@ -14747,12 +14747,12 @@ def carryCharacterCoefficient (n : ℕ) (η : E n) :
         le_of_eq (norm_carryCharacterFunction n η z))).toLp
     (carryCharacterFunction n η)
 
-theorem carryCharacterCoefficient_apply_ae (n : ℕ) (η : E n) :
+lemma carryCharacterCoefficient_apply_ae (n : ℕ) (η : E n) :
     carryCharacterCoefficient n η =ᵐ[carryHaar n]
       carryCharacterFunction n η :=
   MemLp.coeFn_toLp _
 
-theorem carryCharacterMultiplier_character
+lemma carryCharacterMultiplier_character
     (n : ℕ) (η θ : E n) :
     crossedBaseMultiplier (paperCarryHaarAction n)
         (carryCharacterCoefficient n η) (carryCharacterL2 n θ) =
@@ -14791,11 +14791,11 @@ theorem carryCharacterMultiplier_character
 def splitCharacterFunction (d : D) : X × Y → ℂ :=
   fun z => (splitPontryaginCharacter d (Multiplicative.ofAdd z) : ℂ)
 
-theorem measurable_splitCharacterFunction (d : D) :
+lemma measurable_splitCharacterFunction (d : D) :
     Measurable (splitCharacterFunction d) :=
   (splitComplexCharacter d).continuous.measurable
 
-theorem norm_splitCharacterFunction (d : D) (z : X × Y) :
+lemma norm_splitCharacterFunction (d : D) (z : X × Y) :
     ‖splitCharacterFunction d z‖ = 1 :=
   Circle.norm_coe (splitPontryaginCharacter d (Multiplicative.ofAdd z))
 
@@ -14807,12 +14807,12 @@ def splitCharacterCoefficient (d : D) :
         le_of_eq (norm_splitCharacterFunction d z))).toLp
     (splitCharacterFunction d)
 
-theorem splitCharacterCoefficient_apply_ae (d : D) :
+lemma splitCharacterCoefficient_apply_ae (d : D) :
     splitCharacterCoefficient d =ᵐ[productHaar]
       splitCharacterFunction d :=
   MemLp.coeFn_toLp _
 
-theorem splitCharacterMultiplier_character (d e : D) :
+lemma splitCharacterMultiplier_character (d e : D) :
     crossedBaseMultiplier paperSplitHaarAction
         (splitCharacterCoefficient d) (splitCharacterL2 e) =
       splitCharacterL2 (d + e) := by
@@ -14857,7 +14857,7 @@ noncomputable section
 open ConnesRigidity MeasureTheory
 open scoped ENNReal
 
-theorem carryCharacterL2_zero (n : ℕ) :
+lemma carryCharacterL2_zero (n : ℕ) :
     carryCharacterL2 n 0 = Lp.const 2 (carryHaar n) (1 : ℂ) := by
   apply Lp.ext
   filter_upwards [
@@ -14868,7 +14868,7 @@ theorem carryCharacterL2_zero (n : ℕ) :
   rw [hchar, hone]
   rfl
 
-theorem carryFourierEquiv_zero_single (n : ℕ) [DecidableEq (E n)] :
+lemma carryFourierEquiv_zero_single (n : ℕ) [DecidableEq (E n)] :
     carryFourierEquiv n (lp.single 2 (0 : E n) (1 : ℂ)) =
       Lp.const 2 (carryHaar n) (1 : ℂ) := by
   rw [carryFourierEquiv_single, carryCharacterL2_zero]
@@ -14876,17 +14876,17 @@ theorem carryFourierEquiv_zero_single (n : ℕ) [DecidableEq (E n)] :
 def carryEAddAction (n : ℕ) (k : K) : E n ≃+ E n :=
   MulEquiv.toAdditive (kEAction n k)
 
-@[simp] theorem carryEAddAction_apply (n : ℕ) (k : K) (η : E n) :
+@[simp] lemma carryEAddAction_apply (n : ℕ) (k : K) (η : E n) :
     carryEAddAction n k η =
       Multiplicative.toAdd (kEAction n k (Multiplicative.ofAdd η)) := rfl
 
-theorem carryComplexCharacter_kEAction (n : ℕ) (k : K)
+lemma carryComplexCharacter_kEAction (n : ℕ) (k : K)
     (η : E n) (z : CarryGroup n) :
     carryComplexCharacter n (carryEAddAction n k η) z =
       carryComplexCharacter n η (kCarryAddAut n k⁻¹ z) := by
   rfl
 
-theorem carryCharacterL2_kEAction (n : ℕ) (k : K) (η : E n) :
+lemma carryCharacterL2_kEAction (n : ℕ) (k : K) (η : E n) :
     carryCharacterL2 n (carryEAddAction n k η) =
       Lp.compMeasurePreserving
         (kCarryAddAut n k⁻¹ : CarryGroup n → CarryGroup n)
@@ -14912,7 +14912,7 @@ theorem carryCharacterL2_kEAction (n : ℕ) (k : K) (η : E n) :
   rw [hzleft, hzright, Function.comp_apply, hzchar]
   exact carryComplexCharacter_kEAction n k η z
 
-private theorem carry_l2Reindex_single
+private lemma carry_l2Reindex_single
     {α β : Type*} (e : α ≃ β) [DecidableEq α] [DecidableEq β]
     (i : α) (c : ℂ) :
     l2Reindex e (lp.single 2 i c) = lp.single 2 (e i) c := by
@@ -14927,7 +14927,7 @@ private theorem carry_l2Reindex_single
       simp [hj]
     simp [h, hj]
 
-theorem carryFourier_kEAction_comp (n : ℕ) (k : K)
+lemma carryFourier_kEAction_comp (n : ℕ) (k : K)
     (ξ : GroupL2 (E n)) :
     carryFourierEquiv n
         (l2Reindex (carryEAddAction n k).toEquiv ξ) =
@@ -14972,7 +14972,7 @@ theorem carryFourier_kEAction_comp (n : ℕ) (k : K)
     exact congrArg (c • ·) (carryCharacterL2_kEAction n k η)
   exact DFunLike.congr_fun hmaps ξ
 
-theorem carryFourier_kEAction (n : ℕ) (k : K) (ξ : GroupL2 (E n)) :
+lemma carryFourier_kEAction (n : ℕ) (k : K) (ξ : GroupL2 (E n)) :
     carryFourierEquiv n
         (l2Reindex (carryEAddAction n k).toEquiv ξ) =
       crossedActionL2Equiv (paperCarryHaarAction n) k
@@ -14991,18 +14991,18 @@ noncomputable section
 def complexUnitBallClip (z : ℂ) : ℂ :=
   (1 / max 1 ‖z‖ : ℝ) • z
 
-theorem continuous_complexUnitBallClip : Continuous complexUnitBallClip := by
+lemma continuous_complexUnitBallClip : Continuous complexUnitBallClip := by
   unfold complexUnitBallClip
   exact (Continuous.div continuous_const
       (continuous_const.max continuous_norm)
       (fun z => by positivity)).smul continuous_id
 
-theorem complexUnitBallClip_eq_self_of_norm_le {z : ℂ} (hz : ‖z‖ ≤ 1) :
+lemma complexUnitBallClip_eq_self_of_norm_le {z : ℂ} (hz : ‖z‖ ≤ 1) :
     complexUnitBallClip z = z := by
   rw [complexUnitBallClip, max_eq_left hz]
   norm_num
 
-theorem complexUnitBallClip_norm_le (z : ℂ) : ‖complexUnitBallClip z‖ ≤ 1 := by
+lemma complexUnitBallClip_norm_le (z : ℂ) : ‖complexUnitBallClip z‖ ≤ 1 := by
   by_cases hz : ‖z‖ ≤ 1
   · rw [complexUnitBallClip_eq_self_of_norm_le hz]
     exact hz
@@ -15011,7 +15011,7 @@ theorem complexUnitBallClip_norm_le (z : ℂ) : ‖complexUnitBallClip z‖ ≤ 
     rw [norm_smul, Real.norm_eq_abs, abs_of_pos (one_div_pos.mpr hzpos)]
     rw [one_div, inv_mul_cancel₀ hzpos.ne']
 
-theorem complexUnitBallClip_sub_norm_le_two (z u : ℂ) (hu : ‖u‖ = 1) :
+lemma complexUnitBallClip_sub_norm_le_two (z u : ℂ) (hu : ‖u‖ = 1) :
     ‖complexUnitBallClip z - u‖ ≤ 2 * ‖z - u‖ := by
   by_cases hz : ‖z‖ ≤ 1
   · rw [complexUnitBallClip_eq_self_of_norm_le hz]
@@ -15055,7 +15055,7 @@ def unitCoefficient (u : Ω → ℂ) (hu : Measurable u)
 
 omit [TopologicalSpace Ω] [CompactSpace Ω] [T2Space Ω] [SecondCountableTopology Ω]
   [BorelSpace Ω] [IsProbabilityMeasure μ] [μ.WeaklyRegular] in
-theorem unitCoefficient_coeFn (u : Ω → ℂ) (hu : Measurable u)
+lemma unitCoefficient_coeFn (u : Ω → ℂ) (hu : Measurable u)
     (hunit : ∀ x, ‖u x‖ = 1) :
     unitCoefficient μ u hu hunit =ᵐ[μ] u :=
   MemLp.coeFn_toLp _
@@ -15067,7 +15067,7 @@ def unitFunctionL2 (u : Ω → ℂ) (hu : Measurable u)
 
 omit [TopologicalSpace Ω] [CompactSpace Ω] [T2Space Ω] [SecondCountableTopology Ω]
   [BorelSpace Ω] [μ.WeaklyRegular] in
-theorem unitFunctionL2_coeFn (u : Ω → ℂ) (hu : Measurable u)
+lemma unitFunctionL2_coeFn (u : Ω → ℂ) (hu : Measurable u)
     (hunit : ∀ x, ‖u x‖ = 1) :
     unitFunctionL2 μ u hu hunit =ᵐ[μ] u :=
   MemLp.coeFn_toLp _
@@ -15084,7 +15084,7 @@ def continuousMultiplier :
 
 omit [TopologicalSpace Ω] [CompactSpace Ω] [T2Space Ω] [SecondCountableTopology Ω]
   [BorelSpace Ω] [IsProbabilityMeasure μ] [μ.WeaklyRegular] in
-theorem unitMultiplier_coeFn (u : Ω → ℂ) (hu : Measurable u)
+lemma unitMultiplier_coeFn (u : Ω → ℂ) (hu : Measurable u)
     (hunit : ∀ x, ‖u x‖ = 1) (f : Lp ℂ 2 μ) :
     unitMultiplier μ u hu hunit f =ᵐ[μ] fun x => u x * f x := by
   exact (ContinuousLinearMap.coeFn_holder (ContinuousLinearMap.mul ℂ ℂ)
@@ -15094,7 +15094,7 @@ theorem unitMultiplier_coeFn (u : Ω → ℂ) (hu : Measurable u)
       rw [hx]
 
 omit [T2Space Ω] [SecondCountableTopology Ω] [μ.WeaklyRegular] in
-theorem continuousMultiplier_coeFn (q : C(Ω, ℂ)) (f : Lp ℂ 2 μ) :
+lemma continuousMultiplier_coeFn (q : C(Ω, ℂ)) (f : Lp ℂ 2 μ) :
     continuousMultiplier μ q f =ᵐ[μ] fun x => q x * f x := by
   exact (ContinuousLinearMap.coeFn_holder (ContinuousLinearMap.mul ℂ ℂ)
     ((ContinuousMap.toLp ⊤ μ ℂ) q) f).trans <| by
@@ -15103,7 +15103,7 @@ theorem continuousMultiplier_coeFn (q : C(Ω, ℂ)) (f : Lp ℂ 2 μ) :
       rw [hx]
 
 omit [T2Space Ω] [SecondCountableTopology Ω] [μ.WeaklyRegular] in
-theorem continuous_sub_unit_multiplier_norm_le_two
+lemma continuous_sub_unit_multiplier_norm_le_two
     (u : Ω → ℂ) (hu : Measurable u)
     (hunit : ∀ x, ‖u x‖ = 1)
     (q : C(Ω, ℂ)) (hq : ∀ x, ‖q x‖ ≤ 1) (f : Lp ℂ 2 μ) :
@@ -15126,7 +15126,7 @@ theorem continuous_sub_unit_multiplier_norm_le_two
   exact mul_le_mul_of_nonneg_right hqu (norm_nonneg _)
 
 omit [T2Space Ω] [SecondCountableTopology Ω] [μ.WeaklyRegular] in
-theorem continuous_sub_unit_multiplier_on_continuous_norm_le
+lemma continuous_sub_unit_multiplier_on_continuous_norm_le
     (u : Ω → ℂ) (hu : Measurable u)
     (hunit : ∀ x, ‖u x‖ = 1)
     (q h : C(Ω, ℂ)) :
@@ -15154,7 +15154,7 @@ theorem continuous_sub_unit_multiplier_on_continuous_norm_le
   nlinarith [ContinuousMap.norm_coe_le_norm h x, norm_nonneg (q x - u x)]
 
 omit [T2Space Ω] [SecondCountableTopology Ω] [μ.WeaklyRegular] in
-theorem continuous_sub_unit_multiplier_norm_le
+lemma continuous_sub_unit_multiplier_norm_le
     (u : Ω → ℂ) (hu : Measurable u)
     (hunit : ∀ x, ‖u x‖ = 1)
     (q : C(Ω, ℂ)) (hq : ∀ x, ‖q x‖ ≤ 1)
@@ -15181,12 +15181,12 @@ def clipContinuousMap (c : C(Ω, ℂ)) : C(Ω, ℂ) :=
 
 omit [CompactSpace Ω] [T2Space Ω] [SecondCountableTopology Ω] [MeasurableSpace Ω]
   [BorelSpace Ω] in
-theorem clipContinuousMap_norm_le (c : C(Ω, ℂ)) (t : Ω) :
+lemma clipContinuousMap_norm_le (c : C(Ω, ℂ)) (t : Ω) :
     ‖clipContinuousMap c t‖ ≤ 1 :=
   complexUnitBallClip_norm_le _
 
 omit [T2Space Ω] [SecondCountableTopology Ω] [μ.WeaklyRegular] in
-theorem clipContinuousMap_toLp_sub_unit_le (u : Ω → ℂ) (hu : Measurable u)
+lemma clipContinuousMap_toLp_sub_unit_le (u : Ω → ℂ) (hu : Measurable u)
     (hunit : ∀ t, ‖u t‖ = 1) (c : C(Ω, ℂ)) :
     ‖(ContinuousMap.toLp 2 μ ℂ) (clipContinuousMap c) -
         unitFunctionL2 μ u hu hunit‖ ≤
@@ -15211,7 +15211,7 @@ theorem clipContinuousMap_toLp_sub_unit_le (u : Ω → ℂ) (hu : Measurable u)
   rw [hclip, hc, hucoe]
   exact complexUnitBallClip_sub_norm_le_two (c t) (u t) (hunit t)
 
-theorem exists_continuous_norm_le_one_approx (u : Ω → ℂ) (hu : Measurable u)
+lemma exists_continuous_norm_le_one_approx (u : Ω → ℂ) (hu : Measurable u)
     (hunit : ∀ t, ‖u t‖ = 1) {ε : ℝ} (hε : 0 < ε) :
     ∃ q : C(Ω, ℂ), (∀ t, ‖q t‖ ≤ 1) ∧
       ‖(ContinuousMap.toLp 2 μ ℂ) q -
@@ -15227,7 +15227,7 @@ theorem exists_continuous_norm_le_one_approx (u : Ω → ℂ) (hu : Measurable u
   rw [norm_sub_rev]
   linarith
 
-theorem exists_continuous_multiplier_approx_pair
+lemma exists_continuous_multiplier_approx_pair
     (u : Ω → ℂ) (hu : Measurable u)
     (hunit : ∀ x, ‖u x‖ = 1)
     (f₁ f₂ : Lp ℂ 2 μ) {ε : ℝ} (hε : 0 < ε) :
@@ -15280,7 +15280,7 @@ theorem exists_continuous_multiplier_approx_pair
     nlinarith
 
 omit [SecondCountableTopology Ω] [μ.WeaklyRegular] in
-theorem commute_continuousMultiplier_of_commute_characters
+lemma commute_continuousMultiplier_of_commute_characters
     {ι : Type*} (χ : ι → C(Ω, ℂ))
     (hdense : (Submodule.span ℂ (Set.range χ)).topologicalClosure = ⊤)
     (T : Lp ℂ 2 μ →L[ℂ] Lp ℂ 2 μ)
@@ -15309,7 +15309,7 @@ theorem commute_continuousMultiplier_of_commute_characters
       rw [map_smul, map_smul, hf]
   exact congrFun heq q
 
-theorem commute_unitMultiplier_of_commute_characters
+lemma commute_unitMultiplier_of_commute_characters
     {ι : Type*} (χ : ι → C(Ω, ℂ))
     (hdense : (Submodule.span ℂ (Set.range χ)).topologicalClosure = ⊤)
     (T : Lp ℂ 2 μ →L[ℂ] Lp ℂ 2 μ)
@@ -15378,22 +15378,22 @@ namespace FullUnitDecomposition
 def realUnit (x : ℝ) : ℂ :=
   (x : ℂ) + Complex.I * (Real.sqrt (1 - x ^ 2) : ℂ)
 
-theorem continuous_realUnit : Continuous realUnit := by
+lemma continuous_realUnit : Continuous realUnit := by
   unfold realUnit
   fun_prop
 
-theorem norm_realUnit {x : ℝ} (hx : |x| ≤ 1) :
+lemma norm_realUnit {x : ℝ} (hx : |x| ≤ 1) :
     ‖realUnit x‖ = 1 := by
   have hsq : ‖realUnit x‖ ^ 2 = 1 := by
     rw [Complex.sq_norm]
     exact Complex.normSq_ofReal_add_I_mul_sqrt_one_sub hx
   nlinarith [norm_nonneg (realUnit x)]
 
-theorem realUnit_add_conj (x : ℝ) :
+lemma realUnit_add_conj (x : ℝ) :
     realUnit x + starRingEnd ℂ (realUnit x) = 2 * (x : ℂ) := by
   apply Complex.ext <;> simp [realUnit]; ring
 
-theorem complex_four_unit_decomposition {z : ℂ} (_hz : ‖z‖ ≤ 1) :
+lemma complex_four_unit_decomposition {z : ℂ} (_hz : ‖z‖ ≤ 1) :
     z = (realUnit z.re + starRingEnd ℂ (realUnit z.re)) / 2 +
       Complex.I * (realUnit z.im + starRingEnd ℂ (realUnit z.im)) / 2 := by
   rw [realUnit_add_conj, realUnit_add_conj]
@@ -15402,17 +15402,17 @@ theorem complex_four_unit_decomposition {z : ℂ} (_hz : ‖z‖ ≤ 1) :
 def clip (z : ℂ) : ℂ :=
   (1 / max 1 ‖z‖ : ℝ) • z
 
-theorem continuous_clip : Continuous clip := by
+lemma continuous_clip : Continuous clip := by
   unfold clip
   exact (Continuous.div continuous_const
       (continuous_const.max continuous_norm)
       (fun z => by positivity)).smul continuous_id
 
-theorem clip_eq_self_of_norm_le {z : ℂ} (hz : ‖z‖ ≤ 1) : clip z = z := by
+lemma clip_eq_self_of_norm_le {z : ℂ} (hz : ‖z‖ ≤ 1) : clip z = z := by
   rw [clip, max_eq_left hz]
   norm_num
 
-theorem norm_clip_le (z : ℂ) : ‖clip z‖ ≤ 1 := by
+lemma norm_clip_le (z : ℂ) : ‖clip z‖ ≤ 1 := by
   by_cases hz : ‖z‖ ≤ 1
   · rw [clip_eq_self_of_norm_le hz]
     exact hz
@@ -15422,7 +15422,7 @@ theorem norm_clip_le (z : ℂ) : ‖clip z‖ ≤ 1 := by
 
 variable {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
 
-theorem lp_infty_ae_norm_le (f : Lp ℂ ⊤ μ) :
+lemma lp_infty_ae_norm_le (f : Lp ℂ ⊤ μ) :
     ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖f‖ := by
   have hnorm : lpNorm (fun x => f x) ⊤ μ = ‖f‖ := by
     rw [← toReal_eLpNorm (Lp.memLp f).aestronglyMeasurable,
@@ -15434,16 +15434,16 @@ def normalizedCoefficient (f : Lp ℂ ⊤ μ) (x : Ω) : ℂ :=
   clip (((Lp.memLp f).aestronglyMeasurable.mk (fun y => f y) x) /
     ((‖f‖ + 1 : ℝ) : ℂ))
 
-theorem measurable_normalizedCoefficient (f : Lp ℂ ⊤ μ) :
+lemma measurable_normalizedCoefficient (f : Lp ℂ ⊤ μ) :
     Measurable (normalizedCoefficient f) := by
   unfold normalizedCoefficient
   exact continuous_clip.measurable.comp
     ((Lp.memLp f).aestronglyMeasurable.measurable_mk.div measurable_const)
 
-theorem norm_normalizedCoefficient_le (f : Lp ℂ ⊤ μ) (x : Ω) :
+lemma norm_normalizedCoefficient_le (f : Lp ℂ ⊤ μ) (x : Ω) :
     ‖normalizedCoefficient f x‖ ≤ 1 := norm_clip_le _
 
-theorem normalizedCoefficient_ae (f : Lp ℂ ⊤ μ) :
+lemma normalizedCoefficient_ae (f : Lp ℂ ⊤ μ) :
     normalizedCoefficient f =ᵐ[μ]
       fun x => f x / ((‖f‖ + 1 : ℝ) : ℂ) := by
   filter_upwards [lp_infty_ae_norm_le f,
@@ -15467,37 +15467,37 @@ def unitIm (f : Lp ℂ ⊤ μ) (x : Ω) : ℂ :=
 def unitImConj (f : Lp ℂ ⊤ μ) (x : Ω) : ℂ :=
   starRingEnd ℂ (unitIm f x)
 
-theorem measurable_unitRe (f : Lp ℂ ⊤ μ) : Measurable (unitRe f) :=
+lemma measurable_unitRe (f : Lp ℂ ⊤ μ) : Measurable (unitRe f) :=
   continuous_realUnit.measurable.comp
     (Complex.measurable_re.comp (measurable_normalizedCoefficient f))
 
-theorem measurable_unitReConj (f : Lp ℂ ⊤ μ) : Measurable (unitReConj f) :=
+lemma measurable_unitReConj (f : Lp ℂ ⊤ μ) : Measurable (unitReConj f) :=
   Complex.continuous_conj.measurable.comp (measurable_unitRe f)
 
-theorem measurable_unitIm (f : Lp ℂ ⊤ μ) : Measurable (unitIm f) :=
+lemma measurable_unitIm (f : Lp ℂ ⊤ μ) : Measurable (unitIm f) :=
   continuous_realUnit.measurable.comp
     (Complex.measurable_im.comp (measurable_normalizedCoefficient f))
 
-theorem measurable_unitImConj (f : Lp ℂ ⊤ μ) : Measurable (unitImConj f) :=
+lemma measurable_unitImConj (f : Lp ℂ ⊤ μ) : Measurable (unitImConj f) :=
   Complex.continuous_conj.measurable.comp (measurable_unitIm f)
 
-theorem norm_unitRe (f : Lp ℂ ⊤ μ) (x : Ω) : ‖unitRe f x‖ = 1 :=
+lemma norm_unitRe (f : Lp ℂ ⊤ μ) (x : Ω) : ‖unitRe f x‖ = 1 :=
   norm_realUnit ((Complex.abs_re_le_norm _).trans
     (norm_normalizedCoefficient_le f x))
 
-theorem norm_unitReConj (f : Lp ℂ ⊤ μ) (x : Ω) : ‖unitReConj f x‖ = 1 := by
+lemma norm_unitReConj (f : Lp ℂ ⊤ μ) (x : Ω) : ‖unitReConj f x‖ = 1 := by
   unfold unitReConj
   rw [Complex.norm_conj, norm_unitRe]
 
-theorem norm_unitIm (f : Lp ℂ ⊤ μ) (x : Ω) : ‖unitIm f x‖ = 1 :=
+lemma norm_unitIm (f : Lp ℂ ⊤ μ) (x : Ω) : ‖unitIm f x‖ = 1 :=
   norm_realUnit ((Complex.abs_im_le_norm _).trans
     (norm_normalizedCoefficient_le f x))
 
-theorem norm_unitImConj (f : Lp ℂ ⊤ μ) (x : Ω) : ‖unitImConj f x‖ = 1 := by
+lemma norm_unitImConj (f : Lp ℂ ⊤ μ) (x : Ω) : ‖unitImConj f x‖ = 1 := by
   unfold unitImConj
   rw [Complex.norm_conj, norm_unitIm]
 
-theorem lp_infty_four_unit_decomposition (f : Lp ℂ ⊤ μ) :
+lemma lp_infty_four_unit_decomposition (f : Lp ℂ ⊤ μ) :
     ∀ᵐ x ∂μ,
       f x = ((‖f‖ + 1 : ℝ) : ℂ) / 2 * unitRe f x +
         ((‖f‖ + 1 : ℝ) : ℂ) / 2 * unitReConj f x +
@@ -15523,7 +15523,7 @@ variable {Ω : Type*} [TopologicalSpace Ω] [CompactSpace Ω] [T2Space Ω]
 
 omit [TopologicalSpace Ω] [CompactSpace Ω] [T2Space Ω] [SecondCountableTopology Ω]
   [BorelSpace Ω] [IsProbabilityMeasure μ] [μ.WeaklyRegular] in
-theorem lp_infty_eq_four_unitCoefficients (f : Lp ℂ ⊤ μ) :
+lemma lp_infty_eq_four_unitCoefficients (f : Lp ℂ ⊤ μ) :
     f =
       (((‖f‖ + 1 : ℝ) : ℂ) / 2) •
           unitCoefficient μ (FullUnitDecomposition.unitRe f)
@@ -15595,7 +15595,7 @@ theorem lp_infty_eq_four_unitCoefficients (f : Lp ℂ ⊤ μ) :
 
 omit [TopologicalSpace Ω] [CompactSpace Ω] [T2Space Ω] [SecondCountableTopology Ω]
   [BorelSpace Ω] [IsProbabilityMeasure μ] [μ.WeaklyRegular] in
-theorem commute_multiplier_of_commute_units
+lemma commute_multiplier_of_commute_units
     (T : Lp ℂ 2 μ →L[ℂ] Lp ℂ 2 μ)
     (hT : ∀ (u : Ω → ℂ) (hu : Measurable u)
       (hunit : ∀ x, ‖u x‖ = 1), Commute T (unitMultiplier μ u hu hunit))
@@ -15649,13 +15649,13 @@ def crossedOperatorBlock (X : HaarProbabilityAction K Ω)
       lp.singleContinuousLinearMap ℂ
         (fun _ : K ↦ crossedBaseHilbert X) 2 k
 
-@[simp] theorem crossedOperatorBlock_apply (X : HaarProbabilityAction K Ω)
+@[simp] lemma crossedOperatorBlock_apply (X : HaarProbabilityAction K Ω)
     (T : crossedHilbert X →L[ℂ] crossedHilbert X)
     (q k : K) (ξ : crossedBaseHilbert X) :
     crossedOperatorBlock X T q k ξ = T (lp.single 2 k ξ) q := rfl
 
 omit [Group K] in
-theorem crossedFiberwiseOperator_single
+lemma crossedFiberwiseOperator_single
     {H : Type v} [NormedAddCommGroup H] [NormedSpace ℂ H]
     (A : H →L[ℂ] H) (k : K) (ξ : H) :
     crossedFiberwiseOperator (K := K) A (lp.single 2 k ξ) =
@@ -15668,7 +15668,7 @@ theorem crossedFiberwiseOperator_single
     simp
   · simp [h]
 
-theorem crossedOperatorBlock_commute_of_commute_fiberwise
+lemma crossedOperatorBlock_commute_of_commute_fiberwise
     (X : HaarProbabilityAction K Ω)
     (T : crossedHilbert X →L[ℂ] crossedHilbert X)
     (A : crossedBaseHilbert X →L[ℂ] crossedBaseHilbert X)
@@ -15683,7 +15683,7 @@ theorem crossedOperatorBlock_commute_of_commute_fiberwise
   exact congrFun (congrArg ((↑) : crossedHilbert X →
     (K → crossedBaseHilbert X)) hcomm) q
 
-theorem commute_crossedFiberwiseOperator_of_blocks
+lemma commute_crossedFiberwiseOperator_of_blocks
     (X : HaarProbabilityAction K Ω)
     (T : crossedHilbert X →L[ℂ] crossedHilbert X)
     (A : crossedBaseHilbert X →L[ℂ] crossedBaseHilbert X)
@@ -15702,7 +15702,7 @@ theorem commute_crossedFiberwiseOperator_of_blocks
   rw [crossedFiberwiseOperator_single]
   exact DFunLike.congr_fun (hT q k).eq ξ
 
-theorem commute_crossedMultiplier_iff_blocks
+lemma commute_crossedMultiplier_iff_blocks
     (X : HaarProbabilityAction K Ω)
     (T : crossedHilbert X →L[ℂ] crossedHilbert X)
     (f : crossedCoefficient X) :
@@ -15724,7 +15724,7 @@ def crossedCharacterGeneratorSet {ι : Type*}
     Set.range fun k : K ↦
       (crossedGroupUnitary X k).toContinuousLinearEquiv.toContinuousLinearMap
 
-theorem crossedMultiplier_mem_vonNeumannClosure_of_base_commutation
+lemma crossedMultiplier_mem_vonNeumannClosure_of_base_commutation
     {ι : Type*} (X : HaarProbabilityAction K Ω)
     (χ : ι → crossedCoefficient X)
     (hbase : ∀ T : crossedBaseHilbert X →L[ℂ] crossedBaseHilbert X,
@@ -15770,7 +15770,7 @@ def crossedContinuousCharacterCoefficient
   letI : IsProbabilityMeasure X.measure := X.probability
   exact ContinuousMap.toLp ⊤ X.measure ℂ φ
 
-theorem commute_crossedBaseMultiplier_of_commute_characters
+lemma commute_crossedBaseMultiplier_of_commute_characters
     {ι : Type*} (X : HaarProbabilityAction K Ω)
     [X.measure.WeaklyRegular]
     (χ : ι → C(Ω, ℂ))
@@ -15802,7 +15802,7 @@ open scoped ENNReal
 
 noncomputable section
 
-theorem carryCharacterCoefficient_eq_continuousToLp
+lemma carryCharacterCoefficient_eq_continuousToLp
     (n : ℕ) (η : E n) :
     carryCharacterCoefficient n η =
       ContinuousMap.toLp ⊤ (carryHaar n) ℂ (carryComplexCharacter n η) := by
@@ -15813,7 +15813,7 @@ theorem carryCharacterCoefficient_eq_continuousToLp
       (carryHaar n) (carryComplexCharacter n η)] with z hcoeff hcontinuous
   exact hcoeff.trans hcontinuous.symm
 
-theorem splitCharacterCoefficient_eq_continuousToLp (d : D) :
+lemma splitCharacterCoefficient_eq_continuousToLp (d : D) :
     splitCharacterCoefficient d =
       ContinuousMap.toLp ⊤ productHaar ℂ (splitComplexCharacter d) := by
   apply Lp.ext
@@ -15823,21 +15823,21 @@ theorem splitCharacterCoefficient_eq_continuousToLp (d : D) :
       productHaar (splitComplexCharacter d)] with z hcoeff hcontinuous
   exact hcoeff.trans hcontinuous.symm
 
-theorem carryCharacterCoefficient_eq_crossedContinuousCharacterCoefficient
+lemma carryCharacterCoefficient_eq_crossedContinuousCharacterCoefficient
     (n : ℕ) (η : E n) :
     carryCharacterCoefficient n η =
       crossedContinuousCharacterCoefficient (paperCarryHaarAction n)
         (carryComplexCharacter n η) :=
   carryCharacterCoefficient_eq_continuousToLp n η
 
-theorem splitCharacterCoefficient_eq_crossedContinuousCharacterCoefficient
+lemma splitCharacterCoefficient_eq_crossedContinuousCharacterCoefficient
     (d : D) :
     splitCharacterCoefficient d =
       crossedContinuousCharacterCoefficient paperSplitHaarAction
         (splitComplexCharacter d) :=
   splitCharacterCoefficient_eq_continuousToLp d
 
-theorem carryBaseMultiplier_commute_of_commute_characters
+lemma carryBaseMultiplier_commute_of_commute_characters
     (n : ℕ)
     (T : crossedBaseHilbert (paperCarryHaarAction n) →L[ℂ]
       crossedBaseHilbert (paperCarryHaarAction n))
@@ -15856,7 +15856,7 @@ theorem carryBaseMultiplier_commute_of_commute_characters
   rw [← carryCharacterCoefficient_eq_crossedContinuousCharacterCoefficient]
   exact hT η
 
-theorem splitBaseMultiplier_commute_of_commute_characters
+lemma splitBaseMultiplier_commute_of_commute_characters
     (T : crossedBaseHilbert paperSplitHaarAction →L[ℂ]
       crossedBaseHilbert paperSplitHaarAction)
     (hT : ∀ d : D,
@@ -15874,7 +15874,7 @@ theorem splitBaseMultiplier_commute_of_commute_characters
   rw [← splitCharacterCoefficient_eq_crossedContinuousCharacterCoefficient]
   exact hT d
 
-theorem carryMultiplier_mem_character_vonNeumannClosure
+lemma carryMultiplier_mem_character_vonNeumannClosure
     (n : ℕ) (f : crossedCoefficient (paperCarryHaarAction n)) :
     crossedMultiplier (paperCarryHaarAction n) f ∈
       vonNeumannClosure
@@ -15885,7 +15885,7 @@ theorem carryMultiplier_mem_character_vonNeumannClosure
   intro T hT g
   exact carryBaseMultiplier_commute_of_commute_characters n T hT g
 
-theorem splitMultiplier_mem_character_vonNeumannClosure
+lemma splitMultiplier_mem_character_vonNeumannClosure
     (f : crossedCoefficient paperSplitHaarAction) :
     crossedMultiplier paperSplitHaarAction f ∈
       vonNeumannClosure
@@ -15903,7 +15903,7 @@ universe u v w
 variable {J : Type u} [Group J]
 variable {Ω : Type v} [AddCommGroup Ω] [TopologicalSpace Ω] [MeasurableSpace Ω]
 
-theorem crossed_character_vonNeumannClosure_eq_full_of_multipliers
+lemma crossed_character_vonNeumannClosure_eq_full_of_multipliers
     {ι : Type w} (A : HaarProbabilityAction J Ω)
     (χ : ι → crossedCoefficient A)
     (hχ : ∀ f : crossedCoefficient A,
@@ -15954,7 +15954,7 @@ theorem crossed_character_vonNeumannClosure_eq_full_of_multipliers
 
 end CrossedClosureEquality
 
-theorem carry_character_vonNeumannClosure_eq_full (n : ℕ) :
+lemma carry_character_vonNeumannClosure_eq_full (n : ℕ) :
     vonNeumannClosure
       (crossedCharacterGeneratorSet (paperCarryHaarAction n)
         (carryCharacterCoefficient n)) =
@@ -15963,7 +15963,7 @@ theorem carry_character_vonNeumannClosure_eq_full (n : ℕ) :
     (paperCarryHaarAction n) (carryCharacterCoefficient n)
     (carryMultiplier_mem_character_vonNeumannClosure n)
 
-theorem split_character_vonNeumannClosure_eq_full :
+lemma split_character_vonNeumannClosure_eq_full :
     vonNeumannClosure
       (crossedCharacterGeneratorSet paperSplitHaarAction
         splitCharacterCoefficient) =
@@ -16002,13 +16002,13 @@ namespace SplitAbelianExtension
 variable {A : Type u} [AddCommGroup A]
 variable {G H : CountableDiscreteGroup.{u}}
 
-@[simp] theorem quotient_splitting_apply
+@[simp] lemma quotient_splitting_apply
     (E : SplitAbelianExtension A G H) (h : H) :
     E.quotient (E.splitting h) = h := by
   have heq := DFunLike.congr_fun E.quotient_splitting h
   exact heq
 
-theorem exists_kernel_mul_splitting
+lemma exists_kernel_mul_splitting
     (E : SplitAbelianExtension A G H) (g : G) :
     ∃ (a : A) (h : H),
       g = E.inclusion (Multiplicative.ofAdd a) * E.splitting h := by
@@ -16045,7 +16045,7 @@ def dualCharacterAction
     exact map_mul χ _ _
   continuous_toFun := continuous_of_discreteTopology
 
-@[simp] theorem dualCharacterAction_trivial
+@[simp] lemma dualCharacterAction_trivial
     (action : H →* Multiplicative (AddAut A)) (h : H) :
     dualCharacterAction action h (1 : DiscreteCharacterSpace A) = 1 := by
   ext a
@@ -16114,7 +16114,7 @@ omit [TopologicalSpace A] [DiscreteTopology A]
   [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem invariant_of_kernel_and_quotient
+lemma invariant_of_kernel_and_quotient
     (E : SplitAbelianExtension A G H)
     {V : Type u} [NormedAddCommGroup V]
     [InnerProductSpace ℂ V] [CompleteSpace V]
@@ -16141,7 +16141,7 @@ def HasFiniteSpectralDetection
 
 omit [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem exists_positive_spectral_atom
+lemma exists_positive_spectral_atom
     (E : SplitAbelianExtension A G H)
     {V : Type u} [NormedAddCommGroup V]
     [InnerProductSpace ℂ V] [CompleteSpace V]
@@ -16163,7 +16163,7 @@ theorem exists_positive_spectral_atom
 
 omit [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem spectral_criterion_representation
+lemma spectral_criterion_representation
     (E : SplitAbelianExtension A G H)
     {V : Type u} [NormedAddCommGroup V]
     [InnerProductSpace ℂ V] [CompleteSpace V]
@@ -16182,7 +16182,7 @@ theorem spectral_criterion_representation
 
 omit [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem spectral_criterion
+lemma spectral_criterion
     (E : SplitAbelianExtension A G H)
     (hH : HasKazhdanPropertyT H)
     (J : Finset A) {c : ℝ} (hc : 0 < c)
@@ -16263,7 +16263,7 @@ variable {π : UnitaryRepresentation G V}
 
 omit [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem scalar_univ_real
+lemma scalar_univ_real
     (P : ProjectionValuedSpectralMeasure E V π) (x : V) :
     (P.scalar x).real Set.univ = ‖x‖ ^ 2 := by
   rw [P.scalar_apply x Set.univ MeasurableSet.univ, P.projection_univ]
@@ -16271,7 +16271,7 @@ theorem scalar_univ_real
 
 omit [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem scalar_isProbabilityMeasure
+lemma scalar_isProbabilityMeasure
     (P : ProjectionValuedSpectralMeasure E V π)
     (x : V) (hx : ‖x‖ = 1) :
     IsProbabilityMeasure (P.scalar x) where
@@ -16289,7 +16289,7 @@ def probabilityMeasure
 
 omit [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem probabilityMeasure_invariant
+lemma probabilityMeasure_invariant
     (P : ProjectionValuedSpectralMeasure E V π)
     (x : QuotientFixedUnitVector E V π) :
     IsInvariantSpectralMeasure E.action
@@ -16301,7 +16301,7 @@ theorem probabilityMeasure_invariant
 
 omit [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem probabilityMeasure_energy
+lemma probabilityMeasure_energy
     (P : ProjectionValuedSpectralMeasure E V π)
     (x : QuotientFixedUnitVector E V π) (a : A) :
     spectralDetectionEnergy
@@ -16310,7 +16310,7 @@ theorem probabilityMeasure_energy
           x.vector - x.vector‖ ^ 2 := by
   exact P.energy_identity x.vector a
 
-theorem trivialProjection_ne_zero_of_atom_pos
+lemma trivialProjection_ne_zero_of_atom_pos
     (P : ProjectionValuedSpectralMeasure E V π)
     (x : QuotientFixedUnitVector E V π)
     (hx : 0 < spectralTrivialAtom
@@ -16327,7 +16327,7 @@ theorem trivialProjection_ne_zero_of_atom_pos
 
 omit [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem trivialProjection_kernel_fixed
+lemma trivialProjection_kernel_fixed
     (P : ProjectionValuedSpectralMeasure E V π)
     (x : V) (a : A) :
     (π (E.inclusion (Multiplicative.ofAdd a)) : V →L[ℂ] V)
@@ -16336,7 +16336,7 @@ theorem trivialProjection_kernel_fixed
 
 omit [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem trivialProjection_quotient_fixed
+lemma trivialProjection_quotient_fixed
     (P : ProjectionValuedSpectralMeasure E V π)
     (x : QuotientFixedUnitVector E V π) (h : H) :
     (π (E.splitting h) : V →L[ℂ] V)
@@ -16345,7 +16345,7 @@ theorem trivialProjection_quotient_fixed
   simpa [Set.image_singleton, dualCharacterAction_trivial,
     x.quotient_fixed h] using hcov
 
-theorem positive_atom_invariant
+lemma positive_atom_invariant
     (P : ProjectionValuedSpectralMeasure E V π)
     (x : QuotientFixedUnitVector E V π)
     (hx : 0 < spectralTrivialAtom
@@ -16388,7 +16388,7 @@ def normalizedVector (p : W) : W := ((‖p‖ : ℂ)⁻¹) • p
 
 omit [CompleteSpace W] in
 
-theorem normalizedVector_norm (p : W) (hp : p ≠ 0) :
+lemma normalizedVector_norm (p : W) (hp : p ≠ 0) :
     ‖normalizedVector p‖ = 1 := by
   have hpNorm : ‖p‖ ≠ 0 := norm_ne_zero_iff.mpr hp
   rw [normalizedVector, norm_smul, norm_inv, Complex.norm_real,
@@ -16396,7 +16396,7 @@ theorem normalizedVector_norm (p : W) (hp : p ≠ 0) :
 
 omit [CompleteSpace W] in
 
-theorem normalizedVector_rescale (p : W) (hp : p ≠ 0) :
+lemma normalizedVector_rescale (p : W) (hp : p ≠ 0) :
     (‖p‖ : ℂ) • normalizedVector p = p := by
   have hpNorm : (‖p‖ : ℂ) ≠ 0 := by
     exact_mod_cast norm_ne_zero_iff.mpr hp
@@ -16404,7 +16404,7 @@ theorem normalizedVector_rescale (p : W) (hp : p ≠ 0) :
 
 omit [InnerProductSpace ℂ W] [CompleteSpace W] in
 
-theorem ne_zero_of_distance_lt_one_of_unit
+lemma ne_zero_of_distance_lt_one_of_unit
     (ξ p : W) (hξ : ‖ξ‖ = 1) (hclose : ‖p - ξ‖ < 1) :
     p ≠ 0 := by
   intro hp
@@ -16413,7 +16413,7 @@ theorem ne_zero_of_distance_lt_one_of_unit
 
 omit [CompleteSpace W] in
 
-theorem normalizedVector_sub_self_norm_le
+lemma normalizedVector_sub_self_norm_le
     (ξ p : W) (hξ : ‖ξ‖ = 1) (hp : p ≠ 0) :
     ‖normalizedVector p - p‖ ≤ ‖p - ξ‖ := by
   have hrewrite : normalizedVector p - p =
@@ -16430,7 +16430,7 @@ theorem normalizedVector_sub_self_norm_le
 
 omit [CompleteSpace W] in
 
-theorem normalizedVector_sub_unit_norm_le
+lemma normalizedVector_sub_unit_norm_le
     (ξ p : W) (hξ : ‖ξ‖ = 1) (hp : p ≠ 0) :
     ‖normalizedVector p - ξ‖ ≤ 2 * ‖p - ξ‖ := by
   calc
@@ -16442,13 +16442,13 @@ theorem normalizedVector_sub_unit_norm_le
     _ ≤ 2 * ‖p - ξ‖ := by
       nlinarith [normalizedVector_sub_self_norm_le ξ p hξ hp]
 
-theorem normalizedVector_fixed
+lemma normalizedVector_fixed
     (U : unitary (W →L[ℂ] W)) (p : W)
     (hfix : (U : W →L[ℂ] W) p = p) :
     (U : W →L[ℂ] W) (normalizedVector p) = normalizedVector p := by
   simp only [normalizedVector, map_smul, hfix]
 
-theorem unitary_displacement_le_of_distance
+lemma unitary_displacement_le_of_distance
     (U : unitary (W →L[ℂ] W)) (ξ x : W) :
     ‖(U : W →L[ℂ] W) x - x‖ ≤
       ‖(U : W →L[ℂ] W) ξ - ξ‖ + 2 * ‖x - ξ‖ := by
@@ -16469,7 +16469,7 @@ theorem unitary_displacement_le_of_distance
       rw [Unitary.norm_map U, norm_sub_rev ξ x]
       ring
 
-theorem normalizedVector_unitary_displacement_le
+lemma normalizedVector_unitary_displacement_le
     (U : unitary (W →L[ℂ] W)) (ξ p : W)
     (hξ : ‖ξ‖ = 1) (hp : p ≠ 0) :
     ‖(U : W →L[ℂ] W) (normalizedVector p) - normalizedVector p‖ ≤
@@ -16503,14 +16503,14 @@ def quotientFixedSubmodule
       (((π (E.splitting h) : V →L[ℂ] V) -
         ContinuousLinearMap.id ℂ V).toLinearMap)
 
-theorem mem_quotientFixedSubmodule
+lemma mem_quotientFixedSubmodule
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (x : V) :
     x ∈ quotientFixedSubmodule E π ↔
       ∀ h : H, (π (E.splitting h) : V →L[ℂ] V) x = x := by
   simp [quotientFixedSubmodule, sub_eq_zero]
 
-theorem quotientFixedSubmodule_isClosed
+lemma quotientFixedSubmodule_isClosed
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) :
     IsClosed (quotientFixedSubmodule E π : Set V) := by
@@ -16525,7 +16525,7 @@ instance quotientFixedSubmodule_completeSpace
     CompleteSpace (quotientFixedSubmodule E π) :=
   (quotientFixedSubmodule_isClosed E π).isComplete.completeSpace_coe
 
-theorem quotientFixedOrthogonal_mem
+lemma quotientFixedOrthogonal_mem
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V)
     (h : H) {x : V} (hx : x ∈ (quotientFixedSubmodule E π)ᗮ) :
@@ -16546,13 +16546,13 @@ def quotientFixedProjection
     (π : UnitaryRepresentation G V) : V →L[ℂ] V :=
   (quotientFixedSubmodule E π).starProjection
 
-theorem quotientFixedProjection_mem
+lemma quotientFixedProjection_mem
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (x : V) :
     quotientFixedProjection E π x ∈ quotientFixedSubmodule E π :=
   Submodule.starProjection_apply_mem _ _
 
-theorem quotientFixedProjection_fixed
+lemma quotientFixedProjection_fixed
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (x : V) (h : H) :
     (π (E.splitting h) : V →L[ℂ] V)
@@ -16592,7 +16592,7 @@ def quotientFixedOrthogonalIsometry
     exact map_smul (π (E.splitting h) : V →L[ℂ] V) c (x : V)
   norm_map' x := Unitary.norm_map (π (E.splitting h)) x
 
-@[simp] theorem quotientFixedOrthogonalIsometry_apply
+@[simp] lemma quotientFixedOrthogonalIsometry_apply
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (h : H)
     (x : (quotientFixedSubmodule E π)ᗮ) :
@@ -16626,7 +16626,7 @@ def quotientFixedOrthogonalRepresentation
   Unitary.linearIsometryEquiv.symm.toMonoidHom.comp
     (quotientFixedOrthogonalIsometryHom E π)
 
-@[simp] theorem quotientFixedOrthogonalRepresentation_apply
+@[simp] lemma quotientFixedOrthogonalRepresentation_apply
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (h : H)
     (x : (quotientFixedSubmodule E π)ᗮ) :
@@ -16636,7 +16636,7 @@ def quotientFixedOrthogonalRepresentation
           (quotientFixedSubmodule E π)ᗮ) : V) =
       (π (E.splitting h) : V →L[ℂ] V) x := rfl
 
-theorem quotientFixedOrthogonal_no_nonzero_invariant
+lemma quotientFixedOrthogonal_no_nonzero_invariant
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V)
     (x : (quotientFixedSubmodule E π)ᗮ)
@@ -16653,7 +16653,7 @@ theorem quotientFixedOrthogonal_no_nonzero_invariant
     (((quotientFixedSubmodule E π).mem_orthogonal (x : V)).mp
       x.property x hfixed)
 
-theorem quotientFixedOrthogonal_spectralGap
+lemma quotientFixedOrthogonal_spectralGap
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V)
     (hH : HasKazhdanPropertyT H) :
@@ -16679,7 +16679,7 @@ theorem quotientFixedOrthogonal_spectralGap
   obtain ⟨h, hh, hbound⟩ := hgap x hx
   exact ⟨h, hh, hbound⟩
 
-theorem quotientFixed_spectralGap
+lemma quotientFixed_spectralGap
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V)
     (hH : HasKazhdanPropertyT H) :
@@ -16705,7 +16705,7 @@ variable {G H : CountableDiscreteGroup.{u}}
 variable {V : Type u} [NormedAddCommGroup V]
   [InnerProductSpace ℂ V] [CompleteSpace V]
 
-theorem quotientProjection_error_lt_of_spectralGap
+lemma quotientProjection_error_lt_of_spectralGap
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V)
     (M : Submodule ℂ V) [M.HasOrthogonalProjection]
@@ -16759,7 +16759,7 @@ theorem quotientProjection_error_lt_of_spectralGap
   have hsmall := hξ h hh
   nlinarith
 
-theorem quotientFixedApproximation_of_uniform
+lemma quotientFixedApproximation_of_uniform
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V)
     (uniform :
@@ -16803,7 +16803,7 @@ theorem quotientFixedApproximation_of_uniform
       dsimp [denominator]
       nlinarith
 
-theorem quotientFixedUnitVector_uniform
+lemma quotientFixedUnitVector_uniform
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V)
     (hH : HasKazhdanPropertyT H)
@@ -16858,7 +16858,7 @@ theorem quotientFixedUnitVector_uniform
     normalizedVector p‖ < ε
   nlinarith
 
-theorem quotientFixedApproximation
+lemma quotientFixedApproximation
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) :
     ProjectionValuedSpectralMeasure.HasQuotientFixedApproximation E π :=
@@ -16882,7 +16882,7 @@ variable [MeasurableSpace (DiscreteCharacterSpace A)]
 omit [DiscreteTopology A] [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem continuous_character_evaluation (a : A) :
+lemma continuous_character_evaluation (a : A) :
     Continuous (fun χ : DiscreteCharacterSpace A ↦
       ((χ (Multiplicative.ofAdd a) : Circle) : ℂ)) := by
   change Continuous (fun χ : Multiplicative A →ₜ* Circle ↦
@@ -16899,7 +16899,7 @@ def spectralUnitTest (A : Type u)
 
 omit [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
-@[simp] theorem spectralUnitTest_apply (χ : DiscreteCharacterSpace A) :
+@[simp] lemma spectralUnitTest_apply (χ : DiscreteCharacterSpace A) :
     spectralUnitTest A χ = 1 := rfl
 
 def spectralEnergyTest (a : A) :
@@ -16911,7 +16911,7 @@ def spectralEnergyTest (a : A) :
 
 omit [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
-@[simp] theorem spectralEnergyTest_apply
+@[simp] lemma spectralEnergyTest_apply
     (a : A) (χ : DiscreteCharacterSpace A) :
     spectralEnergyTest a χ =
       ‖((χ (Multiplicative.ofAdd a) : Circle) : ℂ) - 1‖ ^ 2 := rfl
@@ -16956,19 +16956,19 @@ instance measure_isFiniteMeasure
   unfold measure
   infer_instance
 
-theorem integral_measure
+lemma integral_measure
     (Φ : PositiveSpectralFunctional E V π) (x : V)
     (f : C_c(DiscreteCharacterSpace A, ℝ)) :
     (∫ χ, f χ ∂(Φ.measure x)) = Φ.functional x f := by
   exact RealRMK.integral_rieszMeasure (Φ.functional x) f
 
-theorem measure_univ_real
+lemma measure_univ_real
     (Φ : PositiveSpectralFunctional E V π) (x : V) :
     (Φ.measure x).real Set.univ = ‖x‖ ^ 2 := by
   have h := Φ.integral_measure x (spectralUnitTest A)
   simpa [Φ.normalization x] using h
 
-theorem measure_isProbabilityMeasure
+lemma measure_isProbabilityMeasure
     (Φ : PositiveSpectralFunctional E V π)
     (x : V) (hx : ‖x‖ = 1) :
     IsProbabilityMeasure (Φ.measure x) := by
@@ -16982,13 +16982,13 @@ def probabilityMeasure
     ProbabilityMeasure (DiscreteCharacterSpace A) :=
   ⟨Φ.measure x, Φ.measure_isProbabilityMeasure x hx⟩
 
-@[simp] theorem probabilityMeasure_toMeasure
+@[simp] lemma probabilityMeasure_toMeasure
     (Φ : PositiveSpectralFunctional E V π)
     (x : V) (hx : ‖x‖ = 1) :
     (Φ.probabilityMeasure x hx : Measure (DiscreteCharacterSpace A)) =
       Φ.measure x := rfl
 
-theorem measure_energy
+lemma measure_energy
     (Φ : PositiveSpectralFunctional E V π)
     (x : V) (a : A) :
     (∫ χ : DiscreteCharacterSpace A,
@@ -16997,7 +16997,7 @@ theorem measure_energy
       ‖(π (E.inclusion (Multiplicative.ofAdd a)) : V →L[ℂ] V) x - x‖ ^ 2 := by
   exact (Φ.integral_measure x (spectralEnergyTest a)).trans (Φ.energy x a)
 
-theorem probabilityMeasure_invariant
+lemma probabilityMeasure_invariant
     (Φ : PositiveSpectralFunctional E V π)
     (x : QuotientFixedUnitVector E V π) :
     IsInvariantSpectralMeasure E.action
@@ -17011,7 +17011,7 @@ theorem probabilityMeasure_invariant
       RealRMK.rieszMeasure (Φ.functional x.vector)
   rw [Φ.covariance h x.vector, x.quotient_fixed h]
 
-theorem probabilityMeasure_energy
+lemma probabilityMeasure_energy
     (Φ : PositiveSpectralFunctional E V π)
     (x : QuotientFixedUnitVector E V π) (a : A) :
     spectralDetectionEnergy
@@ -17036,7 +17036,7 @@ omit [TopologicalSpace A] [DiscreteTopology A]
   [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem mem_kernelFixedSubmodule
+lemma mem_kernelFixedSubmodule
     (E : SplitAbelianExtension A G H)
     {V : Type u} [NormedAddCommGroup V]
     [InnerProductSpace ℂ V] [CompleteSpace V]
@@ -17050,7 +17050,7 @@ omit [TopologicalSpace A] [DiscreteTopology A]
   [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem kernelFixedSubmodule_isClosed
+lemma kernelFixedSubmodule_isClosed
     (E : SplitAbelianExtension A G H)
     {V : Type u} [NormedAddCommGroup V]
     [InnerProductSpace ℂ V] [CompleteSpace V]
@@ -17080,7 +17080,7 @@ omit [TopologicalSpace A] [DiscreteTopology A]
   [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem trivialCharacterProjection_kernel_fixed
+lemma trivialCharacterProjection_kernel_fixed
     (E : SplitAbelianExtension A G H)
     {V : Type u} [NormedAddCommGroup V]
     [InnerProductSpace ℂ V] [CompleteSpace V]
@@ -17095,7 +17095,7 @@ omit [TopologicalSpace A] [DiscreteTopology A]
   [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem kernel_map_kernelFixedSubmodule
+lemma kernel_map_kernelFixedSubmodule
     (E : SplitAbelianExtension A G H)
     {V : Type u} [NormedAddCommGroup V]
     [InnerProductSpace ℂ V] [CompleteSpace V]
@@ -17119,7 +17119,7 @@ omit [TopologicalSpace A] [DiscreteTopology A]
   [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem trivialCharacterProjection_kernel_commutes
+lemma trivialCharacterProjection_kernel_commutes
     (E : SplitAbelianExtension A G H)
     {V : Type u} [NormedAddCommGroup V]
     [InnerProductSpace ℂ V] [CompleteSpace V]
@@ -17155,7 +17155,7 @@ omit [TopologicalSpace A] [DiscreteTopology A]
   [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem trivialCharacterProjection_kernel_orbit
+lemma trivialCharacterProjection_kernel_orbit
     (E : SplitAbelianExtension A G H)
     {V : Type u} [NormedAddCommGroup V]
     [InnerProductSpace ℂ V] [CompleteSpace V]
@@ -17170,7 +17170,7 @@ omit [TopologicalSpace A] [DiscreteTopology A]
   [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem quotient_preserves_kernelFixedSubmodule
+lemma quotient_preserves_kernelFixedSubmodule
     (E : SplitAbelianExtension A G H)
     {V : Type u} [NormedAddCommGroup V]
     [InnerProductSpace ℂ V] [CompleteSpace V]
@@ -17213,7 +17213,7 @@ omit [TopologicalSpace A] [DiscreteTopology A]
   [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem quotient_map_kernelFixedSubmodule
+lemma quotient_map_kernelFixedSubmodule
     (E : SplitAbelianExtension A G H)
     {V : Type u} [NormedAddCommGroup V]
     [InnerProductSpace ℂ V] [CompleteSpace V]
@@ -17242,7 +17242,7 @@ omit [TopologicalSpace A] [DiscreteTopology A]
   [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem trivialCharacterProjection_quotient_commutes
+lemma trivialCharacterProjection_quotient_commutes
     (E : SplitAbelianExtension A G H)
     {V : Type u} [NormedAddCommGroup V]
     [InnerProductSpace ℂ V] [CompleteSpace V]
@@ -17289,7 +17289,7 @@ variable {W : Type u} [NormedAddCommGroup W]
 variable {E : SplitAbelianExtension A G H}
 variable {π : UnitaryRepresentation G W}
 
-theorem measureReal_singleton_le_integral_of_nonneg
+lemma measureReal_singleton_le_integral_of_nonneg
     {Ω : Type v} [MeasurableSpace Ω] [MeasurableSingletonClass Ω]
     (μ : Measure Ω) (f : Ω → ℝ) (x : Ω)
     (hf : Integrable f μ) (hpos : ∀ y, 0 ≤ f y)
@@ -17306,7 +17306,7 @@ theorem measureReal_singleton_le_integral_of_nonneg
 
 namespace PositiveSpectralFunctional
 
-theorem trivial_atom_le_functional_of_nonneg
+lemma trivial_atom_le_functional_of_nonneg
     (Φ : PositiveSpectralFunctional E W π) (x : W)
     (f : C_c(DiscreteCharacterSpace A, ℝ))
     (hpos : ∀ χ, 0 ≤ f χ) (hone : 1 ≤ f 1) :
@@ -17324,7 +17324,7 @@ end PositiveSpectralFunctional
 
 omit [TopologicalSpace A] [DiscreteTopology A]
   [MeasurableSpace (DiscreteCharacterSpace A)] [BorelSpace (DiscreteCharacterSpace A)] in
-theorem kernel_orbit_sub_norm
+lemma kernel_orbit_sub_norm
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G W) (x : W) (a b : A) :
     ‖(π (E.inclusion (Multiplicative.ofAdd a)) : W →L[ℂ] W) x -
@@ -17359,7 +17359,7 @@ theorem kernel_orbit_sub_norm
 
 omit [TopologicalSpace A] [DiscreteTopology A]
   [MeasurableSpace (DiscreteCharacterSpace A)] [BorelSpace (DiscreteCharacterSpace A)] in
-theorem kernel_orbit_sub_norm_sq
+lemma kernel_orbit_sub_norm_sq
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G W) (x : W) (a b : A) :
     ‖(π (E.inclusion (Multiplicative.ofAdd a)) : W →L[ℂ] W) x -
@@ -17369,7 +17369,7 @@ theorem kernel_orbit_sub_norm_sq
 
 omit [DiscreteTopology A] [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
-theorem character_sub_norm
+lemma character_sub_norm
     (χ : DiscreteCharacterSpace A) (a b : A) :
     ‖((χ (Multiplicative.ofAdd a) : Circle) : ℂ) -
       ((χ (Multiplicative.ofAdd b) : Circle) : ℂ)‖ =
@@ -17400,7 +17400,7 @@ theorem character_sub_norm
 
 omit [DiscreteTopology A] [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
-theorem character_sub_norm_sq
+lemma character_sub_norm_sq
     (χ : DiscreteCharacterSpace A) (a b : A) :
     ‖((χ (Multiplicative.ofAdd a) : Circle) : ℂ) -
       ((χ (Multiplicative.ofAdd b) : Circle) : ℂ)‖ ^ 2 =
@@ -17423,7 +17423,7 @@ def spectralFiniteAverageTest
 
 omit [MeasurableSpace (DiscreteCharacterSpace A)] [BorelSpace (DiscreteCharacterSpace A)]
   in
-@[simp] theorem spectralFiniteAverageTest_apply
+@[simp] lemma spectralFiniteAverageTest_apply
     {ι : Type v} (s : Finset ι) (a : ι → A) (w : ι → ℝ)
     (χ : DiscreteCharacterSpace A) :
     spectralFiniteAverageTest s a w χ =
@@ -17432,14 +17432,14 @@ omit [MeasurableSpace (DiscreteCharacterSpace A)] [BorelSpace (DiscreteCharacter
 
 omit [MeasurableSpace (DiscreteCharacterSpace A)] [BorelSpace (DiscreteCharacterSpace A)]
   in
-theorem spectralFiniteAverageTest_nonneg
+lemma spectralFiniteAverageTest_nonneg
     {ι : Type v} (s : Finset ι) (a : ι → A) (w : ι → ℝ)
     (χ : DiscreteCharacterSpace A) :
     0 ≤ spectralFiniteAverageTest s a w χ := sq_nonneg _
 
 omit [MeasurableSpace (DiscreteCharacterSpace A)] [BorelSpace (DiscreteCharacterSpace A)]
   in
-theorem spectralFiniteAverageTest_one
+lemma spectralFiniteAverageTest_one
     {ι : Type v} (s : Finset ι) (a : ι → A) (w : ι → ℝ)
     (hw : ∑ i ∈ s, w i = 1) :
     spectralFiniteAverageTest s a w 1 = 1 := by
@@ -17455,7 +17455,7 @@ theorem spectralFiniteAverageTest_one
 
 namespace PositiveSpectralFunctional
 
-theorem trivial_atom_le_finiteAverage_functional
+lemma trivial_atom_le_finiteAverage_functional
     (Φ : PositiveSpectralFunctional E W π) (x : W)
     {ι : Type v} (s : Finset ι) (a : ι → A) (w : ι → ℝ)
     (hw : ∑ i ∈ s, w i = 1) :
@@ -17477,7 +17477,7 @@ open scoped ENNReal NNReal CompactlySupported
 
 universe u
 
-theorem weighted_norm_sq_eq_sub_pairwise_dist_sq
+lemma weighted_norm_sq_eq_sub_pairwise_dist_sq
     {ι V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
     (s : Finset ι) (w : ι → ℝ) (v : ι → V)
     (hw : ∑ i ∈ s, w i = 1) :
@@ -17524,7 +17524,7 @@ theorem weighted_norm_sq_eq_sub_pairwise_dist_sq
   rw [hcross]
   ring
 
-theorem weighted_norm_sq_eq_sub_pairwise_dist_sq_of_constant_norm
+lemma weighted_norm_sq_eq_sub_pairwise_dist_sq_of_constant_norm
     {ι V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
     (s : Finset ι) (w : ι → ℝ) (v : ι → V) (r : ℝ)
     (hw : ∑ i ∈ s, w i = 1)
@@ -17551,7 +17551,7 @@ variable [MeasurableSpace (DiscreteCharacterSpace A)]
 
 omit [MeasurableSpace (DiscreteCharacterSpace A)] [BorelSpace (DiscreteCharacterSpace A)]
   in
-theorem spectralFiniteAverageTest_eq_sub_energy {ι : Type*}
+lemma spectralFiniteAverageTest_eq_sub_energy {ι : Type*}
     (s : Finset ι) (a : ι → A) (w : ι → ℝ)
     (hw : ∑ i ∈ s, w i = 1) :
     spectralFiniteAverageTest s a w = spectralUnitTest A -
@@ -17573,7 +17573,7 @@ variable {V : Type u} [NormedAddCommGroup V]
   [InnerProductSpace ℂ V] [CompleteSpace V]
 variable {π : UnitaryRepresentation G V}
 
-theorem finiteAverage_functional_eq_kernel_orbit_norm_sq
+lemma finiteAverage_functional_eq_kernel_orbit_norm_sq
     (Φ : PositiveSpectralFunctional E V π) (x : V)
     {ι : Type*} (s : Finset ι) (a : ι → A) (w : ι → ℝ)
     (hw : ∑ i ∈ s, w i = 1) :
@@ -17592,7 +17592,7 @@ theorem finiteAverage_functional_eq_kernel_orbit_norm_sq
     smul_eq_mul]
   exact hvariance.symm
 
-theorem trivial_atom_le_kernel_orbit_norm_sq
+lemma trivial_atom_le_kernel_orbit_norm_sq
     (Φ : PositiveSpectralFunctional E V π) (x : V)
     {ι : Type*} (s : Finset ι) (a : ι → A) (w : ι → ℝ)
     (hw : ∑ i ∈ s, w i = 1) :
@@ -17636,7 +17636,7 @@ variable {V : Type u} [NormedAddCommGroup V]
   [InnerProductSpace ℂ V] [CompleteSpace V]
 variable {π : UnitaryRepresentation G V}
 
-theorem trivialCharacterProjection_ne_zero_of_atom_pos_of_orbitApproximation
+lemma trivialCharacterProjection_ne_zero_of_atom_pos_of_orbitApproximation
     (Φ : PositiveSpectralFunctional E V π)
     (approximation : HasKernelOrbitAffineApproximation E π)
     (x : QuotientFixedUnitVector E V π)
@@ -17661,7 +17661,7 @@ theorem trivialCharacterProjection_ne_zero_of_atom_pos_of_orbitApproximation
   have hznorm : 0 ≤ ‖z‖ := norm_nonneg _
   nlinarith [mul_nonneg hznorm (sub_nonneg.mpr (le_of_lt hzone))]
 
-theorem positive_atom_invariant_of_orbitApproximation
+lemma positive_atom_invariant_of_orbitApproximation
     (Φ : PositiveSpectralFunctional E V π)
     (approximation : HasKernelOrbitAffineApproximation E π)
     (x : QuotientFixedUnitVector E V π)
@@ -17693,7 +17693,7 @@ def toSpectralMeasureInterfaceOfOrbitApproximation
 
 end PositiveSpectralFunctional
 
-theorem spectral_criterion_of_positive_functional_and_orbitApproximation
+lemma spectral_criterion_of_positive_functional_and_orbitApproximation
     (E : SplitAbelianExtension A G H)
     (hH : HasKazhdanPropertyT H)
     (J : Finset A) {c : ℝ} (hc : 0 < c)
@@ -17744,7 +17744,7 @@ def spectralOperatorAlgebra
 
 omit [TopologicalSpace A] [DiscreteTopology A] in
 
-theorem spectralOperatorGenerators_commute
+lemma spectralOperatorGenerators_commute
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V)
     {S T : V →L[ℂ] V}
@@ -17766,7 +17766,7 @@ theorem spectralOperatorGenerators_commute
 
 omit [TopologicalSpace A] [DiscreteTopology A] in
 
-theorem star_mem_spectralOperatorGenerators
+lemma star_mem_spectralOperatorGenerators
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V)
     {T : V →L[ℂ] V}
@@ -17816,7 +17816,7 @@ def spectralKernelOperator
       (StarAlgebra.subset_adjoin ℂ _ ⟨a, rfl⟩)⟩
 
 omit [TopologicalSpace A] [DiscreteTopology A] in
-@[simp] theorem spectralKernelOperator_coe
+@[simp] lemma spectralKernelOperator_coe
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (a : A) :
     ((spectralKernelOperator E π a : spectralOperatorAlgebra E π) :
@@ -17824,7 +17824,7 @@ omit [TopologicalSpace A] [DiscreteTopology A] in
         (π (E.inclusion (Multiplicative.ofAdd a)) : V →L[ℂ] V) := rfl
 
 omit [TopologicalSpace A] [DiscreteTopology A] in
-@[simp] theorem spectralKernelOperator_zero
+@[simp] lemma spectralKernelOperator_zero
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) :
     spectralKernelOperator E π 0 = 1 := by
@@ -17832,7 +17832,7 @@ omit [TopologicalSpace A] [DiscreteTopology A] in
   simp [spectralKernelOperator]
 
 omit [TopologicalSpace A] [DiscreteTopology A] in
-theorem spectralKernelOperator_add
+lemma spectralKernelOperator_add
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (a b : A) :
     spectralKernelOperator E π (a + b) =
@@ -17850,7 +17850,7 @@ theorem spectralKernelOperator_add
   simp
 
 omit [TopologicalSpace A] [DiscreteTopology A] in
-theorem spectralKernelOperator_unitary
+lemma spectralKernelOperator_unitary
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (a : A) :
     spectralKernelOperator E π a ∈
@@ -17865,7 +17865,7 @@ theorem spectralKernelOperator_unitary
       (π (E.inclusion (Multiplicative.ofAdd a)))
 
 omit [TopologicalSpace A] [DiscreteTopology A] in
-theorem spectralCharacter_generator_mem_circle
+lemma spectralCharacter_generator_mem_circle
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V)
     (φ : characterSpace ℂ (spectralOperatorAlgebra E π)) (a : A) :
@@ -17898,14 +17898,14 @@ def spectralCharacter
     rw [spectralKernelOperator_add, map_mul]
   continuous_toFun := continuous_of_discreteTopology
 
-@[simp] theorem spectralCharacter_apply_coe
+@[simp] lemma spectralCharacter_apply_coe
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V)
     (φ : characterSpace ℂ (spectralOperatorAlgebra E π)) (a : A) :
     ((spectralCharacter E π φ (Multiplicative.ofAdd a) : Circle) : ℂ) =
       φ (spectralKernelOperator E π a) := rfl
 
-theorem spectralCharacter_continuous
+lemma spectralCharacter_continuous
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) :
     Continuous (spectralCharacter E π) := by
@@ -17939,12 +17939,12 @@ def spectralCharacterEvaluation
     continuous_character_evaluation a⟩
 
 omit [DiscreteTopology A] in
-@[simp] theorem spectralCharacterEvaluation_apply
+@[simp] lemma spectralCharacterEvaluation_apply
     (a : A) (χ : DiscreteCharacterSpace A) :
     spectralCharacterEvaluation a χ =
       ((χ (Multiplicative.ofAdd a) : Circle) : ℂ) := rfl
 
-theorem jointFunctionalCalculus_characterEvaluation
+lemma jointFunctionalCalculus_characterEvaluation
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (a : A) :
     jointFunctionalCalculus E π (spectralCharacterEvaluation a) =
@@ -17972,7 +17972,7 @@ universe u v
 variable {B : Type u} [CommCStarAlgebra B]
 variable {X : Type v} [TopologicalSpace X]
 
-theorem inverseGelfand_naturality
+lemma inverseGelfand_naturality
     (α : B →⋆ₐ[ℂ] B)
     (p : C(WeakDual.characterSpace ℂ B, X))
     (d : C(X, X))
@@ -18021,7 +18021,7 @@ def positiveVectorState (x : V) : (V →L[ℂ] V) →L[ℝ] ℝ :=
   Complex.reCLM.comp
     (((innerSL ℂ x).comp ((ContinuousLinearMap.apply ℂ V) x)).restrictScalars ℝ)
 
-theorem positiveVectorState_star_mul_self (x : V) (T : V →L[ℂ] V) :
+lemma positiveVectorState_star_mul_self (x : V) (T : V →L[ℂ] V) :
     positiveVectorState x (star T * T) = ‖T x‖ ^ 2 := by
   change (inner ℂ x ((star T) (T x))).re = _
   rw [ContinuousLinearMap.star_eq_adjoint,
@@ -18030,7 +18030,7 @@ theorem positiveVectorState_star_mul_self (x : V) (T : V →L[ℂ] V) :
 
 omit [CompleteSpace V] in
 
-@[simp] theorem positiveVectorState_one (x : V) :
+@[simp] lemma positiveVectorState_one (x : V) :
     positiveVectorState x (1 : V →L[ℂ] V) = ‖x‖ ^ 2 := by
   change (inner ℂ x x).re = _
   exact inner_self_eq_norm_sq (𝕜 := ℂ) x
@@ -18053,14 +18053,14 @@ def dualActionBaseContinuous
   toMonoidHom := ((MulAutMultiplicative A).symm (action h)).toMonoidHom
   continuous_toFun := continuous_of_discreteTopology
 
-theorem dualCharacterAction_continuous
+lemma dualCharacterAction_continuous
     (action : H →* Multiplicative (AddAut A)) (h : H) :
     Continuous (dualCharacterAction action h) := by
   change Continuous (fun χ : DiscreteCharacterSpace A ↦
     PontryaginDual.map (dualActionBaseContinuous action h⁻¹) χ)
   exact (PontryaginDual.map (dualActionBaseContinuous action h⁻¹)).continuous_toFun
 
-theorem dualCharacterAction_mul
+lemma dualCharacterAction_mul
     (action : H →* Multiplicative (AddAut A)) (g h : H)
     (χ : DiscreteCharacterSpace A) :
     dualCharacterAction action (g * h) χ =
@@ -18076,7 +18076,7 @@ theorem dualCharacterAction_mul
   rw [mul_inv_rev, map_mul]
   rfl
 
-@[simp] theorem dualCharacterAction_one
+@[simp] lemma dualCharacterAction_one
     (action : H →* Multiplicative (AddAut A))
     (χ : DiscreteCharacterSpace A) :
     dualCharacterAction action (1 : H) χ = χ := by
@@ -18100,7 +18100,7 @@ def dualCharacterHomeomorph
   continuous_toFun := dualCharacterAction_continuous action h
   continuous_invFun := dualCharacterAction_continuous action h⁻¹
 
-@[simp] theorem dualCharacterHomeomorph_apply
+@[simp] lemma dualCharacterHomeomorph_apply
     (action : H →* Multiplicative (AddAut A)) (h : H)
     (χ : DiscreteCharacterSpace A) :
     dualCharacterHomeomorph action h χ = dualCharacterAction action h χ := rfl
@@ -18115,7 +18115,7 @@ def compactTestPrecomp (e : X ≃ₜ X) (f : C_c(X, ℝ)) : C_c(X, ℝ) where
   continuous_toFun := f.continuous.comp e.continuous
   hasCompactSupport' := HasCompactSupport.of_compactSpace _
 
-theorem rieszMeasure_map_homeomorph
+lemma rieszMeasure_map_homeomorph
     (e : X ≃ₜ X)
     (Λ Λ' : C_c(X, ℝ) →ₚ[ℝ] ℝ)
     (hfunctional : ∀ f : C_c(X, ℝ),
@@ -18140,7 +18140,7 @@ section DualRiesz
 variable [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)]
 
-theorem rieszMeasure_dualCharacterAction
+lemma rieszMeasure_dualCharacterAction
     (action : H →* Multiplicative (AddAut A)) (h : H)
     (Λ Λ' : C_c(DiscreteCharacterSpace A, ℝ) →ₚ[ℝ] ℝ)
     (hfunctional : ∀ f : C_c(DiscreteCharacterSpace A, ℝ),
@@ -18157,7 +18157,7 @@ section VectorState
 variable {V : Type u} [NormedAddCommGroup V]
   [InnerProductSpace ℂ V] [CompleteSpace V]
 
-theorem positiveVectorState_unitary_pullback
+lemma positiveVectorState_unitary_pullback
     (x : V) (U : unitary (V →L[ℂ] V)) (T : V →L[ℂ] V) :
     positiveVectorState x
         (star (U : V →L[ℂ] V) * T * (U : V →L[ℂ] V)) =
@@ -18191,7 +18191,7 @@ def quotientOperatorConjugation
   Unitary.conjStarAlgAut ℂ (V →L[ℂ] V) (π (E.splitting h))
 
 omit [TopologicalSpace A] [DiscreteTopology A] in
-@[simp] theorem quotientOperatorConjugation_apply
+@[simp] lemma quotientOperatorConjugation_apply
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (h : H) (T : V →L[ℂ] V) :
     quotientOperatorConjugation E π h T =
@@ -18199,7 +18199,7 @@ omit [TopologicalSpace A] [DiscreteTopology A] in
         star (π (E.splitting h) : V →L[ℂ] V) := rfl
 
 omit [TopologicalSpace A] [DiscreteTopology A] in
-theorem quotientOperatorConjugation_kernel
+lemma quotientOperatorConjugation_kernel
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (h : H) (a : A) :
     quotientOperatorConjugation E π h
@@ -18218,7 +18218,7 @@ theorem quotientOperatorConjugation_kernel
   rw [← map_mul, ← map_mul, E.conjugation]
 
 omit [TopologicalSpace A] [DiscreteTopology A] in
-theorem quotientOperatorConjugation_generators_image
+lemma quotientOperatorConjugation_generators_image
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (h : H) :
     quotientOperatorConjugation E π h '' spectralOperatorGenerators E π =
@@ -18238,7 +18238,7 @@ theorem quotientOperatorConjugation_generators_image
     simp
 
 omit [TopologicalSpace A] [DiscreteTopology A] in
-theorem quotientOperatorConjugation_mem
+lemma quotientOperatorConjugation_mem
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (h : H)
     {T : V →L[ℂ] V} (hT : T ∈ spectralOperatorAlgebra E π) :
@@ -18262,7 +18262,7 @@ theorem quotientOperatorConjugation_mem
   exact hmap ⟨T, hT, rfl⟩
 
 omit [TopologicalSpace A] [DiscreteTopology A] in
-@[simp] theorem quotientOperatorConjugation_inv
+@[simp] lemma quotientOperatorConjugation_inv
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (h : H) :
     quotientOperatorConjugation E π h⁻¹ =
@@ -18313,7 +18313,7 @@ def quotientSpectralOperatorConjugation
       (T : V →L[ℂ] V)
 
 omit [TopologicalSpace A] [DiscreteTopology A] in
-@[simp] theorem quotientSpectralOperatorConjugation_coe
+@[simp] lemma quotientSpectralOperatorConjugation_coe
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (h : H)
     (T : spectralOperatorAlgebra E π) :
@@ -18322,7 +18322,7 @@ omit [TopologicalSpace A] [DiscreteTopology A] in
       quotientOperatorConjugation E π h (T : V →L[ℂ] V) := rfl
 
 omit [TopologicalSpace A] [DiscreteTopology A] in
-@[simp] theorem quotientSpectralOperatorConjugation_kernel
+@[simp] lemma quotientSpectralOperatorConjugation_kernel
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (h : H) (a : A) :
     quotientSpectralOperatorConjugation E π h
@@ -18332,7 +18332,7 @@ omit [TopologicalSpace A] [DiscreteTopology A] in
   apply Subtype.ext
   exact quotientOperatorConjugation_kernel E π h a
 
-theorem spectralCharacter_quotientConjugation
+lemma spectralCharacter_quotientConjugation
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (h : H)
     (φ : characterSpace ℂ (spectralOperatorAlgebra E π)) :
@@ -18356,7 +18356,7 @@ def dualCharacterActionContinuousMap
     C(DiscreteCharacterSpace A, DiscreteCharacterSpace A) :=
   ⟨dualCharacterAction action h, dualCharacterAction_continuous action h⟩
 
-@[simp] theorem dualCharacterActionContinuousMap_apply
+@[simp] lemma dualCharacterActionContinuousMap_apply
     (action : H →* Multiplicative (AddAut A)) (h : H)
     (χ : DiscreteCharacterSpace A) :
     dualCharacterActionContinuousMap action h χ =
@@ -18364,7 +18364,7 @@ def dualCharacterActionContinuousMap
 
 set_option maxHeartbeats 800000 in
 
-theorem jointFunctionalCalculus_quotient_covariance
+lemma jointFunctionalCalculus_quotient_covariance
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (h : H)
     (f : C(DiscreteCharacterSpace A, ℂ)) :
@@ -18422,18 +18422,18 @@ def characterRealComplexification
   toFun y := (f y : ℂ)
   continuous_toFun := Complex.continuous_ofReal.comp f.continuous
 
-@[simp] theorem characterRealComplexification_apply
+@[simp] lemma characterRealComplexification_apply
     (f : C_c(X, ℝ)) (y : X) :
     characterRealComplexification f y = (f y : ℂ) := rfl
 
-@[simp] theorem characterRealComplexification_add
+@[simp] lemma characterRealComplexification_add
     (f g : C_c(X, ℝ)) :
     characterRealComplexification (f + g) =
       characterRealComplexification f + characterRealComplexification g := by
   ext y
   simp [characterRealComplexification]
 
-@[simp] theorem characterRealComplexification_smul
+@[simp] lemma characterRealComplexification_smul
     (r : ℝ) (f : C_c(X, ℝ)) :
     characterRealComplexification (r • f) =
       (r : ℂ) • characterRealComplexification f := by
@@ -18447,11 +18447,11 @@ def characterRealSqrt (f : C_c(X, ℝ)) : C_c(X, ℝ) where
   continuous_toFun := Real.continuous_sqrt.comp f.continuous
   hasCompactSupport' := HasCompactSupport.of_compactSpace _
 
-@[simp] theorem characterRealSqrt_apply
+@[simp] lemma characterRealSqrt_apply
     (f : C_c(X, ℝ)) (y : X) :
     characterRealSqrt f y = Real.sqrt (f y) := rfl
 
-theorem characterRealComplexification_eq_star_mul_sqrt
+lemma characterRealComplexification_eq_star_mul_sqrt
     (f : C_c(X, ℝ)) (hf : ∀ y : X, 0 ≤ f y) :
     characterRealComplexification f =
       star (characterRealComplexification (characterRealSqrt f)) *
@@ -18479,13 +18479,13 @@ def characterVectorFunctionalLinear
     rw [inner_smul_right, Complex.re_ofReal_mul]
 
 omit [CompactSpace X] in
-@[simp] theorem characterVectorFunctionalLinear_apply
+@[simp] lemma characterVectorFunctionalLinear_apply
     (calculus : C(X, ℂ) →⋆ₐ[ℂ] (V →L[ℂ] V))
     (x : V) (f : C_c(X, ℝ)) :
     characterVectorFunctionalLinear calculus x f =
       (inner ℂ x ((calculus (characterRealComplexification f)) x)).re := rfl
 
-theorem characterVectorFunctionalLinear_nonneg
+lemma characterVectorFunctionalLinear_nonneg
     (calculus : C(X, ℂ) →⋆ₐ[ℂ] (V →L[ℂ] V))
     (x : V) (f : C_c(X, ℝ)) (hf : ∀ y : X, 0 ≤ f y) :
     0 ≤ characterVectorFunctionalLinear calculus x f := by
@@ -18517,13 +18517,13 @@ def characterVectorFunctional
     rw [map_sub] at hpositive
     linarith
 
-@[simp] theorem characterVectorFunctional_apply
+@[simp] lemma characterVectorFunctional_apply
     (calculus : C(X, ℂ) →⋆ₐ[ℂ] (V →L[ℂ] V))
     (x : V) (f : C_c(X, ℝ)) :
     characterVectorFunctional calculus x f =
       (inner ℂ x ((calculus (characterRealComplexification f)) x)).re := rfl
 
-theorem characterVectorFunctional_one
+lemma characterVectorFunctional_one
     (calculus : C(X, ℂ) →⋆ₐ[ℂ] (V →L[ℂ] V))
     (x : V) (f : C_c(X, ℝ)) (hf : ∀ y : X, f y = 1) :
     characterVectorFunctional calculus x f = ‖x‖ ^ 2 := by
@@ -18535,7 +18535,7 @@ theorem characterVectorFunctional_one
     (calculus (characterRealComplexification f)) = ‖x‖ ^ 2
   rw [hcomplex, map_one, positiveVectorState_one]
 
-theorem characterVectorFunctional_energy_of_operator
+lemma characterVectorFunctional_energy_of_operator
     (calculus : C(X, ℂ) →⋆ₐ[ℂ] (V →L[ℂ] V))
     (x : V) (f : C_c(X, ℝ)) (T : V →L[ℂ] V)
     (hf : calculus (characterRealComplexification f) =
@@ -18550,7 +18550,7 @@ section PontryaginCharacter
 
 variable {A : Type u} [AddCommGroup A] [TopologicalSpace A] [DiscreteTopology A]
 
-theorem characterEnergy_complexification
+lemma characterEnergy_complexification
     (a : A) (evaluation : C(DiscreteCharacterSpace A, ℂ))
     (hevaluation : ∀ χ : DiscreteCharacterSpace A,
       evaluation χ =
@@ -18566,7 +18566,7 @@ theorem characterEnergy_complexification
     (Complex.normSq_eq_conj_mul_self
       (z := ((χ (Multiplicative.ofAdd a) : Circle) : ℂ) - 1))
 
-theorem characterVectorFunctional_spectralEnergy
+lemma characterVectorFunctional_spectralEnergy
     (calculus : C(DiscreteCharacterSpace A, ℂ) →⋆ₐ[ℂ]
       (V →L[ℂ] V))
     (x : V) (a : A) (evaluation : C(DiscreteCharacterSpace A, ℂ))
@@ -18581,7 +18581,7 @@ theorem characterVectorFunctional_spectralEnergy
   rw [characterEnergy_complexification a evaluation hevaluation,
     map_mul, map_star, map_sub, map_one, hT]
 
-theorem characterVectorFunctional_spectralUnit
+lemma characterVectorFunctional_spectralUnit
     (calculus : C(DiscreteCharacterSpace A, ℂ) →⋆ₐ[ℂ]
       (V →L[ℂ] V)) (x : V) :
     characterVectorFunctional calculus x (spectralUnitTest A) =
@@ -18605,7 +18605,7 @@ def jointFunctionalCalculusOperator
   (spectralOperatorAlgebra E π).subtype.comp
     (jointFunctionalCalculus E π)
 
-@[simp] theorem jointFunctionalCalculusOperator_characterEvaluation
+@[simp] lemma jointFunctionalCalculusOperator_characterEvaluation
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G W) (a : A) :
     jointFunctionalCalculusOperator E π (spectralCharacterEvaluation a) =
@@ -18622,7 +18622,7 @@ def jointCharacterFunctional
     C_c(DiscreteCharacterSpace A, ℝ) →ₚ[ℝ] ℝ :=
   characterVectorFunctional (jointFunctionalCalculusOperator E π) x
 
-@[simp] theorem jointCharacterFunctional_apply
+@[simp] lemma jointCharacterFunctional_apply
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G W) (x : W)
     (f : C_c(DiscreteCharacterSpace A, ℝ)) :
@@ -18631,14 +18631,14 @@ def jointCharacterFunctional
         ((jointFunctionalCalculusOperator E π
           (characterRealComplexification f)) x)).re := rfl
 
-theorem jointCharacterFunctional_normalization
+lemma jointCharacterFunctional_normalization
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G W) (x : W) :
     jointCharacterFunctional E π x (spectralUnitTest A) = ‖x‖ ^ 2 :=
   characterVectorFunctional_spectralUnit
     (jointFunctionalCalculusOperator E π) x
 
-theorem jointCharacterFunctional_energy
+lemma jointCharacterFunctional_energy
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G W) (x : W) (a : A) :
     jointCharacterFunctional E π x (spectralEnergyTest a) =
@@ -18649,7 +18649,7 @@ theorem jointCharacterFunctional_energy
     (π (E.inclusion (Multiplicative.ofAdd a)) : W →L[ℂ] W)
     (jointFunctionalCalculusOperator_characterEvaluation E π a)
 
-theorem jointCharacterFunctional_pullback_of_operatorCovariance
+lemma jointCharacterFunctional_pullback_of_operatorCovariance
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G W) (h : H)
     (hcovariance : ∀ f : C(DiscreteCharacterSpace A, ℂ),
@@ -18689,7 +18689,7 @@ theorem jointCharacterFunctional_pullback_of_operatorCovariance
 variable [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)]
 
-theorem jointCharacterFunctional_riesz_covariance_of_operatorCovariance
+lemma jointCharacterFunctional_riesz_covariance_of_operatorCovariance
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G W) (h : H)
     (hcovariance : ∀ f : C(DiscreteCharacterSpace A, ℂ),
@@ -18736,7 +18736,7 @@ def kernelOrbitClosedConvexHull
     (π : UnitaryRepresentation G V) (x : V) : Set V :=
   closedConvexHull ℝ (kernelUnitaryOrbit E π x)
 
-theorem mem_kernelOrbitClosedConvexHull
+lemma mem_kernelOrbitClosedConvexHull
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (x : V) :
     x ∈ kernelOrbitClosedConvexHull E π x := by
@@ -18744,7 +18744,7 @@ theorem mem_kernelOrbitClosedConvexHull
   refine ⟨0, ?_⟩
   simp
 
-theorem kernelUnitary_preserves_closedConvexHull
+lemma kernelUnitary_preserves_closedConvexHull
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (x : V) (a : A) :
     ∀ y ∈ kernelOrbitClosedConvexHull E π x,
@@ -18783,7 +18783,7 @@ theorem kernelUnitary_preserves_closedConvexHull
   change U y ∈ closedConvexHull ℝ orbit
   rwa [closedConvexHull_eq_closure_convexHull]
 
-private theorem spectralOrbit_norm_minimizer_fixed
+private lemma spectralOrbit_norm_minimizer_fixed
     {W : Type*} [NormedAddCommGroup W] [InnerProductSpace ℝ W]
     {S : Set W} (hconvex : Convex ℝ S)
     (U : W → W) (hUnorm : ∀ z, ‖U z‖ = ‖z‖)
@@ -18808,7 +18808,7 @@ private theorem spectralOrbit_norm_minimizer_fixed
   · exact le_of_eq (hUnorm y)
   · simpa using heq
 
-theorem exists_kernel_fixed_norm_minimizer
+lemma exists_kernel_fixed_norm_minimizer
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (x : V) :
     ∃ y ∈ kernelOrbitClosedConvexHull E π x,
@@ -18847,7 +18847,7 @@ theorem exists_kernel_fixed_norm_minimizer
         (π (E.inclusion (Multiplicative.ofAdd a)))).norm_map z)
     hy hnorm (kernelUnitary_preserves_closedConvexHull E π x a)
 
-theorem exists_kernel_fixed_mem_closedConvexHull
+lemma exists_kernel_fixed_mem_closedConvexHull
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G V) (x : V) :
     ∃ y ∈ kernelOrbitClosedConvexHull E π x,
@@ -18874,7 +18874,7 @@ variable {V : Type u} [NormedAddCommGroup V]
   [InnerProductSpace ℂ V] [CompleteSpace V]
 variable (π : UnitaryRepresentation G V)
 
-theorem kernelOrbit_closedConvexHull_projection_eq_zero
+lemma kernelOrbit_closedConvexHull_projection_eq_zero
     (x : V) (hx : trivialCharacterProjection E π x = 0) :
     ∀ y ∈ closedConvexHull ℝ
       (Set.range fun a : A =>
@@ -18897,7 +18897,7 @@ theorem kernelOrbit_closedConvexHull_projection_eq_zero
   intro y hy
   exact hsubset hy
 
-theorem kernel_fixed_inner_eq_zero_of_mem_closedConvexHull
+lemma kernel_fixed_inner_eq_zero_of_mem_closedConvexHull
     (x v y : V) (hx : trivialCharacterProjection E π x = 0)
     (hvfixed : ∀ a : A,
       (π (E.inclusion (Multiplicative.ofAdd a)) : V →L[ℂ] V) v = v)
@@ -18914,7 +18914,7 @@ theorem kernel_fixed_inner_eq_zero_of_mem_closedConvexHull
   exact (Submodule.mem_orthogonal (kernelFixedSubmodule E π) y).mp
     horthogonal v ((mem_kernelFixedSubmodule E π v).mpr hvfixed)
 
-theorem kernel_fixed_eq_zero_of_mem_closedConvexHull
+lemma kernel_fixed_eq_zero_of_mem_closedConvexHull
     (x v : V) (hx : trivialCharacterProjection E π x = 0)
     (hv : v ∈ closedConvexHull ℝ
       (Set.range fun a : A =>
@@ -18936,7 +18936,7 @@ open ConnesRigidity
 
 universe u v
 
-theorem exists_finset_affineCombination_approx_of_mem_closedConvexHull
+lemma exists_finset_affineCombination_approx_of_mem_closedConvexHull
     {I : Type u} {V : Type v} [NormedAddCommGroup V] [NormedSpace ℝ V]
     (orbit : I → V) {y : V}
     (hy : y ∈ closedConvexHull ℝ (Set.range orbit))
@@ -18955,7 +18955,7 @@ theorem exists_finset_affineCombination_approx_of_mem_closedConvexHull
   simpa [dist_eq_norm] using
     (show dist z y < ε by simpa [dist_comm] using hdist)
 
-theorem exists_finset_affineCombination_norm_lt_of_zero_mem_closedConvexHull
+lemma exists_finset_affineCombination_norm_lt_of_zero_mem_closedConvexHull
     {I : Type u} {V : Type v} [NormedAddCommGroup V] [NormedSpace ℝ V]
     (orbit : I → V)
     (hzero : (0 : V) ∈ closedConvexHull ℝ (Set.range orbit))
@@ -18971,7 +18971,7 @@ theorem exists_finset_affineCombination_norm_lt_of_zero_mem_closedConvexHull
 variable {A : Type u} [AddCommGroup A]
 variable {G H : CountableDiscreteGroup.{u}}
 
-theorem kernelOrbit_exists_finset_affineCombination_norm_lt
+lemma kernelOrbit_exists_finset_affineCombination_norm_lt
     (E : SplitAbelianExtension A G H)
     {V : Type u} [NormedAddCommGroup V]
     [InnerProductSpace ℂ V] [CompleteSpace V]
@@ -19007,7 +19007,7 @@ omit [TopologicalSpace A] [DiscreteTopology A]
   [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem zero_mem_kernelOrbitClosedConvexHull_of_projection_eq_zero
+lemma zero_mem_kernelOrbitClosedConvexHull_of_projection_eq_zero
     (E : SplitAbelianExtension A G H)
     {V : Type u} [NormedAddCommGroup V]
     [InnerProductSpace ℂ V] [CompleteSpace V]
@@ -19026,7 +19026,7 @@ omit [TopologicalSpace A] [DiscreteTopology A]
   [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
 
-theorem kernelOrbitAffineApproximation
+lemma kernelOrbitAffineApproximation
     (E : SplitAbelianExtension A G H)
     {V : Type u} [NormedAddCommGroup V]
     [InnerProductSpace ℂ V] [CompleteSpace V]
@@ -19041,7 +19041,7 @@ theorem kernelOrbitAffineApproximation
     kernelOrbit_exists_finset_affineCombination_norm_lt E π x hzero hε
   exact ⟨s, w, hw, hnorm⟩
 
-theorem spectral_criterion_of_positive_functional_unconditional
+lemma spectral_criterion_of_positive_functional_unconditional
     (E : SplitAbelianExtension A G H)
     (hH : HasKazhdanPropertyT H)
     (J : Finset A) {c : ℝ} (hc : 0 < c)
@@ -19087,7 +19087,7 @@ def jointPositiveSpectralFunctional
       dualCharacterHomeomorph] using
       jointFunctionalCalculus_quotient_covariance E π h f
 
-theorem spectral_criterion_unconditional
+lemma spectral_criterion_unconditional
     (E : SplitAbelianExtension A G H)
     (hH : HasKazhdanPropertyT H)
     (J : Finset A) {c : ℝ} (hc : 0 < c)
@@ -19119,7 +19119,7 @@ def spectralLargeDisplacementSet (a : A) (r : ℝ) :
     Set (DiscreteCharacterSpace A) :=
   {χ | r ≤ ‖((χ (Multiplicative.ofAdd a) : Circle) : ℂ) - 1‖}
 
-theorem spectralDetection_integrable
+lemma spectralDetection_integrable
     (μ : ProbabilityMeasure (DiscreteCharacterSpace A)) (a : A) :
     Integrable (fun χ : DiscreteCharacterSpace A =>
       ‖((χ (Multiplicative.ofAdd a) : Circle) : ℂ) - 1‖ ^ 2)
@@ -19128,7 +19128,7 @@ theorem spectralDetection_integrable
     continuous_const).norm.pow 2 |>.integrable_of_hasCompactSupport
       (HasCompactSupport.of_compactSpace _)
 
-theorem spectralLargeDisplacement_measureReal_mul_sq_le_energy
+lemma spectralLargeDisplacement_measureReal_mul_sq_le_energy
     (μ : ProbabilityMeasure (DiscreteCharacterSpace A))
     (a : A) (r : ℝ) (hr : 0 ≤ r) :
     r ^ 2 * (μ : Measure (DiscreteCharacterSpace A)).real
@@ -19153,7 +19153,7 @@ section ConditionalSpectralMeasure
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 
-theorem abs_measureReal_inter_sub_inter_le
+lemma abs_measureReal_inter_sub_inter_le
     (μ : Measure Ω) [IsFiniteMeasure μ]
     {U : Set Ω} (hU : MeasurableSet U) (s t : Set Ω) :
     |μ.real (s ∩ U) - μ.real (t ∩ U)| ≤
@@ -19188,7 +19188,7 @@ def conditionedProbability (μ : ProbabilityMeasure Ω)
       change 0 < ((μ : Measure Ω) U).toReal at hU
       simp [hzero] at hU)⟩
 
-theorem conditionedProbability_measureReal
+lemma conditionedProbability_measureReal
     (μ : ProbabilityMeasure Ω) {U : Set Ω}
     (hU : 0 < (μ : Measure Ω).real U)
     (hUmeas : MeasurableSet U) (s : Set Ω) :
@@ -19202,7 +19202,7 @@ theorem conditionedProbability_measureReal
   rw [Set.inter_comm]
   exact (div_eq_inv_mul _ _).symm
 
-theorem abs_conditionedProbability_measureReal_sub_le
+lemma abs_conditionedProbability_measureReal_sub_le
     (μ : ProbabilityMeasure Ω) {U : Set Ω}
     (hU : 0 < (μ : Measure Ω).real U)
     (hUmeas : MeasurableSet U) (s t : Set Ω) :
@@ -19258,11 +19258,11 @@ def affineFixedSet (α : AffineHilbertAction G V)
     (K : Subgroup G) : Set V :=
   {x | IsAffineFixed α K x}
 
-@[simp] theorem mem_affineFixedSet
+@[simp] lemma mem_affineFixedSet
     (α : AffineHilbertAction G V) (K : Subgroup G) (x : V) :
     x ∈ affineFixedSet α K ↔ IsAffineFixed α K x := Iff.rfl
 
-theorem IsAffineFixed.midpoint
+lemma IsAffineFixed.midpoint
     {α : AffineHilbertAction G V} {K : Subgroup G} {x y : V}
     (hx : IsAffineFixed α K x) (hy : IsAffineFixed α K y) :
     IsAffineFixed α K (midpoint ℂ x y) := by
@@ -19292,12 +19292,12 @@ def affineLinearRepresentation
   Unitary.linearIsometryEquiv.symm.toMonoidHom.comp
     (affineLinearIsometryHom α)
 
-@[simp] theorem affineLinearRepresentation_apply
+@[simp] lemma affineLinearRepresentation_apply
     (α : AffineHilbertAction G V) (g : G) (x : V) :
     (affineLinearRepresentation α g : V →L[ℂ] V) x =
       (α g).linearIsometryEquiv x := rfl
 
-theorem affineLinearRepresentation_sub_fixed
+lemma affineLinearRepresentation_sub_fixed
     {α : AffineHilbertAction G V} {K : Subgroup G} {x y : V}
     (hx : IsAffineFixed α K x) (hy : IsAffineFixed α K y)
     (k : K) :
@@ -19305,7 +19305,7 @@ theorem affineLinearRepresentation_sub_fixed
   change (α (k : G)).linearIsometryEquiv (x - y) = x - y
   simpa [hx k, hy k] using (α (k : G)).map_vsub x y
 
-theorem IsAffineFixed.normalizer_action
+lemma IsAffineFixed.normalizer_action
     {α : AffineHilbertAction G V} {K : Subgroup G}
     {x : V} (hx : IsAffineFixed α K x)
     (g : G) (hg : g ∈ Subgroup.normalizer (K : Set G)) :
@@ -19329,7 +19329,7 @@ theorem IsAffineFixed.normalizer_action
 
 omit [CompleteSpace V] in
 
-theorem eq_of_norm_eq_and_midpoint_norm_ge
+lemma eq_of_norm_eq_and_midpoint_norm_ge
     (x y : V) (d : ℝ)
     (hx : ‖x‖ = d) (hy : ‖y‖ = d)
     (hmid : d ≤ ‖midpoint ℂ x y‖) : x = y := by
@@ -19356,7 +19356,7 @@ structure IsMinimizingAffinePair
     IsAffineFixed α K₁ y₁ → IsAffineFixed α K₂ y₂ →
       ‖x₁ - x₂‖ ≤ ‖y₁ - y₂‖
 
-theorem IsMinimizingAffinePair.sub_eq_of_norm_eq
+lemma IsMinimizingAffinePair.sub_eq_of_norm_eq
     {α : AffineHilbertAction G V}
     {K₁ K₂ : Subgroup G} {x₁ x₂ : V}
     (hmin : IsMinimizingAffinePair α K₁ K₂ x₁ x₂)
@@ -19403,12 +19403,12 @@ def affineLinearStabilizer
         rfl
       _ = x := by simp
 
-@[simp] theorem mem_affineLinearStabilizer
+@[simp] lemma mem_affineLinearStabilizer
     (α : AffineHilbertAction G V) (x : V) (g : G) :
     g ∈ affineLinearStabilizer α x ↔
       (affineLinearRepresentation α g : V →L[ℂ] V) x = x := Iff.rfl
 
-theorem affineLinear_invariant_of_sup_eq_top
+lemma affineLinear_invariant_of_sup_eq_top
     (α : AffineHilbertAction G V)
     (K₁ K₂ : Subgroup G) (hgen : K₁ ⊔ K₂ = ⊤)
     (x : V)
@@ -19425,7 +19425,7 @@ theorem affineLinear_invariant_of_sup_eq_top
   intro g
   exact htop (Subgroup.mem_top g)
 
-theorem IsMinimizingAffinePair.sub_eq_normalizer_sub
+lemma IsMinimizingAffinePair.sub_eq_normalizer_sub
     {α : AffineHilbertAction G V}
     {K₁ K₂ : Subgroup G} {x₁ x₂ : V}
     (hmin : IsMinimizingAffinePair α K₁ K₂ x₁ x₂)
@@ -19443,7 +19443,7 @@ theorem IsMinimizingAffinePair.sub_eq_normalizer_sub
       simpa only [vsub_eq_sub] using ((α g).map_vsub x₁ x₂).symm
     _ = ‖x₁ - x₂‖ := (α g).linearIsometryEquiv.norm_map _
 
-theorem IsMinimizingAffinePair.normalizer_fixed_of_no_linear_invariants
+lemma IsMinimizingAffinePair.normalizer_fixed_of_no_linear_invariants
     {α : AffineHilbertAction G V}
     {K₁ K₂ : Subgroup G} {x₁ x₂ : V}
     (hmin : IsMinimizingAffinePair α K₁ K₂ x₁ x₂)
@@ -19495,7 +19495,7 @@ def scalarOperatorKernel {I : Type u} (K : Matrix I I ℂ) :
     Matrix I I (ℂ →L[ℂ] ℂ) :=
   fun g h => ContinuousLinearMap.toSpanSingleton ℂ (K g h)
 
-theorem scalarOperatorKernel_posSemidef {I : Type u}
+lemma scalarOperatorKernel_posSemidef {I : Type u}
     (K : Matrix I I ℂ) (hK : K.PosSemidef) :
     (scalarOperatorKernel K).PosSemidef := by
   apply ((RKHS.posSemidef_tfae
@@ -19530,7 +19530,7 @@ theorem scalarOperatorKernel_posSemidef {I : Type u}
     simpa only [← RCLike.star_def, hK.isHermitian.apply,
       mul_assoc, mul_left_comm, mul_comm] using hreal
 
-theorem preKernel_inner_single {I : Type u}
+lemma preKernel_inner_single {I : Type u}
     (K : Matrix I I ℂ)
     [Fact (scalarOperatorKernel K).PosSemidef]
     (i j : I × ℂ) (z w : ℂ) :
@@ -19551,7 +19551,7 @@ def actionPreKernelTranslation {G I : Type u} [Group G]
       RKHS.H₀ (scalarOperatorKernel K) :=
   Finsupp.domLCongr ((ρ a).prodCongr (Equiv.refl ℂ))
 
-theorem actionPreKernelTranslation_inner {G I : Type u} [Group G]
+lemma actionPreKernelTranslation_inner {G I : Type u} [Group G]
     (K : Matrix I I ℂ)
     [Fact (scalarOperatorKernel K).PosSemidef]
     (ρ : G →* Equiv.Perm I)
@@ -19601,7 +19601,7 @@ def actionKernelTranslationMap {G I : Type u} [Group G]
     ((actionPreKernelTranslationIsometry K ρ hinv a).toLinearIsometry.toContinuousLinearMap)
 
 @[simp]
-theorem actionKernelTranslationMap_coe {G I : Type u} [Group G]
+lemma actionKernelTranslationMap_coe {G I : Type u} [Group G]
     (K : Matrix I I ℂ)
     [Fact (scalarOperatorKernel K).PosSemidef]
     (ρ : G →* Equiv.Perm I)
@@ -19614,7 +19614,7 @@ theorem actionKernelTranslationMap_coe {G I : Type u} [Group G]
   exact ContinuousLinearMap.completion_apply_coe
     ((actionPreKernelTranslationIsometry K ρ hinv a).toLinearIsometry.toContinuousLinearMap) f
 
-theorem actionKernelTranslationMap_isometry {G I : Type u} [Group G]
+lemma actionKernelTranslationMap_isometry {G I : Type u} [Group G]
     (K : Matrix I I ℂ)
     [Fact (scalarOperatorKernel K).PosSemidef]
     (ρ : G →* Equiv.Perm I)
@@ -19624,7 +19624,7 @@ theorem actionKernelTranslationMap_isometry {G I : Type u} [Group G]
     (actionPreKernelTranslationIsometry K ρ hinv a))
   exact (actionPreKernelTranslationIsometry K ρ hinv a).isometry.completion_map
 
-theorem actionPreKernelTranslation_mul_apply {G I : Type u} [Group G]
+lemma actionPreKernelTranslation_mul_apply {G I : Type u} [Group G]
     (K : Matrix I I ℂ) (ρ : G →* Equiv.Perm I)
     (a b : G) (f : RKHS.H₀ (scalarOperatorKernel K)) :
     actionPreKernelTranslation K ρ (a * b) f =
@@ -19642,7 +19642,7 @@ theorem actionPreKernelTranslation_mul_apply {G I : Type u} [Group G]
     rfl
 
 @[simp]
-theorem actionPreKernelTranslation_one_apply {G I : Type u} [Group G]
+lemma actionPreKernelTranslation_one_apply {G I : Type u} [Group G]
     (K : Matrix I I ℂ) (ρ : G →* Equiv.Perm I)
     (f : RKHS.H₀ (scalarOperatorKernel K)) :
     actionPreKernelTranslation K ρ 1 f = f := by
@@ -19656,7 +19656,7 @@ theorem actionPreKernelTranslation_one_apply {G I : Type u} [Group G]
       Finsupp.single (i.1, i.2) z
     simp
 
-theorem actionKernelTranslationMap_mul_apply {G I : Type u} [Group G]
+lemma actionKernelTranslationMap_mul_apply {G I : Type u} [Group G]
     (K : Matrix I I ℂ)
     [Fact (scalarOperatorKernel K).PosSemidef]
     (ρ : G →* Equiv.Perm I)
@@ -19676,7 +19676,7 @@ theorem actionKernelTranslationMap_mul_apply {G I : Type u} [Group G]
       actionPreKernelTranslation_mul_apply]
 
 @[simp]
-theorem actionKernelTranslationMap_one_apply {G I : Type u} [Group G]
+lemma actionKernelTranslationMap_one_apply {G I : Type u} [Group G]
     (K : Matrix I I ℂ)
     [Fact (scalarOperatorKernel K).PosSemidef]
     (ρ : G →* Equiv.Perm I)
@@ -19753,7 +19753,7 @@ def actionKernelUnitaryRepresentation {G I : Type u} [Group G]
         (actionKernelTranslationMap K ρ hinv b x)
     exact actionKernelTranslationMap_mul_apply K ρ hinv a b x
 
-theorem ofKernel_kerFun_one_eq_coe_single
+lemma ofKernel_kerFun_one_eq_coe_single
     {I : Type u} (L : Matrix I I (ℂ →L[ℂ] ℂ))
     [Fact L.PosSemidef] (i : I) :
     RKHS.kerFun (RKHS.OfKernel L) i (1 : ℂ) =
@@ -19761,7 +19761,7 @@ theorem ofKernel_kerFun_one_eq_coe_single
         RKHS.OfKernel L) := by
   simp [RKHS.kerFun, RKHS.coeCLM]
 
-theorem actionKernelUnitaryRepresentation_kerFun_one
+lemma actionKernelUnitaryRepresentation_kerFun_one
     {G I : Type u} [Group G]
     (K : Matrix I I ℂ)
     [Fact (scalarOperatorKernel K).PosSemidef]
@@ -19809,7 +19809,7 @@ instance hilbertKernelRealizationCompleteSpace
     (R : HilbertKernelRealization K) : CompleteSpace R.carrier :=
   R.complete
 
-theorem hilbertKernelRealization_pair_vector_add
+lemma hilbertKernelRealization_pair_vector_add
     {G : Type u} (K : Matrix (G × G) (G × G) ℂ)
     (R : HilbertKernelRealization K)
     (hadd : ∀ g h j : G, ∀ q : G × G,
@@ -19844,7 +19844,7 @@ def equivariantPairCocycle {G : Type u} [Group G]
     R.realization.carrier :=
   R.realization.vector (g, 1)
 
-theorem equivariantPairCocycle_mul {G : Type u} [Group G]
+lemma equivariantPairCocycle_mul {G : Type u} [Group G]
     (K : Matrix (G × G) (G × G) ℂ)
     (R : EquivariantHilbertKernelRealization K)
     (hadd : ∀ g h j : G, ∀ q : G × G,
@@ -19886,7 +19886,7 @@ def unitaryCocycleAffineAction
       (π g (π h x) + π g (b h)) + b g
     abel
 
-@[simp] theorem unitaryCocycleAffineAction_apply
+@[simp] lemma unitaryCocycleAffineAction_apply
     {G H : Type u} [Group G]
     [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     (π : G →* (H ≃ₗᵢ[ℂ] H)) (b : G → H)
@@ -19894,7 +19894,7 @@ def unitaryCocycleAffineAction
     (g : G) (x : H) :
     unitaryCocycleAffineAction π b hb g x = π g x + b g := rfl
 
-@[simp] theorem unitaryCocycleAffineAction_linearIsometryEquiv
+@[simp] lemma unitaryCocycleAffineAction_linearIsometryEquiv
     {G H : Type u} [Group G]
     [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     (π : G →* (H ≃ₗᵢ[ℂ] H)) (b : G → H)
@@ -19916,7 +19916,7 @@ def equivariantPairAffineAction
     (equivariantPairCocycle R)
     (equivariantPairCocycle_mul K R hadd)
 
-@[simp] theorem equivariantPairAffineAction_apply
+@[simp] lemma equivariantPairAffineAction_apply
     {G : Type u} [Group G]
     (K : Matrix (G × G) (G × G) ℂ)
     (R : EquivariantHilbertKernelRealization K)
@@ -19926,7 +19926,7 @@ def equivariantPairAffineAction
     equivariantPairAffineAction K R hadd g x =
       R.representation g x + equivariantPairCocycle R g := rfl
 
-@[simp] theorem equivariantPairAffineAction_apply_zero
+@[simp] lemma equivariantPairAffineAction_apply_zero
     {G : Type u} [Group G]
     (K : Matrix (G × G) (G × G) ℂ)
     (R : EquivariantHilbertKernelRealization K)
@@ -19961,7 +19961,7 @@ structure EquivariantMarkedHilbertKernelRealization
     representation g (realization.vector (i, j)) =
       realization.vector (ρ g i, ρ g j)
 
-theorem scalarKernel_canonical_dense
+lemma scalarKernel_canonical_dense
     {I : Type u} (K : Matrix I I ℂ)
     [Fact (scalarOperatorKernel K).PosSemidef] :
     Dense
@@ -19985,7 +19985,7 @@ theorem scalarKernel_canonical_dense
   apply Submodule.smul_mem
   exact Submodule.subset_span ⟨i, rfl⟩
 
-theorem exists_equivariantMarkedHilbertKernelRealization_dense
+lemma exists_equivariantMarkedHilbertKernelRealization_dense
     {G I : Type u} [Group G]
     (ρ : G →* Equiv.Perm I)
     (K : Matrix (I × I) (I × I) ℂ)
@@ -20024,7 +20024,7 @@ theorem exists_equivariantMarkedHilbertKernelRealization_dense
   refine ⟨S, ?_⟩
   exact scalarKernel_canonical_dense K
 
-theorem inner_finsupp_sum_self
+lemma inner_finsupp_sum_self
     {I H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     (v : I → H) (c : I →₀ ℂ) :
     ⟪c.sum (fun i a => a • v i),
@@ -20040,7 +20040,7 @@ theorem inner_finsupp_sum_self
   simp only [inner_smul_left, inner_smul_right, RCLike.star_def]
   ring
 
-theorem tendsto_norm_sq_finsupp_sum_of_gram
+lemma tendsto_norm_sq_finsupp_sum_of_gram
     {N I H : Type*} {V : N → Type*}
     [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     [∀ n, NormedAddCommGroup (V n)]
@@ -20088,7 +20088,7 @@ theorem tendsto_norm_sq_finsupp_sum_of_gram
     exact norm_sq_eq_re_inner (𝕜 := ℂ)
       (c.sum (fun i a => a • w i))
 
-theorem tendsto_norm_finsupp_sum_of_gram
+lemma tendsto_norm_finsupp_sum_of_gram
     {N I H : Type*} {V : N → Type*}
     [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     [∀ n, NormedAddCommGroup (V n)]
@@ -20120,7 +20120,7 @@ def markedPairCocycle
     (i₀ : I) (g : G) : R.realization.carrier :=
   R.realization.vector (ρ g i₀, i₀)
 
-theorem markedPairCocycle_mul
+lemma markedPairCocycle_mul
     {G I : Type u} [Group G]
     {ρ : G →* Equiv.Perm I}
     (K : Matrix (I × I) (I × I) ℂ)
@@ -20161,7 +20161,7 @@ def markedPairPoint
     (i₀ i : I) : R.realization.carrier :=
   R.realization.vector (i, i₀)
 
-theorem markedPairAffineAction_point
+lemma markedPairAffineAction_point
     {G I : Type u} [Group G]
     {ρ : G →* Equiv.Perm I}
     (K : Matrix (I × I) (I × I) ℂ)
@@ -20178,7 +20178,7 @@ theorem markedPairAffineAction_point
   exact hilbertKernelRealization_pair_vector_add K R.realization
     hadd (ρ g i) (ρ g i₀) i₀
 
-theorem markedPairPoint_sub
+lemma markedPairPoint_sub
     {G I : Type u} [Group G]
     {ρ : G →* Equiv.Perm I}
     (K : Matrix (I × I) (I × I) ℂ)
@@ -20200,7 +20200,7 @@ namespace CornulierUltralimit
 open Filter
 open scoped BigOperators ComplexOrder InnerProductSpace Topology
 
-theorem exists_hyperfilter_gram_limit_of_pointwise_bound
+lemma exists_hyperfilter_gram_limit_of_pointwise_bound
     {I : Type*} {H : ℕ → Type*}
     [∀ n, SeminormedAddCommGroup (H n)]
     [∀ n, InnerProductSpace ℂ (H n)]
@@ -20246,7 +20246,7 @@ theorem exists_hyperfilter_gram_limit_of_pointwise_bound
     continuous_subtype_val.tendsto (z (i, j))
   exact hval.comp (heval.comp hu)
 
-theorem gram_posSemidef_infinite
+lemma gram_posSemidef_infinite
     {I H : Type*} [SeminormedAddCommGroup H]
     [InnerProductSpace ℂ H] (v : I → H) :
     (Matrix.gram ℂ v).PosSemidef := by
@@ -20269,7 +20269,7 @@ theorem gram_posSemidef_infinite
         Matrix.gram_apply, RCLike.star_def]
       ring
 
-theorem exists_hyperfilter_positive_gram_kernel_of_pointwise_bound
+lemma exists_hyperfilter_positive_gram_kernel_of_pointwise_bound
     {I : Type*} {H : ℕ → Type*}
     [∀ n, SeminormedAddCommGroup (H n)]
     [∀ n, InnerProductSpace ℂ (H n)]
@@ -20310,7 +20310,7 @@ theorem exists_hyperfilter_positive_gram_kernel_of_pointwise_bound
   exact Eventually.of_forall fun n =>
     (gram_posSemidef_infinite (v n)).2 c
 
-theorem exists_hyperfilter_action_diagonal_positive_pair_kernel
+lemma exists_hyperfilter_action_diagonal_positive_pair_kernel
     {G I : Type*} [Group G] {H : ℕ → Type*}
     [∀ n, SeminormedAddCommGroup (H n)]
     [∀ n, InnerProductSpace ℂ (H n)]
@@ -20373,7 +20373,7 @@ def AffineUniformGeneratorDisplacement
     (α : G →* (H ≃ᵃⁱ[ℂ] H)) (S : Finset G) : Prop :=
   ∀ z : H, ∃ s ∈ S, (1 : ℝ) ≤ ‖α s z - z‖
 
-theorem AffineUniformGeneratorDisplacement.no_global_fixed
+lemma AffineUniformGeneratorDisplacement.no_global_fixed
     {G H : Type u} [Group G] [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H]
     {α : G →* (H ≃ᵃⁱ[ℂ] H)} {S : Finset G}
@@ -20385,7 +20385,7 @@ theorem AffineUniformGeneratorDisplacement.no_global_fixed
     simpa [hz s] using hs
   linarith
 
-theorem ultrafilter_eventually_exists_finset
+lemma ultrafilter_eventually_exists_finset
     {N G : Type*} (U : Ultrafilter N) (S : Finset G)
     (P : N → G → Prop)
     (h : ∀ᶠ n in (U : Filter N), ∃ s ∈ S, P n s) :
@@ -20415,7 +20415,7 @@ def markedDisplacementCoefficients
   Finsupp.mapDomain (markedPairAction ρ g) c - c +
     Finsupp.single (ρ g i₀, i₀) 1
 
-theorem finsupp_sum_markedDisplacementCoefficients
+lemma finsupp_sum_markedDisplacementCoefficients
     {G I H : Type u} [Group G] [NormedAddCommGroup H]
     [InnerProductSpace ℂ H]
     (ρ : G →* Equiv.Perm I) (i₀ : I) (g : G)
@@ -20458,7 +20458,7 @@ def markedOrbitAction (G : Type u) [Group G] :
     intro x
     exact Prod.ext (mul_assoc a b x.1) rfl
 
-@[simp] theorem markedOrbitAction_apply
+@[simp] lemma markedOrbitAction_apply
     {G : Type u} [Group G] (a : G) (i : G × Bool) :
     markedOrbitAction G a i = (a * i.1, i.2) := rfl
 
@@ -20476,7 +20476,7 @@ def markedAffinePairDisplacement
   markedAffineOrbitPoint α x y q.1 -
     markedAffineOrbitPoint α x y q.2
 
-theorem markedAffineOrbitPoint_action
+lemma markedAffineOrbitPoint_action
     {G H : Type u} [Group G] [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H]
     (α : G →* (H ≃ᵃⁱ[ℂ] H)) (x y : H)
@@ -20488,7 +20488,7 @@ theorem markedAffineOrbitPoint_action
   rw [map_mul]
   rfl
 
-theorem markedAffinePairDisplacement_action
+lemma markedAffinePairDisplacement_action
     {G H : Type u} [Group G] [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H]
     (α : G →* (H ≃ᵃⁱ[ℂ] H)) (x y : H)
@@ -20503,7 +20503,7 @@ theorem markedAffinePairDisplacement_action
     (markedAffineOrbitPoint α x y i)
     (markedAffineOrbitPoint α x y j)).symm
 
-theorem markedAffinePairDisplacement_inner_action
+lemma markedAffinePairDisplacement_inner_action
     {G H : Type u} [Group G] [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H]
     (α : G →* (H ≃ᵃⁱ[ℂ] H)) (x y : H)
@@ -20518,7 +20518,7 @@ theorem markedAffinePairDisplacement_inner_action
     markedAffinePairDisplacement_action]
   exact (α a).linearIsometryEquiv.inner_map_map _ _
 
-theorem markedAffinePairDisplacement_add
+lemma markedAffinePairDisplacement_add
     {G H : Type u} [Group G] [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H]
     (α : G →* (H ≃ᵃⁱ[ℂ] H)) (x y : H)
@@ -20529,7 +20529,7 @@ theorem markedAffinePairDisplacement_add
   simp only [markedAffinePairDisplacement]
   abel
 
-theorem markedAffinePairDisplacement_finsupp_action
+lemma markedAffinePairDisplacement_finsupp_action
     {G H : Type u} [Group G] [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H]
     (α : G →* (H ≃ᵃⁱ[ℂ] H)) (x y : H)
@@ -20565,7 +20565,7 @@ theorem markedAffinePairDisplacement_finsupp_action
   rw [hmap]
   abel
 
-theorem markedPairAffineAction_finsupp_action
+lemma markedPairAffineAction_finsupp_action
     {G I : Type u} [Group G]
     {ρ : G →* Equiv.Perm I}
     (K : Matrix (I × I) (I × I) ℂ)
@@ -20588,7 +20588,7 @@ theorem markedPairAffineAction_finsupp_action
         c.sum (fun q a => a • R.realization.vector q)
   abel
 
-theorem affineUniformGeneratorDisplacement_of_dense
+lemma affineUniformGeneratorDisplacement_of_dense
     {G H : Type u} [Group G] [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H]
     (α : G →* (H ≃ᵃⁱ[ℂ] H)) (S : Finset G)
@@ -20616,7 +20616,7 @@ theorem affineUniformGeneratorDisplacement_of_dense
     exact (Set.mem_iInter₂.mp hwU) s hs
   linarith
 
-theorem exists_marked_affine_pair_kernel
+lemma exists_marked_affine_pair_kernel
     {G : Type u} [Group G] {H : ℕ → Type u}
     [∀ n, NormedAddCommGroup (H n)]
     [∀ n, InnerProductSpace ℂ (H n)]
@@ -20652,7 +20652,7 @@ theorem exists_marked_affine_pair_kernel
   · intro n i j k
     exact markedAffinePairDisplacement_add (α n) (x n) (y n) i j k
 
-theorem tendsto_norm_sq_of_gram
+lemma tendsto_norm_sq_of_gram
     {N H : Type*} {V : N → Type*}
     [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     [∀ n, NormedAddCommGroup (V n)]
@@ -20670,7 +20670,7 @@ theorem tendsto_norm_sq_of_gram
   · congr 1
     exact norm_sq_eq_re_inner (𝕜 := ℂ) w
 
-theorem norm_eq_of_gram_and_tendsto_norm
+lemma norm_eq_of_gram_and_tendsto_norm
     {N H : Type*} {V : N → Type*}
     [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     [∀ n, NormedAddCommGroup (V n)]
@@ -20688,7 +20688,7 @@ theorem norm_eq_of_gram_and_tendsto_norm
     ge_of_tendsto hnorm (Eventually.of_forall fun n => norm_nonneg (v n))
   nlinarith [norm_nonneg w]
 
-theorem realization_vector_eq_of_kernel_rows
+lemma realization_vector_eq_of_kernel_rows
     {I : Type u} {K : Matrix I I ℂ}
     (R : HilbertKernelRealization K) {i j : I}
     (hrows : ∀ q : I, K i q = K j q) :
@@ -20701,7 +20701,7 @@ theorem realization_vector_eq_of_kernel_rows
   rw [inner_sub_right, horth i, horth j]
   simp
 
-theorem exists_marked_affine_ultralimit
+lemma exists_marked_affine_ultralimit
     {G : Type u} [Group G] {H : ℕ → Type u}
     [∀ n, NormedAddCommGroup (H n)]
     [∀ n, InnerProductSpace ℂ (H n)]
@@ -20800,7 +20800,7 @@ theorem exists_marked_affine_ultralimit
   · intro q r
     simpa only [R.realization.gram] using hconv q r
 
-theorem affineUniformGeneratorDisplacement_marked_limit
+lemma affineUniformGeneratorDisplacement_marked_limit
     {G : Type u} [Group G] {H : ℕ → Type u}
     [∀ n, NormedAddCommGroup (H n)]
     [∀ n, InnerProductSpace ℂ (H n)]
@@ -20863,7 +20863,7 @@ theorem affineUniformGeneratorDisplacement_marked_limit
       zₙ] using hlimit
   exact ge_of_tendsto hlimit' hmove
 
-theorem exists_marked_affine_ultralimit_normalized
+lemma exists_marked_affine_ultralimit_normalized
     {G : Type u} [Group G] {H : ℕ → Type u}
     [∀ n, NormedAddCommGroup (H n)]
     [∀ n, InnerProductSpace ℂ (H n)]
@@ -20946,12 +20946,12 @@ def normalFixedSubmodule (N : Subgroup G)
   smul_mem' c x hx n := by
     rw [map_smul, hx n]
 
-@[simp] theorem mem_normalFixedSubmodule
+@[simp] lemma mem_normalFixedSubmodule
     (N : Subgroup G) (π : UnitaryRepresentation G H) (x : H) :
     x ∈ normalFixedSubmodule N π ↔
       ∀ n : N, (π (n : G) : H →L[ℂ] H) x = x := Iff.rfl
 
-theorem normalFixedSubmodule_isClosed
+lemma normalFixedSubmodule_isClosed
     (N : Subgroup G) (π : UnitaryRepresentation G H) :
     IsClosed (normalFixedSubmodule N π : Set H) := by
   have hset : (normalFixedSubmodule N π : Set H) =
@@ -20971,7 +20971,7 @@ section Normality
 
 variable (N : Subgroup G) [N.Normal] (π : UnitaryRepresentation G H)
 
-theorem unitary_mem_normalFixedSubmodule
+lemma unitary_mem_normalFixedSubmodule
     (g : G) {x : H} (hx : x ∈ normalFixedSubmodule N π) :
     (π g : H →L[ℂ] H) x ∈ normalFixedSubmodule N π := by
   intro n
@@ -20996,7 +20996,7 @@ theorem unitary_mem_normalFixedSubmodule
       rfl
     _ = (π g : H →L[ℂ] H) x := by rw [hx n']
 
-theorem unitary_mem_normalFixedSubmodule_orthogonal
+lemma unitary_mem_normalFixedSubmodule_orthogonal
     (g : G) {x : H} (hx : x ∈ (normalFixedSubmodule N π)ᗮ) :
     (π g : H →L[ℂ] H) x ∈ (normalFixedSubmodule N π)ᗮ := by
   rw [Submodule.mem_orthogonal]
@@ -21065,13 +21065,13 @@ def normalFixedRepresentation :
     rw [map_mul]
     rfl
 
-@[simp] theorem normalFixedRepresentation_apply
+@[simp] lemma normalFixedRepresentation_apply
     (g : G) (x : normalFixedSubmodule N π) :
     ((normalFixedRepresentation N π g :
       normalFixedSubmodule N π →L[ℂ] normalFixedSubmodule N π) x : H) =
       (π g : H →L[ℂ] H) (x : H) := rfl
 
-theorem normalFixedRepresentation_apply_eq_one
+lemma normalFixedRepresentation_apply_eq_one
     (n : G) (hn : n ∈ N) : normalFixedRepresentation N π n = 1 := by
   apply Subtype.ext
   apply ContinuousLinearMap.ext
@@ -21085,7 +21085,7 @@ def normalFixedQuotientRepresentation :
   QuotientGroup.lift N (normalFixedRepresentation N π)
     (fun n hn => normalFixedRepresentation_apply_eq_one N π n hn)
 
-@[simp] theorem normalFixedQuotientRepresentation_apply_mk
+@[simp] lemma normalFixedQuotientRepresentation_apply_mk
     (g : G) (x : normalFixedSubmodule N π) :
     ((normalFixedQuotientRepresentation N π (QuotientGroup.mk' N g) :
       normalFixedSubmodule N π →L[ℂ] normalFixedSubmodule N π) x : H) =
@@ -21137,14 +21137,14 @@ def normalFixedOrthogonalRepresentation :
     rw [map_mul]
     rfl
 
-@[simp] theorem normalFixedOrthogonalRepresentation_apply
+@[simp] lemma normalFixedOrthogonalRepresentation_apply
     (g : G) (x : (normalFixedSubmodule N π)ᗮ) :
     ((normalFixedOrthogonalRepresentation N π g :
       (normalFixedSubmodule N π)ᗮ →L[ℂ]
         (normalFixedSubmodule N π)ᗮ) x : H) =
       (π g : H →L[ℂ] H) (x : H) := rfl
 
-theorem normalFixedOrthogonalRepresentation_no_fixed
+lemma normalFixedOrthogonalRepresentation_no_fixed
     (x : (normalFixedSubmodule N π)ᗮ)
     (hx : ∀ n : N,
       (normalFixedOrthogonalRepresentation N π (n : G) :
@@ -21158,7 +21158,7 @@ theorem normalFixedOrthogonalRepresentation_no_fixed
   apply Subtype.ext
   exact inner_self_eq_zero.mp hinner
 
-theorem normalFixed_starProjection_commute
+lemma normalFixed_starProjection_commute
     (g : G) (x : H) :
     (normalFixedSubmodule N π).starProjection
         ((π g : H →L[ℂ] H) x) =
@@ -21172,7 +21172,7 @@ theorem normalFixed_starProjection_commute
     exact unitary_mem_normalFixedSubmodule_orthogonal N π g
       (Submodule.sub_starProjection_mem_orthogonal x)
 
-theorem normalFixed_orthogonalResidual_displacement_le
+lemma normalFixed_orthogonalResidual_displacement_le
     (g : G) (x : H) :
     ‖(π g : H →L[ℂ] H)
           (x - (normalFixedSubmodule N π).starProjection x) -
@@ -21218,7 +21218,7 @@ def hilbertSquaredEnclosingRadii (S : Set V) : Set ℝ :=
   {r | 0 ≤ r ∧ ∃ c : V, ∀ z ∈ S, ‖c - z‖ ^ 2 ≤ r}
 
 omit [InnerProductSpace ℂ V] [CompleteSpace V] in
-theorem hilbertSquaredEnclosingRadii_nonempty
+lemma hilbertSquaredEnclosingRadii_nonempty
     {S : Set V} (hS : IsBounded S) :
     (hilbertSquaredEnclosingRadii S).Nonempty := by
   obtain ⟨R, hR⟩ := hS.exists_norm_le
@@ -21228,7 +21228,7 @@ theorem hilbertSquaredEnclosingRadii_nonempty
   simpa using (pow_le_pow_left₀ (norm_nonneg z) hnorm 2)
 
 omit [InnerProductSpace ℂ V] [CompleteSpace V] in
-theorem hilbertSquaredEnclosingRadii_bddBelow (S : Set V) :
+lemma hilbertSquaredEnclosingRadii_bddBelow (S : Set V) :
     BddBelow (hilbertSquaredEnclosingRadii S) :=
   ⟨0, fun _ hr => hr.1⟩
 
@@ -21236,7 +21236,7 @@ def hilbertCircumradiusSq (S : Set V) : ℝ :=
   sInf (hilbertSquaredEnclosingRadii S)
 
 omit [CompleteSpace V] in
-theorem hilbert_midpoint_sq_parallelogram
+lemma hilbert_midpoint_sq_parallelogram
     (x y z : V) :
     4 * ‖midpoint ℂ x y - z‖ ^ 2 + ‖x - y‖ ^ 2 =
       2 * (‖x - z‖ ^ 2 + ‖y - z‖ ^ 2) := by
@@ -21255,7 +21255,7 @@ theorem hilbert_midpoint_sq_parallelogram
   nlinarith
 
 omit [CompleteSpace V] in
-theorem hilbertSquaredEnclosingRadii_midpoint
+lemma hilbertSquaredEnclosingRadii_midpoint
     {S : Set V} (hS : S.Nonempty)
     {x y : V} {r s : ℝ}
     (hx : ∀ z ∈ S, ‖x - z‖ ^ 2 ≤ r)
@@ -21273,14 +21273,14 @@ theorem hilbertSquaredEnclosingRadii_midpoint
     midpoint ℂ x y, hbound⟩
 
 omit [InnerProductSpace ℂ V] [CompleteSpace V] in
-theorem hilbertCircumradiusSq_le
+lemma hilbertCircumradiusSq_le
     (S : Set V) {r : ℝ}
     (hr : r ∈ hilbertSquaredEnclosingRadii S) :
     hilbertCircumradiusSq S ≤ r :=
   csInf_le (hilbertSquaredEnclosingRadii_bddBelow S) hr
 
 omit [InnerProductSpace ℂ V] [CompleteSpace V] in
-theorem exists_hilbert_near_circumcenter
+lemma exists_hilbert_near_circumcenter
     {S : Set V} (hS : IsBounded S) (n : ℕ) :
     ∃ c : V, ∀ z ∈ S,
       ‖c - z‖ ^ 2 ≤
@@ -21293,7 +21293,7 @@ theorem exists_hilbert_near_circumcenter
   exact ⟨c, fun z hz => (hc z hz).trans (le_of_lt hlt)⟩
 
 omit [CompleteSpace V] in
-theorem hilbert_near_circumcenter_dist_sq_le
+lemma hilbert_near_circumcenter_dist_sq_le
     {S : Set V} (hSne : S.Nonempty)
     {x y : V} {ε η : ℝ}
     (hx : ∀ z ∈ S,
@@ -21306,7 +21306,7 @@ theorem hilbert_near_circumcenter_dist_sq_le
   nlinarith
 
 omit [CompleteSpace V] in
-theorem hilbert_near_circumcenter_cauchy
+lemma hilbert_near_circumcenter_cauchy
     {S : Set V} (hSne : S.Nonempty)
     (c : ℕ → V)
     (hc : ∀ n z, z ∈ S →
@@ -21346,7 +21346,7 @@ theorem hilbert_near_circumcenter_cauchy
     simpa only [Real.sqrt_zero] using
       (Real.continuous_sqrt.tendsto 0).comp hzero
 
-theorem exists_hilbert_circumcenter
+lemma exists_hilbert_circumcenter
     {S : Set V} (hSne : S.Nonempty) (hS : IsBounded S) :
     ∃ c : V, ∀ z ∈ S,
       ‖c - z‖ ^ 2 ≤ hilbertCircumradiusSq S := by
@@ -21370,7 +21370,7 @@ theorem exists_hilbert_circumcenter
   linarith
 
 omit [CompleteSpace V] in
-theorem hilbert_circumcenter_unique
+lemma hilbert_circumcenter_unique
     {S : Set V} (hSne : S.Nonempty)
     {x y : V}
     (hx : ∀ z ∈ S, ‖x - z‖ ^ 2 ≤ hilbertCircumradiusSq S)
@@ -21386,14 +21386,14 @@ def hilbertCircumcenter
     (S : Set V) (hSne : S.Nonempty) (hS : IsBounded S) : V :=
   (exists_hilbert_circumcenter hSne hS).choose
 
-theorem hilbertCircumcenter_encloses
+lemma hilbertCircumcenter_encloses
     (S : Set V) (hSne : S.Nonempty) (hS : IsBounded S)
     (z : V) (hz : z ∈ S) :
     ‖hilbertCircumcenter S hSne hS - z‖ ^ 2 ≤
       hilbertCircumradiusSq S :=
   (exists_hilbert_circumcenter hSne hS).choose_spec z hz
 
-theorem affineIsometryEquiv_hilbertCircumcenter_fixed
+lemma affineIsometryEquiv_hilbertCircumcenter_fixed
     (S : Set V) (hSne : S.Nonempty) (hS : IsBounded S)
     (f : V ≃ᵃⁱ[ℂ] V) (hf : f '' S = S) :
     f (hilbertCircumcenter S hSne hS) =
@@ -21417,13 +21417,13 @@ def affineSubgroupOrbit
     (α : AffineHilbertAction G V) (N : Subgroup G) (x : V) : Set V :=
   Set.range fun n : N => α (n : G) x
 
-theorem affineSubgroupOrbit_nonempty
+lemma affineSubgroupOrbit_nonempty
     (α : AffineHilbertAction G V) (N : Subgroup G) (x : V) :
     (affineSubgroupOrbit α N x).Nonempty := by
   refine ⟨x, 1, ?_⟩
   simp
 
-theorem affineSubgroupOrbit_image
+lemma affineSubgroupOrbit_image
     (α : AffineHilbertAction G V) (N : Subgroup G)
     (x : V) (n : N) :
     α (n : G) '' affineSubgroupOrbit α N x =
@@ -21448,7 +21448,7 @@ theorem affineSubgroupOrbit_image
         dsimp [m]
         simp
 
-theorem affineSubgroupOrbit_bounded
+lemma affineSubgroupOrbit_bounded
     (α : AffineHilbertAction G V) (N : Subgroup G) (x : V)
     (hbound : ∃ C : ℝ, ∀ n : N, ‖α (n : G) x - x‖ ≤ C) :
     IsBounded (affineSubgroupOrbit α N x) := by
@@ -21459,7 +21459,7 @@ theorem affineSubgroupOrbit_bounded
   change dist (α (n : G) x) x ≤ C
   simpa [dist_eq_norm] using hC n
 
-theorem affine_subgroup_fixedPoint_of_bounded_orbit
+lemma affine_subgroup_fixedPoint_of_bounded_orbit
     (α : AffineHilbertAction G V) (N : Subgroup G) (x : V)
     (hbound : ∃ C : ℝ, ∀ n : N, ‖α (n : G) x - x‖ ≤ C) :
     ∃ y : V, IsAffineFixed α N y := by
@@ -21497,7 +21497,7 @@ def HasCorelativeAffineOrbitBound
       (∃ C : ℝ, ∀ h : H, ‖α (h : G) x - x‖ ≤ C) →
         ∃ C : ℝ, ∀ g : G, ‖α g x - x‖ ≤ C
 
-theorem cornulier_normalized_minimizing_action_false
+lemma cornulier_normalized_minimizing_action_false
     (H K₁ K₂ : Subgroup G) (S : Finset G)
     (hgen : K₁ ⊔ K₂ = ⊤)
     (hH₁ : H ≤ Subgroup.normalizer (K₁ : Set G))
@@ -21545,7 +21545,7 @@ def realInnerCharacter (f : G →* Multiplicative V) (v : V) :
     rw [inner_add_right, Complex.add_re]
 
 omit [CompleteSpace V] in
-theorem multiplicativeHilbertHom_eq_zero_of_no_real_characters
+lemma multiplicativeHilbertHom_eq_zero_of_no_real_characters
     (hreal : ∀ φ : G →* Multiplicative ℝ,
       ∀ g : G, Multiplicative.toAdd (φ g) = 0)
     (f : G →* Multiplicative V) (g : G) :
@@ -21603,7 +21603,7 @@ def affineInvariantProjectionHom
     rw [hfixed]
     abel
 
-theorem affineInvariantProjection_zero_of_no_real_characters
+lemma affineInvariantProjection_zero_of_no_real_characters
     (hreal : ∀ φ : G →* Multiplicative ℝ,
       ∀ g : G, Multiplicative.toAdd (φ g) = 0)
     (α : AffineHilbertAction G V) (g : G) :
@@ -21624,7 +21624,7 @@ instance affineOrthogonalComplement_completeSpace
   unfold affineOrthogonalComplement
   infer_instance
 
-theorem affineTranslation_mem_orthogonal_of_no_real_characters
+lemma affineTranslation_mem_orthogonal_of_no_real_characters
     (hreal : ∀ φ : G →* Multiplicative ℝ,
       ∀ g : G, Multiplicative.toAdd (φ g) = 0)
     (α : AffineHilbertAction G V) (g : G) :
@@ -21656,7 +21656,7 @@ def affineOrthogonalLinearHom
     rw [map_mul]
     rfl
 
-theorem affineOrthogonalTranslation_mul
+lemma affineOrthogonalTranslation_mul
     (hreal : ∀ φ : G →* Multiplicative ℝ,
       ∀ g : G, Multiplicative.toAdd (φ g) = 0)
     (α : AffineHilbertAction G V) (g h : G) :
@@ -21685,7 +21685,7 @@ def affineOrthogonalAction
     (affineOrthogonalTranslation hreal α)
     (affineOrthogonalTranslation_mul hreal α)
 
-@[simp] theorem affineOrthogonalAction_apply_coe
+@[simp] lemma affineOrthogonalAction_apply_coe
     (hreal : ∀ φ : G →* Multiplicative ℝ,
       ∀ g : G, Multiplicative.toAdd (φ g) = 0)
     (α : AffineHilbertAction G V)
@@ -21698,7 +21698,7 @@ def affineOrthogonalAction
     ((x : V) - 0) = α g (x : V) - α g 0 at he
   simpa only [sub_zero] using (eq_sub_iff_add_eq.mp he)
 
-theorem affineOrthogonalAction_no_linear_invariants
+lemma affineOrthogonalAction_no_linear_invariants
     (hreal : ∀ φ : G →* Multiplicative ℝ,
       ∀ g : G, Multiplicative.toAdd (φ g) = 0)
     (α : AffineHilbertAction G V)
@@ -21734,7 +21734,7 @@ variable {G V : Type u} [Group G]
 
 omit [InnerProductSpace ℂ V] [CompleteSpace V] in
 
-private theorem exists_add_ne_zero_of_unit_coordinates
+private lemma exists_add_ne_zero_of_unit_coordinates
     (x : lp (fun _ : ℕ => V) 2)
     (v : ℕ → V) (hv : ∀ n, ‖v n‖ = 1) :
     ∃ n : ℕ, x n + v n ≠ 0 := by
@@ -21754,7 +21754,7 @@ private theorem exists_add_ne_zero_of_unit_coordinates
     simp [hnorm n]
   exact (Finite.of_summable_const (by norm_num : (0 : ℝ) < 1) hconstant).false
 
-theorem affineDiagonal_subgroup_nonzero_invariant_of_fixed
+lemma affineDiagonal_subgroup_nonzero_invariant_of_fixed
     (π : UnitaryRepresentation G V)
     (v : ℕ → V) (hv : ∀ n, ‖v n‖ = 1)
     (α : AffineHilbertAction G (lp (fun _ : ℕ => V) 2))
@@ -21772,7 +21772,7 @@ theorem affineDiagonal_subgroup_nonzero_invariant_of_fixed
   rw [hα] at hfixed
   exact sub_eq_iff_eq_add.mp hfixed
 
-theorem affineDiagonal_nonzero_invariant_of_fixed
+lemma affineDiagonal_nonzero_invariant_of_fixed
     (π : UnitaryRepresentation G V)
     (v : ℕ → V) (hv : ∀ n, ‖v n‖ = 1)
     (α : AffineHilbertAction G (lp (fun _ : ℕ => V) 2))
@@ -21800,7 +21800,7 @@ universe u
 variable {G V : Type u} [Group G]
   [NormedAddCommGroup V] [InnerProductSpace ℂ V] [CompleteSpace V]
 
-theorem diagonalDisplacement_memℓp_of_summable
+lemma diagonalDisplacement_memℓp_of_summable
     (π : UnitaryRepresentation G V) (v : ℕ → V) (g : G)
     (hsum : Summable fun n : ℕ =>
       ‖(π g : V →L[ℂ] V) (v n) - v n‖ ^ (2 : ℕ)) :
@@ -21816,7 +21816,7 @@ def diagonalDisplacement
   ⟨fun n => (π g : V →L[ℂ] V) (v n) - v n,
     diagonalDisplacement_memℓp_of_summable π v g (hsum g)⟩
 
-@[simp] theorem diagonalDisplacement_apply
+@[simp] lemma diagonalDisplacement_apply
     (π : UnitaryRepresentation G V) (v : ℕ → V)
     (hsum : ∀ g : G, Summable fun n : ℕ =>
       ‖(π g : V →L[ℂ] V) (v n) - v n‖ ^ (2 : ℕ))
@@ -21847,7 +21847,7 @@ def diagonalLinearIsometryHom
     rw [map_mul]
     rfl
 
-@[simp] theorem diagonalLinearIsometryHom_apply
+@[simp] lemma diagonalLinearIsometryHom_apply
     (π : UnitaryRepresentation G V)
     (g : G) (x : lp (fun _ : ℕ => V) 2) (n : ℕ) :
     diagonalLinearIsometryHom π g x n =
@@ -21888,7 +21888,7 @@ def diagonalAffineAction
     rw [map_add, map_sub]
     abel
 
-@[simp] theorem diagonalAffineAction_apply
+@[simp] lemma diagonalAffineAction_apply
     (π : UnitaryRepresentation G V) (v : ℕ → V)
     (hsum : ∀ g : G, Summable fun n : ℕ =>
       ‖(π g : V →L[ℂ] V) (v n) - v n‖ ^ (2 : ℕ))
@@ -21913,7 +21913,7 @@ def countableExhaustion (n : ℕ) : Finset G :=
       (Encodable.mem_decode₂.mp hj))
 
 omit [Group G] in
-theorem mem_countableExhaustion (g : G) (n : ℕ)
+lemma mem_countableExhaustion (g : G) (n : ℕ)
     (hn : Encodable.encode g ≤ n) :
     g ∈ countableExhaustion (G := G) n := by
   unfold countableExhaustion
@@ -21922,7 +21922,7 @@ theorem mem_countableExhaustion (g : G) (n : ℕ)
   · exact Nat.lt_succ_iff.mpr hn
   · exact Encodable.decode₂_encode g
 
-theorem exists_almostInvariantUnitSequence
+lemma exists_almostInvariantUnitSequence
     (π : UnitaryRepresentation G V)
     (hπ : π.HasAlmostInvariantUnitVectors) :
     ∃ ξ : ℕ → V,
@@ -21943,7 +21943,7 @@ theorem exists_almostInvariantUnitSequence
   intro g n hn
   exact hbound n g (mem_countableExhaustion g n hn)
 
-theorem exists_almostInvariantUnitSequence_summable
+lemma exists_almostInvariantUnitSequence_summable
     (π : UnitaryRepresentation G V)
     (hπ : π.HasAlmostInvariantUnitVectors) :
     ∃ ξ : ℕ → V,
@@ -21991,7 +21991,7 @@ def cornulierRowShear (s : Fin 3 → IntegralPolynomial) :
     cornulierRoot 3 1 (by decide) (s 1) *
     cornulierRoot 3 2 (by decide) (s 2)
 
-theorem cornulierColumnShear_mem (s : Fin 3 → IntegralPolynomial) :
+lemma cornulierColumnShear_mem (s : Fin 3 → IntegralPolynomial) :
     cornulierColumnShear s ∈ cornulierK₁ := by
   unfold cornulierColumnShear
   exact cornulierK₁.mul_mem
@@ -21999,7 +21999,7 @@ theorem cornulierColumnShear_mem (s : Fin 3 → IntegralPolynomial) :
       (cornulierRoot_mem_K₁ 1 (by decide) (s 1)))
     (cornulierRoot_mem_K₁ 2 (by decide) (s 2))
 
-theorem cornulierRowShear_mem (s : Fin 3 → IntegralPolynomial) :
+lemma cornulierRowShear_mem (s : Fin 3 → IntegralPolynomial) :
     cornulierRowShear s ∈ cornulierK₂ := by
   unfold cornulierRowShear
   exact cornulierK₂.mul_mem
@@ -22007,7 +22007,7 @@ theorem cornulierRowShear_mem (s : Fin 3 → IntegralPolynomial) :
       (cornulierRoot_mem_K₂ 1 (by decide) (s 1)))
     (cornulierRoot_mem_K₂ 2 (by decide) (s 2))
 
-private theorem columnShear_mul_castSucc (s : Fin 3 → IntegralPolynomial)
+private lemma columnShear_mul_castSucc (s : Fin 3 → IntegralPolynomial)
     (g : integralElementaryGroup) (i : Fin 3) (j : Fin 4) :
     ((cornulierColumnShear s * g : integralElementaryGroup).val :
       Matrix (Fin 4) (Fin 4) IntegralPolynomial) i.castSucc j =
@@ -22021,7 +22021,7 @@ private theorem columnShear_mul_castSucc (s : Fin 3 → IntegralPolynomial)
   fin_cases i <;>
     simp [Matrix.transvection, Matrix.mul_apply, Fin.sum_univ_four]
 
-private theorem columnShear_mul_last (s : Fin 3 → IntegralPolynomial)
+private lemma columnShear_mul_last (s : Fin 3 → IntegralPolynomial)
     (g : integralElementaryGroup) (j : Fin 4) :
     ((cornulierColumnShear s * g : integralElementaryGroup).val :
       Matrix (Fin 4) (Fin 4) IntegralPolynomial) 3 j =
@@ -22033,7 +22033,7 @@ private theorem columnShear_mul_last (s : Fin 3 → IntegralPolynomial)
         Matrix (Fin 4) (Fin 4) IntegralPolynomial)) 3 j = _
   simp [Matrix.transvection, Matrix.mul_apply, Fin.sum_univ_four]
 
-private theorem rowShear_mul_last (s : Fin 3 → IntegralPolynomial)
+private lemma rowShear_mul_last (s : Fin 3 → IntegralPolynomial)
     (g : integralElementaryGroup) (j : Fin 4) :
     ((cornulierRowShear s * g : integralElementaryGroup).val :
       Matrix (Fin 4) (Fin 4) IntegralPolynomial) 3 j =
@@ -22049,7 +22049,7 @@ private theorem rowShear_mul_last (s : Fin 3 → IntegralPolynomial)
     Fin.sum_univ_three]
   ring
 
-private theorem mul_rowShear_castSucc (s : Fin 3 → IntegralPolynomial)
+private lemma mul_rowShear_castSucc (s : Fin 3 → IntegralPolynomial)
     (g : integralElementaryGroup) (i : Fin 4) (j : Fin 3) :
     ((g * cornulierRowShear s : integralElementaryGroup).val :
       Matrix (Fin 4) (Fin 4) IntegralPolynomial) i j.castSucc =
@@ -22065,7 +22065,7 @@ private theorem mul_rowShear_castSucc (s : Fin 3 → IntegralPolynomial)
     simp [Matrix.mul_transvection_apply_same,
       Matrix.mul_transvection_apply_of_ne, mul_comm]
 
-private theorem mul_rowShear_last (s : Fin 3 → IntegralPolynomial)
+private lemma mul_rowShear_last (s : Fin 3 → IntegralPolynomial)
     (g : integralElementaryGroup) (i : Fin 4) :
     ((g * cornulierRowShear s : integralElementaryGroup).val :
       Matrix (Fin 4) (Fin 4) IntegralPolynomial) i 3 =
@@ -22078,7 +22078,7 @@ private theorem mul_rowShear_last (s : Fin 3 → IntegralPolynomial)
   simp only [← mul_assoc]
   simp [Matrix.mul_transvection_apply_of_ne]
 
-theorem cornulierBoundedFactorization_of_stableRange
+lemma cornulierBoundedFactorization_of_stableRange
     (hstable : IntegralPolynomialStableRangeThree) :
     CornulierBoundedFactorization := by
   intro g
@@ -22200,7 +22200,7 @@ theorem cornulierBoundedFactorization_of_stableRange
   dsimp [b, g₂, g₁]
   group
 
-theorem cornulierBoundedFactorization : CornulierBoundedFactorization :=
+lemma cornulierBoundedFactorization : CornulierBoundedFactorization :=
   cornulierBoundedFactorization_of_stableRange
     integralPolynomial_stableRangeThree
 
@@ -22212,7 +22212,7 @@ open Matrix
 
 variable {A : Type} [CommRing A]
 
-theorem rankTwo_transvection_smul_single
+lemma rankTwo_transvection_smul_single
     {i j : Fin 2} (hij : i ≠ j) (a b : A) :
     (Matrix.SpecialLinearGroup.transvection hij a) •
         (Pi.single j b : Fin 2 → A) =
@@ -22268,7 +22268,7 @@ def elementaryRankTwoTranslationSubgroup (A : Type) [CommRing A] :
   (SemidirectProduct.inl : Multiplicative (Fin 2 → A) →*
     ElementaryRankTwoSemidirect A).range
 
-@[simp] theorem elementaryRankTwoAction_toAdd
+@[simp] lemma elementaryRankTwoAction_toAdd
     (g : elementaryRankTwo A) (v : Multiplicative (Fin 2 → A)) :
     Multiplicative.toAdd (elementaryRankTwoAction A g v) =
       (g : Matrix.SpecialLinearGroup (Fin 2) A) • Multiplicative.toAdd v := by
@@ -22357,7 +22357,7 @@ def integralElementaryRankTwoSplitAbelianExtension :
           ElementaryRankTwoSemidirect IntegralPolynomial)
     ext <;> simp
 
-@[simp] theorem integralElementaryRankTwoSplitAbelianExtension_range :
+@[simp] lemma integralElementaryRankTwoSplitAbelianExtension_range :
     integralElementaryRankTwoSplitAbelianExtension.inclusion.range =
       integralElementaryRankTwoTranslationSubgroup := rfl
 
@@ -22402,7 +22402,7 @@ def IsRelativeKazhdanPair
           ∃ η : W, η ≠ 0 ∧
             ∀ n : N, (π (n : G) : W →L[ℂ] W) η = η
 
-theorem HasUniformRelativeKazhdanDisplacement.map
+lemma HasUniformRelativeKazhdanDisplacement.map
     {G H : CountableDiscreteGroup.{u}} {N : Subgroup G}
     (h : HasUniformRelativeKazhdanDisplacement G N) (f : G →* H) :
     HasUniformRelativeKazhdanDisplacement H (N.map f) := by
@@ -22420,7 +22420,7 @@ theorem HasUniformRelativeKazhdanDisplacement.map
   rintro ⟨_, ⟨g, hg, rfl⟩⟩
   exact hN ⟨g, hg⟩
 
-theorem uniformRelativeKazhdanDisplacement_of_pair
+lemma uniformRelativeKazhdanDisplacement_of_pair
     {G : CountableDiscreteGroup.{u}} (N : Subgroup G) [N.Normal]
     {F : Finset G} {κ : ℝ}
     (hpair : IsRelativeKazhdanPair G N F κ) :
@@ -22487,16 +22487,16 @@ theorem uniformRelativeKazhdanDisplacement_of_pair
 def shalomPolynomialKazhdanConstant (m : ℕ) : ℝ :=
   2 / (22 : ℝ) ^ (m + 1)
 
-theorem shalomPolynomialKazhdanConstant_pos (m : ℕ) :
+lemma shalomPolynomialKazhdanConstant_pos (m : ℕ) :
     0 < shalomPolynomialKazhdanConstant m := by
   unfold shalomPolynomialKazhdanConstant
   positivity
 
-@[simp] theorem shalomPolynomialKazhdanConstant_zero :
+@[simp] lemma shalomPolynomialKazhdanConstant_zero :
     shalomPolynomialKazhdanConstant 0 = (1 / 11 : ℝ) := by
   norm_num [shalomPolynomialKazhdanConstant]
 
-@[simp] theorem shalomPolynomialKazhdanConstant_one :
+@[simp] lemma shalomPolynomialKazhdanConstant_one :
     shalomPolynomialKazhdanConstant 1 = (1 / 242 : ℝ) := by
   norm_num [shalomPolynomialKazhdanConstant]
 
@@ -22549,7 +22549,7 @@ def ShalomIntegralPolynomialRelativePair : Prop :=
     shalomPolynomialKazhdanGenerators
     (shalomPolynomialKazhdanConstant 1)
 
-theorem shalom_uniformPolynomialTranslationDisplacement
+lemma shalom_uniformPolynomialTranslationDisplacement
     (h : ShalomIntegralPolynomialRelativePair) :
     HasUniformRelativeKazhdanDisplacement integralElementaryRankTwoGroup
       integralElementaryRankTwoTranslationSubgroup :=
@@ -22565,12 +22565,12 @@ open scoped BigOperators
 
 universe u
 
-theorem gaussian_defect_le_parameter (u : ℝ) :
+lemma gaussian_defect_le_parameter (u : ℝ) :
     1 - Real.exp (-u) ≤ u := by
   have h := Real.add_one_le_exp (-u)
   linarith
 
-theorem gaussian_parameter_lt_one_of_displacement
+lemma gaussian_parameter_lt_one_of_displacement
     {t r d : ℝ}
     (_ht : 0 < t) (_hr : 0 ≤ r) (hd : 0 ≤ d) (hdlt : d < 1)
     (hsq : d ^ 2 = 2 * (1 - Real.exp (-(t * r ^ 2)))) :
@@ -22586,7 +22586,7 @@ theorem gaussian_parameter_lt_one_of_displacement
   have hlower := Real.add_one_le_exp (t * r ^ 2)
   nlinarith
 
-theorem gaussian_affine_displacement_le
+lemma gaussian_affine_displacement_le
     {t r d : ℝ}
     (ht : 0 < t) (hr : 0 ≤ r) (hd : 0 ≤ d) (hdlt : d < 1)
     (hsq : d ^ 2 = 2 * (1 - Real.exp (-(t * r ^ 2)))) :
@@ -22616,7 +22616,7 @@ def HasAffineGaussianRealization
           ‖(π g : W →L[ℂ] W) ξ - ξ‖ ^ 2 =
             2 * (1 - Real.exp (-(t * ‖α g x - x‖ ^ 2)))
 
-theorem gaussian_relativeAffineFixedPoint_of_uniform
+lemma gaussian_relativeAffineFixedPoint_of_uniform
     (G : CountableDiscreteGroup.{u}) (N : Subgroup G)
     (hgaussian : HasAffineGaussianRealization G)
     (huniform : HasUniformRelativeKazhdanDisplacement G N) :
@@ -22690,7 +22690,7 @@ namespace CornulierUltralimit
 open Filter
 open scoped BigOperators ComplexOrder Matrix Topology
 
-theorem constantOneKernel_posSemidef {I : Type*} :
+lemma constantOneKernel_posSemidef {I : Type*} :
     Matrix.PosSemidef (fun (_ _ : I) => (1 : ℂ)) := by
   constructor
   · apply Matrix.IsHermitian.ext
@@ -22705,7 +22705,7 @@ theorem constantOneKernel_posSemidef {I : Type*} :
       mul_one]
     rw [Finset.sum_comm]
 
-theorem schurProduct_posSemidef
+lemma schurProduct_posSemidef
     {I : Type*} {A B : Matrix I I ℂ}
     (hA : A.PosSemidef) (hB : B.PosSemidef) :
     (A ⊙ B).PosSemidef :=
@@ -22714,11 +22714,11 @@ theorem schurProduct_posSemidef
 def entrywisePow {I : Type*} (A : Matrix I I ℂ) (n : ℕ) :
     Matrix I I ℂ := fun i j => A i j ^ n
 
-@[simp] theorem entrywisePow_apply
+@[simp] lemma entrywisePow_apply
     {I : Type*} (A : Matrix I I ℂ) (n : ℕ) (i j : I) :
     entrywisePow A n i j = A i j ^ n := rfl
 
-theorem entrywisePow_posSemidef
+lemma entrywisePow_posSemidef
     {I : Type*} {A : Matrix I I ℂ}
     (hA : A.PosSemidef) (n : ℕ) :
     (entrywisePow A n).PosSemidef := by
@@ -22731,13 +22731,13 @@ theorem entrywisePow_posSemidef
       ext i j
       simp [entrywisePow, pow_succ, Matrix.hadamard_apply]
 
-theorem nonnegReal_smul_posSemidef
+lemma nonnegReal_smul_posSemidef
     {I : Type*} {A : Matrix I I ℂ}
     (hA : A.PosSemidef) (r : ℝ) (hr : 0 ≤ r) :
     (r • A).PosSemidef :=
   hA.smul hr
 
-theorem weightedSum_posSemidef
+lemma weightedSum_posSemidef
     {I J : Type*} (s : Finset J)
     (A : J → Matrix I I ℂ) (a : J → ℝ)
     (hA : ∀ j ∈ s, (A j).PosSemidef)
@@ -22747,7 +22747,7 @@ theorem weightedSum_posSemidef
   intro j hj
   exact nonnegReal_smul_posSemidef (hA j hj) (a j) (ha j hj)
 
-theorem posSemidef_of_tendsto_entries
+lemma posSemidef_of_tendsto_entries
     {I N : Type*} (l : Filter N) [NeBot l]
     (A : N → Matrix I I ℂ) (B : Matrix I I ℂ)
     (hA : ∀ n, (A n).PosSemidef)
@@ -22785,7 +22785,7 @@ def entrywiseExpPartial
     Matrix I I ℂ :=
   ∑ n ∈ Finset.range N, ((n.factorial : ℝ)⁻¹) • entrywisePow A n
 
-theorem entrywiseExpPartial_posSemidef
+lemma entrywiseExpPartial_posSemidef
     {I : Type*} {A : Matrix I I ℂ}
     (hA : A.PosSemidef) (N : ℕ) :
     (entrywiseExpPartial A N).PosSemidef := by
@@ -22796,7 +22796,7 @@ theorem entrywiseExpPartial_posSemidef
   · intro n hn
     positivity
 
-theorem tendsto_entrywiseExpPartial
+lemma tendsto_entrywiseExpPartial
     {I : Type*} (A : Matrix I I ℂ) (i j : I) :
     Tendsto (fun N => entrywiseExpPartial A N i j)
       Filter.atTop (𝓝 (Complex.exp (A i j))) := by
@@ -22807,7 +22807,7 @@ theorem tendsto_entrywiseExpPartial
   rw [Complex.exp_eq_exp_ℂ]
   exact hsum
 
-theorem entrywiseExp_posSemidef
+lemma entrywiseExp_posSemidef
     {I : Type*} {A : Matrix I I ℂ}
     (hA : A.PosSemidef) :
     Matrix.PosSemidef (fun i j => Complex.exp (A i j)) := by
@@ -22837,13 +22837,13 @@ def gaussianKernel (v : I → V) (t : ℝ) : Matrix I I ℂ :=
   fun i j => (Real.exp (-t * ‖v i - v j‖ ^ 2) : ℂ)
 
 omit [InnerProductSpace ℂ V] in
-@[simp] theorem gaussianKernel_apply
+@[simp] lemma gaussianKernel_apply
     (v : I → V) (t : ℝ) (i j : I) :
     gaussianKernel v t i j =
       (Real.exp (-t * ‖v i - v j‖ ^ 2) : ℂ) := rfl
 
 omit [InnerProductSpace ℂ V] in
-@[simp] theorem gaussianKernel_diag
+@[simp] lemma gaussianKernel_diag
     (v : I → V) (t : ℝ) (i : I) :
     gaussianKernel v t i i = 1 := by
   simp [gaussianKernel]
@@ -22851,7 +22851,7 @@ omit [InnerProductSpace ℂ V] in
 def gaussianSymmetricGram (v : I → V) (t : ℝ) : Matrix I I ℂ :=
   t • (Matrix.gram ℂ v + (Matrix.gram ℂ v)ᵀ)
 
-theorem gaussianSymmetricGram_posSemidef
+lemma gaussianSymmetricGram_posSemidef
     (v : I → V) {t : ℝ} (ht : 0 ≤ t) :
     (gaussianSymmetricGram v t).PosSemidef := by
   have hgram := CornulierUltralimit.gram_posSemidef_infinite v
@@ -22861,12 +22861,12 @@ def gaussianWeight (v : I → V) (t : ℝ) (i : I) : ℂ :=
   (Real.exp (-t * ‖v i‖ ^ 2) : ℂ)
 
 omit [InnerProductSpace ℂ V] in
-theorem gaussianWeightGram_posSemidef
+lemma gaussianWeightGram_posSemidef
     (v : I → V) (t : ℝ) :
     (Matrix.gram ℂ (gaussianWeight v t)).PosSemidef :=
   CornulierUltralimit.gram_posSemidef_infinite (gaussianWeight v t)
 
-theorem gaussianSymmetricGram_apply
+lemma gaussianSymmetricGram_apply
     (v : I → V) (t : ℝ) (i j : I) :
     gaussianSymmetricGram v t i j =
       (2 * t * (inner ℂ (v i) (v j)).re : ℝ) := by
@@ -22877,7 +22877,7 @@ theorem gaussianSymmetricGram_apply
   push_cast
   ring
 
-theorem gaussianKernel_factor
+lemma gaussianKernel_factor
     (v : I → V) (t : ℝ) (i j : I) :
     gaussianKernel v t i j =
       Complex.exp (gaussianSymmetricGram v t i j) *
@@ -22908,7 +22908,7 @@ theorem gaussianKernel_factor
   push_cast
   simpa [add_assoc] using hcomplex
 
-theorem gaussianKernel_posSemidef
+lemma gaussianKernel_posSemidef
     (v : I → V) {t : ℝ} (ht : 0 ≤ t) :
     (gaussianKernel v t).PosSemidef := by
   have hexp : Matrix.PosSemidef
@@ -22934,7 +22934,7 @@ def gaussianAffineKernel
     Matrix G G ℂ :=
   gaussianKernel (fun g : G => α g x) t
 
-@[simp] theorem gaussianAffineKernel_apply
+@[simp] lemma gaussianAffineKernel_apply
     (α : AffineHilbertAction G V) (x : V) (t : ℝ)
     (g h : G) :
     gaussianAffineKernel α x t g h =
@@ -22951,7 +22951,7 @@ open scoped ComplexOrder InnerProductSpace
 
 universe u
 
-theorem hasAffineGaussianRealization
+lemma hasAffineGaussianRealization
     (G : CountableDiscreteGroup.{u}) : HasAffineGaussianRealization G := by
   intro V _ _ _ α x t ht
   let v : G → V := fun g ↦ α g x
@@ -23022,7 +23022,7 @@ theorem hasAffineGaussianRealization
   rw [neg_mul]
   ring
 
-theorem cornulierRelativeAffineFixed_of_uniform
+lemma cornulierRelativeAffineFixed_of_uniform
     (G : CountableDiscreteGroup.{u}) (N : Subgroup G)
     (huniform : HasUniformRelativeKazhdanDisplacement G N) :
     ∀ (V : Type u)
@@ -23044,7 +23044,7 @@ universe u
 
 variable {G : CountableDiscreteGroup.{u}}
 
-theorem mem_sup_of_elementwise_commute
+lemma mem_sup_of_elementwise_commute
     (N₁ N₂ : Subgroup G)
     (hcomm : ∀ g ∈ N₁, ∀ h ∈ N₂, Commute g h)
     (x : G) :
@@ -23086,7 +23086,7 @@ theorem mem_sup_of_elementwise_commute
 variable {V : Type u} [NormedAddCommGroup V]
   [InnerProductSpace ℂ V] [CompleteSpace V]
 
-theorem unitary_displacement_mul_le
+lemma unitary_displacement_mul_le
     (π : UnitaryRepresentation G V)
     (g h : G) (ξ : V) :
     ‖(π (g * h) : V →L[ℂ] V) ξ - ξ‖ ≤
@@ -23111,7 +23111,7 @@ theorem unitary_displacement_mul_le
       rw [Unitary.norm_map]
       ring
 
-theorem unitary_displacement_sup_lt_of_elementwise_commute
+lemma unitary_displacement_sup_lt_of_elementwise_commute
     (π : UnitaryRepresentation G V)
     (N₁ N₂ : Subgroup G)
     (hcomm : ∀ g ∈ N₁, ∀ h ∈ N₂, Commute g h)
@@ -23130,7 +23130,7 @@ theorem unitary_displacement_sup_lt_of_elementwise_commute
   exact lt_of_le_of_lt (unitary_displacement_mul_le π g h ξ)
     (add_lt_add (h₁ ⟨g, hg⟩) (h₂ ⟨h, hh⟩))
 
-theorem HasUniformRelativeKazhdanDisplacement.sup_of_elementwise_commute
+lemma HasUniformRelativeKazhdanDisplacement.sup_of_elementwise_commute
     {N₁ N₂ : Subgroup G}
     (h₁ : HasUniformRelativeKazhdanDisplacement G N₁)
     (h₂ : HasUniformRelativeKazhdanDisplacement G N₂)
@@ -23159,7 +23159,7 @@ theorem HasUniformRelativeKazhdanDisplacement.sup_of_elementwise_commute
     π N₁ N₂ hcomm ξ (ε / 2) (ε / 2) hone htwo k
   linarith
 
-theorem HasUniformRelativeKazhdanDisplacement.mono
+lemma HasUniformRelativeKazhdanDisplacement.mono
     {N M : Subgroup G}
     (hN : HasUniformRelativeKazhdanDisplacement G N)
     (hMN : M ≤ N) :
@@ -23185,38 +23185,38 @@ open Matrix
 
 variable {A : Type} [CommRing A]
 
-@[simp] theorem finTwoPlusTwo_symm_zero :
+@[simp] lemma finTwoPlusTwo_symm_zero :
     (finSumFinEquiv (m := 2) (n := 2)).symm (0 : Fin 4) =
       Sum.inl (0 : Fin 2) := by decide
 
-@[simp] theorem finTwoPlusTwo_symm_one :
+@[simp] lemma finTwoPlusTwo_symm_one :
     (finSumFinEquiv (m := 2) (n := 2)).symm (1 : Fin 4) =
       Sum.inl (1 : Fin 2) := by decide
 
-@[simp] theorem finTwoPlusTwo_symm_two :
+@[simp] lemma finTwoPlusTwo_symm_two :
     (finSumFinEquiv (m := 2) (n := 2)).symm (2 : Fin 4) =
       Sum.inr (0 : Fin 2) := by decide
 
-@[simp] theorem finTwoPlusTwo_symm_three :
+@[simp] lemma finTwoPlusTwo_symm_three :
     (finSumFinEquiv (m := 2) (n := 2)).symm (3 : Fin 4) =
       Sum.inr (1 : Fin 2) := by decide
 
 def rankTwoColumnBlock (v : Fin 2 → A) : Matrix (Fin 2) (Fin 2) A :=
   fun i j => if j = (1 : Fin 2) then v i else 0
 
-@[simp] theorem rankTwoColumnBlock_add (v w : Fin 2 → A) :
+@[simp] lemma rankTwoColumnBlock_add (v w : Fin 2 → A) :
     rankTwoColumnBlock (v + w) =
       rankTwoColumnBlock v + rankTwoColumnBlock w := by
   ext i j
   by_cases hj : j = (1 : Fin 2) <;>
     simp [rankTwoColumnBlock, hj]
 
-@[simp] theorem rankTwoColumnBlock_zero :
+@[simp] lemma rankTwoColumnBlock_zero :
     rankTwoColumnBlock (0 : Fin 2 → A) = 0 := by
   ext i j
   simp [rankTwoColumnBlock]
 
-@[simp] theorem rankTwoColumnBlock_mul
+@[simp] lemma rankTwoColumnBlock_mul
     (g : Matrix.SpecialLinearGroup (Fin 2) A) (v : Fin 2 → A) :
     (g : Matrix (Fin 2) (Fin 2) A) * rankTwoColumnBlock v =
       rankTwoColumnBlock (g • v) := by
@@ -23237,7 +23237,7 @@ def rankTwoParabolicMatrix (x : ElementaryRankTwoSemidirect A) :
         Matrix (Fin 2) (Fin 2) A)
       (rankTwoColumnBlock (Multiplicative.toAdd x.left)) 0 1)
 
-theorem rankTwoParabolicMatrix_det (x : ElementaryRankTwoSemidirect A) :
+lemma rankTwoParabolicMatrix_det (x : ElementaryRankTwoSemidirect A) :
     (rankTwoParabolicMatrix x).det = 1 := by
   unfold rankTwoParabolicMatrix
   rw [Matrix.det_reindex_self, Matrix.det_fromBlocks_zero₂₁,
@@ -23286,7 +23286,7 @@ def rankTwoParabolicSpecialLinear :
     · simp
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp] theorem rankTwoParabolicSpecialLinear_inl
+@[simp] lemma rankTwoParabolicSpecialLinear_inl
     (v : Fin 2 → A) :
     rankTwoParabolicSpecialLinear
         (SemidirectProduct.inl (Multiplicative.ofAdd v) :
@@ -23304,7 +23304,7 @@ set_option backward.isDefEq.respectTransparency false in
       Fin.sum_univ_four, Matrix.one_apply, Matrix.single_apply]
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp] theorem rankTwoParabolicSpecialLinear_inr_root
+@[simp] lemma rankTwoParabolicSpecialLinear_inr_root
     {i j : Fin 2} (hij : i ≠ j) (a : A) :
     rankTwoParabolicSpecialLinear
         (SemidirectProduct.inr (elementaryRankTwoRoot hij a) :
@@ -23320,7 +23320,7 @@ set_option backward.isDefEq.respectTransparency false in
       Matrix.reindex_apply, Matrix.fromBlocks, elementaryRankTwoRoot,
       Matrix.SpecialLinearGroup.transvection_coe]
 
-theorem rankTwoParabolicSpecialLinear_inr_mem_integral
+lemma rankTwoParabolicSpecialLinear_inr_mem_integral
     (g : Matrix.SpecialLinearGroup (Fin 2) IntegralPolynomial)
     (hg : g ∈ elementaryRankTwo IntegralPolynomial) :
     rankTwoParabolicSpecialLinear
@@ -23373,7 +23373,7 @@ theorem rankTwoParabolicSpecialLinear_inr_mem_integral
       rw [hinv, map_inv, map_inv]
       exact integralElementarySubgroup.inv_mem ihx
 
-theorem rankTwoParabolicSpecialLinear_mem_integral
+lemma rankTwoParabolicSpecialLinear_mem_integral
     (x : ElementaryRankTwoSemidirect IntegralPolynomial) :
     rankTwoParabolicSpecialLinear x ∈ integralElementarySubgroup := by
   rw [← SemidirectProduct.inl_left_mul_inr_right x, map_mul]
@@ -23398,7 +23398,7 @@ def integralRankTwoColumnEmbedding :
   map_one' := Subtype.ext (map_one rankTwoParabolicSpecialLinear)
   map_mul' x y := Subtype.ext (map_mul rankTwoParabolicSpecialLinear x y)
 
-@[simp] theorem integralRankTwoColumnEmbedding_inl
+@[simp] lemma integralRankTwoColumnEmbedding_inl
     (v : Fin 2 → IntegralPolynomial) :
     integralRankTwoColumnEmbedding
       (SemidirectProduct.inl (Multiplicative.ofAdd v)) =
@@ -23432,7 +23432,7 @@ def specialLinearReindexHom (e : Equiv.Perm (Fin 4)) :
       (g : Matrix (Fin 4) (Fin 4) A) (h : Matrix (Fin 4) (Fin 4) A)
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp] theorem specialLinearReindexHom_transvection
+@[simp] lemma specialLinearReindexHom_transvection
     (e : Equiv.Perm (Fin 4)) {i j : Fin 4} (hij : i ≠ j) (a : A) :
     specialLinearReindexHom e
       (Matrix.SpecialLinearGroup.transvection hij a) =
@@ -23444,7 +23444,7 @@ set_option backward.isDefEq.respectTransparency false in
     Matrix.one_apply, Matrix.single_apply,
     Equiv.eq_symm_apply, eq_comm]
 
-theorem specialLinearReindexHom_mem_integral
+lemma specialLinearReindexHom_mem_integral
     (e : Equiv.Perm Index) :
     integralElementarySubgroup.map (specialLinearReindexHom e) ≤
       integralElementarySubgroup := by
@@ -23464,7 +23464,7 @@ def integralElementaryReindexHom (e : Equiv.Perm Index) :
     (map_mul (specialLinearReindexHom e)
       (g.val : IntegralSpecialLinearGroup) (h.val : IntegralSpecialLinearGroup))
 
-@[simp] theorem integralElementaryReindexHom_root
+@[simp] lemma integralElementaryReindexHom_root
     (e : Equiv.Perm Index) (i j : Index) (hij : i ≠ j)
     (a : IntegralPolynomial) :
     integralElementaryReindexHom e (cornulierRoot i j hij a) =
@@ -23495,7 +23495,7 @@ def specialLinearTransposeInverseHom :
       ((g⁻¹ : Matrix.SpecialLinearGroup (Fin 4) A) :
         Matrix (Fin 4) (Fin 4) A)
 
-@[simp] theorem specialLinearTransposeInverseHom_transvection
+@[simp] lemma specialLinearTransposeInverseHom_transvection
     {i j : Fin 4} (hij : i ≠ j) (a : A) :
     specialLinearTransposeInverseHom
       (Matrix.SpecialLinearGroup.transvection hij a) =
@@ -23508,7 +23508,7 @@ def specialLinearTransposeInverseHom :
     1 + Matrix.single j i (-a)
   rw [Matrix.transpose_add, Matrix.transpose_one, Matrix.transpose_single]
 
-theorem specialLinearTransposeInverseHom_mem_integral :
+lemma specialLinearTransposeInverseHom_mem_integral :
     integralElementarySubgroup.map
       (specialLinearTransposeInverseHom (A := IntegralPolynomial)) ≤
         integralElementarySubgroup := by
@@ -23529,7 +23529,7 @@ def integralElementaryTransposeInverseHom :
     (map_mul specialLinearTransposeInverseHom
       (g.val : IntegralSpecialLinearGroup) (h.val : IntegralSpecialLinearGroup))
 
-@[simp] theorem integralElementaryTransposeInverseHom_root
+@[simp] lemma integralElementaryTransposeInverseHom_root
     (i j : Index) (hij : i ≠ j)
     (a : IntegralPolynomial) :
     integralElementaryTransposeInverseHom (cornulierRoot i j hij a) =
@@ -23550,7 +23550,7 @@ def integralRankTwoRowEmbedding12 :
     integralElementaryRankTwoGroup →* integralElementaryGroup :=
   integralElementaryTransposeInverseHom.comp integralRankTwoColumnEmbedding12
 
-@[simp] theorem integralRankTwoColumnEmbedding12_inl
+@[simp] lemma integralRankTwoColumnEmbedding12_inl
     (v : Fin 2 → IntegralPolynomial) :
     integralRankTwoColumnEmbedding12
       (SemidirectProduct.inl (Multiplicative.ofAdd v)) =
@@ -23567,7 +23567,7 @@ def integralRankTwoRowEmbedding12 :
   have hlast : (Equiv.swap (0 : Index) 2) 3 = 3 := by decide
   simp only [hzero, hfirst, hlast]
 
-@[simp] theorem integralRankTwoRowEmbedding01_inl
+@[simp] lemma integralRankTwoRowEmbedding01_inl
     (v : Fin 2 → IntegralPolynomial) :
     integralRankTwoRowEmbedding01
       (SemidirectProduct.inl (Multiplicative.ofAdd v)) =
@@ -23580,7 +23580,7 @@ def integralRankTwoRowEmbedding12 :
     integralElementaryTransposeInverseHom_root,
     integralElementaryTransposeInverseHom_root]
 
-@[simp] theorem integralRankTwoRowEmbedding12_inl
+@[simp] lemma integralRankTwoRowEmbedding12_inl
     (v : Fin 2 → IntegralPolynomial) :
     integralRankTwoRowEmbedding12
       (SemidirectProduct.inl (Multiplicative.ofAdd v)) =
@@ -23599,7 +23599,7 @@ noncomputable section
 
 open Matrix
 
-theorem cornulierColumnRoot_commute
+lemma cornulierColumnRoot_commute
     (i j : Index) (hi : i ≠ cornulierLast)
     (hj : j ≠ cornulierLast) (a b : IntegralPolynomial) :
     Commute (cornulierRoot i cornulierLast hi a)
@@ -23617,7 +23617,7 @@ theorem cornulierColumnRoot_commute
     Matrix.single_mul_single_of_ne _ _ _ _ hi.symm,
     add_comm, add_left_comm]
 
-theorem cornulierRowRoot_commute
+lemma cornulierRowRoot_commute
     (i j : Index) (hi : cornulierLast ≠ i)
     (hj : cornulierLast ≠ j) (a b : IntegralPolynomial) :
     Commute (cornulierRoot cornulierLast i hi a)
@@ -23635,13 +23635,13 @@ theorem cornulierRowRoot_commute
     Matrix.single_mul_single_of_ne _ _ _ _ hj.symm,
     add_comm, add_left_comm]
 
-theorem cornulierK₁_isMulCommutative : IsMulCommutative cornulierK₁ := by
+lemma cornulierK₁_isMulCommutative : IsMulCommutative cornulierK₁ := by
   unfold cornulierK₁
   apply Subgroup.isMulCommutative_closure
   rintro _ ⟨i, hi, a, rfl⟩ _ ⟨j, hj, b, rfl⟩
   exact (cornulierColumnRoot_commute i j hi hj a b).eq
 
-theorem cornulierK₂_isMulCommutative : IsMulCommutative cornulierK₂ := by
+lemma cornulierK₂_isMulCommutative : IsMulCommutative cornulierK₂ := by
   unfold cornulierK₂
   apply Subgroup.isMulCommutative_closure
   rintro _ ⟨i, hi, a, rfl⟩ _ ⟨j, hj, b, rfl⟩
@@ -23651,7 +23651,7 @@ def cornulierColumnPlane01 : Subgroup integralElementaryGroup :=
   integralElementaryRankTwoTranslationSubgroup.map
     integralRankTwoColumnEmbedding
 
-theorem cornulierColumnPlane01_le_K₁ :
+lemma cornulierColumnPlane01_le_K₁ :
     cornulierColumnPlane01 ≤ cornulierK₁ := by
   rintro _ ⟨g, ⟨v, hv⟩, rfl⟩
   subst g
@@ -23662,7 +23662,7 @@ theorem cornulierColumnPlane01_le_K₁ :
     (cornulierRoot_mem_K₁ 0 (by decide) (w 0))
     (cornulierRoot_mem_K₁ 1 (by decide) (w 1))
 
-@[simp] theorem cornulierRoot_zero
+@[simp] lemma cornulierRoot_zero
     (i j : Index) (hij : i ≠ j) :
     cornulierRoot i j hij 0 = 1 := by
   apply Subtype.ext
@@ -23671,7 +23671,7 @@ theorem cornulierColumnPlane01_le_K₁ :
       (1 : Matrix.SpecialLinearGroup Index IntegralPolynomial)
   exact Matrix.SpecialLinearGroup.transvection_coeff_zero hij
 
-theorem cornulierColumnPlane01_root_zero (a : IntegralPolynomial) :
+lemma cornulierColumnPlane01_root_zero (a : IntegralPolynomial) :
     cornulierRoot 0 3 (by decide) a ∈ cornulierColumnPlane01 := by
   let v : Fin 2 → IntegralPolynomial := Pi.single 0 a
   refine ⟨SemidirectProduct.inl (Multiplicative.ofAdd v),
@@ -23679,7 +23679,7 @@ theorem cornulierColumnPlane01_root_zero (a : IntegralPolynomial) :
   rw [integralRankTwoColumnEmbedding_inl]
   simp [v]
 
-theorem cornulierColumnPlane01_root_one (a : IntegralPolynomial) :
+lemma cornulierColumnPlane01_root_one (a : IntegralPolynomial) :
     cornulierRoot 1 3 (by decide) a ∈ cornulierColumnPlane01 := by
   let v : Fin 2 → IntegralPolynomial := Pi.single 1 a
   refine ⟨SemidirectProduct.inl (Multiplicative.ofAdd v),
@@ -23691,7 +23691,7 @@ def cornulierColumnPlane12 : Subgroup integralElementaryGroup :=
   integralElementaryRankTwoTranslationSubgroup.map
     integralRankTwoColumnEmbedding12
 
-theorem cornulierColumnPlane12_le_K₁ :
+lemma cornulierColumnPlane12_le_K₁ :
     cornulierColumnPlane12 ≤ cornulierK₁ := by
   rintro _ ⟨g, ⟨v, hv⟩, rfl⟩
   subst g
@@ -23702,7 +23702,7 @@ theorem cornulierColumnPlane12_le_K₁ :
     (cornulierRoot_mem_K₁ 2 (by decide) (w 0))
     (cornulierRoot_mem_K₁ 1 (by decide) (w 1))
 
-theorem cornulierColumnPlane12_root_two (a : IntegralPolynomial) :
+lemma cornulierColumnPlane12_root_two (a : IntegralPolynomial) :
     cornulierRoot 2 3 (by decide) a ∈ cornulierColumnPlane12 := by
   let v : Fin 2 → IntegralPolynomial := Pi.single 0 a
   refine ⟨SemidirectProduct.inl (Multiplicative.ofAdd v),
@@ -23714,7 +23714,7 @@ def cornulierRowPlane01 : Subgroup integralElementaryGroup :=
   integralElementaryRankTwoTranslationSubgroup.map
     integralRankTwoRowEmbedding01
 
-theorem cornulierRowPlane01_le_K₂ :
+lemma cornulierRowPlane01_le_K₂ :
     cornulierRowPlane01 ≤ cornulierK₂ := by
   rintro _ ⟨g, ⟨v, hv⟩, rfl⟩
   subst g
@@ -23725,7 +23725,7 @@ theorem cornulierRowPlane01_le_K₂ :
     (cornulierRoot_mem_K₂ 0 (by decide) (-(w 0)))
     (cornulierRoot_mem_K₂ 1 (by decide) (-(w 1)))
 
-theorem cornulierRowPlane01_root_zero (a : IntegralPolynomial) :
+lemma cornulierRowPlane01_root_zero (a : IntegralPolynomial) :
     cornulierRoot 3 0 (by decide) a ∈ cornulierRowPlane01 := by
   let v : Fin 2 → IntegralPolynomial := Pi.single 0 (-a)
   refine ⟨SemidirectProduct.inl (Multiplicative.ofAdd v),
@@ -23733,7 +23733,7 @@ theorem cornulierRowPlane01_root_zero (a : IntegralPolynomial) :
   rw [integralRankTwoRowEmbedding01_inl]
   simp [v]
 
-theorem cornulierRowPlane01_root_one (a : IntegralPolynomial) :
+lemma cornulierRowPlane01_root_one (a : IntegralPolynomial) :
     cornulierRoot 3 1 (by decide) a ∈ cornulierRowPlane01 := by
   let v : Fin 2 → IntegralPolynomial := Pi.single 1 (-a)
   refine ⟨SemidirectProduct.inl (Multiplicative.ofAdd v),
@@ -23745,7 +23745,7 @@ def cornulierRowPlane12 : Subgroup integralElementaryGroup :=
   integralElementaryRankTwoTranslationSubgroup.map
     integralRankTwoRowEmbedding12
 
-theorem cornulierRowPlane12_le_K₂ :
+lemma cornulierRowPlane12_le_K₂ :
     cornulierRowPlane12 ≤ cornulierK₂ := by
   rintro _ ⟨g, ⟨v, hv⟩, rfl⟩
   subst g
@@ -23756,7 +23756,7 @@ theorem cornulierRowPlane12_le_K₂ :
     (cornulierRoot_mem_K₂ 2 (by decide) (-(w 0)))
     (cornulierRoot_mem_K₂ 1 (by decide) (-(w 1)))
 
-theorem cornulierRowPlane12_root_two (a : IntegralPolynomial) :
+lemma cornulierRowPlane12_root_two (a : IntegralPolynomial) :
     cornulierRoot 3 2 (by decide) a ∈ cornulierRowPlane12 := by
   let v : Fin 2 → IntegralPolynomial := Pi.single 0 (-a)
   refine ⟨SemidirectProduct.inl (Multiplicative.ofAdd v),
@@ -23764,7 +23764,7 @@ theorem cornulierRowPlane12_root_two (a : IntegralPolynomial) :
   rw [integralRankTwoRowEmbedding12_inl]
   simp [v]
 
-theorem cornulierColumnPlanes_sup_eq_K₁ :
+lemma cornulierColumnPlanes_sup_eq_K₁ :
     cornulierColumnPlane01 ⊔ cornulierColumnPlane12 = cornulierK₁ := by
   apply le_antisymm
     (sup_le cornulierColumnPlane01_le_K₁ cornulierColumnPlane12_le_K₁)
@@ -23777,7 +23777,7 @@ theorem cornulierColumnPlanes_sup_eq_K₁ :
   · exact Subgroup.mem_sup_right (cornulierColumnPlane12_root_two a)
   · exact (hi rfl).elim
 
-theorem cornulierRowPlanes_sup_eq_K₂ :
+lemma cornulierRowPlanes_sup_eq_K₂ :
     cornulierRowPlane01 ⊔ cornulierRowPlane12 = cornulierK₂ := by
   apply le_antisymm
     (sup_le cornulierRowPlane01_le_K₂ cornulierRowPlane12_le_K₂)
@@ -23790,7 +23790,7 @@ theorem cornulierRowPlanes_sup_eq_K₂ :
   · exact Subgroup.mem_sup_right (cornulierRowPlane12_root_two a)
   · exact (hj rfl).elim
 
-theorem cornulierColumnPlanes_commute
+lemma cornulierColumnPlanes_commute
     (g : integralElementaryGroup) (hg : g ∈ cornulierColumnPlane01)
     (h : integralElementaryGroup) (hh : h ∈ cornulierColumnPlane12) :
     Commute g h := by
@@ -23799,7 +23799,7 @@ theorem cornulierColumnPlanes_commute
   exact setLike_mul_comm (cornulierColumnPlane01_le_K₁ hg)
     (cornulierColumnPlane12_le_K₁ hh)
 
-theorem cornulierRowPlanes_commute
+lemma cornulierRowPlanes_commute
     (g : integralElementaryGroup) (hg : g ∈ cornulierRowPlane01)
     (h : integralElementaryGroup) (hh : h ∈ cornulierRowPlane12) :
     Commute g h := by
@@ -23814,7 +23814,7 @@ section
 
 open ConnesRigidity
 
-theorem cornulierK₁_hasUniformRelativeKazhdanDisplacement
+lemma cornulierK₁_hasUniformRelativeKazhdanDisplacement
     (hroot : ShalomIntegralPolynomialRelativePair) :
     HasUniformRelativeKazhdanDisplacement
       integralElementaryGroup cornulierK₁ := by
@@ -23824,7 +23824,7 @@ theorem cornulierK₁_hasUniformRelativeKazhdanDisplacement
       (huniform.map integralRankTwoColumnEmbedding12)
       cornulierColumnPlanes_commute
 
-theorem cornulierK₂_hasUniformRelativeKazhdanDisplacement
+lemma cornulierK₂_hasUniformRelativeKazhdanDisplacement
     (hroot : ShalomIntegralPolynomialRelativePair) :
     HasUniformRelativeKazhdanDisplacement
       integralElementaryGroup cornulierK₂ := by
@@ -23852,12 +23852,12 @@ def cornulierHilbertLength (α : AffineHilbertAction G V)
     (x : V) (g : G) : ℝ :=
   ‖α g x - x‖
 
-@[simp] theorem cornulierHilbertLength_one
+@[simp] lemma cornulierHilbertLength_one
     (α : AffineHilbertAction G V) (x : V) :
     cornulierHilbertLength α x 1 = 0 := by
   simp [cornulierHilbertLength]
 
-theorem cornulierHilbertLength_mul_le
+lemma cornulierHilbertLength_mul_le
     (α : AffineHilbertAction G V) (x : V) (g h : G) :
     cornulierHilbertLength α x (g * h) ≤
       cornulierHilbertLength α x g + cornulierHilbertLength α x h := by
@@ -23873,7 +23873,7 @@ theorem cornulierHilbertLength_mul_le
       rw [(α g).isometry.dist_eq]
     _ = dist (α g x) x + dist (α h x) x := add_comm _ _
 
-theorem cornulierHilbertLength_le_of_fixed
+lemma cornulierHilbertLength_le_of_fixed
     (α : AffineHilbertAction G V) (N : Subgroup G)
     (x y : V) (hy : IsAffineFixed α N y) (g : N) :
     cornulierHilbertLength α x (g : G) ≤ 2 * ‖x - y‖ := by
@@ -23915,7 +23915,7 @@ def HasCornulierRelativeAffineFixedPoint
     (α : AffineHilbertAction G V),
       ∃ x : V, IsAffineFixed α N x
 
-theorem cornulier_corelative_iff_affineOrbitBound
+lemma cornulier_corelative_iff_affineOrbitBound
     (G : CountableDiscreteGroup.{u}) (N : Subgroup G) :
     HasCornulierCorelativePropertyFH G N ↔
       HasCorelativeAffineOrbitBound N := by
@@ -23931,11 +23931,11 @@ theorem cornulier_corelative_iff_affineOrbitBound
         using hN)
     exact ⟨C, fun g => hC (g : G)⟩
 
-theorem cornulier_elementary_isPerfect :
+lemma cornulier_elementary_isPerfect :
     Group.IsPerfect integralElementaryGroup :=
   integralElementaryGroup_isPerfect
 
-theorem cornulier_hom_commGroup_eq_one
+lemma cornulier_hom_commGroup_eq_one
     {A : Type*} [CommGroup A]
     (f : integralElementaryGroup →* A) :
     ∀ g : integralElementaryGroup, f g = 1 := by
@@ -23949,7 +23949,7 @@ theorem cornulier_hom_commGroup_eq_one
     Subsingleton.elim _ _
   exact congrArg Subtype.val h
 
-theorem cornulier_realCharacter_eq_zero
+lemma cornulier_realCharacter_eq_zero
     (f : integralElementaryGroup →* Multiplicative ℝ)
     (g : integralElementaryGroup) :
     Multiplicative.toAdd (f g) = 0 := by
@@ -23973,7 +23973,7 @@ noncomputable def cornulierFiniteOppositeRoots :
           (cornulierRoot cornulierLast j h)
     else ∅)
 
-theorem cornulier_lastColumnRoot_mem_finiteOppositeRoots
+lemma cornulier_lastColumnRoot_mem_finiteOppositeRoots
     (i : Index) (hi : i ≠ cornulierLast) (a : IntegralPolynomial)
     (ha : a = 1 ∨ a = Polynomial.X) :
     cornulierRoot i cornulierLast hi a ∈ cornulierFiniteOppositeRoots := by
@@ -23985,7 +23985,7 @@ theorem cornulier_lastColumnRoot_mem_finiteOppositeRoots
   rw [dif_pos hi]
   exact Finset.mem_image.mpr ⟨a, by simpa using ha, rfl⟩
 
-theorem cornulier_lastRowRoot_mem_finiteOppositeRoots
+lemma cornulier_lastRowRoot_mem_finiteOppositeRoots
     (j : Index) (hj : cornulierLast ≠ j) (a : IntegralPolynomial)
     (ha : a = 1 ∨ a = Polynomial.X) :
     cornulierRoot cornulierLast j hj a ∈ cornulierFiniteOppositeRoots := by
@@ -23997,7 +23997,7 @@ theorem cornulier_lastRowRoot_mem_finiteOppositeRoots
   rw [dif_pos hj]
   exact Finset.mem_image.mpr ⟨a, by simpa using ha, rfl⟩
 
-theorem cornulier_finiteOppositeRoots_subset
+lemma cornulier_finiteOppositeRoots_subset
     (g : integralElementaryGroup)
     (hg : g ∈ cornulierFiniteOppositeRoots) :
     g ∈ cornulierK₁ ∨ g ∈ cornulierK₂ := by
@@ -24019,7 +24019,7 @@ theorem cornulier_finiteOppositeRoots_subset
     · rw [dif_neg h] at hj
       simp at hj
 
-theorem cornulierRoot_mem_finiteOppositeRoots_closure
+lemma cornulierRoot_mem_finiteOppositeRoots_closure
     (i j : Index) (hij : i ≠ j) (a : IntegralPolynomial)
     (ha : a = 1 ∨ a = Polynomial.X) :
     cornulierRoot i j hij a ∈
@@ -24057,7 +24057,7 @@ theorem cornulierRoot_mem_finiteOppositeRoots_closure
       i cornulierLast j hi (Ne.symm hj) hij a 1
   exact heq ▸ hcomm
 
-theorem cornulier_finiteOppositeRoots_closure_eq_top :
+lemma cornulier_finiteOppositeRoots_closure_eq_top :
     Subgroup.closure
       (cornulierFiniteOppositeRoots : Set integralElementaryGroup) = ⊤ := by
   let S : Subgroup integralElementaryGroup :=
@@ -24091,11 +24091,11 @@ theorem cornulier_finiteOppositeRoots_closure_eq_top :
   have heq : z = g := Subtype.ext hzg
   exact heq ▸ hz
 
-theorem cornulier_oppositeRoots_generate :
+lemma cornulier_oppositeRoots_generate :
     cornulierK₁ ⊔ cornulierK₂ = ⊤ :=
   cornulierK₁_sup_cornulierK₂_eq_top
 
-theorem cornulier_proposition4_corelativeFH
+lemma cornulier_proposition4_corelativeFH
     (hfactor : CornulierBoundedFactorization)
     (hleft : HasCornulierRelativeAffineFixedPoint
       integralElementaryGroup cornulierK₁)
@@ -24149,7 +24149,7 @@ theorem cornulier_proposition4_corelativeFH
           2 * ‖x - x₁‖ + C + 2 * ‖x - x₂‖ := by
       linarith
 
-theorem cornulier_relativeAffineFixedPoints_of_shalom_gaussian
+lemma cornulier_relativeAffineFixedPoints_of_shalom_gaussian
     (hShalomPair : ShalomIntegralPolynomialRelativePair) :
     HasCornulierRelativeAffineFixedPoint integralElementaryGroup cornulierK₁ ∧
       HasCornulierRelativeAffineFixedPoint integralElementaryGroup cornulierK₂ := by
@@ -24161,7 +24161,7 @@ theorem cornulier_relativeAffineFixedPoints_of_shalom_gaussian
       integralElementaryGroup cornulierK₂
       (cornulierK₂_hasUniformRelativeKazhdanDisplacement hShalomPair)
 
-theorem cornulier_proposition4_of_shalom_gaussian
+lemma cornulier_proposition4_of_shalom_gaussian
     (hShalomPair : ShalomIntegralPolynomialRelativePair) :
     HasCornulierCorelativePropertyFH integralElementaryGroup cornulierH := by
   obtain ⟨hleft, hright⟩ :=
@@ -24169,7 +24169,7 @@ theorem cornulier_proposition4_of_shalom_gaussian
   exact cornulier_proposition4_corelativeFH
     cornulierBoundedFactorization hleft hright
 
-theorem cornulier_fullLatticePropertyT_of_relativeSuslin
+lemma cornulier_fullLatticePropertyT_of_relativeSuslin
     (hSuslinRelative : SuslinRelativeElementaryGeneration)
     (hElementary : HasKazhdanPropertyT integralElementaryGroup) :
     ErshovJaikinUniversalLatticePropertyT :=
@@ -24197,7 +24197,7 @@ inductive AffineGeneratorWord
       (hg : AffineGeneratorWord S g n) :
       AffineGeneratorWord S g⁻¹ n
 
-theorem exists_affineGeneratorWord_of_mem_closure
+lemma exists_affineGeneratorWord_of_mem_closure
     {G : Type u} [Group G] (S : Set G)
     {g : G} (hg : g ∈ Subgroup.closure S) :
     ∃ n : ℕ, AffineGeneratorWord S g n := by
@@ -24219,7 +24219,7 @@ def affineGeneratorWordLength
   exact Nat.find (exists_affineGeneratorWord_of_mem_closure
     (S : Set G) (g := g) (by rw [hgen]; trivial))
 
-theorem affineGeneratorWordLength_spec
+lemma affineGeneratorWordLength_spec
     {G : Type u} [Group G] (S : Finset G)
     (hgen : Subgroup.closure (S : Set G) = ⊤) (g : G) :
     AffineGeneratorWord (S : Set G) g
@@ -24232,7 +24232,7 @@ variable {G : Type u} [Group G]
 variable {V : Type u} [NormedAddCommGroup V]
   [InnerProductSpace ℂ V] [CompleteSpace V]
 
-theorem affineHilbert_displacement_inv
+lemma affineHilbert_displacement_inv
     (α : AffineHilbertAction G V) (x : V) (g : G) :
     ‖α g⁻¹ x - x‖ = ‖α g x - x‖ := by
   rw [← dist_eq_norm, ← dist_eq_norm]
@@ -24248,7 +24248,7 @@ theorem affineHilbert_displacement_inv
         _ = x := by simp
     _ = dist (α g x) x := dist_comm _ _
 
-theorem affine_displacement_le_of_generatorWord
+lemma affine_displacement_le_of_generatorWord
     (α : AffineHilbertAction G V) (x : V)
     (S : Set G) (D : ℝ)
     (hS : ∀ g ∈ S, ‖α g x - x‖ ≤ D)
@@ -24270,7 +24270,7 @@ theorem affine_displacement_le_of_generatorWord
       rw [affineHilbert_displacement_inv]
       exact ih
 
-theorem affine_oppositeGenerator_displacement_left
+lemma affine_oppositeGenerator_displacement_left
     (α : AffineHilbertAction G V) (K₁ K₂ : Subgroup G)
     (x y : V)
     (hx : IsAffineFixed α K₁ x)
@@ -24283,7 +24283,7 @@ theorem affine_oppositeGenerator_displacement_left
   · exact cornulierHilbertLength_le_of_fixed
       α K₂ x y hy ⟨g, hg⟩
 
-theorem affine_oppositeGenerator_displacement_right
+lemma affine_oppositeGenerator_displacement_right
     (α : AffineHilbertAction G V) (K₁ K₂ : Subgroup G)
     (x y : V)
     (hx : IsAffineFixed α K₁ x)
@@ -24298,7 +24298,7 @@ theorem affine_oppositeGenerator_displacement_right
   · have hfixed : α g y = y := hy ⟨g, hg⟩
     simp [hfixed]
 
-theorem affine_oppositeWord_displacement_left
+lemma affine_oppositeWord_displacement_left
     (α : AffineHilbertAction G V) (K₁ K₂ : Subgroup G)
     (S : Finset G) (hgen : Subgroup.closure (S : Set G) = ⊤)
     (hS : ∀ g ∈ S, g ∈ K₁ ∨ g ∈ K₂)
@@ -24318,7 +24318,7 @@ theorem affine_oppositeWord_displacement_left
         (hS s hs)
     _ ≤ 2 * C := by gcongr
 
-theorem affine_oppositeWord_displacement_right
+lemma affine_oppositeWord_displacement_right
     (α : AffineHilbertAction G V) (K₁ K₂ : Subgroup G)
     (S : Finset G) (hgen : Subgroup.closure (S : Set G) = ⊤)
     (hS : ∀ g ∈ S, g ∈ K₁ ∨ g ∈ K₂)
@@ -24349,7 +24349,7 @@ def affineMarkedPairWordBound
   affineMarkedPointWordBound S hgen C q.1 +
     affineMarkedPointWordBound S hgen C q.2
 
-theorem markedAffineOrbitPoint_le_wordBound
+lemma markedAffineOrbitPoint_le_wordBound
     (α : AffineHilbertAction G V) (K₁ K₂ : Subgroup G)
     (S : Finset G) (hgen : Subgroup.closure (S : Set G) = ⊤)
     (hS : ∀ g ∈ S, g ∈ K₁ ∨ g ∈ K₂)
@@ -24388,7 +24388,7 @@ theorem markedAffineOrbitPoint_le_wordBound
           unfold affineMarkedPointWordBound
           nlinarith
 
-theorem markedAffinePairDisplacement_le_wordBound
+lemma markedAffinePairDisplacement_le_wordBound
     (α : AffineHilbertAction G V) (K₁ K₂ : Subgroup G)
     (S : Finset G) (hgen : Subgroup.closure (S : Set G) = ⊤)
     (hS : ∀ g ∈ S, g ∈ K₁ ∨ g ∈ K₂)
@@ -24419,7 +24419,7 @@ theorem markedAffinePairDisplacement_le_wordBound
           α K₁ K₂ S hgen hS x y hx hy C hC q.2)
     _ = affineMarkedPairWordBound S hgen C q := rfl
 
-theorem exists_markedAffinePairDisplacement_uniform_bound
+lemma exists_markedAffinePairDisplacement_uniform_bound
     (K₁ K₂ : Subgroup G) (S : Finset G)
     (hgen : Subgroup.closure (S : Set G) = ⊤)
     (hS : ∀ g ∈ S, g ∈ K₁ ∨ g ∈ K₂)
@@ -24461,7 +24461,7 @@ def HasAffineFixedPointProperty (G : CountableDiscreteGroup.{u}) : Prop :=
     (α : AffineHilbertAction G V),
       ∃ x : V, ∀ g : G, α g x = x
 
-theorem hasKazhdanPropertyT_of_affine_fixed_points
+lemma hasKazhdanPropertyT_of_affine_fixed_points
     (G : CountableDiscreteGroup.{u})
     (hfixed : HasAffineFixedPointProperty G) :
     HasKazhdanPropertyT G := by
@@ -24525,7 +24525,7 @@ def cornulierNormalizedDistanceSpectrum
     (CornulierNormalizedMarkedAction.distance
       (G := G) (K₁ := K₁) (K₂ := K₂) (S := S))
 
-theorem cornulierNormalizedDistanceSpectrum_bddBelow
+lemma cornulierNormalizedDistanceSpectrum_bddBelow
     {G : Type u} [Group G]
     (K₁ K₂ : Subgroup G) (S : Finset G) :
     BddBelow (cornulierNormalizedDistanceSpectrum G K₁ K₂ S) := by
@@ -24537,14 +24537,14 @@ def cornulierNormalizedDistanceInfimum
     (G : Type u) [Group G] (K₁ K₂ : Subgroup G) (S : Finset G) : ℝ :=
   sInf (cornulierNormalizedDistanceSpectrum G K₁ K₂ S)
 
-theorem cornulierNormalizedDistanceInfimum_le
+lemma cornulierNormalizedDistanceInfimum_le
     {G : Type u} [Group G] {K₁ K₂ : Subgroup G} {S : Finset G}
     (a : CornulierNormalizedMarkedAction G K₁ K₂ S) :
     cornulierNormalizedDistanceInfimum G K₁ K₂ S ≤ a.distance :=
   csInf_le (cornulierNormalizedDistanceSpectrum_bddBelow K₁ K₂ S)
     ⟨a, rfl⟩
 
-theorem cornulierNormalizedDistanceInfimum_le_of_fixed
+lemma cornulierNormalizedDistanceInfimum_le_of_fixed
     {G H : Type u} [Group G]
     [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
     {K₁ K₂ : Subgroup G} {S : Finset G}
@@ -24564,7 +24564,7 @@ theorem cornulierNormalizedDistanceInfimum_le_of_fixed
       normalized := hnormalized }
   exact cornulierNormalizedDistanceInfimum_le a
 
-theorem exists_cornulierNormalizedMinimizingSequence
+lemma exists_cornulierNormalizedMinimizingSequence
     {G : Type u} [Group G]
     (K₁ K₂ : Subgroup G) (S : Finset G)
     (hne : Nonempty (CornulierNormalizedMarkedAction G K₁ K₂ S)) :
@@ -24588,14 +24588,14 @@ theorem exists_cornulierNormalizedMinimizingSequence
   rw [heq]
   simpa [cornulierNormalizedDistanceInfimum] using hd
 
-theorem cornulierNormalizedMinimizingSequence_bounded
+lemma cornulierNormalizedMinimizingSequence_bounded
     {G : Type u} [Group G] {K₁ K₂ : Subgroup G} {S : Finset G}
     (a : ℕ → CornulierNormalizedMarkedAction G K₁ K₂ S)
     (hanti : Antitone (fun n ↦ (a n).distance)) :
     ∀ n : ℕ, (a n).distance ≤ (a 0).distance := fun n ↦
   hanti (Nat.zero_le n)
 
-theorem cornulierNormalizedMarkedAction_nonempty_of_fixed
+lemma cornulierNormalizedMarkedAction_nonempty_of_fixed
     {G H : Type u} [Group G]
     [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
     (K₁ K₂ : Subgroup G) (S : Finset G)
@@ -24615,7 +24615,7 @@ theorem cornulierNormalizedMarkedAction_nonempty_of_fixed
     right_fixed := hy
     normalized := hnormalized }⟩
 
-theorem isMinimizingAffinePair_of_normalized_infimum
+lemma isMinimizingAffinePair_of_normalized_infimum
     {G H : Type u} [Group G]
     [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
     (K₁ K₂ : Subgroup G) (S : Finset G)
@@ -24634,7 +24634,7 @@ theorem isMinimizingAffinePair_of_normalized_infimum
     exact cornulierNormalizedDistanceInfimum_le_of_fixed
       α hnormalized hz hw
 
-theorem exists_cornulierNormalizedExtremalAction_with_infimum
+lemma exists_cornulierNormalizedExtremalAction_with_infimum
     {G : Type u} [Group G]
     (K₁ K₂ : Subgroup G) (S : Finset G)
     (hgen : Subgroup.closure (S : Set G) = ⊤)
@@ -24682,7 +24682,7 @@ theorem exists_cornulierNormalizedExtremalAction_with_infimum
   exact isMinimizingAffinePair_of_normalized_infimum K₁ K₂ S β
     hlimitNormalized x' y' hleft hright hlimit
 
-theorem isMinimizingAffinePair_of_normalized_nonexpansive_image
+lemma isMinimizingAffinePair_of_normalized_nonexpansive_image
     {G H W : Type u} [Group G]
     [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
     [NormedAddCommGroup W] [InnerProductSpace ℂ W] [CompleteSpace W]
@@ -24730,7 +24730,7 @@ def gromovCenteredCocycle
     (α : AffineHilbertAction G H) (x : H) (r : ℝ) (g : G) : H :=
   (r⁻¹ : ℝ) • (α g x - x)
 
-theorem gromovCenteredCocycle_mul
+lemma gromovCenteredCocycle_mul
     (α : AffineHilbertAction G H) (x : H) (r : ℝ) (g h : G) :
     gromovCenteredCocycle α x r (g * h) =
       gromovCenteredCocycle α x r g +
@@ -24758,13 +24758,13 @@ def gromovRescaledAffineAction
     (gromovCenteredCocycle α x r)
     (gromovCenteredCocycle_mul α x r)
 
-@[simp] theorem gromovRescaledAffineAction_apply
+@[simp] lemma gromovRescaledAffineAction_apply
     (α : AffineHilbertAction G H) (x : H) (r : ℝ)
     (g : G) (z : H) :
     gromovRescaledAffineAction α x r g z =
       (α g).linearIsometryEquiv z + (r⁻¹ : ℝ) • (α g x - x) := rfl
 
-theorem gromovRescaledAffineAction_displacement_norm
+lemma gromovRescaledAffineAction_displacement_norm
     (α : AffineHilbertAction G H) (x : H) (r : ℝ) (hr : 0 < r)
     (g : G) (z : H) :
     ‖gromovRescaledAffineAction α x r g z - z‖ =
@@ -24797,7 +24797,7 @@ open scoped ComplexOrder InnerProductSpace Topology
 
 universe u
 
-theorem affineUniformGeneratorDisplacement_marked_limit_of_local
+lemma affineUniformGeneratorDisplacement_marked_limit_of_local
     {G : Type u} [Group G] {H : ℕ → Type u}
     [∀ n, NormedAddCommGroup (H n)]
     [∀ n, InnerProductSpace ℂ (H n)]
@@ -24880,7 +24880,7 @@ theorem affineUniformGeneratorDisplacement_marked_limit_of_local
       zero_add, zₙ] using hlimit
   exact ge_of_tendsto hlimit' hmove
 
-theorem exists_affineUniformGeneratorDisplacement_of_local_sequence
+lemma exists_affineUniformGeneratorDisplacement_of_local_sequence
     {G : Type u} [Group G] {H : ℕ → Type u}
     [∀ n, NormedAddCommGroup (H n)]
     [∀ n, InnerProductSpace ℂ (H n)]
@@ -24949,7 +24949,7 @@ open scoped BigOperators ComplexOrder InnerProductSpace Topology
 
 universe u
 
-theorem exists_local_half_minimizer
+lemma exists_local_half_minimizer
     {X : Type*} [PseudoMetricSpace X] [CompleteSpace X] [Nonempty X]
     (D : X → ℝ) (hcont : Continuous D) (hpositive : ∀ x, 0 < D x)
     (N : ℕ) :
@@ -25014,7 +25014,7 @@ def generatorMaxDisplacement
     (α : G →* (H ≃ᵃⁱ[ℂ] H)) (S : Finset G) (x : H) : ℝ :=
   ((S.sup fun s => ‖α s x - x‖₊ : NNReal) : ℝ)
 
-theorem continuous_generatorMaxDisplacement
+lemma continuous_generatorMaxDisplacement
     {G H : Type u} [Group G] [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H]
     (α : G →* (H ≃ᵃⁱ[ℂ] H)) (S : Finset G) :
@@ -25028,7 +25028,7 @@ theorem continuous_generatorMaxDisplacement
       simpa only [Finset.sup_insert, Pi.sub_apply, id_eq] using
         (((α a).continuous.sub continuous_id).nnnorm.sup ih)
 
-theorem generator_displacement_le_max
+lemma generator_displacement_le_max
     {G H : Type u} [Group G] [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H]
     (α : G →* (H ≃ᵃⁱ[ℂ] H)) (S : Finset G) (x : H)
@@ -25061,7 +25061,7 @@ def affinePointStabilizer
       _ = x := by simp
       _ = α a x := ha.symm
 
-theorem generatorMaxDisplacement_pos_of_no_fixed
+lemma generatorMaxDisplacement_pos_of_no_fixed
     {G H : Type u} [Group G] [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H]
     (α : G →* (H ≃ᵃⁱ[ℂ] H)) (S : Finset G)
@@ -25093,7 +25093,7 @@ theorem generatorMaxDisplacement_pos_of_no_fixed
     trivial
   exact hstabilizer hg
 
-theorem exists_generator_eq_max
+lemma exists_generator_eq_max
     {G H : Type u} [Group G] [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H]
     (α : G →* (H ≃ᵃⁱ[ℂ] H)) (S : Finset G) (x : H)
@@ -25111,7 +25111,7 @@ theorem exists_generator_eq_max
     ((S.sup fun s => ‖α s x - x‖₊ : NNReal) : ℝ)
   exact_mod_cast heq.symm
 
-theorem gromov_rescaled_generator_displacement_at_zero_le_two
+lemma gromov_rescaled_generator_displacement_at_zero_le_two
     {G H : Type u} [Group G] [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H]
     (α : G →* (H ≃ᵃⁱ[ℂ] H)) (S : Finset G) (x : H)
@@ -25135,7 +25135,7 @@ theorem gromov_rescaled_generator_displacement_at_zero_le_two
     _ = 2 := by
       field_simp [show D ≠ 0 by linarith]
 
-theorem gromov_rescaled_generator_displacement_ge_one_on_ball
+lemma gromov_rescaled_generator_displacement_ge_one_on_ball
     {G H : Type u} [Group G] [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H]
     (α : G →* (H ≃ᵃⁱ[ℂ] H)) (S : Finset G) (x : H) (N : ℕ)
@@ -25179,7 +25179,7 @@ theorem gromov_rescaled_generator_displacement_ge_one_on_ball
     _ ≤ (D x / 2)⁻¹ * ‖α s y - y‖ := by
       exact mul_le_mul_of_nonneg_left hlow (inv_nonneg.mpr hr.le)
 
-theorem exists_affineUniformGeneratorDisplacement_of_no_fixed
+lemma exists_affineUniformGeneratorDisplacement_of_no_fixed
     {G H : Type u} [Group G] [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H]
     (α : G →* (H ≃ᵃⁱ[ℂ] H)) (S : Finset G)
@@ -25233,13 +25233,13 @@ def affineInvariantOrthogonalProjection
       (affineLinearRepresentation α)).starProjection x,
     Submodule.sub_starProjection_mem_orthogonal x⟩
 
-@[simp] theorem affineInvariantOrthogonalProjection_coe
+@[simp] lemma affineInvariantOrthogonalProjection_coe
     (α : AffineHilbertAction G V) (x : V) :
     (affineInvariantOrthogonalProjection α x : V) =
       x - (normalFixedSubmodule (⊤ : Subgroup G)
         (affineLinearRepresentation α)).starProjection x := rfl
 
-theorem affineAction_apply_eq_linear_add_zero
+lemma affineAction_apply_eq_linear_add_zero
     (α : AffineHilbertAction G V) (g : G) (x : V) :
     α g x = (affineLinearRepresentation α g : V →L[ℂ] V) x + α g 0 := by
   have h := (α g).map_vsub x 0
@@ -25247,7 +25247,7 @@ theorem affineAction_apply_eq_linear_add_zero
     α g x - α g 0 at h
   simpa only [sub_zero] using (eq_sub_iff_add_eq.mp h).symm
 
-theorem affineInvariantLinearProjection_action
+lemma affineInvariantLinearProjection_action
     (hreal : ∀ φ : G →* Multiplicative ℝ,
       ∀ g : G, Multiplicative.toAdd (φ g) = 0)
     (α : AffineHilbertAction G V) (g : G) (x : V) :
@@ -25265,7 +25265,7 @@ theorem affineInvariantLinearProjection_action
   exact (Submodule.starProjection_apply_mem M x)
     ⟨g, Subgroup.mem_top g⟩
 
-theorem affineInvariantOrthogonalProjection_equivariant
+lemma affineInvariantOrthogonalProjection_equivariant
     (hreal : ∀ φ : G →* Multiplicative ℝ,
       ∀ g : G, Multiplicative.toAdd (φ g) = 0)
     (α : AffineHilbertAction G V) (g : G) (x : V) :
@@ -25289,7 +25289,7 @@ theorem affineInvariantOrthogonalProjection_equivariant
   rw [hfixed]
   abel
 
-theorem affineInvariantOrthogonalProjection_nonexpansive
+lemma affineInvariantOrthogonalProjection_nonexpansive
     (α : AffineHilbertAction G V) (x y : V) :
     ‖affineInvariantOrthogonalProjection α x -
         affineInvariantOrthogonalProjection α y‖ ≤ ‖x - y‖ := by
@@ -25301,7 +25301,7 @@ theorem affineInvariantOrthogonalProjection_nonexpansive
     ← Submodule.starProjection_orthogonal_val y, ← map_sub]
   exact Mᗮ.norm_starProjection_apply_le _
 
-theorem affineOrthogonalAction_normalized
+lemma affineOrthogonalAction_normalized
     (hreal : ∀ φ : G →* Multiplicative ℝ,
       ∀ g : G, Multiplicative.toAdd (φ g) = 0)
     (α : AffineHilbertAction G V) (S : Finset G)
@@ -25313,7 +25313,7 @@ theorem affineOrthogonalAction_normalized
   change 1 ≤ ‖(affineOrthogonalAction hreal α s z : V) - (z : V)‖
   rwa [affineOrthogonalAction_apply_coe]
 
-theorem IsAffineFixed.affineInvariantOrthogonalProjection
+lemma IsAffineFixed.affineInvariantOrthogonalProjection
     (hreal : ∀ φ : G →* Multiplicative ℝ,
       ∀ g : G, Multiplicative.toAdd (φ g) = 0)
     {α : AffineHilbertAction G V} {K : Subgroup G}
@@ -25324,7 +25324,7 @@ theorem IsAffineFixed.affineInvariantOrthogonalProjection
   rw [← affineInvariantOrthogonalProjection_equivariant hreal α (k : G) x,
     hx k]
 
-theorem affineOrthogonalAction_isMinimizingAffinePair
+lemma affineOrthogonalAction_isMinimizingAffinePair
     (hreal : ∀ φ : G →* Multiplicative ℝ,
       ∀ g : G, Multiplicative.toAdd (φ g) = 0)
     (K₁ K₂ : Subgroup G) (S : Finset G)
@@ -25355,7 +25355,7 @@ open CornulierUltralimit
 
 universe u
 
-theorem cornulier_normalizedMarkedAction_false
+lemma cornulier_normalizedMarkedAction_false
     (G : CountableDiscreteGroup.{u})
     (H K₁ K₂ : Subgroup G) (S : Finset G)
     (hSgen : Subgroup.closure (S : Set G) = ⊤)
@@ -25384,7 +25384,7 @@ theorem cornulier_normalizedMarkedAction_false
     H K₁ K₂ S hgen hH₁ hH₂ hcorel β hβ x y hmin
       (affineOrthogonalAction_no_linear_invariants hreal a.action)
 
-theorem cornulier_theorem7_of_normalization
+lemma cornulier_theorem7_of_normalization
     (G : CountableDiscreteGroup.{u})
     (H K₁ K₂ : Subgroup G) (S : Finset G)
     (hSgen : Subgroup.closure (S : Set G) = ⊤)
@@ -25437,7 +25437,7 @@ theorem cornulier_theorem7_of_normalization
   exact cornulier_normalizedMarkedAction_false
     G H K₁ K₂ S hSgen hSroot hgen hH₁ hH₂ hreal hcorel hmarked
 
-theorem cornulier_theorem7
+lemma cornulier_theorem7
     (G : CountableDiscreteGroup.{u})
     (H K₁ K₂ : Subgroup G) (S : Finset G)
     (hSgen : Subgroup.closure (S : Set G) = ⊤)
@@ -25480,14 +25480,14 @@ variable {A : Type u} [AddCommGroup A] [TopologicalSpace A] [DiscreteTopology A]
 variable [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)]
 
-theorem shalom_normalized_restriction_variation_bound
+lemma shalom_normalized_restriction_variation_bound
     {ε : ℝ} (hε : 0 ≤ ε) (hsmall : ε ≤ (1 / 10 : ℝ)) :
     (2 * ε + ε ^ 2) / (1 - ε ^ 2) ≤ (7 / 33 : ℝ) := by
   have hden : 0 < 1 - ε ^ 2 := by nlinarith
   apply (div_le_iff₀ hden).2
   nlinarith
 
-theorem shalom_normalized_restriction_variation_lt_one_fourth
+lemma shalom_normalized_restriction_variation_lt_one_fourth
     {ε : ℝ} (hε : 0 ≤ ε) (hsmall : ε ≤ (1 / 10 : ℝ)) :
     (2 * ε + ε ^ 2) / (1 - ε ^ 2) < (1 / 4 : ℝ) := by
   calc
@@ -25495,7 +25495,7 @@ theorem shalom_normalized_restriction_variation_lt_one_fourth
       shalom_normalized_restriction_variation_bound hε hsmall
     _ < 1 / 4 := by norm_num
 
-theorem circle_nonpositive_real_energy (z : Circle)
+lemma circle_nonpositive_real_energy (z : Circle)
     (hz : (z : ℂ).re ≤ 0) :
     (2 : ℝ) ≤ ‖(z : ℂ) - 1‖ ^ 2 := by
   have hnorm : Complex.normSq (z : ℂ) = 1 := Circle.normSq_coe z
@@ -25508,13 +25508,13 @@ def spectralNonpositiveRealSet (a : A) : Set (DiscreteCharacterSpace A) :=
   {χ | (((χ (Multiplicative.ofAdd a) : Circle) : ℂ).re) ≤ 0}
 
 omit [DiscreteTopology A] in
-theorem spectralNonpositiveRealSet_measurable (a : A) :
+lemma spectralNonpositiveRealSet_measurable (a : A) :
     MeasurableSet (spectralNonpositiveRealSet a) := by
   exact (Complex.continuous_re.comp
     (continuous_character_evaluation a)).measurable
       (measurableSet_Iic)
 
-theorem spectralNonpositiveRealSet_measureReal_mul_two_le_energy
+lemma spectralNonpositiveRealSet_measureReal_mul_two_le_energy
     (μ : ProbabilityMeasure (DiscreteCharacterSpace A)) (a : A) :
     2 * (μ : Measure (DiscreteCharacterSpace A)).real
         (spectralNonpositiveRealSet a) ≤
@@ -25550,12 +25550,12 @@ def spectralTorusWindow (a b : A) : Set (DiscreteCharacterSpace A) :=
   (spectralNonpositiveRealSet a ∪ spectralNonpositiveRealSet b)ᶜ
 
 omit [DiscreteTopology A] in
-theorem spectralTorusWindow_measurable (a b : A) :
+lemma spectralTorusWindow_measurable (a b : A) :
     MeasurableSet (spectralTorusWindow a b) :=
   ((spectralNonpositiveRealSet_measurable a).union
     (spectralNonpositiveRealSet_measurable b)).compl
 
-theorem spectralTorusWindow_compl_measureReal_mul_two_le_energy_sum
+lemma spectralTorusWindow_compl_measureReal_mul_two_le_energy_sum
     (μ : ProbabilityMeasure (DiscreteCharacterSpace A)) (a b : A) :
     2 * (μ : Measure (DiscreteCharacterSpace A)).real
         (spectralTorusWindow a b)ᶜ ≤
@@ -25571,7 +25571,7 @@ theorem spectralTorusWindow_compl_measureReal_mul_two_le_energy_sum
     nlinarith
   simpa only [spectralTorusWindow, compl_compl] using hbad
 
-theorem spectralTorusWindow_compl_measureReal_le_sq
+lemma spectralTorusWindow_compl_measureReal_le_sq
     (μ : ProbabilityMeasure (DiscreteCharacterSpace A)) (a b : A)
     {ε : ℝ}
     (ha : spectralDetectionEnergy μ a ≤ ε ^ 2)
@@ -25582,7 +25582,7 @@ theorem spectralTorusWindow_compl_measureReal_le_sq
     spectralTorusWindow_compl_measureReal_mul_two_le_energy_sum μ a b
   linarith
 
-theorem spectralTorusWindow_measureReal_ge_one_sub_sq
+lemma spectralTorusWindow_measureReal_ge_one_sub_sq
     (μ : ProbabilityMeasure (DiscreteCharacterSpace A)) (a b : A)
     {ε : ℝ}
     (ha : spectralDetectionEnergy μ a ≤ ε ^ 2)
@@ -25596,7 +25596,7 @@ theorem spectralTorusWindow_measureReal_ge_one_sub_sq
   have hbad := spectralTorusWindow_compl_measureReal_le_sq μ a b ha hb
   linarith
 
-theorem spectralTorusWindow_measureReal_pos
+lemma spectralTorusWindow_measureReal_pos
     (μ : ProbabilityMeasure (DiscreteCharacterSpace A)) (a b : A)
     {ε : ℝ} (hsmall : ε ≤ (1 / 10 : ℝ))
     (hε : 0 ≤ ε)
@@ -25608,7 +25608,7 @@ theorem spectralTorusWindow_measureReal_pos
   exact lt_of_lt_of_le hden
     (spectralTorusWindow_measureReal_ge_one_sub_sq μ a b ha hb)
 
-theorem shalom_conditioned_variation_lt_one_fourth
+lemma shalom_conditioned_variation_lt_one_fourth
     {Ω : Type*} [MeasurableSpace Ω]
     (μ : ProbabilityMeasure Ω) {U : Set Ω}
     (hU : 0 < (μ : Measure Ω).real U)
@@ -25653,14 +25653,14 @@ local instance shalomCircleMeasurable : MeasurableSpace Circle := borel Circle
 
 local instance shalomCircleBorel : BorelSpace Circle := ⟨rfl⟩
 
-theorem circle_re_pos_iff_arg_mem_Ioo (z : Circle) :
+lemma circle_re_pos_iff_arg_mem_Ioo (z : Circle) :
     0 < (z : ℂ).re ↔
       -(Real.pi / 2) < Complex.arg (z : ℂ) ∧
         Complex.arg (z : ℂ) < Real.pi / 2 := by
   simpa [abs_lt, z.coe_ne_zero] using
     (Complex.abs_arg_lt_pi_div_two_iff (z := (z : ℂ))).symm
 
-theorem circle_arg_mul_of_no_wrap_le (z w : Circle)
+lemma circle_arg_mul_of_no_wrap_le (z w : Circle)
     (hlower : -Real.pi < Complex.arg (z : ℂ) + Complex.arg (w : ℂ))
     (hupper : Complex.arg (z : ℂ) + Complex.arg (w : ℂ) ≤ Real.pi) :
     Complex.arg ((z * w : Circle) : ℂ) =
@@ -25668,20 +25668,20 @@ theorem circle_arg_mul_of_no_wrap_le (z w : Circle)
   change Complex.arg ((z : ℂ) * (w : ℂ)) = _
   exact Complex.arg_mul z.coe_ne_zero w.coe_ne_zero ⟨hlower, hupper⟩
 
-theorem circle_arg_mul_of_no_wrap (z w : Circle)
+lemma circle_arg_mul_of_no_wrap (z w : Circle)
     (hlower : -Real.pi < Complex.arg (z : ℂ) + Complex.arg (w : ℂ))
     (hupper : Complex.arg (z : ℂ) + Complex.arg (w : ℂ) < Real.pi) :
     Complex.arg ((z * w : Circle) : ℂ) =
       Complex.arg (z : ℂ) + Complex.arg (w : ℂ) :=
   circle_arg_mul_of_no_wrap_le z w hlower hupper.le
 
-theorem circle_arg_inv_of_lt_pi (z : Circle)
+lemma circle_arg_inv_of_lt_pi (z : Circle)
     (hz : Complex.arg (z : ℂ) < Real.pi) :
     Complex.arg ((z⁻¹ : Circle) : ℂ) = -Complex.arg (z : ℂ) := by
   change Complex.arg ((z : ℂ)⁻¹) = -Complex.arg (z : ℂ)
   rw [Complex.arg_inv, if_neg (ne_of_lt hz)]
 
-theorem circle_arg_div_of_no_wrap (z w : Circle)
+lemma circle_arg_div_of_no_wrap (z w : Circle)
     (hw : Complex.arg (w : ℂ) < Real.pi)
     (hlower : -Real.pi < Complex.arg (z : ℂ) - Complex.arg (w : ℂ))
     (hupper : Complex.arg (z : ℂ) - Complex.arg (w : ℂ) < Real.pi) :
@@ -25696,7 +25696,7 @@ theorem circle_arg_div_of_no_wrap (z w : Circle)
   · rw [circle_arg_inv_of_lt_pi w hw]
     exact hupper
 
-theorem circle_arg_mul_of_re_pos (z w : Circle)
+lemma circle_arg_mul_of_re_pos (z w : Circle)
     (hz : 0 < (z : ℂ).re) (hw : 0 < (w : ℂ).re) :
     Complex.arg ((z * w : Circle) : ℂ) =
       Complex.arg (z : ℂ) + Complex.arg (w : ℂ) := by
@@ -25704,7 +25704,7 @@ theorem circle_arg_mul_of_re_pos (z w : Circle)
   obtain ⟨hwlo, hwhi⟩ := (circle_re_pos_iff_arg_mem_Ioo w).mp hw
   exact circle_arg_mul_of_no_wrap z w (by linarith) (by linarith)
 
-theorem circle_arg_div_of_re_pos (z w : Circle)
+lemma circle_arg_div_of_re_pos (z w : Circle)
     (hz : 0 < (z : ℂ).re) (hw : 0 < (w : ℂ).re) :
     Complex.arg ((z / w : Circle) : ℂ) =
       Complex.arg (z : ℂ) - Complex.arg (w : ℂ) := by
@@ -25725,7 +25725,7 @@ def spectralArgCoordinates (a b : A)
     Complex.arg (((χ (Multiplicative.ofAdd b) : Circle) : ℂ)))
 
 omit [DiscreteTopology A] in
-theorem measurable_spectralArgCoordinates (a b : A) :
+lemma measurable_spectralArgCoordinates (a b : A) :
     Measurable (spectralArgCoordinates a b) :=
   (Complex.measurable_arg.comp
     (continuous_character_evaluation a).measurable).prodMk
@@ -25734,7 +25734,7 @@ theorem measurable_spectralArgCoordinates (a b : A) :
 
 omit [DiscreteTopology A] [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
-theorem spectralTorusWindow_mem_iff_re_pos (a b : A)
+lemma spectralTorusWindow_mem_iff_re_pos (a b : A)
     (χ : DiscreteCharacterSpace A) :
     χ ∈ spectralTorusWindow a b ↔
       0 < (((χ (Multiplicative.ofAdd a) : Circle) : ℂ).re) ∧
@@ -25743,7 +25743,7 @@ theorem spectralTorusWindow_mem_iff_re_pos (a b : A)
 
 omit [DiscreteTopology A] [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
-theorem spectralArg_add_of_window (a b : A)
+lemma spectralArg_add_of_window (a b : A)
     (χ : DiscreteCharacterSpace A) (hχ : χ ∈ spectralTorusWindow a b) :
     Complex.arg (((χ (Multiplicative.ofAdd (a + b)) : Circle) : ℂ)) =
       (spectralArgCoordinates a b χ).1 +
@@ -25755,7 +25755,7 @@ theorem spectralArg_add_of_window (a b : A)
 
 omit [DiscreteTopology A] [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
-theorem spectralArg_sub_of_window (a b : A)
+lemma spectralArg_sub_of_window (a b : A)
     (χ : DiscreteCharacterSpace A) (hχ : χ ∈ spectralTorusWindow a b) :
     Complex.arg (((χ (Multiplicative.ofAdd (a - b)) : Circle) : ℂ)) =
       (spectralArgCoordinates a b χ).1 -
@@ -25767,7 +25767,7 @@ theorem spectralArg_sub_of_window (a b : A)
 
 omit [DiscreteTopology A] [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
-theorem spectralArgCoordinates_tpos (a b : A)
+lemma spectralArgCoordinates_tpos (a b : A)
     (χ : DiscreteCharacterSpace A) (hχ : χ ∈ spectralTorusWindow a b) :
     spectralArgCoordinates a (b - a) χ =
       ((spectralArgCoordinates a b χ).1,
@@ -25780,7 +25780,7 @@ theorem spectralArgCoordinates_tpos (a b : A)
 
 omit [DiscreteTopology A] [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
-theorem spectralArgCoordinates_spos (a b : A)
+lemma spectralArgCoordinates_spos (a b : A)
     (χ : DiscreteCharacterSpace A) (hχ : χ ∈ spectralTorusWindow a b) :
     spectralArgCoordinates (a - b) b χ =
       ((spectralArgCoordinates a b χ).1 -
@@ -25792,7 +25792,7 @@ theorem spectralArgCoordinates_spos (a b : A)
 
 omit [DiscreteTopology A] [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
-theorem spectralArgCoordinates_tneg (a b : A)
+lemma spectralArgCoordinates_tneg (a b : A)
     (χ : DiscreteCharacterSpace A) (hχ : χ ∈ spectralTorusWindow a b) :
     spectralArgCoordinates a (b + a) χ =
       ((spectralArgCoordinates a b χ).1,
@@ -25805,7 +25805,7 @@ theorem spectralArgCoordinates_tneg (a b : A)
 
 omit [DiscreteTopology A] [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
-theorem spectralArgCoordinates_sneg (a b : A)
+lemma spectralArgCoordinates_sneg (a b : A)
     (χ : DiscreteCharacterSpace A) (hχ : χ ∈ spectralTorusWindow a b) :
     spectralArgCoordinates (a + b) b χ =
       ((spectralArgCoordinates a b χ).1 +
@@ -25827,14 +25827,14 @@ def integerDualCoordinateZero : IntegerRankTwo := Pi.single 0 1
 
 def integerDualCoordinateOne : IntegerRankTwo := Pi.single 1 1
 
-private theorem integerRankTwo_basis_decomposition (v : IntegerRankTwo) :
+private lemma integerRankTwo_basis_decomposition (v : IntegerRankTwo) :
     v = v 0 • integerDualCoordinateZero +
       v 1 • integerDualCoordinateOne := by
   funext i
   fin_cases i <;>
     simp [integerDualCoordinateZero, integerDualCoordinateOne]
 
-theorem integerDual_eq_one_iff_coordinate_values
+lemma integerDual_eq_one_iff_coordinate_values
     (χ : DiscreteCharacterSpace IntegerRankTwo) :
     χ = 1 ↔
       χ (Multiplicative.ofAdd integerDualCoordinateZero) = 1 ∧
@@ -25860,7 +25860,7 @@ local instance integerDualMeasurable :
 local instance integerDualBorel :
     BorelSpace (DiscreteCharacterSpace IntegerRankTwo) := ⟨rfl⟩
 
-theorem integerDual_spectralArgCoordinates_eq_zero_iff
+lemma integerDual_spectralArgCoordinates_eq_zero_iff
     (χ : DiscreteCharacterSpace IntegerRankTwo) :
     spectralArgCoordinates integerDualCoordinateZero
       integerDualCoordinateOne χ = (0, 0) ↔ χ = 1 := by
@@ -25873,7 +25873,7 @@ theorem integerDual_spectralArgCoordinates_eq_zero_iff
   rw [Circle.arg_eq_zero, Circle.arg_eq_zero]
   exact (integerDual_eq_one_iff_coordinate_values χ).symm
 
-theorem integerDual_spectralArgCoordinates_origin_preimage :
+lemma integerDual_spectralArgCoordinates_origin_preimage :
     spectralArgCoordinates integerDualCoordinateZero
       integerDualCoordinateOne ⁻¹' {(0, 0)} =
         ({1} : Set (DiscreteCharacterSpace IntegerRankTwo)) := by
@@ -25886,7 +25886,7 @@ noncomputable section
 
 open MeasureTheory Set
 
-theorem shalom_four_sector_mass_gap
+lemma shalom_four_sector_mass_gap
     (a b c d u v w z : ℝ)
     (hmass : a + b + c + d = 1)
     (hu : u ≤ a) (hv : v ≤ b) (hw : w ≤ d) (hz : z ≤ c) :
@@ -25908,7 +25908,7 @@ theorem shalom_four_sector_mass_gap
   norm_num at hu' hv' hw' hz'
   linarith
 
-theorem shalom_three_sector_mass_gap
+lemma shalom_three_sector_mass_gap
     (a b c u v w : ℝ)
     (hmass : a + b + c = 1)
     (hu : u ≤ c) (hv : v ≤ a) (hw : w ≤ b) :
@@ -25938,7 +25938,7 @@ section RegularSpectralMeasure
 variable {Ω : Type*} [TopologicalSpace Ω] [CompactSpace Ω] [T2Space Ω]
   [MeasurableSpace Ω] [BorelSpace Ω]
 
-theorem regular_measureReal_le_add_of_testFunctions
+lemma regular_measureReal_le_add_of_testFunctions
     (μ ν : Measure Ω) [μ.Regular] [ν.Regular]
     [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (c : ℝ) (hc : 0 ≤ c)
@@ -26010,7 +26010,7 @@ theorem regular_measureReal_le_add_of_testFunctions
   dsimp [ε] at hUreal
   linarith
 
-theorem abs_regular_measureReal_sub_le_of_testFunctions
+lemma abs_regular_measureReal_sub_le_of_testFunctions
     (μ ν : Measure Ω) [μ.Regular] [ν.Regular]
     [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (c : ℝ) (hc : 0 ≤ c)
@@ -26038,7 +26038,7 @@ end RegularSpectralMeasure
 
 universe u
 
-theorem bounded_vector_state_lipschitz
+lemma bounded_vector_state_lipschitz
     {W : Type u} [NormedAddCommGroup W] [InnerProductSpace ℂ W]
     (T : W →L[ℂ] W) (x y : W)
     (hT : ‖T‖ ≤ 1) (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
@@ -26087,7 +26087,7 @@ variable {W : Type u} [NormedAddCommGroup W]
 
 omit [MeasurableSpace (DiscreteCharacterSpace A)] [BorelSpace (DiscreteCharacterSpace A)]
   in
-theorem jointFunctionalCalculusOperator_positive_contraction
+lemma jointFunctionalCalculusOperator_positive_contraction
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G W)
     (f : C_c(DiscreteCharacterSpace A, ℝ))
@@ -26104,7 +26104,7 @@ theorem jointFunctionalCalculusOperator_positive_contraction
     (jointFunctionalCalculusOperator E π)
     (characterRealComplexification f)).trans hnorm
 
-theorem abs_jointScalarMeasure_measureReal_sub_le
+lemma abs_jointScalarMeasure_measureReal_sub_le
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G W)
     (x y : W) (hx : ‖x‖ = 1) (hy : ‖y‖ = 1)
@@ -26130,7 +26130,7 @@ theorem abs_jointScalarMeasure_measureReal_sub_le
       (jointFunctionalCalculusOperator_positive_contraction E π f hf) hx hy
   · exact hs
 
-theorem abs_jointScalarMeasure_map_measureReal_sub_le
+lemma abs_jointScalarMeasure_map_measureReal_sub_le
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G W)
     (x : W) (hx : ‖x‖ = 1) (h : H)
@@ -26150,7 +26150,7 @@ theorem abs_jointScalarMeasure_map_measureReal_sub_le
     ((π (E.splitting h) : W →L[ℂ] W) x) x
     ((Unitary.norm_map (π (E.splitting h)) x).trans hx) hx hs
 
-theorem trivialCharacterProjection_ne_zero_of_joint_atom_pos
+lemma trivialCharacterProjection_ne_zero_of_joint_atom_pos
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G W)
     (x : W) (hxnorm : ‖x‖ = 1)
@@ -26176,7 +26176,7 @@ theorem trivialCharacterProjection_ne_zero_of_joint_atom_pos
   have hznorm : 0 ≤ ‖z‖ := norm_nonneg _
   nlinarith [mul_nonneg hznorm (sub_nonneg.mpr (le_of_lt hzone))]
 
-theorem exists_kernel_fixed_of_joint_atom_pos
+lemma exists_kernel_fixed_of_joint_atom_pos
     (E : SplitAbelianExtension A G H)
     (π : UnitaryRepresentation G W)
     (x : W) (hxnorm : ‖x‖ = 1)
@@ -26245,7 +26245,7 @@ def integerElementaryRankTwoSplitAbelianExtension :
         ElementaryRankTwoSemidirect ℤ)
     ext <;> simp
 
-@[simp] theorem integerElementaryRankTwoSplitAbelianExtension_range :
+@[simp] lemma integerElementaryRankTwoSplitAbelianExtension_range :
     integerElementaryRankTwoSplitAbelianExtension.inclusion.range =
       integerElementaryRankTwoTranslationSubgroup := rfl
 
@@ -26293,17 +26293,17 @@ def integerShalomGenerators : Finset integerElementaryRankTwoGroup := by
   classical
   exact integerShalomTranslationGenerators ∪ integerShalomShearGenerators
 
-@[simp] theorem integerShalomTranslation_zero_one :
+@[simp] lemma integerShalomTranslation_zero_one :
     integerShalomTranslation 0 1 =
       integerElementaryRankTwoInl
         (Multiplicative.ofAdd integerTranslationZero) := rfl
 
-@[simp] theorem integerShalomTranslation_one_one :
+@[simp] lemma integerShalomTranslation_one_one :
     integerShalomTranslation 1 1 =
       integerElementaryRankTwoInl
         (Multiplicative.ofAdd integerTranslationOne) := rfl
 
-theorem integerShalomTranslations_in_generators
+lemma integerShalomTranslations_in_generators
     {a : Fin 2 → ℤ} (ha : a ∈ integerShalomTranslations) :
     integerElementaryRankTwoInl (Multiplicative.ofAdd a) ∈
       integerShalomGenerators := by
@@ -26316,7 +26316,7 @@ theorem integerShalomTranslations_in_generators
   · simp [integerShalomGenerators, integerShalomTranslationGenerators,
       integerShalomTranslation, integerTranslationOne]
 
-theorem integerShalomShears_in_generators
+lemma integerShalomShears_in_generators
     {h : integerElementaryRankTwoActingGroup}
     (hh : h ∈ integerShalomShears) :
     integerElementaryRankTwoInr h ∈ integerShalomGenerators := by
@@ -26356,7 +26356,7 @@ def IntegerShalomFourierAtomGap : Prop :=
         (shalomPolynomialKazhdanConstant 0) ^ 2) →
       0 < spectralTrivialAtom μ
 
-theorem integerShalomRelativeKazhdanPair_of_fourierAtomGap
+lemma integerShalomRelativeKazhdanPair_of_fourierAtomGap
     (hatom : IntegerShalomFourierAtomGap) :
     ShalomIntegerRelativePair := by
   classical
@@ -26450,27 +26450,27 @@ def shalomPuncturedC : Set ShalomPuncturedPlane :=
 def shalomPuncturedD : Set ShalomPuncturedPlane :=
   Subtype.val ⁻¹' shalomSectorD
 
-theorem shalomSectorA_measurable : MeasurableSet shalomSectorA := by
+lemma shalomSectorA_measurable : MeasurableSet shalomSectorA := by
   exact (isClosed_le (continuous_fst.mul continuous_snd)
     continuous_const).measurableSet.inter
     (isOpen_lt continuous_fst.abs continuous_snd.abs).measurableSet
 
-theorem shalomSectorB_measurable : MeasurableSet shalomSectorB := by
+lemma shalomSectorB_measurable : MeasurableSet shalomSectorB := by
   exact (isOpen_lt (continuous_fst.mul continuous_snd)
     continuous_const).measurableSet.inter
     (isClosed_le continuous_snd.abs continuous_fst.abs).measurableSet
 
-theorem shalomSectorC_measurable : MeasurableSet shalomSectorC := by
+lemma shalomSectorC_measurable : MeasurableSet shalomSectorC := by
   exact (isClosed_le continuous_const
     (continuous_fst.mul continuous_snd)).measurableSet.inter
     (isOpen_lt continuous_snd.abs continuous_fst.abs).measurableSet
 
-theorem shalomSectorD_measurable : MeasurableSet shalomSectorD := by
+lemma shalomSectorD_measurable : MeasurableSet shalomSectorD := by
   exact (isOpen_lt continuous_const
     (continuous_fst.mul continuous_snd)).measurableSet.inter
     (isClosed_le continuous_fst.abs continuous_snd.abs).measurableSet
 
-theorem shalomPunctured_cover :
+lemma shalomPunctured_cover :
     shalomPuncturedA ∪ shalomPuncturedB ∪ shalomPuncturedC ∪
       shalomPuncturedD = Set.univ := by
   ext ⟨⟨x, y⟩, hne⟩
@@ -26500,7 +26500,7 @@ theorem shalomPunctured_cover :
     exact Or.inl (Or.inr
       ⟨by simp [hy], by simp [hy, abs_pos.mpr hxne]⟩)
 
-private theorem abs_sub_of_mul_nonpos {x y : ℝ} (h : x * y ≤ 0) :
+private lemma abs_sub_of_mul_nonpos {x y : ℝ} (h : x * y ≤ 0) :
     |y - x| = |y| + |x| := by
   rcases (mul_nonpos_iff.mp h) with ⟨hx, hy⟩ | ⟨hx, hy⟩
   · rw [abs_of_nonpos hy, abs_of_nonneg hx, abs_of_nonpos (by linarith)]
@@ -26508,7 +26508,7 @@ private theorem abs_sub_of_mul_nonpos {x y : ℝ} (h : x * y ≤ 0) :
   · rw [abs_of_nonneg hy, abs_of_nonpos hx, abs_of_nonneg (by linarith)]
     linarith
 
-private theorem abs_add_of_mul_nonneg {x y : ℝ} (h : 0 ≤ x * y) :
+private lemma abs_add_of_mul_nonneg {x y : ℝ} (h : 0 ≤ x * y) :
     |x + y| = |x| + |y| := by
   rcases (mul_nonneg_iff.mp h) with ⟨hx, hy⟩ | ⟨hx, hy⟩
   · rw [abs_of_nonneg hx, abs_of_nonneg hy, abs_of_nonneg (by linarith)]
@@ -26523,7 +26523,7 @@ def shalomTneg (p : ℝ × ℝ) : ℝ × ℝ := (p.1, p.2 + p.1)
 
 def shalomSneg (p : ℝ × ℝ) : ℝ × ℝ := (p.1 + p.2, p.2)
 
-theorem shalomTpos_sector_inclusion :
+lemma shalomTpos_sector_inclusion :
     shalomTpos '' (shalomSectorA ∪ shalomSectorB) ⊆ shalomSectorA := by
   rintro _ ⟨⟨x, y⟩, hxy, rfl⟩
   have hnonpos : x * y ≤ 0 := by
@@ -26541,7 +26541,7 @@ theorem shalomTpos_sector_inclusion :
   · rw [abs_sub_of_mul_nonpos hnonpos]
     linarith [abs_pos.mpr hy]
 
-theorem shalomSpos_sector_inclusion :
+lemma shalomSpos_sector_inclusion :
     shalomSpos '' (shalomSectorA ∪ shalomSectorB) ⊆ shalomSectorB := by
   rintro _ ⟨⟨x, y⟩, hxy, rfl⟩
   have hnonpos : x * y ≤ 0 := by
@@ -26559,7 +26559,7 @@ theorem shalomSpos_sector_inclusion :
   · rw [abs_sub_comm, abs_sub_of_mul_nonpos hnonpos]
     linarith [abs_nonneg x]
 
-theorem shalomTneg_sector_inclusion :
+lemma shalomTneg_sector_inclusion :
     shalomTneg '' (shalomSectorD ∪ shalomSectorC) ⊆ shalomSectorD := by
   rintro _ ⟨⟨x, y⟩, hxy, rfl⟩
   have hnonneg : 0 ≤ x * y := by
@@ -26577,7 +26577,7 @@ theorem shalomTneg_sector_inclusion :
   · rw [add_comm y x, abs_add_of_mul_nonneg hnonneg]
     linarith [abs_nonneg y]
 
-theorem shalomSneg_sector_inclusion :
+lemma shalomSneg_sector_inclusion :
     shalomSneg '' (shalomSectorD ∪ shalomSectorC) ⊆ shalomSectorC := by
   rintro _ ⟨⟨x, y⟩, hxy, rfl⟩
   have hnonneg : 0 ≤ x * y := by
@@ -26610,7 +26610,7 @@ variable [MeasurableSpace (DiscreteCharacterSpace A)]
 
 omit [MeasurableSpace (DiscreteCharacterSpace A)] [BorelSpace (DiscreteCharacterSpace A)]
   in
-theorem spectralArgCoordinates_dualCharacterAction
+lemma spectralArgCoordinates_dualCharacterAction
     (action : H →* Multiplicative (AddAut A)) (h : H)
     (a b : A) (χ : DiscreteCharacterSpace A) :
     spectralArgCoordinates a b (dualCharacterAction action h χ) =
@@ -26623,7 +26623,7 @@ theorem spectralArgCoordinates_dualCharacterAction
 
 omit [MeasurableSpace (DiscreteCharacterSpace A)] [BorelSpace (DiscreteCharacterSpace A)]
   in
-theorem spectralArgCoordinates_dualCharacterAction_tpos
+lemma spectralArgCoordinates_dualCharacterAction_tpos
     (action : H →* Multiplicative (AddAut A)) (h : H)
     (a b : A)
     (ha : (Multiplicative.toAdd (action h⁻¹)) a = a)
@@ -26642,7 +26642,7 @@ theorem spectralArgCoordinates_dualCharacterAction_tpos
 
 omit [MeasurableSpace (DiscreteCharacterSpace A)] [BorelSpace (DiscreteCharacterSpace A)]
   in
-theorem spectralArgCoordinates_dualCharacterAction_spos
+lemma spectralArgCoordinates_dualCharacterAction_spos
     (action : H →* Multiplicative (AddAut A)) (h : H)
     (a b : A)
     (ha : (Multiplicative.toAdd (action h⁻¹)) a = a - b)
@@ -26661,7 +26661,7 @@ theorem spectralArgCoordinates_dualCharacterAction_spos
 
 omit [MeasurableSpace (DiscreteCharacterSpace A)] [BorelSpace (DiscreteCharacterSpace A)]
   in
-theorem spectralArgCoordinates_dualCharacterAction_tneg
+lemma spectralArgCoordinates_dualCharacterAction_tneg
     (action : H →* Multiplicative (AddAut A)) (h : H)
     (a b : A)
     (ha : (Multiplicative.toAdd (action h⁻¹)) a = a)
@@ -26680,7 +26680,7 @@ theorem spectralArgCoordinates_dualCharacterAction_tneg
 
 omit [MeasurableSpace (DiscreteCharacterSpace A)] [BorelSpace (DiscreteCharacterSpace A)]
   in
-theorem spectralArgCoordinates_dualCharacterAction_sneg
+lemma spectralArgCoordinates_dualCharacterAction_sneg
     (action : H →* Multiplicative (AddAut A)) (h : H)
     (a b : A)
     (ha : (Multiplicative.toAdd (action h⁻¹)) a = a + b)
@@ -26710,7 +26710,7 @@ local instance integerShearDualMeasurable :
 local instance integerShearDualBorel :
     BorelSpace (DiscreteCharacterSpace (Fin 2 → ℤ)) := ⟨rfl⟩
 
-theorem integerUpperShear_inv_action_zero :
+lemma integerUpperShear_inv_action_zero :
     (Multiplicative.toAdd
       (integerElementaryRankTwoSplitAbelianExtension.action
         integerUpperShear⁻¹)) integerTranslationZero =
@@ -26723,7 +26723,7 @@ theorem integerUpperShear_inv_action_zero :
   rw [Matrix.SpecialLinearGroup.transvection_inv,
     Matrix.SpecialLinearGroup.transvection_smul_single_fst]
 
-theorem integerUpperShear_inv_action_one :
+lemma integerUpperShear_inv_action_one :
     (Multiplicative.toAdd
       (integerElementaryRankTwoSplitAbelianExtension.action
         integerUpperShear⁻¹)) integerTranslationOne =
@@ -26737,7 +26737,7 @@ theorem integerUpperShear_inv_action_one :
     Matrix.SpecialLinearGroup.transvection_smul_single_snd]
   simp [sub_eq_add_neg]
 
-theorem integerLowerShear_inv_action_zero :
+lemma integerLowerShear_inv_action_zero :
     (Multiplicative.toAdd
       (integerElementaryRankTwoSplitAbelianExtension.action
         integerLowerShear⁻¹)) integerTranslationZero =
@@ -26751,7 +26751,7 @@ theorem integerLowerShear_inv_action_zero :
     Matrix.SpecialLinearGroup.transvection_smul_single_snd]
   simp [sub_eq_add_neg]
 
-theorem integerLowerShear_inv_action_one :
+lemma integerLowerShear_inv_action_one :
     (Multiplicative.toAdd
       (integerElementaryRankTwoSplitAbelianExtension.action
         integerLowerShear⁻¹)) integerTranslationOne =
@@ -26764,7 +26764,7 @@ theorem integerLowerShear_inv_action_one :
   rw [Matrix.SpecialLinearGroup.transvection_inv,
     Matrix.SpecialLinearGroup.transvection_smul_single_fst]
 
-theorem integerUpperShear_action_zero :
+lemma integerUpperShear_action_zero :
     (Multiplicative.toAdd
       (integerElementaryRankTwoSplitAbelianExtension.action
         integerUpperShear)) integerTranslationZero =
@@ -26776,7 +26776,7 @@ theorem integerUpperShear_action_zero :
       Pi.single (0 : Fin 2) 1
   rw [Matrix.SpecialLinearGroup.transvection_smul_single_fst]
 
-theorem integerUpperShear_action_one :
+lemma integerUpperShear_action_one :
     (Multiplicative.toAdd
       (integerElementaryRankTwoSplitAbelianExtension.action
         integerUpperShear)) integerTranslationOne =
@@ -26789,7 +26789,7 @@ theorem integerUpperShear_action_one :
   rw [Matrix.SpecialLinearGroup.transvection_smul_single_snd]
   simp
 
-theorem integerLowerShear_action_zero :
+lemma integerLowerShear_action_zero :
     (Multiplicative.toAdd
       (integerElementaryRankTwoSplitAbelianExtension.action
         integerLowerShear)) integerTranslationZero =
@@ -26802,7 +26802,7 @@ theorem integerLowerShear_action_zero :
   rw [Matrix.SpecialLinearGroup.transvection_smul_single_snd]
   simp
 
-theorem integerLowerShear_action_one :
+lemma integerLowerShear_action_one :
     (Multiplicative.toAdd
       (integerElementaryRankTwoSplitAbelianExtension.action
         integerLowerShear)) integerTranslationOne =
@@ -26822,7 +26822,7 @@ open ConnesRigidity MeasureTheory Set
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 
-theorem shalom_conditioned_image_variation_lt_one_fourth
+lemma shalom_conditioned_image_variation_lt_one_fourth
     (μ : ProbabilityMeasure Ω) {U : Set Ω}
     (hU : 0 < (μ : Measure Ω).real U)
     (hUmeas : MeasurableSet U)
@@ -26845,7 +26845,7 @@ theorem shalom_conditioned_image_variation_lt_one_fourth
   exact shalom_conditioned_variation_lt_one_fourth μ hU hUmeas
     hε hsmall hdiscard (f.symm ⁻¹' s) s hvariation
 
-theorem shalom_conditioned_image_variation_of_map_lt_one_fourth
+lemma shalom_conditioned_image_variation_of_map_lt_one_fourth
     (μ : ProbabilityMeasure Ω) {U : Set Ω}
     (hU : 0 < (μ : Measure Ω).real U)
     (hUmeas : MeasurableSet U)
@@ -26867,7 +26867,7 @@ variable {A : Type u} [AddCommGroup A] [TopologicalSpace A] [DiscreteTopology A]
 variable [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)]
 
-theorem spectralTorusWindow_conditioned_image_variation_lt_one_fourth
+lemma spectralTorusWindow_conditioned_image_variation_lt_one_fourth
     (μ : ProbabilityMeasure (DiscreteCharacterSpace A)) (a b : A)
     {ε : ℝ} (hε : 0 ≤ ε) (hsmall : ε ≤ (1 / 10 : ℝ))
     (ha : spectralDetectionEnergy μ a ≤ ε ^ 2)
@@ -26898,7 +26898,7 @@ open MeasureTheory Set
 
 noncomputable section
 
-theorem shalom_measureReal_inter_support_eq
+lemma shalom_measureReal_inter_support_eq
     {Ω : Type*} [MeasurableSpace Ω]
     (μ : Measure Ω) [IsProbabilityMeasure μ]
     {support : Set Ω} (hsupport : MeasurableSet support)
@@ -26918,7 +26918,7 @@ theorem shalom_measureReal_inter_support_eq
     (μ := μ) (s := s) hsupport
   linarith
 
-theorem shalom_three_sector_supported_probability_gap
+lemma shalom_three_sector_supported_probability_gap
     {Ω : Type*} [MeasurableSpace Ω]
     (μ : Measure Ω) [IsProbabilityMeasure μ]
     (support A B C U V W : Set Ω)
@@ -26961,7 +26961,7 @@ theorem shalom_three_sector_supported_probability_gap
     (μ.real U) (μ.real V) (μ.real W)
     hsector_mass hUmass hVmass hWmass
 
-theorem shalom_three_sector_supported_action_gap
+lemma shalom_three_sector_supported_action_gap
     {Ω G : Type*} [MeasurableSpace Ω]
     (μ : Measure Ω) [IsProbabilityMeasure μ]
     (act : G → Ω → Ω) (t s n : G)
@@ -26990,7 +26990,7 @@ theorem shalom_three_sector_supported_action_gap
   · exact ⟨s, by simp, C ∪ B, hC.union hB, h⟩
   · exact ⟨n, by simp, A, hA, h⟩
 
-theorem shalom_four_sector_supported_probability_gap
+lemma shalom_four_sector_supported_probability_gap
     {Ω : Type*} [MeasurableSpace Ω]
     (μ : Measure Ω) [IsProbabilityMeasure μ]
     (support A B C D U V W Z : Set Ω)
@@ -27044,7 +27044,7 @@ theorem shalom_four_sector_supported_probability_gap
     (μ.real U) (μ.real V) (μ.real W) (μ.real Z)
     hsector_mass hUmass hVmass hWmass hZmass
 
-theorem shalom_four_sector_supported_action_gap
+lemma shalom_four_sector_supported_action_gap
     {Ω G : Type*} [MeasurableSpace Ω]
     (μ : Measure Ω) [IsProbabilityMeasure μ]
     (act : G → Ω → Ω) (tpos spos tneg sneg : G)
@@ -27078,7 +27078,7 @@ theorem shalom_four_sector_supported_action_gap
   · exact ⟨tneg, by simp, D ∪ C, hD.union hC, h⟩
   · exact ⟨sneg, by simp, D ∪ C, hD.union hC, h⟩
 
-theorem shalom_punctured_support_measureReal_eq_one
+lemma shalom_punctured_support_measureReal_eq_one
     {Ω : Type*} [MeasurableSpace Ω]
     (μ : Measure Ω) [IsProbabilityMeasure μ]
     {support : Set Ω} (_hsupport : MeasurableSet support)
@@ -27142,29 +27142,29 @@ def torusShearTneg : ShalomTorus ≃ₜ ShalomTorus :=
 def torusShearSneg : ShalomTorus ≃ₜ ShalomTorus :=
   torusShearSpos.symm
 
-@[simp] theorem torusShearTpos_apply (z w : Circle) :
+@[simp] lemma torusShearTpos_apply (z w : Circle) :
     torusShearTpos (z, w) = (z, w / z) := rfl
 
-@[simp] theorem torusShearSpos_apply (z w : Circle) :
+@[simp] lemma torusShearSpos_apply (z w : Circle) :
     torusShearSpos (z, w) = (z / w, w) := rfl
 
-@[simp] theorem torusShearTneg_apply (z w : Circle) :
+@[simp] lemma torusShearTneg_apply (z w : Circle) :
     torusShearTneg (z, w) = (z, w * z) := rfl
 
-@[simp] theorem torusShearSneg_apply (z w : Circle) :
+@[simp] lemma torusShearSneg_apply (z w : Circle) :
     torusShearSneg (z, w) = (z * w, w) := rfl
 
-@[simp] theorem torusShearTpos_symm :
+@[simp] lemma torusShearTpos_symm :
     torusShearTpos.symm = torusShearTneg := rfl
 
-@[simp] theorem torusShearSpos_symm :
+@[simp] lemma torusShearSpos_symm :
     torusShearSpos.symm = torusShearSneg := rfl
 
-@[simp] theorem torusShearTneg_symm :
+@[simp] lemma torusShearTneg_symm :
     torusShearTneg.symm = torusShearTpos := by
   rfl
 
-@[simp] theorem torusShearSneg_symm :
+@[simp] lemma torusShearSneg_symm :
     torusShearSneg.symm = torusShearSpos := by
   rfl
 
@@ -27190,31 +27190,31 @@ def shalomSpectralPuncturedWindow (a b : A) : Set (DiscreteCharacterSpace A) :=
   spectralTorusWindow a b \ spectralArgCoordinates a b ⁻¹' {(0, 0)}
 
 omit [DiscreteTopology A] in
-theorem shalomSpectralSectorA_measurable (a b : A) :
+lemma shalomSpectralSectorA_measurable (a b : A) :
     MeasurableSet (shalomSpectralSectorA a b) :=
   (spectralTorusWindow_measurable a b).inter
     (shalomSectorA_measurable.preimage (measurable_spectralArgCoordinates a b))
 
 omit [DiscreteTopology A] in
-theorem shalomSpectralSectorB_measurable (a b : A) :
+lemma shalomSpectralSectorB_measurable (a b : A) :
     MeasurableSet (shalomSpectralSectorB a b) :=
   (spectralTorusWindow_measurable a b).inter
     (shalomSectorB_measurable.preimage (measurable_spectralArgCoordinates a b))
 
 omit [DiscreteTopology A] in
-theorem shalomSpectralSectorC_measurable (a b : A) :
+lemma shalomSpectralSectorC_measurable (a b : A) :
     MeasurableSet (shalomSpectralSectorC a b) :=
   (spectralTorusWindow_measurable a b).inter
     (shalomSectorC_measurable.preimage (measurable_spectralArgCoordinates a b))
 
 omit [DiscreteTopology A] in
-theorem shalomSpectralSectorD_measurable (a b : A) :
+lemma shalomSpectralSectorD_measurable (a b : A) :
     MeasurableSet (shalomSpectralSectorD a b) :=
   (spectralTorusWindow_measurable a b).inter
     (shalomSectorD_measurable.preimage (measurable_spectralArgCoordinates a b))
 
 omit [DiscreteTopology A] in
-theorem shalomSpectralPuncturedWindow_measurable (a b : A) :
+lemma shalomSpectralPuncturedWindow_measurable (a b : A) :
     MeasurableSet (shalomSpectralPuncturedWindow a b) :=
   (spectralTorusWindow_measurable a b).diff
     ((measurable_spectralArgCoordinates a b)
@@ -27222,7 +27222,7 @@ theorem shalomSpectralPuncturedWindow_measurable (a b : A) :
 
 omit [DiscreteTopology A] [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
-theorem shalomSpectralSectorA_B_disjoint (a b : A) :
+lemma shalomSpectralSectorA_B_disjoint (a b : A) :
     Disjoint (shalomSpectralSectorA a b) (shalomSpectralSectorB a b) := by
   rw [Set.disjoint_left]
   intro χ hA hB
@@ -27230,7 +27230,7 @@ theorem shalomSpectralSectorA_B_disjoint (a b : A) :
 
 omit [DiscreteTopology A] [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
-theorem shalomSpectralSectorA_C_disjoint (a b : A) :
+lemma shalomSpectralSectorA_C_disjoint (a b : A) :
     Disjoint (shalomSpectralSectorA a b) (shalomSpectralSectorC a b) := by
   rw [Set.disjoint_left]
   intro χ hA hC
@@ -27238,7 +27238,7 @@ theorem shalomSpectralSectorA_C_disjoint (a b : A) :
 
 omit [DiscreteTopology A] [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
-theorem shalomSpectralSectorA_D_disjoint (a b : A) :
+lemma shalomSpectralSectorA_D_disjoint (a b : A) :
     Disjoint (shalomSpectralSectorA a b) (shalomSpectralSectorD a b) := by
   rw [Set.disjoint_left]
   intro χ hA hD
@@ -27246,7 +27246,7 @@ theorem shalomSpectralSectorA_D_disjoint (a b : A) :
 
 omit [DiscreteTopology A] [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
-theorem shalomSpectralSectorB_C_disjoint (a b : A) :
+lemma shalomSpectralSectorB_C_disjoint (a b : A) :
     Disjoint (shalomSpectralSectorB a b) (shalomSpectralSectorC a b) := by
   rw [Set.disjoint_left]
   intro χ hB hC
@@ -27254,7 +27254,7 @@ theorem shalomSpectralSectorB_C_disjoint (a b : A) :
 
 omit [DiscreteTopology A] [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
-theorem shalomSpectralSectorB_D_disjoint (a b : A) :
+lemma shalomSpectralSectorB_D_disjoint (a b : A) :
     Disjoint (shalomSpectralSectorB a b) (shalomSpectralSectorD a b) := by
   rw [Set.disjoint_left]
   intro χ hB hD
@@ -27262,7 +27262,7 @@ theorem shalomSpectralSectorB_D_disjoint (a b : A) :
 
 omit [DiscreteTopology A] [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
-theorem shalomSpectralSectorC_D_disjoint (a b : A) :
+lemma shalomSpectralSectorC_D_disjoint (a b : A) :
     Disjoint (shalomSpectralSectorC a b) (shalomSpectralSectorD a b) := by
   rw [Set.disjoint_left]
   intro χ hC hD
@@ -27270,7 +27270,7 @@ theorem shalomSpectralSectorC_D_disjoint (a b : A) :
 
 omit [DiscreteTopology A] [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)] in
-theorem shalomSpectralSector_cover (a b : A) :
+lemma shalomSpectralSector_cover (a b : A) :
     shalomSpectralSectorA a b ∪ shalomSpectralSectorB a b ∪
       shalomSpectralSectorC a b ∪ shalomSpectralSectorD a b =
         shalomSpectralPuncturedWindow a b := by
@@ -27332,7 +27332,7 @@ variable [MeasurableSpace (DiscreteCharacterSpace A)]
 
 omit [MeasurableSpace (DiscreteCharacterSpace A)] [BorelSpace (DiscreteCharacterSpace A)]
   in
-theorem shalomSpectralSector_tpos_inclusion
+lemma shalomSpectralSector_tpos_inclusion
     (action : H →* Multiplicative (AddAut A)) (h : H)
     (a b : A)
     (ha : (Multiplicative.toAdd (action h⁻¹)) a = a)
@@ -27361,7 +27361,7 @@ theorem shalomSpectralSector_tpos_inclusion
 
 omit [MeasurableSpace (DiscreteCharacterSpace A)] [BorelSpace (DiscreteCharacterSpace A)]
   in
-theorem shalomSpectralSector_spos_inclusion
+lemma shalomSpectralSector_spos_inclusion
     (action : H →* Multiplicative (AddAut A)) (h : H)
     (a b : A)
     (ha : (Multiplicative.toAdd (action h⁻¹)) a = a - b)
@@ -27390,7 +27390,7 @@ theorem shalomSpectralSector_spos_inclusion
 
 omit [MeasurableSpace (DiscreteCharacterSpace A)] [BorelSpace (DiscreteCharacterSpace A)]
   in
-theorem shalomSpectralSector_tneg_inclusion
+lemma shalomSpectralSector_tneg_inclusion
     (action : H →* Multiplicative (AddAut A)) (h : H)
     (a b : A)
     (ha : (Multiplicative.toAdd (action h⁻¹)) a = a)
@@ -27419,7 +27419,7 @@ theorem shalomSpectralSector_tneg_inclusion
 
 omit [MeasurableSpace (DiscreteCharacterSpace A)] [BorelSpace (DiscreteCharacterSpace A)]
   in
-theorem shalomSpectralSector_sneg_inclusion
+lemma shalomSpectralSector_sneg_inclusion
     (action : H →* Multiplicative (AddAut A)) (h : H)
     (a b : A)
     (ha : (Multiplicative.toAdd (action h⁻¹)) a = a + b)
@@ -27459,7 +27459,7 @@ variable {H : CountableDiscreteGroup.{u}}
 variable [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)]
 
-theorem shalomSpectral_four_sector_action_gap
+lemma shalomSpectral_four_sector_action_gap
     (action : H →* Multiplicative (AddAut A)) (a b : A)
     (tpos spos tneg sneg : H)
     (htpos_a : (Multiplicative.toAdd (action tpos⁻¹)) a = a)
@@ -27517,7 +27517,7 @@ open ConnesRigidity MeasureTheory Set
 
 variable {Ω Ξ : Type*} [MeasurableSpace Ω] [MeasurableSpace Ξ]
 
-theorem conditionedProbability_punctured_window_measureReal_one
+lemma conditionedProbability_punctured_window_measureReal_one
     (μ : ProbabilityMeasure Ω) {U s : Set Ω}
     (hU : 0 < (μ : Measure Ω).real U)
     (hUmeas : MeasurableSet U)
@@ -27554,7 +27554,7 @@ variable {H : CountableDiscreteGroup.{u}}
 variable [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)]
 
-theorem shalomSpectral_zeroFiber_positive_of_variation
+lemma shalomSpectral_zeroFiber_positive_of_variation
     (action : H →* Multiplicative (AddAut A)) (a b : A)
     (tpos spos tneg sneg : H)
     (htposa : (Multiplicative.toAdd (action tpos⁻¹)) a = a)
@@ -27632,7 +27632,7 @@ local instance integerAtomDualMeasurable :
 local instance integerAtomDualBorel :
     BorelSpace (DiscreteCharacterSpace (Fin 2 → ℤ)) := ⟨rfl⟩
 
-theorem integerShalomShears_inv_mem
+lemma integerShalomShears_inv_mem
     {g : integerElementaryRankTwoActingGroup}
     (hg : g ∈ integerShalomShears) :
     g⁻¹ ∈ integerShalomShears := by
@@ -27641,24 +27641,24 @@ theorem integerShalomShears_inv_mem
     Finset.mem_singleton] at hg ⊢
   rcases hg with rfl | rfl | rfl | rfl <;> simp
 
-@[simp] theorem integerTranslationZero_eq_dualCoordinate :
+@[simp] lemma integerTranslationZero_eq_dualCoordinate :
     integerTranslationZero = integerDualCoordinateZero := rfl
 
-@[simp] theorem integerTranslationOne_eq_dualCoordinate :
+@[simp] lemma integerTranslationOne_eq_dualCoordinate :
     integerTranslationOne = integerDualCoordinateOne := rfl
 
-theorem integerShalom_spectralArgCoordinates_zero_preimage :
+lemma integerShalom_spectralArgCoordinates_zero_preimage :
     spectralArgCoordinates integerTranslationZero integerTranslationOne ⁻¹'
       {(0, 0)} =
         ({1} : Set (DiscreteCharacterSpace (Fin 2 → ℤ))) :=
   integerDual_spectralArgCoordinates_origin_preimage
 
-theorem integerShalomKazhdanConstant_le_one_tenth :
+lemma integerShalomKazhdanConstant_le_one_tenth :
     shalomPolynomialKazhdanConstant 0 ≤ (1 / 10 : ℝ) := by
   rw [shalomPolynomialKazhdanConstant_zero]
   norm_num
 
-theorem integerShalomFourierAtomGap : IntegerShalomFourierAtomGap := by
+lemma integerShalomFourierAtomGap : IntegerShalomFourierAtomGap := by
   intro μ hshears htranslations
   have hzero : spectralDetectionEnergy μ integerTranslationZero ≤
       (shalomPolynomialKazhdanConstant 0) ^ 2 := by
@@ -27704,7 +27704,7 @@ theorem integerShalomFourierAtomGap : IntegerShalomFourierAtomGap := by
   rw [integerShalom_spectralArgCoordinates_zero_preimage] at hpositive
   exact hpositive
 
-theorem integerShalomRelativeKazhdanPair : ShalomIntegerRelativePair :=
+lemma integerShalomRelativeKazhdanPair : ShalomIntegerRelativePair :=
   integerShalomRelativeKazhdanPair_of_fourierAtomGap
     integerShalomFourierAtomGap
 
@@ -27719,7 +27719,7 @@ universe u
 variable {A : Type u} [AddCommGroup A] [TopologicalSpace A] [DiscreteTopology A]
 variable {H : CountableDiscreteGroup.{u}}
 
-theorem dualCharacterAction_preimage_eq_image_inv
+lemma dualCharacterAction_preimage_eq_image_inv
     (action : H →* Multiplicative (AddAut A)) (h : H)
     (s : Set (DiscreteCharacterSpace A)) :
     dualCharacterAction action h ⁻¹' s =
@@ -27742,12 +27742,12 @@ section Borel
 variable [MeasurableSpace (DiscreteCharacterSpace A)]
   [BorelSpace (DiscreteCharacterSpace A)]
 
-theorem dualCharacterAction_measurable
+lemma dualCharacterAction_measurable
     (action : H →* Multiplicative (AddAut A)) (h : H) :
     Measurable (dualCharacterAction action h) :=
   (dualCharacterAction_continuous action h).measurable
 
-theorem dualCharacterAction_map_measureReal
+lemma dualCharacterAction_map_measureReal
     (action : H →* Multiplicative (AddAut A)) (h : H)
     (μ : Measure (DiscreteCharacterSpace A))
     {s : Set (DiscreteCharacterSpace A)} (hs : MeasurableSet s) :
@@ -27756,7 +27756,7 @@ theorem dualCharacterAction_map_measureReal
   rw [map_measureReal_apply (dualCharacterAction_measurable action h) hs,
     dualCharacterAction_preimage_eq_image_inv]
 
-theorem dualCharacterAction_image_measureReal_eq_map_inv
+lemma dualCharacterAction_image_measureReal_eq_map_inv
     (action : H →* Multiplicative (AddAut A)) (h : H)
     (μ : Measure (DiscreteCharacterSpace A))
     {s : Set (DiscreteCharacterSpace A)} (hs : MeasurableSet s) :
@@ -27764,7 +27764,7 @@ theorem dualCharacterAction_image_measureReal_eq_map_inv
       (μ.map (dualCharacterAction action h⁻¹)).real s := by
   simpa using (dualCharacterAction_map_measureReal action h⁻¹ μ hs).symm
 
-theorem dualCharacterAction_image_variation_eq_map_inv
+lemma dualCharacterAction_image_variation_eq_map_inv
     (action : H →* Multiplicative (AddAut A)) (h : H)
     (μ : Measure (DiscreteCharacterSpace A))
     {s : Set (DiscreteCharacterSpace A)} (hs : MeasurableSet s) :
@@ -27793,7 +27793,7 @@ noncomputable def polynomialFirstNontrivial
   classical
   exact if h : ∃ n : ℕ, x n ≠ 1 then (Nat.find h : ℕ∞) else ⊤
 
-theorem polynomialFirstNontrivial_eq_top_iff (x : PolynomialCircleSequence) :
+lemma polynomialFirstNontrivial_eq_top_iff (x : PolynomialCircleSequence) :
     polynomialFirstNontrivial x = ⊤ ↔ ∀ n : ℕ, x n = 1 := by
   classical
   by_cases h : ∃ n : ℕ, x n ≠ 1
@@ -27801,7 +27801,7 @@ theorem polynomialFirstNontrivial_eq_top_iff (x : PolynomialCircleSequence) :
   · simp [polynomialFirstNontrivial, h]
     exact fun n => Classical.byContradiction fun hn => h ⟨n, hn⟩
 
-theorem polynomialFirstNontrivial_eq_coe_iff
+lemma polynomialFirstNontrivial_eq_coe_iff
     (x : PolynomialCircleSequence) (n : ℕ) :
     polynomialFirstNontrivial x = (n : ℕ∞) ↔
       x n ≠ 1 ∧ ∀ m < n, x m = 1 := by
@@ -27830,7 +27830,7 @@ theorem polynomialFirstNontrivial_eq_coe_iff
     have hlt : Nat.find hex < n := Nat.lt_of_not_ge hnot
     exact (Nat.find_spec hex) (hmin (Nat.find hex) hlt)
 
-theorem polynomialFirstNontrivial_le_coe_iff
+lemma polynomialFirstNontrivial_le_coe_iff
     (x : PolynomialCircleSequence) (n : ℕ) :
     polynomialFirstNontrivial x ≤ (n : ℕ∞) ↔
       ∃ k ≤ n, x k ≠ 1 := by
@@ -27853,18 +27853,18 @@ def polynomialSequenceMul
     (x y : PolynomialCircleSequence) : PolynomialCircleSequence :=
   fun n => x n * y n
 
-@[simp] theorem polynomialSequenceMul_apply
+@[simp] lemma polynomialSequenceMul_apply
     (x y : PolynomialCircleSequence) (n : ℕ) :
     polynomialSequenceMul x y n = x n * y n := rfl
 
 def polynomialSequenceTail (x : PolynomialCircleSequence) : PolynomialCircleSequence :=
   fun n => x (n + 1)
 
-@[simp] theorem polynomialSequenceTail_apply
+@[simp] lemma polynomialSequenceTail_apply
     (x : PolynomialCircleSequence) (n : ℕ) :
     polynomialSequenceTail x n = x (n + 1) := rfl
 
-theorem polynomialFirstNontrivial_tail_succ
+lemma polynomialFirstNontrivial_tail_succ
     (x : PolynomialCircleSequence)
     {n : ℕ} (hval : polynomialFirstNontrivial x = (n + 1 : ℕ∞)) :
     polynomialFirstNontrivial (polynomialSequenceTail x) = (n : ℕ∞) := by
@@ -27872,7 +27872,7 @@ theorem polynomialFirstNontrivial_tail_succ
   have hcoeff := (polynomialFirstNontrivial_eq_coe_iff x (n + 1)).mp hval
   exact ⟨hcoeff.1, fun m hm => hcoeff.2 (m + 1) (by omega)⟩
 
-theorem polynomialFirstNontrivial_mul_eq_left_of_lt
+lemma polynomialFirstNontrivial_mul_eq_left_of_lt
     (x y : PolynomialCircleSequence)
     (hxy : polynomialFirstNontrivial x < polynomialFirstNontrivial y) :
     polynomialFirstNontrivial (polynomialSequenceMul x y) =
@@ -27903,7 +27903,7 @@ theorem polynomialFirstNontrivial_mul_eq_left_of_lt
   apply (polynomialFirstNontrivial_eq_coe_iff _ n).mpr
   exact ⟨by simpa [polynomialSequenceMul_apply, hyn] using hx.1, hmin⟩
 
-theorem polynomialFirstNontrivial_eq_top_iff_eq_one
+lemma polynomialFirstNontrivial_eq_top_iff_eq_one
     (x : PolynomialCircleSequence) :
     polynomialFirstNontrivial x = ⊤ ↔ x = 1 := by
   rw [polynomialFirstNontrivial_eq_top_iff]
@@ -27914,7 +27914,7 @@ theorem polynomialFirstNontrivial_eq_top_iff_eq_one
   · intro h n
     simp [h]
 
-theorem polynomialFirstNontrivial_tail_lt_of_head
+lemma polynomialFirstNontrivial_tail_lt_of_head
     (x : PolynomialCircleSequence) (hx0 : x 0 = 1) (hx : x ≠ 1) :
     polynomialFirstNontrivial (polynomialSequenceTail x) <
       polynomialFirstNontrivial x := by
@@ -27930,7 +27930,7 @@ theorem polynomialFirstNontrivial_tail_lt_of_head
   rw [polynomialFirstNontrivial_tail_succ x hval, hval]
   exact ENat.coe_lt_coe.mpr (Nat.lt_succ_self m)
 
-theorem polynomialFirstNontrivial_mul_eq_right_of_gt
+lemma polynomialFirstNontrivial_mul_eq_right_of_gt
     (x y : PolynomialCircleSequence)
     (hxy : polynomialFirstNontrivial y < polynomialFirstNontrivial x) :
     polynomialFirstNontrivial (polynomialSequenceMul x y) =
@@ -27969,7 +27969,7 @@ def polynomialSectorB : Set PolynomialCirclePair :=
 def polynomialSectorC : Set PolynomialCirclePair :=
   polynomialRawSectorC ∩ polynomialSectorSupport
 
-theorem measurableSet_polynomialFirstNontrivial_lt :
+lemma measurableSet_polynomialFirstNontrivial_lt :
     MeasurableSet {p : PolynomialCirclePair |
       polynomialFirstNontrivial p.1 < polynomialFirstNontrivial p.2} := by
   classical
@@ -28018,14 +28018,14 @@ theorem measurableSet_polynomialFirstNontrivial_lt :
     measurableSet_eq_fun ((measurable_pi_apply m.1).comp measurable_snd)
       measurable_const
 
-theorem measurableSet_polynomialNoFree : MeasurableSet polynomialNoFree := by
+lemma measurableSet_polynomialNoFree : MeasurableSet polynomialNoFree := by
   exact
     (measurableSet_eq_fun
       ((measurable_pi_apply 0).comp measurable_fst) measurable_const).inter
       (measurableSet_eq_fun
         ((measurable_pi_apply 0).comp measurable_snd) measurable_const)
 
-theorem measurableSet_polynomialPunctured :
+lemma measurableSet_polynomialPunctured :
     MeasurableSet polynomialPunctured := by
   have hone : MeasurableSet {x : PolynomialCircleSequence | x = 1} := by
     have hrepr :
@@ -28048,15 +28048,15 @@ theorem measurableSet_polynomialPunctured :
   exact (hone.preimage measurable_fst).compl.union
     (hone.preimage measurable_snd).compl
 
-theorem measurableSet_polynomialSectorSupport :
+lemma measurableSet_polynomialSectorSupport :
     MeasurableSet polynomialSectorSupport :=
   measurableSet_polynomialNoFree.inter measurableSet_polynomialPunctured
 
-theorem measurableSet_polynomialRawSectorC :
+lemma measurableSet_polynomialRawSectorC :
     MeasurableSet polynomialRawSectorC :=
   measurableSet_polynomialFirstNontrivial_lt
 
-theorem measurableSet_polynomialRawSectorA :
+lemma measurableSet_polynomialRawSectorA :
     MeasurableSet polynomialRawSectorA := by
   change MeasurableSet
     ((fun z : PolynomialCirclePair => (z.2, z.1)) ⁻¹'
@@ -28065,7 +28065,7 @@ theorem measurableSet_polynomialRawSectorA :
   exact measurableSet_polynomialFirstNontrivial_lt.preimage
     (measurable_snd.prodMk measurable_fst)
 
-theorem measurableSet_polynomialRawSectorB :
+lemma measurableSet_polynomialRawSectorB :
     MeasurableSet polynomialRawSectorB := by
   have hrepr :
       polynomialRawSectorB =
@@ -28087,13 +28087,13 @@ theorem measurableSet_polynomialRawSectorB :
   exact (measurableSet_polynomialRawSectorA.union
     measurableSet_polynomialRawSectorC).compl
 
-theorem measurableSet_polynomialSectorA : MeasurableSet polynomialSectorA :=
+lemma measurableSet_polynomialSectorA : MeasurableSet polynomialSectorA :=
   measurableSet_polynomialRawSectorA.inter measurableSet_polynomialSectorSupport
 
-theorem measurableSet_polynomialSectorB : MeasurableSet polynomialSectorB :=
+lemma measurableSet_polynomialSectorB : MeasurableSet polynomialSectorB :=
   measurableSet_polynomialRawSectorB.inter measurableSet_polynomialSectorSupport
 
-theorem measurableSet_polynomialSectorC : MeasurableSet polynomialSectorC :=
+lemma measurableSet_polynomialSectorC : MeasurableSet polynomialSectorC :=
   measurableSet_polynomialRawSectorC.inter measurableSet_polynomialSectorSupport
 
 def polynomialShearT (z : PolynomialCirclePair) : PolynomialCirclePair :=
@@ -28105,7 +28105,7 @@ def polynomialShearS (z : PolynomialCirclePair) : PolynomialCirclePair :=
 def polynomialShearN (z : PolynomialCirclePair) : PolynomialCirclePair :=
   (polynomialSequenceMul z.1 z.2, z.2)
 
-theorem polynomialShearT_mem_rawSectorC
+lemma polynomialShearT_mem_rawSectorC
     {z : PolynomialCirclePair}
     (hfree : z ∈ polynomialNoFree)
     (hpunctured : z ∈ polynomialPunctured)
@@ -28134,7 +28134,7 @@ theorem polynomialShearT_mem_rawSectorC
   rw [polynomialFirstNontrivial_mul_eq_right_of_gt _ _ hdominates]
   exact htail
 
-theorem polynomialShearS_mem_rawSectorA
+lemma polynomialShearS_mem_rawSectorA
     {z : PolynomialCirclePair}
     (hfree : z ∈ polynomialNoFree)
     (hpunctured : z ∈ polynomialPunctured)
@@ -28163,14 +28163,14 @@ theorem polynomialShearS_mem_rawSectorA
   rw [polynomialFirstNontrivial_mul_eq_right_of_gt _ _ hdominates]
   exact htail
 
-theorem polynomialShearN_mem_rawSectorB
+lemma polynomialShearN_mem_rawSectorB
     {z : PolynomialCirclePair} (hsector : z ∈ polynomialRawSectorA) :
     polynomialShearN z ∈ polynomialRawSectorB := by
   change polynomialFirstNontrivial
       (polynomialSequenceMul z.1 z.2) = polynomialFirstNontrivial z.2
   exact polynomialFirstNontrivial_mul_eq_right_of_gt z.1 z.2 hsector
 
-theorem polynomialShearT_image_sector_inter_support :
+lemma polynomialShearT_image_sector_inter_support :
     (polynomialShearT '' (polynomialSectorA ∪ polynomialSectorB)) ∩
       polynomialSectorSupport ⊆ polynomialSectorC := by
   rintro w ⟨⟨z, hz, rfl⟩, hw⟩
@@ -28178,7 +28178,7 @@ theorem polynomialShearT_image_sector_inter_support :
   · exact ⟨polynomialShearT_mem_rawSectorC hsupport.1 hsupport.2 (Or.inl hz), hw⟩
   · exact ⟨polynomialShearT_mem_rawSectorC hsupport.1 hsupport.2 (Or.inr hz), hw⟩
 
-theorem polynomialShearS_image_sector_inter_support :
+lemma polynomialShearS_image_sector_inter_support :
     (polynomialShearS '' (polynomialSectorC ∪ polynomialSectorB)) ∩
       polynomialSectorSupport ⊆ polynomialSectorA := by
   rintro w ⟨⟨z, hz, rfl⟩, hw⟩
@@ -28186,13 +28186,13 @@ theorem polynomialShearS_image_sector_inter_support :
   · exact ⟨polynomialShearS_mem_rawSectorA hsupport.1 hsupport.2 (Or.inl hz), hw⟩
   · exact ⟨polynomialShearS_mem_rawSectorA hsupport.1 hsupport.2 (Or.inr hz), hw⟩
 
-theorem polynomialShearN_image_sector_inter_support :
+lemma polynomialShearN_image_sector_inter_support :
     (polynomialShearN '' polynomialSectorA) ∩
       polynomialSectorSupport ⊆ polynomialSectorB := by
   rintro w ⟨⟨z, ⟨hz, _⟩, rfl⟩, hw⟩
   exact ⟨polynomialShearN_mem_rawSectorB hz, hw⟩
 
-theorem polynomialSector_cover :
+lemma polynomialSector_cover :
     polynomialSectorA ∪ polynomialSectorB ∪ polynomialSectorC =
       polynomialSectorSupport := by
   ext z
@@ -28210,13 +28210,13 @@ theorem polynomialSector_cover :
     · exact Or.inl (Or.inr ⟨heq, hsupport⟩)
     · exact Or.inl (Or.inl ⟨hgt, hsupport⟩)
 
-theorem polynomialSector_disjoint_AB :
+lemma polynomialSector_disjoint_AB :
     Disjoint polynomialSectorA polynomialSectorB := by
   rw [Set.disjoint_left]
   rintro z ⟨hA, _⟩ ⟨hB, _⟩
   exact (ne_of_lt hA) hB.symm
 
-theorem polynomialSector_disjoint_AC :
+lemma polynomialSector_disjoint_AC :
     Disjoint polynomialSectorA polynomialSectorC := by
   rw [Set.disjoint_left]
   rintro z ⟨hA, _⟩ ⟨hC, _⟩
@@ -28224,7 +28224,7 @@ theorem polynomialSector_disjoint_AC :
   change polynomialFirstNontrivial z.1 < polynomialFirstNontrivial z.2 at hC
   exact (not_lt_of_ge hA.le) hC
 
-theorem polynomialSector_disjoint_BC :
+lemma polynomialSector_disjoint_BC :
     Disjoint polynomialSectorB polynomialSectorC := by
   rw [Set.disjoint_left]
   rintro z ⟨hB, _⟩ ⟨hC, _⟩
@@ -28262,7 +28262,7 @@ def polynomialCharacterCoefficients
     PolynomialCircleSequence :=
   fun n => polynomialCharacterCoefficient χ i n
 
-@[simp] theorem polynomialCharacterCoefficients_apply
+@[simp] lemma polynomialCharacterCoefficients_apply
     (χ : PolynomialRankTwoCharacter) (i : Fin 2) (n : ℕ) :
     polynomialCharacterCoefficients χ i n =
       polynomialCharacterCoefficient χ i n := rfl
@@ -28272,11 +28272,11 @@ def polynomialCharacterCoefficientPair
   (polynomialCharacterCoefficients χ 0,
     polynomialCharacterCoefficients χ 1)
 
-@[simp] theorem polynomialCharacterCoefficient_one (i : Fin 2) (n : ℕ) :
+@[simp] lemma polynomialCharacterCoefficient_one (i : Fin 2) (n : ℕ) :
     polynomialCharacterCoefficient (1 : PolynomialRankTwoCharacter) i n = 1 := by
   simp [polynomialCharacterCoefficient]
 
-@[simp] theorem polynomialCharacterCoefficientPair_one :
+@[simp] lemma polynomialCharacterCoefficientPair_one :
     polynomialCharacterCoefficientPair (1 : PolynomialRankTwoCharacter) = 1 := by
   apply Prod.ext
   · funext n
@@ -28284,7 +28284,7 @@ def polynomialCharacterCoefficientPair
   · funext n
     exact polynomialCharacterCoefficient_one 1 n
 
-theorem continuous_polynomialCharacterCoefficient
+lemma continuous_polynomialCharacterCoefficient
     (i : Fin 2) (n : ℕ) :
     Continuous (fun χ : PolynomialRankTwoCharacter =>
       polynomialCharacterCoefficient χ i n) := by
@@ -28293,24 +28293,24 @@ theorem continuous_polynomialCharacterCoefficient
     (Pi.single i ((Polynomial.X : IntegralPolynomial) ^ n) :
       Fin 2 → IntegralPolynomial)
 
-theorem measurable_polynomialCharacterCoefficient
+lemma measurable_polynomialCharacterCoefficient
     (i : Fin 2) (n : ℕ) :
     Measurable (fun χ : PolynomialRankTwoCharacter =>
       polynomialCharacterCoefficient χ i n) :=
   (continuous_polynomialCharacterCoefficient i n).measurable
 
-theorem measurable_polynomialCharacterCoefficients (i : Fin 2) :
+lemma measurable_polynomialCharacterCoefficients (i : Fin 2) :
     Measurable (fun χ : PolynomialRankTwoCharacter =>
       polynomialCharacterCoefficients χ i) := by
   exact measurable_pi_lambda _ fun n =>
     measurable_polynomialCharacterCoefficient i n
 
-theorem measurable_polynomialCharacterCoefficientPair :
+lemma measurable_polynomialCharacterCoefficientPair :
     Measurable polynomialCharacterCoefficientPair := by
   exact (measurable_polynomialCharacterCoefficients 0).prodMk
     (measurable_polynomialCharacterCoefficients 1)
 
-theorem polynomialCharacter_monomial
+lemma polynomialCharacter_monomial
     (χ : PolynomialRankTwoCharacter) (i : Fin 2)
     (n : ℕ) (z : ℤ) :
     χ (Multiplicative.ofAdd
@@ -28335,7 +28335,7 @@ theorem polynomialCharacter_monomial
       Fin 2 → IntegralPolynomial)) ^ z) = _
   exact map_zpow χ _ _
 
-theorem polynomialCharacter_ext
+lemma polynomialCharacter_ext
     {χ ψ : PolynomialRankTwoCharacter}
     (h : ∀ i : Fin 2, ∀ n : ℕ,
       polynomialCharacterCoefficient χ i n =
@@ -28386,7 +28386,7 @@ theorem polynomialCharacter_ext
           (Pi.single (1 : Fin 2) (w 1) : Fin 2 → IntegralPolynomial) := rfl
   rw [hsplit, map_mul, map_mul, hcoord, hcoord]
 
-theorem polynomialCharacterCoefficientPair_injective :
+lemma polynomialCharacterCoefficientPair_injective :
     Function.Injective polynomialCharacterCoefficientPair := by
   intro χ ψ hpair
   apply polynomialCharacter_ext
@@ -28398,7 +28398,7 @@ theorem polynomialCharacterCoefficientPair_injective :
 def polynomialCharacterNoFree : Set PolynomialRankTwoCharacter :=
   {χ | ∀ i : Fin 2, polynomialCharacterCoefficient χ i 0 = 1}
 
-theorem polynomialCharacterNoFree_measurable :
+lemma polynomialCharacterNoFree_measurable :
     MeasurableSet polynomialCharacterNoFree := by
   have hset : polynomialCharacterNoFree =
     (⋂ i : Fin 2,
@@ -28411,12 +28411,12 @@ theorem polynomialCharacterNoFree_measurable :
     measurableSet_eq_fun (measurable_polynomialCharacterCoefficient i 0)
       measurable_const
 
-@[simp] theorem mem_polynomialCharacterNoFree
+@[simp] lemma mem_polynomialCharacterNoFree
     (χ : PolynomialRankTwoCharacter) :
     χ ∈ polynomialCharacterNoFree ↔
       ∀ i : Fin 2, polynomialCharacterCoefficient χ i 0 = 1 := Iff.rfl
 
-theorem polynomialCharacterNoFree_eq_preimage :
+lemma polynomialCharacterNoFree_eq_preimage :
     polynomialCharacterNoFree =
       polynomialCharacterCoefficientPair ⁻¹' polynomialNoFree := by
   ext χ
@@ -28432,7 +28432,7 @@ theorem polynomialCharacterNoFree_eq_preimage :
     · exact h0
     · exact h1
 
-theorem polynomialCharacterCoefficientPair_eq_one_iff
+lemma polynomialCharacterCoefficientPair_eq_one_iff
     (χ : PolynomialRankTwoCharacter) :
     polynomialCharacterCoefficientPair χ = 1 ↔ χ = 1 := by
   constructor
@@ -28442,7 +28442,7 @@ theorem polynomialCharacterCoefficientPair_eq_one_iff
   · intro h
     rw [h, polynomialCharacterCoefficientPair_one]
 
-theorem polynomialCharacterCoefficientPair_mem_punctured
+lemma polynomialCharacterCoefficientPair_mem_punctured
     (χ : PolynomialRankTwoCharacter) :
     polynomialCharacterCoefficientPair χ ∈ polynomialPunctured ↔ χ ≠ 1 := by
   calc
@@ -28484,7 +28484,7 @@ def integralElementaryJointSpectralProbability
   (jointPositiveSpectralFunctional
     integralElementaryRankTwoSplitAbelianExtension π).probabilityMeasure x hx
 
-theorem integralElementaryJointSpectralProbability_energy
+lemma integralElementaryJointSpectralProbability_energy
     (π : UnitaryRepresentation integralElementaryRankTwoGroup V)
     (x : V) (hx : ‖x‖ = 1) (a : Fin 2 → IntegralPolynomial) :
     spectralDetectionEnergy
@@ -28494,7 +28494,7 @@ theorem integralElementaryJointSpectralProbability_energy
   exact (jointPositiveSpectralFunctional
     integralElementaryRankTwoSplitAbelianExtension π).measure_energy x a
 
-theorem integralElementaryJointSpectralProbability_shear_map_variation
+lemma integralElementaryJointSpectralProbability_shear_map_variation
     (π : UnitaryRepresentation integralElementaryRankTwoGroup V)
     (x : V) (hx : ‖x‖ = 1)
     (h : integralElementaryRankTwoActingGroup)
@@ -28510,7 +28510,7 @@ theorem integralElementaryJointSpectralProbability_shear_map_variation
   exact abs_jointScalarMeasure_map_measureReal_sub_le
     integralElementaryRankTwoSplitAbelianExtension π x hx h hs
 
-theorem integralElementaryJointSpectralProbability_ae_character_eq_one
+lemma integralElementaryJointSpectralProbability_ae_character_eq_one
     (π : UnitaryRepresentation integralElementaryRankTwoGroup V)
     (x : V) (hx : ‖x‖ = 1) (a : Fin 2 → IntegralPolynomial)
     (hfixed : (π (integralElementaryRankTwoInl (Multiplicative.ofAdd a)) :
@@ -28542,7 +28542,7 @@ theorem integralElementaryJointSpectralProbability_ae_character_eq_one
   apply Circle.coe_injective
   simpa using (sub_eq_zero.mp (norm_eq_zero.mp hnorm))
 
-theorem integralElementaryJointSpectralProbability_ae_polynomialCharacterNoFree
+lemma integralElementaryJointSpectralProbability_ae_polynomialCharacterNoFree
     (π : UnitaryRepresentation integralElementaryRankTwoGroup V)
     (x : V) (hx : ‖x‖ = 1)
     (hfixed : ∀ i : Fin 2,
@@ -28563,7 +28563,7 @@ theorem integralElementaryJointSpectralProbability_ae_polynomialCharacterNoFree
   · simpa [polynomialCharacterCoefficient] using hχzero
   · simpa [polynomialCharacterCoefficient] using hχone
 
-theorem integralElementaryJointSpectralProbability_polynomialCharacterNoFree
+lemma integralElementaryJointSpectralProbability_polynomialCharacterNoFree
     (π : UnitaryRepresentation integralElementaryRankTwoGroup V)
     (x : V) (hx : ‖x‖ = 1)
     (hfixed : ∀ i : Fin 2,
@@ -28591,14 +28591,14 @@ open ConnesRigidity Matrix
 
 variable {A : Type} [CommRing A]
 
-@[simp] theorem elementaryRankTwoRoot_inv
+@[simp] lemma elementaryRankTwoRoot_inv
     {i j : Fin 2} (hij : i ≠ j) (a : A) :
     (elementaryRankTwoRoot hij a)⁻¹ =
       elementaryRankTwoRoot hij (-a) := by
   apply Subtype.ext
   exact Matrix.SpecialLinearGroup.transvection_inv hij a
 
-theorem elementaryRankTwoRoot_smul_single_target
+lemma elementaryRankTwoRoot_smul_single_target
     {i j : Fin 2} (hij : i ≠ j) (a b : A) :
     ((elementaryRankTwoRoot hij a : elementaryRankTwo A) :
       Matrix.SpecialLinearGroup (Fin 2) A) •
@@ -28612,7 +28612,7 @@ theorem elementaryRankTwoRoot_smul_single_target
     Matrix.one_apply, Pi.single_apply,
     hij.symm]
 
-theorem elementaryRankTwoRoot_smul_single_source
+lemma elementaryRankTwoRoot_smul_single_source
     {i j : Fin 2} (hij : i ≠ j) (a b : A) :
     ((elementaryRankTwoRoot hij a : elementaryRankTwo A) :
       Matrix.SpecialLinearGroup (Fin 2) A) •
@@ -28620,7 +28620,7 @@ theorem elementaryRankTwoRoot_smul_single_source
       Pi.single j b + Pi.single i (a * b) :=
   rankTwo_transvection_smul_single hij a b
 
-theorem elementaryRankTwoRoot_inv_smul_single_target
+lemma elementaryRankTwoRoot_inv_smul_single_target
     {i j : Fin 2} (hij : i ≠ j) (a b : A) :
     (((elementaryRankTwoRoot hij a)⁻¹ : elementaryRankTwo A) :
       Matrix.SpecialLinearGroup (Fin 2) A) •
@@ -28628,7 +28628,7 @@ theorem elementaryRankTwoRoot_inv_smul_single_target
   rw [elementaryRankTwoRoot_inv]
   exact elementaryRankTwoRoot_smul_single_target hij (-a) b
 
-theorem elementaryRankTwoRoot_inv_smul_single_source
+lemma elementaryRankTwoRoot_inv_smul_single_source
     {i j : Fin 2} (hij : i ≠ j) (a b : A) :
     (((elementaryRankTwoRoot hij a)⁻¹ : elementaryRankTwo A) :
       Matrix.SpecialLinearGroup (Fin 2) A) •
@@ -28637,12 +28637,12 @@ theorem elementaryRankTwoRoot_inv_smul_single_source
   rw [elementaryRankTwoRoot_inv]
   exact elementaryRankTwoRoot_smul_single_source hij (-a) b
 
-@[simp] theorem shalomPolynomial_X_mul_X_pow (n : ℕ) :
+@[simp] lemma shalomPolynomial_X_mul_X_pow (n : ℕ) :
     (Polynomial.X : IntegralPolynomial) * Polynomial.X ^ n =
       Polynomial.X ^ (n + 1) := by
   rw [mul_comm, ← pow_succ]
 
-@[simp] theorem shalomPolynomial_negX_mul_X_pow (n : ℕ) :
+@[simp] lemma shalomPolynomial_negX_mul_X_pow (n : ℕ) :
     (-(Polynomial.X : IntegralPolynomial)) * Polynomial.X ^ n =
       -(Polynomial.X ^ (n + 1)) := by
   rw [neg_mul, shalomPolynomial_X_mul_X_pow]
@@ -28680,7 +28680,7 @@ def polynomialDualShearN
   dualCharacterAction integralElementaryRankTwoSplitAbelianExtension.action
     polynomialShearNActing χ
 
-theorem polynomialCharacterCoefficient_dual_root_source
+lemma polynomialCharacterCoefficient_dual_root_source
     {i j : Fin 2} (hij : i ≠ j) (a : IntegralPolynomial)
     (χ : PolynomialRankTwoCharacter) (n : ℕ) :
     polynomialCharacterCoefficient
@@ -28706,7 +28706,7 @@ theorem polynomialCharacterCoefficient_dual_root_source
         Pi.single i ((-a) * (Polynomial.X : IntegralPolynomial) ^ n))) = _
   exact map_mul χ _ _
 
-theorem polynomialCharacterCoefficient_dual_root_target
+lemma polynomialCharacterCoefficient_dual_root_target
     {i j : Fin 2} (hij : i ≠ j) (a : IntegralPolynomial)
     (χ : PolynomialRankTwoCharacter) (n : ℕ) :
     polynomialCharacterCoefficient
@@ -28724,7 +28724,7 @@ theorem polynomialCharacterCoefficient_dual_root_target
   rw [elementaryRankTwoRoot_inv_smul_single_target]
   rfl
 
-theorem polynomialCharacterCoefficientPair_polynomialDualShearT
+lemma polynomialCharacterCoefficientPair_polynomialDualShearT
     (χ : PolynomialRankTwoCharacter) :
     polynomialCharacterCoefficientPair (polynomialDualShearT χ) =
       polynomialShearT (polynomialCharacterCoefficientPair χ) := by
@@ -28747,7 +28747,7 @@ theorem polynomialCharacterCoefficientPair_polynomialDualShearT
       (show (1 : Fin 2) ≠ 0 by decide)
       (-(Polynomial.X : IntegralPolynomial)) χ n
 
-theorem polynomialCharacterCoefficientPair_polynomialDualShearS
+lemma polynomialCharacterCoefficientPair_polynomialDualShearS
     (χ : PolynomialRankTwoCharacter) :
     polynomialCharacterCoefficientPair (polynomialDualShearS χ) =
       polynomialShearS (polynomialCharacterCoefficientPair χ) := by
@@ -28770,7 +28770,7 @@ theorem polynomialCharacterCoefficientPair_polynomialDualShearS
     simp only [neg_neg, shalomPolynomial_X_mul_X_pow]
     rfl
 
-theorem polynomialCharacterCoefficientPair_polynomialDualShearN
+lemma polynomialCharacterCoefficientPair_polynomialDualShearN
     (χ : PolynomialRankTwoCharacter) :
     polynomialCharacterCoefficientPair (polynomialDualShearN χ) =
       polynomialShearN (polynomialCharacterCoefficientPair χ) := by
@@ -28802,7 +28802,7 @@ open Set MeasureTheory
 def polynomialCharacterSectorSupport : Set PolynomialRankTwoCharacter :=
   polynomialCharacterNoFree \ ({1} : Set PolynomialRankTwoCharacter)
 
-theorem polynomialCharacterCoefficientPair_preimage_sectorSupport :
+lemma polynomialCharacterCoefficientPair_preimage_sectorSupport :
     polynomialCharacterCoefficientPair ⁻¹' polynomialSectorSupport =
       polynomialCharacterSectorSupport := by
   ext χ
@@ -28814,7 +28814,7 @@ theorem polynomialCharacterCoefficientPair_preimage_sectorSupport :
     polynomialCharacterCoefficientPair_mem_punctured]
   simp
 
-theorem measurableSet_polynomialCharacterSectorSupport :
+lemma measurableSet_polynomialCharacterSectorSupport :
     MeasurableSet polynomialCharacterSectorSupport := by
   rw [← polynomialCharacterCoefficientPair_preimage_sectorSupport]
   exact measurableSet_polynomialSectorSupport.preimage
@@ -28835,7 +28835,7 @@ def polynomialCharacterSectorC : Set PolynomialRankTwoCharacter :=
     polynomialCharacterNoFree) ∩
     ({1} : Set PolynomialRankTwoCharacter)ᶜ
 
-private theorem polynomialCharacterSector_preimage_redundant
+private lemma polynomialCharacterSector_preimage_redundant
     (S : Set PolynomialCirclePair) (hS : S ⊆ polynomialSectorSupport) :
     (polynomialCharacterCoefficientPair ⁻¹' S ∩
         polynomialCharacterNoFree) ∩
@@ -28851,64 +28851,64 @@ private theorem polynomialCharacterSector_preimage_redundant
       exact hs.1
     · exact (polynomialCharacterCoefficientPair_mem_punctured χ).mp hs.2
 
-theorem polynomialCharacterSectorA_eq_preimage :
+lemma polynomialCharacterSectorA_eq_preimage :
     polynomialCharacterSectorA =
       polynomialCharacterCoefficientPair ⁻¹' polynomialSectorA := by
   apply polynomialCharacterSector_preimage_redundant
   exact fun _ h => h.2
 
-theorem polynomialCharacterSectorB_eq_preimage :
+lemma polynomialCharacterSectorB_eq_preimage :
     polynomialCharacterSectorB =
       polynomialCharacterCoefficientPair ⁻¹' polynomialSectorB := by
   apply polynomialCharacterSector_preimage_redundant
   exact fun _ h => h.2
 
-theorem polynomialCharacterSectorC_eq_preimage :
+lemma polynomialCharacterSectorC_eq_preimage :
     polynomialCharacterSectorC =
       polynomialCharacterCoefficientPair ⁻¹' polynomialSectorC := by
   apply polynomialCharacterSector_preimage_redundant
   exact fun _ h => h.2
 
-theorem measurableSet_polynomialCharacterSectorA :
+lemma measurableSet_polynomialCharacterSectorA :
     MeasurableSet polynomialCharacterSectorA := by
   rw [polynomialCharacterSectorA_eq_preimage]
   exact measurableSet_polynomialSectorA.preimage
     measurable_polynomialCharacterCoefficientPair
 
-theorem measurableSet_polynomialCharacterSectorB :
+lemma measurableSet_polynomialCharacterSectorB :
     MeasurableSet polynomialCharacterSectorB := by
   rw [polynomialCharacterSectorB_eq_preimage]
   exact measurableSet_polynomialSectorB.preimage
     measurable_polynomialCharacterCoefficientPair
 
-theorem measurableSet_polynomialCharacterSectorC :
+lemma measurableSet_polynomialCharacterSectorC :
     MeasurableSet polynomialCharacterSectorC := by
   rw [polynomialCharacterSectorC_eq_preimage]
   exact measurableSet_polynomialSectorC.preimage
     measurable_polynomialCharacterCoefficientPair
 
-theorem polynomialCharacterSector_disjoint_AB :
+lemma polynomialCharacterSector_disjoint_AB :
     Disjoint polynomialCharacterSectorA polynomialCharacterSectorB := by
   rw [polynomialCharacterSectorA_eq_preimage,
     polynomialCharacterSectorB_eq_preimage, Set.disjoint_left]
   exact fun _ hA hB =>
     Set.disjoint_left.mp polynomialSector_disjoint_AB hA hB
 
-theorem polynomialCharacterSector_disjoint_AC :
+lemma polynomialCharacterSector_disjoint_AC :
     Disjoint polynomialCharacterSectorA polynomialCharacterSectorC := by
   rw [polynomialCharacterSectorA_eq_preimage,
     polynomialCharacterSectorC_eq_preimage, Set.disjoint_left]
   exact fun _ hA hC =>
     Set.disjoint_left.mp polynomialSector_disjoint_AC hA hC
 
-theorem polynomialCharacterSector_disjoint_BC :
+lemma polynomialCharacterSector_disjoint_BC :
     Disjoint polynomialCharacterSectorB polynomialCharacterSectorC := by
   rw [polynomialCharacterSectorB_eq_preimage,
     polynomialCharacterSectorC_eq_preimage, Set.disjoint_left]
   exact fun _ hB hC =>
     Set.disjoint_left.mp polynomialSector_disjoint_BC hB hC
 
-theorem polynomialCharacterSector_cover :
+lemma polynomialCharacterSector_cover :
     polynomialCharacterSectorA ∪ polynomialCharacterSectorB ∪
         polynomialCharacterSectorC = polynomialCharacterSectorSupport := by
   rw [polynomialCharacterSectorA_eq_preimage,
@@ -28917,7 +28917,7 @@ theorem polynomialCharacterSector_cover :
     ← Set.preimage_union, ← Set.preimage_union, polynomialSector_cover,
     polynomialCharacterCoefficientPair_preimage_sectorSupport]
 
-theorem polynomialCharacterSector_shearT_supported
+lemma polynomialCharacterSector_shearT_supported
     (T : PolynomialRankTwoCharacter → PolynomialRankTwoCharacter)
     (hT : ∀ χ, polynomialCharacterCoefficientPair (T χ) =
       polynomialShearT (polynomialCharacterCoefficientPair χ)) :
@@ -28939,7 +28939,7 @@ theorem polynomialCharacterSector_shearT_supported
   rw [hT x]
   exact himage
 
-theorem polynomialCharacterSector_shearS_supported
+lemma polynomialCharacterSector_shearS_supported
     (S : PolynomialRankTwoCharacter → PolynomialRankTwoCharacter)
     (hS : ∀ χ, polynomialCharacterCoefficientPair (S χ) =
       polynomialShearS (polynomialCharacterCoefficientPair χ)) :
@@ -28961,7 +28961,7 @@ theorem polynomialCharacterSector_shearS_supported
   rw [hS x]
   exact himage
 
-theorem polynomialCharacterSector_shearN_supported
+lemma polynomialCharacterSector_shearN_supported
     (N : PolynomialRankTwoCharacter → PolynomialRankTwoCharacter)
     (hN : ∀ χ, polynomialCharacterCoefficientPair (N χ) =
       polynomialShearN (polynomialCharacterCoefficientPair χ)) :
@@ -28980,7 +28980,7 @@ theorem polynomialCharacterSector_shearN_supported
   rw [hN x]
   exact himage
 
-theorem polynomialCharacterSectorSupport_measureReal_eq_one
+lemma polynomialCharacterSectorSupport_measureReal_eq_one
     (μ : Measure PolynomialRankTwoCharacter) [IsProbabilityMeasure μ]
     (hfree : μ.real polynomialCharacterNoFree = 1)
     (hatom : μ.real ({1} : Set PolynomialRankTwoCharacter) = 0) :
@@ -28989,7 +28989,7 @@ theorem polynomialCharacterSectorSupport_measureReal_eq_one
     polynomialCharacterNoFree_measurable hfree 1
     (measurableSet_singleton 1) hatom
 
-theorem polynomialCharacterSector_action_gap
+lemma polynomialCharacterSector_action_gap
     (μ : Measure PolynomialRankTwoCharacter) [IsProbabilityMeasure μ]
     (hfree : μ.real polynomialCharacterNoFree = 1)
     (hatom : μ.real ({1} : Set PolynomialRankTwoCharacter) = 0)
@@ -29022,7 +29022,7 @@ theorem polynomialCharacterSector_action_gap
     (polynomialCharacterSector_shearS_supported S hS)
     (polynomialCharacterSector_shearN_supported N hN)
 
-theorem polynomialCharacter_atom_pos_of_actual_sector_variation
+lemma polynomialCharacter_atom_pos_of_actual_sector_variation
     (μ : Measure PolynomialRankTwoCharacter) [IsProbabilityMeasure μ]
     (hfree : μ.real polynomialCharacterNoFree = 1)
     (T S N : PolynomialRankTwoCharacter → PolynomialRankTwoCharacter)
@@ -29050,14 +29050,14 @@ section
 
 open ConnesRigidity
 
-theorem polynomialElementaryRankTwoRoot_inv
+lemma polynomialElementaryRankTwoRoot_inv
     {i j : Fin 2} (hij : i ≠ j) (a : IntegralPolynomial) :
     (elementaryRankTwoRoot hij a)⁻¹ = elementaryRankTwoRoot hij (-a) := by
   apply Subtype.ext
   exact Matrix.SpecialLinearGroup.transvection_inv hij a
 
 set_option backward.isDefEq.respectTransparency false in
-theorem shalomPolynomialUpperShear_inv (a : IntegralPolynomial) :
+lemma shalomPolynomialUpperShear_inv (a : IntegralPolynomial) :
     (shalomPolynomialUpperShear a)⁻¹ = shalomPolynomialUpperShear (-a) := by
   change (integralElementaryRankTwoInr _)⁻¹ =
     integralElementaryRankTwoInr _
@@ -29066,7 +29066,7 @@ theorem shalomPolynomialUpperShear_inv (a : IntegralPolynomial) :
   exact polynomialElementaryRankTwoRoot_inv _ a
 
 set_option backward.isDefEq.respectTransparency false in
-theorem shalomPolynomialLowerShear_inv (a : IntegralPolynomial) :
+lemma shalomPolynomialLowerShear_inv (a : IntegralPolynomial) :
     (shalomPolynomialLowerShear a)⁻¹ = shalomPolynomialLowerShear (-a) := by
   change (integralElementaryRankTwoInr _)⁻¹ =
     integralElementaryRankTwoInr _
@@ -29074,18 +29074,18 @@ theorem shalomPolynomialLowerShear_inv (a : IntegralPolynomial) :
   congr 1
   exact polynomialElementaryRankTwoRoot_inv _ a
 
-theorem shalomPolynomialUpperShear_X_mem :
+lemma shalomPolynomialUpperShear_X_mem :
     shalomPolynomialUpperShear Polynomial.X ∈
       shalomPolynomialKazhdanGenerators := by
   classical
   simp [shalomPolynomialKazhdanGenerators, shalomPolynomialShearGenerators]
 
-theorem shalomPolynomialLowerShear_one_mem :
+lemma shalomPolynomialLowerShear_one_mem :
     shalomPolynomialLowerShear 1 ∈ shalomPolynomialKazhdanGenerators := by
   classical
   simp [shalomPolynomialKazhdanGenerators, shalomPolynomialShearGenerators]
 
-theorem shalomPolynomialLowerShear_X_mem :
+lemma shalomPolynomialLowerShear_X_mem :
     shalomPolynomialLowerShear Polynomial.X ∈
       shalomPolynomialKazhdanGenerators := by
   classical
@@ -29097,7 +29097,7 @@ noncomputable section
 
 open ConnesRigidity
 
-theorem polynomialShearTActing_inv_mem_kazhdanGenerators :
+lemma polynomialShearTActing_inv_mem_kazhdanGenerators :
     integralElementaryRankTwoInr (polynomialShearTActing⁻¹) ∈
       shalomPolynomialKazhdanGenerators := by
   rw [map_inv]
@@ -29105,7 +29105,7 @@ theorem polynomialShearTActing_inv_mem_kazhdanGenerators :
   rw [shalomPolynomialLowerShear_inv]
   simpa using shalomPolynomialLowerShear_X_mem
 
-theorem polynomialShearSActing_inv_mem_kazhdanGenerators :
+lemma polynomialShearSActing_inv_mem_kazhdanGenerators :
     integralElementaryRankTwoInr (polynomialShearSActing⁻¹) ∈
       shalomPolynomialKazhdanGenerators := by
   rw [map_inv]
@@ -29113,7 +29113,7 @@ theorem polynomialShearSActing_inv_mem_kazhdanGenerators :
   rw [shalomPolynomialUpperShear_inv]
   simpa using shalomPolynomialUpperShear_X_mem
 
-theorem polynomialShearNActing_inv_mem_kazhdanGenerators :
+lemma polynomialShearNActing_inv_mem_kazhdanGenerators :
     integralElementaryRankTwoInr (polynomialShearNActing⁻¹) ∈
       shalomPolynomialKazhdanGenerators := by
   rw [map_inv]
@@ -29130,7 +29130,7 @@ open ConnesRigidity MeasureTheory Set
 variable {W : Type} [NormedAddCommGroup W]
   [InnerProductSpace ℂ W] [CompleteSpace W]
 
-theorem polynomialTrivialAtom_pos_of_constantFixed_smallShears_of_covariance
+lemma polynomialTrivialAtom_pos_of_constantFixed_smallShears_of_covariance
     (π : UnitaryRepresentation integralElementaryRankTwoGroup W)
     (η : W) (hη : ‖η‖ = 1)
     (hfixed : ∀ i : Fin 2,
@@ -29196,7 +29196,7 @@ theorem polynomialTrivialAtom_pos_of_constantFixed_smallShears_of_covariance
       polynomialShearNActing_inv_mem_kazhdanGenerators
     linarith
 
-theorem polynomialKernelFixed_of_constantFixed_smallShears_of_covariance
+lemma polynomialKernelFixed_of_constantFixed_smallShears_of_covariance
     (π : UnitaryRepresentation integralElementaryRankTwoGroup W)
     (η : W) (hη : ‖η‖ = 1)
     (hfixed : ∀ i : Fin 2,
@@ -29243,11 +29243,11 @@ def shalomConstantVector : (Fin 2 → ℤ) →+ (Fin 2 → IntegralPolynomial) w
     ext i
     simp
 
-@[simp] theorem shalomConstantVector_apply
+@[simp] lemma shalomConstantVector_apply
     (v : Fin 2 → ℤ) (i : Fin 2) :
     shalomConstantVector v i = Polynomial.C (v i) := rfl
 
-@[simp] theorem shalomConstantVector_single
+@[simp] lemma shalomConstantVector_single
     (i : Fin 2) (a : ℤ) :
     shalomConstantVector (Pi.single i a) =
       (Pi.single i (Polynomial.C a) : Fin 2 → IntegralPolynomial) := by
@@ -29259,12 +29259,12 @@ def shalomConstantSpecialLinear :
       Matrix.SpecialLinearGroup (Fin 2) IntegralPolynomial :=
   Matrix.SpecialLinearGroup.map (Polynomial.C : ℤ →+* IntegralPolynomial)
 
-@[simp] theorem shalomConstantSpecialLinear_apply
+@[simp] lemma shalomConstantSpecialLinear_apply
     (g : Matrix.SpecialLinearGroup (Fin 2) ℤ) (i j : Fin 2) :
     shalomConstantSpecialLinear g i j = Polynomial.C (g i j) := rfl
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp] theorem shalomConstantSpecialLinear_transvection
+@[simp] lemma shalomConstantSpecialLinear_transvection
     {i j : Fin 2} (hij : i ≠ j) (a : ℤ) :
     shalomConstantSpecialLinear
       (Matrix.SpecialLinearGroup.transvection hij a) =
@@ -29275,7 +29275,7 @@ set_option backward.isDefEq.respectTransparency false in
     Matrix.SpecialLinearGroup.transvection_coe,
     Matrix.single_apply, Matrix.one_apply]
 
-theorem shalomConstantSpecialLinear_map_elementary_le :
+lemma shalomConstantSpecialLinear_map_elementary_le :
     (elementaryRankTwo ℤ).map shalomConstantSpecialLinear ≤
       elementaryRankTwo IntegralPolynomial := by
   change
@@ -29302,21 +29302,21 @@ def shalomConstantActing :
       (g : Matrix.SpecialLinearGroup (Fin 2) ℤ)
       (h : Matrix.SpecialLinearGroup (Fin 2) ℤ))
 
-@[simp] theorem shalomConstantActing_apply
+@[simp] lemma shalomConstantActing_apply
     (g : elementaryRankTwo ℤ) (i j : Fin 2) :
     (shalomConstantActing g :
       Matrix.SpecialLinearGroup (Fin 2) IntegralPolynomial) i j =
         Polynomial.C
           ((g : Matrix.SpecialLinearGroup (Fin 2) ℤ) i j) := rfl
 
-@[simp] theorem shalomConstantActing_root
+@[simp] lemma shalomConstantActing_root
     {i j : Fin 2} (hij : i ≠ j) (a : ℤ) :
     shalomConstantActing (elementaryRankTwoRoot hij a) =
       elementaryRankTwoRoot hij (Polynomial.C a) := by
   apply Subtype.ext
   exact shalomConstantSpecialLinear_transvection hij a
 
-theorem shalomConstantVector_action
+lemma shalomConstantVector_action
     (g : elementaryRankTwo ℤ) (v : Fin 2 → ℤ) :
     shalomConstantVector
       ((g : Matrix.SpecialLinearGroup (Fin 2) ℤ) • v) =
@@ -29339,7 +29339,7 @@ def shalomConstantMultiplicative :
       Multiplicative (Fin 2 → IntegralPolynomial) :=
   shalomConstantVector.toMultiplicative
 
-theorem shalomConstantAction_natural (g : elementaryRankTwo ℤ) :
+lemma shalomConstantAction_natural (g : elementaryRankTwo ℤ) :
     shalomConstantMultiplicative.comp
         (elementaryRankTwoAction ℤ g).toMonoidHom =
       (elementaryRankTwoAction IntegralPolynomial
@@ -29356,7 +29356,7 @@ def shalomConstantEmbedding :
   SemidirectProduct.map shalomConstantMultiplicative
     shalomConstantActing shalomConstantAction_natural
 
-@[simp] theorem shalomConstantEmbedding_inl (v : Fin 2 → ℤ) :
+@[simp] lemma shalomConstantEmbedding_inl (v : Fin 2 → ℤ) :
     shalomConstantEmbedding
         (integerElementaryRankTwoInl (Multiplicative.ofAdd v)) =
       integralElementaryRankTwoInl
@@ -29365,13 +29365,13 @@ def shalomConstantEmbedding :
     shalomConstantActing shalomConstantAction_natural
       (Multiplicative.ofAdd v)
 
-@[simp] theorem shalomConstantEmbedding_inr (g : elementaryRankTwo ℤ) :
+@[simp] lemma shalomConstantEmbedding_inr (g : elementaryRankTwo ℤ) :
     shalomConstantEmbedding (integerElementaryRankTwoInr g) =
       integralElementaryRankTwoInr (shalomConstantActing g) := by
   exact SemidirectProduct.map_inr shalomConstantMultiplicative
     shalomConstantActing shalomConstantAction_natural g
 
-@[simp] theorem shalomConstantEmbedding_translation
+@[simp] lemma shalomConstantEmbedding_translation
     (i : Fin 2) (a : ℤ) :
     shalomConstantEmbedding
         (integerElementaryRankTwoInl
@@ -29380,13 +29380,13 @@ def shalomConstantEmbedding :
   rw [shalomConstantEmbedding_inl, shalomConstantVector_single]
   rfl
 
-@[simp] theorem shalomConstantEmbedding_integerTranslation
+@[simp] lemma shalomConstantEmbedding_integerTranslation
     (i : Fin 2) (a : ℤ) :
     shalomConstantEmbedding (integerShalomTranslation i a) =
       shalomPolynomialTranslation i (Polynomial.C a) :=
   shalomConstantEmbedding_translation i a
 
-@[simp] theorem shalomConstantEmbedding_upperShear (a : ℤ) :
+@[simp] lemma shalomConstantEmbedding_upperShear (a : ℤ) :
     shalomConstantEmbedding
         (integerElementaryRankTwoInr
           (elementaryRankTwoRoot
@@ -29395,7 +29395,7 @@ def shalomConstantEmbedding :
   rw [shalomConstantEmbedding_inr, shalomConstantActing_root]
   rfl
 
-@[simp] theorem shalomConstantEmbedding_lowerShear (a : ℤ) :
+@[simp] lemma shalomConstantEmbedding_lowerShear (a : ℤ) :
     shalomConstantEmbedding
         (integerElementaryRankTwoInr
           (elementaryRankTwoRoot
@@ -29404,13 +29404,13 @@ def shalomConstantEmbedding :
   rw [shalomConstantEmbedding_inr, shalomConstantActing_root]
   rfl
 
-@[simp] theorem shalomConstantEmbedding_integerUpperShear :
+@[simp] lemma shalomConstantEmbedding_integerUpperShear :
     shalomConstantEmbedding
         (integerElementaryRankTwoInr integerUpperShear) =
       shalomPolynomialUpperShear 1 := by
   simpa [integerUpperShear] using shalomConstantEmbedding_upperShear 1
 
-@[simp] theorem shalomConstantEmbedding_integerLowerShear :
+@[simp] lemma shalomConstantEmbedding_integerLowerShear :
     shalomConstantEmbedding
         (integerElementaryRankTwoInr integerLowerShear) =
       shalomPolynomialLowerShear 1 := by
@@ -29423,7 +29423,7 @@ noncomputable section
 open scoped Classical
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp] theorem shalomPolynomialUpperShear_one_inv :
+@[simp] lemma shalomPolynomialUpperShear_one_inv :
     (shalomPolynomialUpperShear 1)⁻¹ =
       shalomPolynomialUpperShear (-1) := by
   change
@@ -29442,7 +29442,7 @@ set_option backward.isDefEq.respectTransparency false in
     (show (0 : Fin 2) ≠ 1 by decide) (1 : IntegralPolynomial)
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp] theorem shalomPolynomialLowerShear_one_inv :
+@[simp] lemma shalomPolynomialLowerShear_one_inv :
     (shalomPolynomialLowerShear 1)⁻¹ =
       shalomPolynomialLowerShear (-1) := by
   change
@@ -29460,7 +29460,7 @@ set_option backward.isDefEq.respectTransparency false in
   exact Matrix.SpecialLinearGroup.transvection_inv
     (show (1 : Fin 2) ≠ 0 by decide) (1 : IntegralPolynomial)
 
-theorem shalomConstantEmbedding_translationGenerators_image :
+lemma shalomConstantEmbedding_translationGenerators_image :
     integerShalomTranslationGenerators.image shalomConstantEmbedding =
       shalomPolynomialTranslationGenerators := by
   classical
@@ -29469,7 +29469,7 @@ theorem shalomConstantEmbedding_translationGenerators_image :
     Finset.image_singleton, shalomConstantEmbedding_integerTranslation]
   simp
 
-theorem shalomConstantEmbedding_shearGenerators_image_subset :
+lemma shalomConstantEmbedding_shearGenerators_image_subset :
     integerShalomShearGenerators.image shalomConstantEmbedding ⊆
       shalomPolynomialShearGenerators := by
   classical
@@ -29498,7 +29498,7 @@ theorem shalomConstantEmbedding_shearGenerators_image_subset :
     rw [shalomPolynomialLowerShear_one_inv]
     simp [shalomPolynomialShearGenerators]
 
-theorem shalomConstantEmbedding_generators_image_subset :
+lemma shalomConstantEmbedding_generators_image_subset :
     integerShalomGenerators.image shalomConstantEmbedding ⊆
       shalomPolynomialKazhdanGenerators := by
   classical
@@ -29516,7 +29516,7 @@ theorem shalomConstantEmbedding_generators_image_subset :
     apply shalomConstantEmbedding_shearGenerators_image_subset
     exact Finset.mem_image.mpr ⟨h, hshear, rfl⟩
 
-theorem shalomConstantEmbedding_mem_polynomialGenerators
+lemma shalomConstantEmbedding_mem_polynomialGenerators
     {g : integerElementaryRankTwoGroup}
     (hg : g ∈ integerShalomGenerators) :
     shalomConstantEmbedding g ∈ shalomPolynomialKazhdanGenerators :=
@@ -29531,7 +29531,7 @@ open ConnesRigidity
 
 universe u
 
-theorem shalom_projectionResidual_norm_lt_of_relativePair
+lemma shalom_projectionResidual_norm_lt_of_relativePair
     {G₀ G : CountableDiscreteGroup.{u}}
     (N₀ : Subgroup G₀) [N₀.Normal]
     (f : G₀ →* G) {F₀ : Finset G₀} {κ δ : ℝ}
@@ -29590,7 +29590,7 @@ theorem shalom_projectionResidual_norm_lt_of_relativePair
     (normalFixedOrthogonalRepresentation N₀ ρ) w hwnorm hwsmall
   exact hη (normalFixedOrthogonalRepresentation_no_fixed N₀ ρ η hηfixed)
 
-theorem shalom_normalizedFixedVector_of_relativePair
+lemma shalom_normalizedFixedVector_of_relativePair
     {G₀ G : CountableDiscreteGroup.{u}}
     (N₀ : Subgroup G₀) [N₀.Normal]
     (f : G₀ →* G) {F₀ : Finset G₀} {κ δ : ℝ}
@@ -29683,7 +29683,7 @@ theorem shalom_normalizedFixedVector_of_relativePair
       Complex.norm_real, Real.norm_of_nonneg (norm_nonneg p)]
     simpa [div_eq_mul_inv, mul_comm] using hfrac
 
-theorem shalom_normalizedConstantFixedVector_of_integerPair
+lemma shalom_normalizedConstantFixedVector_of_integerPair
     (hbase : ShalomIntegerRelativePair)
     (W : Type) [NormedAddCommGroup W]
       [InnerProductSpace ℂ W] [CompleteSpace W]
@@ -29726,7 +29726,7 @@ theorem shalom_normalizedConstantFixedVector_of_integerPair
     shalomPolynomialKazhdanConstant_zero]
   norm_num
 
-theorem shalom_constantCoordinate_fixed_of_constantTranslation_fixed
+lemma shalom_constantCoordinate_fixed_of_constantTranslation_fixed
     (W : Type) [NormedAddCommGroup W]
       [InnerProductSpace ℂ W] [CompleteSpace W]
     (π : UnitaryRepresentation integralElementaryRankTwoGroup W)
@@ -29754,7 +29754,7 @@ open ConnesRigidity MeasureTheory Set
 
 noncomputable section
 
-theorem shalom_normalizedConstantFixedVector
+lemma shalom_normalizedConstantFixedVector
     (W : Type) [NormedAddCommGroup W]
       [InnerProductSpace ℂ W] [CompleteSpace W]
     (π : UnitaryRepresentation integralElementaryRankTwoGroup W)
@@ -29771,7 +29771,7 @@ theorem shalom_normalizedConstantFixedVector
   shalom_normalizedConstantFixedVector_of_integerPair
     integerShalomRelativeKazhdanPair W π ξ hξ hsmall
 
-theorem shalomIntegralPolynomialRelativePair_of_constantFixed
+lemma shalomIntegralPolynomialRelativePair_of_constantFixed
     (hkernel : ∀ (W : Type)
       (_ : NormedAddCommGroup W)
       (_ : InnerProductSpace ℂ W)
@@ -29797,7 +29797,7 @@ theorem shalomIntegralPolynomialRelativePair_of_constantFixed
     (shalom_constantCoordinate_fixed_of_constantTranslation_fixed
       W π η hfixed) hηsmall
 
-theorem shalomIntegralPolynomialRelativePair :
+lemma shalomIntegralPolynomialRelativePair :
     ShalomIntegralPolynomialRelativePair := by
   apply shalomIntegralPolynomialRelativePair_of_constantFixed
   intro W _ _ _ π η hη hfixed hsmall
@@ -29815,7 +29815,7 @@ noncomputable section
 
 open ConnesRigidity
 
-theorem integralElementaryGroup_propertyT_of_shalomPair
+lemma integralElementaryGroup_propertyT_of_shalomPair
     (hShalomPair : ShalomIntegralPolynomialRelativePair) :
     HasKazhdanPropertyT integralElementaryGroup := by
   obtain ⟨hleft, hright⟩ :=
@@ -29834,18 +29834,18 @@ theorem integralElementaryGroup_propertyT_of_shalomPair
       (cornulier_proposition4_of_shalom_gaussian hShalomPair))
     hleft hright
 
-theorem integralElementaryGroup_propertyT :
+lemma integralElementaryGroup_propertyT :
     HasKazhdanPropertyT integralElementaryGroup :=
   integralElementaryGroup_propertyT_of_shalomPair
     shalomIntegralPolynomialRelativePair
 
-theorem universalLatticePropertyT_of_suslinRelative
+lemma universalLatticePropertyT_of_suslinRelative
     (hSuslinRelative : SuslinRelativeElementaryGeneration) :
     ErshovJaikinUniversalLatticePropertyT :=
   cornulier_fullLatticePropertyT_of_relativeSuslin hSuslinRelative
     integralElementaryGroup_propertyT
 
-theorem suslinRelativeElementaryGeneration :
+lemma suslinRelativeElementaryGeneration :
     SuslinRelativeElementaryGeneration := by
   apply suslinRelativeElementaryGeneration_of_maximal_local_elementary
   intro g _ m _
@@ -29864,7 +29864,7 @@ noncomputable section
 
 universe u v
 
-theorem conj_mem_centralizer_image_iff
+lemma conj_mem_centralizer_image_iff
     {H K : Type*}
     [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
     [NormedAddCommGroup K] [InnerProductSpace ℂ K] [CompleteSpace K]
@@ -29903,7 +29903,7 @@ theorem conj_mem_centralizer_image_iff
       rw [map_star] at heq
       exact heq
 
-theorem conj_image_centralizer
+lemma conj_image_centralizer
     {H K : Type*}
     [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
     [NormedAddCommGroup K] [InnerProductSpace ℂ K] [CompleteSpace K]
@@ -29925,7 +29925,7 @@ theorem conj_image_centralizer
   · rintro ⟨x, hx, rfl⟩
     exact (conj_mem_centralizer_image_iff e S x).mpr hx
 
-theorem conj_mem_vonNeumannClosure_image_iff
+lemma conj_mem_vonNeumannClosure_image_iff
     {H K : Type*}
     [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
     [NormedAddCommGroup K] [InnerProductSpace ℂ K] [CompleteSpace K]
@@ -29944,7 +29944,7 @@ theorem conj_mem_vonNeumannClosure_image_iff
   exact conj_mem_centralizer_image_iff e
     (StarSubalgebra.centralizer ℂ S : Set (H →L[ℂ] H)) T
 
-theorem isProjectionSupremum_image_starAlgEquiv
+lemma isProjectionSupremum_image_starAlgEquiv
     {A : Type u} {B : Type v}
     [Semiring A] [StarRing A] [Algebra ℂ A] [StarModule ℂ A]
     [Semiring B] [StarRing B] [Algebra ℂ B] [StarModule ℂ B]
@@ -29967,7 +29967,7 @@ theorem isProjectionSupremum_image_starAlgEquiv
     have hleast := hp.2.2 (e.symm r) hr' hbound
     simpa [ProjectionLE] using congrArg e hleast
 
-theorem starAlgEquiv_isNormal
+lemma starAlgEquiv_isNormal
     {A : Type u} {B : Type v}
     [Semiring A] [StarRing A] [Algebra ℂ A] [StarModule ℂ A]
     [Semiring B] [StarRing B] [Algebra ℂ B] [StarModule ℂ B]
@@ -29982,7 +29982,7 @@ variable {Γ : Type*} [Group Γ]
 variable {Ω : Type*} [AddCommGroup Ω] [TopologicalSpace Ω] [MeasurableSpace Ω]
 variable {Ξ : Type*} [AddCommGroup Ξ] [TopologicalSpace Ξ] [MeasurableSpace Ξ]
 
-theorem crossedHaarHilbertEquiv_multiplier_conj
+lemma crossedHaarHilbertEquiv_multiplier_conj
     {X : HaarProbabilityAction Γ Ω}
     {Y : HaarProbabilityAction Γ Ξ}
     (e : EquivariantHaarEquiv X Y)
@@ -30015,7 +30015,7 @@ theorem crossedHaarHilbertEquiv_multiplier_conj
         (crossedBaseHaarEquiv e (ξ k))
   exact crossedBaseHaarEquiv_multiplier_apply e f (ξ k)
 
-theorem crossedCoefficient_pullback_symm_apply
+lemma crossedCoefficient_pullback_symm_apply
     {X : HaarProbabilityAction Γ Ω}
     {Y : HaarProbabilityAction Γ Ξ}
     (e : EquivariantHaarEquiv X Y)
@@ -30031,7 +30031,7 @@ theorem crossedCoefficient_pullback_symm_apply
   simpa [Function.comp_def, EquivariantHaarEquiv.symm,
     show (fun z : Ξ ↦ z) = id from rfl] using h.symm
 
-theorem crossedGeneratorSet_image
+lemma crossedGeneratorSet_image
     {X : HaarProbabilityAction Γ Ω}
     {Y : HaarProbabilityAction Γ Ξ}
     (e : EquivariantHaarEquiv X Y) :
@@ -30055,7 +30055,7 @@ theorem crossedGeneratorSet_image
         Or.inr ⟨k, rfl⟩,
         crossedHaarHilbertEquiv_group_conj e k⟩
 
-theorem crossedHaarHilbertEquiv_mem_algebra_iff
+lemma crossedHaarHilbertEquiv_mem_algebra_iff
     {X : HaarProbabilityAction Γ Ω}
     {Y : HaarProbabilityAction Γ Ξ}
     (e : EquivariantHaarEquiv X Y)
@@ -30085,7 +30085,7 @@ open ConnesRigidity.FeedbackBooleanPolynomial
 
 variable {α ι ζ : Type*}
 
-theorem nonprimitive_card
+lemma nonprimitive_card
     [DecidableEq α]
     (ambient primitive : Finset α) (k : ℕ)
     (hprimitive_subset : primitive ⊆ ambient)
@@ -30096,7 +30096,7 @@ theorem nonprimitive_card
     Finset.card_sdiff_add_card_eq_card hprimitive_subset
   omega
 
-theorem primitive_detecting_card
+lemma primitive_detecting_card
     [DecidableEq α]
     (ambient primitive detecting : Finset α) (k : ℕ)
     (hprimitive_subset : primitive ⊆ ambient)
@@ -30118,7 +30118,7 @@ theorem primitive_detecting_card
     Finset.card_sdiff_add_card_inter detecting primitive
   omega
 
-theorem primitive_detecting_seventh
+lemma primitive_detecting_seventh
     [DecidableEq α]
     (ambient primitive detecting : Finset α) (k : ℕ)
     (hprimitive_subset : primitive ⊆ ambient)
@@ -30131,7 +30131,7 @@ theorem primitive_detecting_seventh
     hprimitive_subset hdetecting_subset hambient hprimitive hquarter
   omega
 
-theorem cube_card_eq_eight_mul_scale
+lemma cube_card_eq_eight_mul_scale
     (N : ℕ) (hN : 0 < N) :
     2 ^ (4 * N) = 8 * 2 ^ (4 * N - 3) := by
   have hexponent : 4 * N = (4 * N - 3) + 3 := by omega
@@ -30156,13 +30156,13 @@ noncomputable def binaryRootEquiv : F ≃ rootsOfUnity 2 Circle :=
 noncomputable def circleBit (z : Circle) (hz : z ^ 2 = 1) : F :=
   binaryRootEquiv.symm (rootsOfUnity.mkOfPowEq z hz)
 
-theorem circleBit_spec (z : Circle) (hz : z ^ 2 = 1) :
+lemma circleBit_spec (z : Circle) (hz : z ^ 2 = 1) :
     ZMod.toCircle (circleBit z hz) = z := by
   have h := binaryRootEquiv.apply_symm_apply (rootsOfUnity.mkOfPowEq z hz)
   have h' := congrArg (fun w : rootsOfUnity 2 Circle => (w.val : Circle)) h
   exact h'
 
-theorem dualCharacter_square (χ : DiscreteCharacterSpace D) (d : D) :
+lemma dualCharacter_square (χ : DiscreteCharacterSpace D) (d : D) :
     χ (Multiplicative.ofAdd d) ^ 2 = 1 := by
   rw [← map_pow, pow_two]
   change χ (Multiplicative.ofAdd (d + d)) = 1
@@ -30173,17 +30173,17 @@ noncomputable def characterBit
     (χ : DiscreteCharacterSpace D) (d : D) : F :=
   circleBit (χ (Multiplicative.ofAdd d)) (dualCharacter_square χ d)
 
-theorem characterBit_spec (χ : DiscreteCharacterSpace D) (d : D) :
+lemma characterBit_spec (χ : DiscreteCharacterSpace D) (d : D) :
     ZMod.toCircle (characterBit χ d) = χ (Multiplicative.ofAdd d) :=
   circleBit_spec _ _
 
-@[simp] theorem characterBit_zero (χ : DiscreteCharacterSpace D) :
+@[simp] lemma characterBit_zero (χ : DiscreteCharacterSpace D) :
     characterBit χ 0 = 0 := by
   apply ZMod.injective_toCircle
   rw [characterBit_spec]
   simp
 
-theorem characterBit_add (χ : DiscreteCharacterSpace D) (d₁ d₂ : D) :
+lemma characterBit_add (χ : DiscreteCharacterSpace D) (d₁ d₂ : D) :
     characterBit χ (d₁ + d₂) = characterBit χ d₁ + characterBit χ d₂ := by
   apply ZMod.injective_toCircle
   calc
@@ -30207,18 +30207,18 @@ noncomputable def characterBitLinear (χ : DiscreteCharacterSpace D) : D →ₗ[
       · exact Or.inr rfl
     rcases ha with rfl | rfl <;> simp
 
-@[simp] theorem characterBitLinear_apply (χ : DiscreteCharacterSpace D) (d : D) :
+@[simp] lemma characterBitLinear_apply (χ : DiscreteCharacterSpace D) (d : D) :
     characterBitLinear χ d = characterBit χ d := rfl
 
 noncomputable def dualToPair (χ : DiscreteCharacterSpace D) : X × Y :=
   ((characterBitLinear χ).comp (LinearMap.inl F V B),
     (characterBitLinear χ).comp (LinearMap.inr F V B))
 
-@[simp] theorem dualToPair_linear_apply
+@[simp] lemma dualToPair_linear_apply
     (χ : DiscreteCharacterSpace D) (v : V) :
     (dualToPair χ).1 v = characterBit χ (v, 0) := rfl
 
-@[simp] theorem dualToPair_quadratic_apply
+@[simp] lemma dualToPair_quadratic_apply
     (χ : DiscreteCharacterSpace D) (b : B) :
     (dualToPair χ).2 b = characterBit χ (0, b) := rfl
 
@@ -30236,11 +30236,11 @@ noncomputable def pairToDual (z : X × Y) : DiscreteCharacterSpace D where
     abel
   continuous_toFun := continuous_of_discreteTopology
 
-@[simp] theorem pairToDual_apply (z : X × Y) (d : D) :
+@[simp] lemma pairToDual_apply (z : X × Y) (d : D) :
     pairToDual z (Multiplicative.ofAdd d) =
       ZMod.toCircle (z.1 d.1 + z.2 d.2) := rfl
 
-@[simp] theorem pairToDual_linear_eq_one_iff (z : X × Y) (v : V) :
+@[simp] lemma pairToDual_linear_eq_one_iff (z : X × Y) (v : V) :
     pairToDual z (Multiplicative.ofAdd (v, 0)) = 1 ↔ z.1 v = 0 := by
   change ZMod.toCircle (z.1 v + z.2 0) = 1 ↔ z.1 v = 0
   simp only [map_zero, add_zero]
@@ -30252,7 +30252,7 @@ noncomputable def pairToDual (z : X × Y) : DiscreteCharacterSpace D where
     rw [h]
     exact ZMod.toCircle.map_zero_eq_one
 
-@[simp] theorem pairToDual_quadratic_eq_one_iff (z : X × Y) (b : B) :
+@[simp] lemma pairToDual_quadratic_eq_one_iff (z : X × Y) (b : B) :
     pairToDual z (Multiplicative.ofAdd (0, b)) = 1 ↔ z.2 b = 0 := by
   change ZMod.toCircle (z.1 0 + z.2 b) = 1 ↔ z.2 b = 0
   simp only [map_zero, zero_add]
@@ -30264,15 +30264,15 @@ noncomputable def pairToDual (z : X × Y) : DiscreteCharacterSpace D where
     rw [h]
     exact ZMod.toCircle.map_zero_eq_one
 
-@[simp] theorem pairToDual_linear_ne_one_iff (z : X × Y) (v : V) :
+@[simp] lemma pairToDual_linear_ne_one_iff (z : X × Y) (v : V) :
     pairToDual z (Multiplicative.ofAdd (v, 0)) ≠ 1 ↔ z.1 v ≠ 0 :=
   not_congr (pairToDual_linear_eq_one_iff z v)
 
-@[simp] theorem pairToDual_quadratic_ne_one_iff (z : X × Y) (b : B) :
+@[simp] lemma pairToDual_quadratic_ne_one_iff (z : X × Y) (b : B) :
     pairToDual z (Multiplicative.ofAdd (0, b)) ≠ 1 ↔ z.2 b ≠ 0 :=
   not_congr (pairToDual_quadratic_eq_one_iff z b)
 
-@[simp] theorem dualToPair_pairToDual (z : X × Y) :
+@[simp] lemma dualToPair_pairToDual (z : X × Y) :
     dualToPair (pairToDual z) = z := by
   apply Prod.ext
   · apply LinearMap.ext
@@ -30292,7 +30292,7 @@ noncomputable def pairToDual (z : X × Y) : DiscreteCharacterSpace D where
     change ZMod.toCircle (z.1 0 + z.2 b) = ZMod.toCircle (z.2 b)
     simp
 
-@[simp] theorem pairToDual_dualToPair (χ : DiscreteCharacterSpace D) :
+@[simp] lemma pairToDual_dualToPair (χ : DiscreteCharacterSpace D) :
     pairToDual (dualToPair χ) = χ := by
   apply PontryaginDual.ext
   rintro ⟨v, b⟩
@@ -30320,7 +30320,7 @@ noncomputable def pairDualEquiv : X × Y ≃ DiscreteCharacterSpace D where
   left_inv := dualToPair_pairToDual
   right_inv := pairToDual_dualToPair
 
-theorem pairToDual_continuous : Continuous pairToDual := by
+lemma pairToDual_continuous : Continuous pairToDual := by
   change Continuous
     (fun z : X × Y ↦ (pairToDual z : ((Multiplicative D) →ₜ* Circle)))
   apply ContinuousMonoidHom.continuous_of_continuous_uncurry
@@ -30337,10 +30337,10 @@ theorem pairToDual_continuous : Continuous pairToDual := by
 noncomputable def pairDualHomeomorph : X × Y ≃ₜ DiscreteCharacterSpace D :=
   pairToDual_continuous.homeoOfEquivCompactToT2 (f := pairDualEquiv)
 
-@[simp] theorem pairDualHomeomorph_apply (z : X × Y) :
+@[simp] lemma pairDualHomeomorph_apply (z : X × Y) :
     pairDualHomeomorph z = pairToDual z := rfl
 
-@[simp] theorem pairDualHomeomorph_symm_apply
+@[simp] lemma pairDualHomeomorph_symm_apply
     (χ : DiscreteCharacterSpace D) :
     pairDualHomeomorph.symm χ = dualToPair χ := rfl
 
@@ -30352,7 +30352,7 @@ noncomputable def moduleAddAction :
     actingGroup →* Multiplicative (AddAut D) :=
   (MulAutMultiplicative D).toMonoidHom.comp kDAction
 
-theorem pairDualHomeomorph_equivariant (k : K) (z : X × Y) :
+lemma pairDualHomeomorph_equivariant (k : K) (z : X × Y) :
     pairDualHomeomorph (dualPairAction k z) =
       dualCharacterAction (A := D) (H := actingGroup)
         moduleAddAction k (pairDualHomeomorph z) := by
@@ -30372,11 +30372,11 @@ open scoped BigOperators
 abbrev elementarySubgroup : Subgroup Q :=
   Subgroup.closure elementaryTransvections
 
-theorem transvection_mem (i j : Index) (h : i ≠ j) (c : R) :
+lemma transvection_mem (i j : Index) (h : i ≠ j) (c : R) :
     Matrix.SpecialLinearGroup.transvection h c ∈ elementarySubgroup :=
   Subgroup.subset_closure ⟨i, j, h, c, rfl⟩
 
-theorem transvection_smul_same (i j : Index) (h : i ≠ j) (c : R)
+lemma transvection_smul_same (i j : Index) (h : i ≠ j) (c : R)
     (v : V) :
     (Matrix.SpecialLinearGroup.transvection h c • v) i = v i + c * v j := by
   change ((Matrix.SpecialLinearGroup.transvection h c).val *ᵥ v) i = _
@@ -30384,7 +30384,7 @@ theorem transvection_smul_same (i j : Index) (h : i ≠ j) (c : R)
       Matrix.one_mulVec, Matrix.single_mulVec]
   simp
 
-theorem transvection_smul_other (i j k : Index) (h : i ≠ j)
+lemma transvection_smul_other (i j k : Index) (h : i ≠ j)
     (hk : k ≠ i) (c : R) (v : V) :
     (Matrix.SpecialLinearGroup.transvection h c • v) k = v k := by
   change ((Matrix.SpecialLinearGroup.transvection h c).val *ᵥ v) k = _
@@ -30397,14 +30397,14 @@ def coordinateSwap (i j : Index) (h : i ≠ j) : Q :=
     Matrix.SpecialLinearGroup.transvection h.symm 1 *
     Matrix.SpecialLinearGroup.transvection h 1
 
-theorem coordinateSwap_mem (i j : Index) (h : i ≠ j) :
+lemma coordinateSwap_mem (i j : Index) (h : i ≠ j) :
     coordinateSwap i j h ∈ elementarySubgroup :=
   elementarySubgroup.mul_mem
     (elementarySubgroup.mul_mem (transvection_mem i j h 1)
       (transvection_mem j i h.symm 1))
     (transvection_mem i j h 1)
 
-theorem coordinateSwap_smul_left (i j : Index) (h : i ≠ j) (v : V) :
+lemma coordinateSwap_smul_left (i j : Index) (h : i ≠ j) (v : V) :
     (coordinateSwap i j h • v) i = v j := by
   simp only [coordinateSwap, mul_smul]
   rw [transvection_smul_same]
@@ -30418,7 +30418,7 @@ theorem coordinateSwap_smul_left (i j : Index) (h : i ≠ j) (v : V) :
       (v i + v i) + (v j + v j) + v j := by ac_rfl
     _ = v j := by simp [CharTwo.add_self_eq_zero]
 
-theorem coordinateSwap_smul_right (i j : Index) (h : i ≠ j) (v : V) :
+lemma coordinateSwap_smul_right (i j : Index) (h : i ≠ j) (v : V) :
     (coordinateSwap i j h • v) j = v i := by
   simp only [coordinateSwap, mul_smul]
   rw [transvection_smul_other i j j h h.symm]
@@ -30430,7 +30430,7 @@ theorem coordinateSwap_smul_right (i j : Index) (h : i ≠ j) (v : V) :
     v j + (v i + v j) = (v j + v j) + v i := by ac_rfl
     _ = v i := by simp [CharTwo.add_self_eq_zero]
 
-theorem coordinateSwap_smul_other (i j k : Index) (h : i ≠ j)
+lemma coordinateSwap_smul_other (i j k : Index) (h : i ≠ j)
     (hki : k ≠ i) (hkj : k ≠ j) (v : V) :
     (coordinateSwap i j h • v) k = v k := by
   simp only [coordinateSwap, mul_smul]
@@ -30442,12 +30442,12 @@ def euclideanStep (i j : Index) (h : i ≠ j) (a b : R) : Q :=
   coordinateSwap i j h *
     Matrix.SpecialLinearGroup.transvection h.symm (b / a)
 
-theorem euclideanStep_mem (i j : Index) (h : i ≠ j) (a b : R) :
+lemma euclideanStep_mem (i j : Index) (h : i ≠ j) (a b : R) :
     euclideanStep i j h a b ∈ elementarySubgroup :=
   elementarySubgroup.mul_mem (coordinateSwap_mem i j h)
     (transvection_mem j i h.symm (b / a))
 
-theorem euclideanStep_smul_left (i j : Index) (h : i ≠ j) (v : V) :
+lemma euclideanStep_smul_left (i j : Index) (h : i ≠ j) (v : V) :
     (euclideanStep i j h (v i) (v j) • v) i = v j % v i := by
   rw [euclideanStep, mul_smul, coordinateSwap_smul_left,
     transvection_smul_same]
@@ -30458,19 +30458,19 @@ theorem euclideanStep_smul_left (i j : Index) (h : i ≠ j) (v : V) :
     _ = (v i * (v j / v i) + v i * (v j / v i)) + v j % v i := by ac_rfl
     _ = v j % v i := by simp [CharTwo.add_self_eq_zero]
 
-theorem euclideanStep_smul_right (i j : Index) (h : i ≠ j) (v : V) :
+lemma euclideanStep_smul_right (i j : Index) (h : i ≠ j) (v : V) :
     (euclideanStep i j h (v i) (v j) • v) j = v i := by
   rw [euclideanStep, mul_smul, coordinateSwap_smul_right,
     transvection_smul_other _ _ _ h.symm h]
 
-theorem euclideanStep_smul_other (i j k : Index) (h : i ≠ j)
+lemma euclideanStep_smul_other (i j k : Index) (h : i ≠ j)
     (hki : k ≠ i) (hkj : k ≠ j) (v : V) :
     (euclideanStep i j h (v i) (v j) • v) k = v k := by
   rw [euclideanStep, mul_smul,
     coordinateSwap_smul_other i j k h hki hkj,
     transvection_smul_other _ _ _ h.symm hkj]
 
-theorem pair_reduce (i j : Index) (h : i ≠ j) (v : V) :
+lemma pair_reduce (i j : Index) (h : i ≠ j) (v : V) :
     ∃ g : Q, g ∈ elementarySubgroup ∧
       (g • v) i = EuclideanDomain.gcd (v i) (v j) ∧
       (g • v) j = 0 ∧
@@ -30515,7 +30515,7 @@ theorem pair_reduce (i j : Index) (h : i ≠ j) (v : V) :
   exact hp v rfl rfl
 
 set_option backward.isDefEq.respectTransparency false in
-theorem binaryPolynomial_eq_one_of_isUnit (p : R) (hp : IsUnit p) :
+lemma binaryPolynomial_eq_one_of_isUnit (p : R) (hp : IsUnit p) :
     p = 1 := by
   obtain ⟨a, ha, hpa⟩ := Polynomial.isUnit_iff.mp hp
   have ha' : a = 1 := by
@@ -30523,11 +30523,11 @@ theorem binaryPolynomial_eq_one_of_isUnit (p : R) (hp : IsUnit p) :
     fin_cases a <;> simp_all
   simpa [ha'] using hpa.symm
 
-theorem matrix_mul_apply_as_smul (g A : Q) (i j : Index) :
+lemma matrix_mul_apply_as_smul (g A : Q) (i j : Index) :
     (g * A) i j = (g • (fun k : Index => A k j)) i := by
   rfl
 
-theorem first_column_reduce (A : Q) :
+lemma first_column_reduce (A : Q) :
     ∃ g : Q, g ∈ elementarySubgroup ∧
       (g * A) 0 0 = 1 ∧
       (g * A) 1 0 = 0 ∧
@@ -30573,7 +30573,7 @@ theorem first_column_reduce (A : Q) :
     IsUnit.of_mul_eq_one _ hproduct
   exact ⟨g, hg, binaryPolynomial_eq_one_of_isUnit _ hunit, hz1, hz2, hz3⟩
 
-theorem transvection_fix_of_source_zero (i j : Index) (h : i ≠ j) (c : R)
+lemma transvection_fix_of_source_zero (i j : Index) (h : i ≠ j) (c : R)
     (w : V) (hw : w j = 0) :
     Matrix.SpecialLinearGroup.transvection h c • w = w := by
   funext k
@@ -30583,7 +30583,7 @@ theorem transvection_fix_of_source_zero (i j : Index) (h : i ≠ j) (c : R)
     simp
   · exact transvection_smul_other i j k h hk c w
 
-theorem coordinateSwap_fix_of_pair_zero (i j : Index) (h : i ≠ j) (w : V)
+lemma coordinateSwap_fix_of_pair_zero (i j : Index) (h : i ≠ j) (w : V)
     (hi : w i = 0) (hj : w j = 0) :
     coordinateSwap i j h • w = w := by
   rw [coordinateSwap, mul_smul, mul_smul,
@@ -30591,14 +30591,14 @@ theorem coordinateSwap_fix_of_pair_zero (i j : Index) (h : i ≠ j) (w : V)
     transvection_fix_of_source_zero j i h.symm 1 w hi,
     transvection_fix_of_source_zero i j h 1 w hj]
 
-theorem euclideanStep_fix_of_pair_zero (i j : Index) (h : i ≠ j)
+lemma euclideanStep_fix_of_pair_zero (i j : Index) (h : i ≠ j)
     (a b : R) (w : V) (hi : w i = 0) (hj : w j = 0) :
     euclideanStep i j h a b • w = w := by
   rw [euclideanStep, mul_smul,
     transvection_fix_of_source_zero j i h.symm (b / a) w hi,
     coordinateSwap_fix_of_pair_zero i j h w hi hj]
 
-theorem pair_reduce_strong (i j : Index) (h : i ≠ j) (v : V) :
+lemma pair_reduce_strong (i j : Index) (h : i ≠ j) (v : V) :
     ∃ g : Q, g ∈ elementarySubgroup ∧
       (g • v) i = EuclideanDomain.gcd (v i) (v j) ∧
       (g • v) j = 0 ∧
@@ -30650,7 +30650,7 @@ theorem pair_reduce_strong (i j : Index) (h : i ≠ j) (v : V) :
         rw [hsz, hgfix z hzi hzj]
   exact hp v rfl rfl
 
-theorem second_column_reduce (A : Q)
+lemma second_column_reduce (A : Q)
     (h₁₀ : A (1 : Index) 0 = 0)
     (h₂₀ : A (2 : Index) 0 = 0)
     (h₃₀ : A (3 : Index) 0 = 0) :
@@ -30697,7 +30697,7 @@ theorem second_column_reduce (A : Q)
     exact h₃₀
   exact ⟨p, hp, h10, h20, h30, h21, h31⟩
 
-theorem third_column_reduce (A : Q)
+lemma third_column_reduce (A : Q)
     (h10 : A 1 0 = 0) (h20 : A 2 0 = 0) (h30 : A 3 0 = 0)
     (h21 : A 2 1 = 0) (h31 : A 3 1 = 0) :
     ∃ p : Q, p ∈ elementarySubgroup ∧
@@ -30728,7 +30728,7 @@ theorem third_column_reduce (A : Q)
     exact h31
   · exact hz32
 
-theorem fin_four_upperTriangular_of_six (A : Q)
+lemma fin_four_upperTriangular_of_six (A : Q)
     (h10 : A (1 : Index) 0 = 0)
     (h20 : A (2 : Index) 0 = 0)
     (h30 : A (3 : Index) 0 = 0)
@@ -30764,7 +30764,7 @@ theorem fin_four_upperTriangular_of_six (A : Q)
     · exact h31
     · exact h32
 
-theorem upper_triangularize (A : Q) :
+lemma upper_triangularize (A : Q) :
     ∃ g : Q, g ∈ elementarySubgroup ∧
       ∀ i j : Index, j < i → (g * A) i j = 0 := by
   obtain ⟨p₀, hp₀, _, h10, h20, h30⟩ := first_column_reduce A
@@ -30783,7 +30783,7 @@ theorem upper_triangularize (A : Q) :
   exact fin_four_upperTriangular_of_six _
     h10'' h20'' h30'' h21' h31' h32
 
-theorem upperTriangular_diag_one (g : Q)
+lemma upperTriangular_diag_one (g : Q)
     (htri : ∀ i j : Index, j < i → g i j = 0) (i : Index) :
     g i i = 1 := by
   have hblock : (g : Matrix Index Index R).BlockTriangular id := by
@@ -30799,7 +30799,7 @@ theorem upperTriangular_diag_one (g : Q)
   rw [hprod] at hdvd
   exact binaryPolynomial_eq_one_of_isUnit _ (isUnit_of_dvd_one hdvd)
 
-theorem upperUnitriangular_factorization (g : Q)
+lemma upperUnitriangular_factorization (g : Q)
     (hu : ∀ i j : Index, j < i → g i j = 0)
     (hd : ∀ i : Index, g i i = 1) :
     g =
@@ -30833,7 +30833,7 @@ theorem upperUnitriangular_factorization (g : Q)
       Matrix.single_apply, Matrix.one_apply,
       h00, h11, h22, h33, h10, h20, h21, h30, h31, h32]
 
-theorem upperUnitriangular_mem (g : Q)
+lemma upperUnitriangular_mem (g : Q)
     (hu : ∀ i j : Index, j < i → g i j = 0)
     (hd : ∀ i : Index, g i i = 1) :
     g ∈ elementarySubgroup := by
@@ -30850,7 +30850,7 @@ theorem upperUnitriangular_mem (g : Q)
       (transvection_mem 0 2 (by decide) (g 0 2)))
     (transvection_mem 0 1 (by decide) (g 0 1))
 
-theorem elementarySubgroup_eq_top : elementarySubgroup = ⊤ := by
+lemma elementarySubgroup_eq_top : elementarySubgroup = ⊤ := by
   apply top_unique
   intro A _
   obtain ⟨p, hp, hupper⟩ := upper_triangularize A
@@ -30863,10 +30863,10 @@ theorem elementarySubgroup_eq_top : elementarySubgroup = ⊤ := by
 
 end ElementaryGenerationProof
 
-theorem elementaryGeneration : ElementaryGeneration :=
+lemma elementaryGeneration : ElementaryGeneration :=
   ElementaryGenerationProof.elementarySubgroup_eq_top
 
-theorem pi₂_surjective : Function.Surjective pi₂ :=
+lemma pi₂_surjective : Function.Surjective pi₂ :=
   pi₂_surjective_of_elementaryGeneration elementaryGeneration
 
 instance instShiftKernelFinite (n : ℕ) : Finite (shiftKernel n) := by
@@ -30896,7 +30896,7 @@ def pontryaginDualEquivMonoidHom
     rfl
   map_mul' χ ψ := rfl
 
-theorem finitePontryaginDual_card
+lemma finitePontryaginDual_card
     (A : Type*) [CommGroup A] [Finite A]
     [TopologicalSpace A] [DiscreteTopology A] :
     Nat.card (PontryaginDual A) = Nat.card A := by
@@ -30905,14 +30905,14 @@ theorem finitePontryaginDual_card
     (A →* Circle) ≃* (A →* Circleˣ)).toEquiv]
   exact CommGroup.card_monoidHom_of_hasEnoughRootsOfUnity A Circle
 
-theorem shiftKernelPontryaginDual_card_eq_shiftKernel_card (n : ℕ) :
+lemma shiftKernelPontryaginDual_card_eq_shiftKernel_card (n : ℕ) :
     Nat.card (PontryaginDual (Multiplicative (shiftKernel n))) =
       Nat.card (shiftKernel n) := by
   rw [finitePontryaginDual_card (Multiplicative (shiftKernel n))]
   change Nat.card (shiftKernel n) = Nat.card (shiftKernel n)
   rfl
 
-theorem shiftKernelPontryaginDual_card (n : ℕ) :
+lemma shiftKernelPontryaginDual_card (n : ℕ) :
     Nat.card (PontryaginDual (Multiplicative (shiftKernel n))) =
       2 ^ (4 * n) := by
   rw [shiftKernelPontryaginDual_card_eq_shiftKernel_card]
@@ -30924,7 +30924,7 @@ abbrev ShiftKernelDual (n : ℕ) :=
 def dualCarryPullback (n : ℕ) : E 0 →+ E n :=
   (PontryaginDual.map (carryPullbackContinuous n)).toMonoidHom.toAdditive
 
-@[simp] theorem dualCarryPullback_apply (n : ℕ) (η : E 0)
+@[simp] lemma dualCarryPullback_apply (n : ℕ) (η : E 0)
     (z : CarryGroup n) :
     Additive.toMul (dualCarryPullback n η) (Multiplicative.ofAdd z) =
       Additive.toMul η (Multiplicative.ofAdd (carryPullback n z)) := rfl
@@ -30932,7 +30932,7 @@ def dualCarryPullback (n : ℕ) : E 0 →+ E n :=
 def dualCarrySection (n : ℕ) : E n →+ E 0 :=
   (PontryaginDual.map (carryPullbackSectionContinuous n)).toMonoidHom.toAdditive
 
-@[simp] theorem dualCarrySection_dualCarryPullback (n : ℕ) (η : E 0) :
+@[simp] lemma dualCarrySection_dualCarryPullback (n : ℕ) (η : E 0) :
     dualCarrySection n (dualCarryPullback n η) = η := by
   apply Additive.toMul.injective
   apply PontryaginDual.ext
@@ -30944,14 +30944,14 @@ def dualCarrySection (n : ℕ) : E n →+ E 0 :=
   rw [carryPullback_carryPullbackSection]
   rfl
 
-theorem dualCarryPullback_injective (n : ℕ) :
+lemma dualCarryPullback_injective (n : ℕ) :
     Function.Injective (dualCarryPullback n) :=
   Function.LeftInverse.injective (dualCarrySection_dualCarryPullback n)
 
 def shiftKernelRestriction (n : ℕ) : E n →+ ShiftKernelDual n :=
   (PontryaginDual.map (shiftKernelInclusionContinuous n)).toMonoidHom.toAdditive
 
-@[simp] theorem shiftKernelRestriction_apply (n : ℕ) (η : E n)
+@[simp] lemma shiftKernelRestriction_apply (n : ℕ) (η : E n)
     (ℓ : shiftKernel n) :
     Additive.toMul (shiftKernelRestriction n η) (Multiplicative.ofAdd ℓ) =
       Additive.toMul η (Multiplicative.ofAdd (shiftKernelInclusion n ℓ)) := rfl
@@ -30959,7 +30959,7 @@ def shiftKernelRestriction (n : ℕ) : E n →+ ShiftKernelDual n :=
 def extendShiftKernelCharacter (n : ℕ) : ShiftKernelDual n →+ E n :=
   (PontryaginDual.map (kernelProjectionContinuous n)).toMonoidHom.toAdditive
 
-@[simp] theorem shiftKernelRestriction_extend (n : ℕ)
+@[simp] lemma shiftKernelRestriction_extend (n : ℕ)
     (χ : ShiftKernelDual n) :
     shiftKernelRestriction n (extendShiftKernelCharacter n χ) = χ := by
   apply Additive.toMul.injective
@@ -30973,11 +30973,11 @@ def extendShiftKernelCharacter (n : ℕ) : ShiftKernelDual n →+ E n :=
   rw [kernelProjection_shiftKernelInclusion]
   rfl
 
-theorem shiftKernelRestriction_surjective (n : ℕ) :
+lemma shiftKernelRestriction_surjective (n : ℕ) :
     Function.Surjective (shiftKernelRestriction n) :=
   Function.RightInverse.surjective (shiftKernelRestriction_extend n)
 
-theorem dualCarryPullback_range_eq_shiftKernelRestriction_ker (n : ℕ) :
+lemma dualCarryPullback_range_eq_shiftKernelRestriction_ker (n : ℕ) :
     (dualCarryPullback n).range = (shiftKernelRestriction n).ker := by
   ext η
   constructor
@@ -31037,19 +31037,19 @@ theorem dualCarryPullback_range_eq_shiftKernelRestriction_ker (n : ℕ) :
                 (fun w : CarryGroup n => Additive.toMul η (Multiplicative.ofAdd w))
                 hsplit
 
-theorem dualCarryPullback_range_index_eq_kernelDual_card (n : ℕ) :
+lemma dualCarryPullback_range_index_eq_kernelDual_card (n : ℕ) :
     (dualCarryPullback n).range.index = Nat.card (ShiftKernelDual n) := by
   rw [dualCarryPullback_range_eq_shiftKernelRestriction_ker]
   rw [AddSubgroup.index_ker]
   rw [AddMonoidHom.range_eq_top.mpr (shiftKernelRestriction_surjective n)]
   exact Nat.card_congr (Equiv.Set.univ (ShiftKernelDual n))
 
-theorem shiftKernelDual_card (n : ℕ) :
+lemma shiftKernelDual_card (n : ℕ) :
     Nat.card (ShiftKernelDual n) = 2 ^ (4 * n) := by
   change Nat.card (PontryaginDual (Multiplicative (shiftKernel n))) = _
   exact shiftKernelPontryaginDual_card n
 
-theorem dualCarryPullback_range_index (n : ℕ) :
+lemma dualCarryPullback_range_index (n : ℕ) :
     (dualCarryPullback n).range.index = 2 ^ (4 * n) := by
   rw [dualCarryPullback_range_index_eq_kernelDual_card, shiftKernelDual_card]
 
@@ -31058,7 +31058,7 @@ section SemidirectIndex
 variable {N₁ N₂ H : Type*} [Group N₁] [Group N₂] [Group H]
 variable {φ₁ : H →* MulAut N₁} {φ₂ : H →* MulAut N₂}
 
-theorem semidirectMap_range_index
+lemma semidirectMap_range_index
     (f : N₁ →* N₂)
     (hequiv : ∀ h : H,
       f.comp (φ₁ h).toMonoidHom =
@@ -31106,7 +31106,7 @@ theorem semidirectMap_range_index
 
 end SemidirectIndex
 
-theorem carryPullback_kCarryAddAut (n : ℕ) (k : K)
+lemma carryPullback_kCarryAddAut (n : ℕ) (k : K)
     (z : CarryGroup n) :
     carryPullback n (kCarryAddAut n k z) =
       kCarryAddAut 0 k (carryPullback n z) := by
@@ -31114,7 +31114,7 @@ theorem carryPullback_kCarryAddAut (n : ℕ) (k : K)
   · exact kXLinear_shift k n z.linear
   · rfl
 
-theorem dualCarryPullback_equivariant
+lemma dualCarryPullback_equivariant
     (n : ℕ) (k : K) (η : E 0) :
     dualCarryPullback n
         (Multiplicative.toAdd (kEAction 0 k (Multiplicative.ofAdd η))) =
@@ -31145,16 +31145,16 @@ def gammaEmbedding (n : ℕ) : Gamma 0 →* Gamma n :=
       exact congrArg Multiplicative.ofAdd
         (dualCarryPullback_equivariant n k (Multiplicative.toAdd η)))
 
-@[simp] theorem gammaEmbedding_left (n : ℕ) (g : Gamma 0) :
+@[simp] lemma gammaEmbedding_left (n : ℕ) (g : Gamma 0) :
     (gammaEmbedding n g).left =
       Multiplicative.ofAdd (dualCarryPullback n (Multiplicative.toAdd g.left)) :=
   rfl
 
-@[simp] theorem gammaEmbedding_right (n : ℕ) (g : Gamma 0) :
+@[simp] lemma gammaEmbedding_right (n : ℕ) (g : Gamma 0) :
     (gammaEmbedding n g).right = g.right :=
   rfl
 
-theorem gammaEmbedding_injective (n : ℕ) :
+lemma gammaEmbedding_injective (n : ℕ) :
     Function.Injective (gammaEmbedding n) := by
   intro g h heq
   apply SemidirectProduct.ext
@@ -31163,7 +31163,7 @@ theorem gammaEmbedding_injective (n : ℕ) :
     exact congrArg (fun z : Gamma n => Multiplicative.toAdd z.left) heq
   · exact congrArg (fun z : Gamma n => z.right) heq
 
-theorem gammaEmbedding_range_index (n : ℕ) :
+lemma gammaEmbedding_range_index (n : ℕ) :
     (gammaEmbedding n).range.index = 2 ^ (4 * n) := by
   unfold gammaEmbedding
   rw [semidirectMap_range_index]
@@ -31186,7 +31186,7 @@ noncomputable section
 
 universe u v
 
-theorem additiveLeftRegularUnitary_single
+lemma additiveLeftRegularUnitary_single
     {A : Type u} [AddCommGroup A] [DecidableEq A]
     (a b : A) (c : ℂ) :
     (leftRegularUnitary (Multiplicative.ofAdd a) :
@@ -31197,7 +31197,7 @@ theorem additiveLeftRegularUnitary_single
   simp [leftRegularUnitary_apply, lp.single_apply, Pi.single_apply,
     inv_mul_eq_iff_eq_mul]
 
-theorem fourierUnitary_single_smul
+lemma fourierUnitary_single_smul
     {A : Type u} [AddCommGroup A] [DecidableEq A]
     {H : Type v} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     [CompleteSpace H]
@@ -31215,7 +31215,7 @@ theorem fourierUnitary_single_smul
       2 (Multiplicative.ofAdd b) c (1 : ℂ))
   rw [hs, map_smul, hU]
 
-theorem fourier_conjugates_regular_of_character_basis
+lemma fourier_conjugates_regular_of_character_basis
     {A : Type u} [AddCommGroup A] [DecidableEq A]
     {H : Type v} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     [CompleteSpace H]
@@ -31262,7 +31262,7 @@ theorem fourier_conjugates_regular_of_character_basis
   rw [U.symm_apply_apply]
   exact DFunLike.congr_fun hcomp η
 
-theorem carryFourier_conjugates_regular_of_character_basis
+lemma carryFourier_conjugates_regular_of_character_basis
     (n : ℕ) (η : E n)
     (T : Lp ℂ 2 (carryHaar n) →L[ℂ] Lp ℂ 2 (carryHaar n))
     (hT : ∀ θ : E n,
@@ -31283,7 +31283,7 @@ theorem carryFourier_conjugates_regular_of_character_basis
     (A := E n) (H := Lp ℂ 2 (carryHaar n))
     U (carryCharacterL2 n) hU η T hT
 
-theorem splitFourier_conjugates_regular_of_character_basis
+lemma splitFourier_conjugates_regular_of_character_basis
     (d : D)
     (T : Lp ℂ 2 productHaar →L[ℂ] Lp ℂ 2 productHaar)
     (hT : ∀ e : D,
@@ -31304,7 +31304,7 @@ theorem splitFourier_conjugates_regular_of_character_basis
     (A := D) (H := Lp ℂ 2 productHaar)
     U splitCharacterL2 hU d T hT
 
-theorem carryFourier_conjugates_normal_generator
+lemma carryFourier_conjugates_normal_generator
     (n : ℕ) (η : E n) :
     (carryFourierEquiv n).conjStarAlgEquiv
       (leftRegularUnitary (Multiplicative.ofAdd η) :
@@ -31315,7 +31315,7 @@ theorem carryFourier_conjugates_normal_generator
   apply carryFourier_conjugates_regular_of_character_basis
   exact carryCharacterMultiplier_character n η
 
-theorem splitFourier_conjugates_normal_generator
+lemma splitFourier_conjugates_normal_generator
     (d : D) :
     splitFourierEquiv.conjStarAlgEquiv
       (leftRegularUnitary (Multiplicative.ofAdd d) :
@@ -31337,7 +31337,7 @@ def tensorCoords : T ≃ₗ[F] Fin 4 → Fin 4 → TensorProduct F R R :=
     (LinearEquiv.piCongrRight fun _ : Fin 4 ↦
       TensorProduct.piRight F F R (fun _ : Fin 4 ↦ R))
 
-@[simp] theorem tensorCoords_tmul (u v : V) (i j : Fin 4) :
+@[simp] lemma tensorCoords_tmul (u v : V) (i j : Fin 4) :
     tensorCoords (u ⊗ₜ[F] v) i j = u i ⊗ₜ[F] v j := by
   change
     (TensorProduct.piRight F F R (fun _ : Fin 4 ↦ R)
@@ -31347,13 +31347,13 @@ def tensorCoords : T ≃ₗ[F] Fin 4 → Fin 4 → TensorProduct F R R :=
 def blockCoefficients : TensorProduct F R R ≃ₗ[F] ℕ →₀ R :=
   TensorProduct.equivFinsuppOfBasisRight (Polynomial.basisMonomials F)
 
-@[simp] theorem blockCoefficients_tmul (u v : R) (n : ℕ) :
+@[simp] lemma blockCoefficients_tmul (u v : R) (n : ℕ) :
     blockCoefficients (u ⊗ₜ[F] v) n = v.coeff n • u := by
   rw [blockCoefficients,
     TensorProduct.equivFinsuppOfBasisRight_apply_tmul_apply]
   rfl
 
-theorem exists_blockCoefficient_ne_zero {w : TensorProduct F R R} (hw : w ≠ 0) :
+lemma exists_blockCoefficient_ne_zero {w : TensorProduct F R R} (hw : w ≠ 0) :
     ∃ n : ℕ, blockCoefficients w n ≠ 0 := by
   have h : blockCoefficients w ≠ 0 := by
     intro hzero
@@ -31366,7 +31366,7 @@ theorem exists_blockCoefficient_ne_zero {w : TensorProduct F R R} (hw : w ≠ 0)
   by_contra hn
   exact hnot ⟨n, hn⟩
 
-theorem blockCoefficients_map_mulLeft (f : R) (w : TensorProduct F R R)
+lemma blockCoefficients_map_mulLeft (f : R) (w : TensorProduct F R R)
     (n : ℕ) :
     blockCoefficients
         ((TensorProduct.map (LinearMap.mulLeft F f) LinearMap.id) w) n =
@@ -31379,7 +31379,7 @@ theorem blockCoefficients_map_mulLeft (f : R) (w : TensorProduct F R R)
       simp only [map_add, Finsupp.add_apply]
       rw [hu, hv, mul_add]
 
-theorem exists_tensor_blockCoefficient_ne_zero {w : T} (hw : w ≠ 0) :
+lemma exists_tensor_blockCoefficient_ne_zero {w : T} (hw : w ≠ 0) :
     ∃ (i j : Fin 4) (n : ℕ), blockCoefficients (tensorCoords w i j) n ≠ 0 := by
   have hcoords : tensorCoords w ≠ 0 := by
     intro hzero
@@ -31396,7 +31396,7 @@ noncomputable section
 
 open Matrix
 
-theorem specialLinear_map_transvection
+lemma specialLinear_map_transvection
     {A C : Type*} [CommRing A] [CommRing C]
     (f : A →+* C) {i j : Index} (hij : i ≠ j) (a : A) :
     Matrix.SpecialLinearGroup.map f
@@ -31418,7 +31418,7 @@ def integralOrbitTransvection {i j : Index} (hij : i ≠ j) (n : ℕ) :
   Matrix.SpecialLinearGroup.transvection hij
     (Polynomial.C (3 : ℤ) * (Polynomial.X : IntegralPolynomial) ^ n)
 
-theorem integralOrbitTransvection_mem_K {i j : Index} (hij : i ≠ j) (n : ℕ) :
+lemma integralOrbitTransvection_mem_K {i j : Index} (hij : i ≠ j) (n : ℕ) :
     integralOrbitTransvection hij n ∈ KSubgroup := by
   change modThreeGroupHom (integralOrbitTransvection hij n) = 1
   rw [integralOrbitTransvection, modThreeGroupHom,
@@ -31429,7 +31429,7 @@ theorem integralOrbitTransvection_mem_K {i j : Index} (hij : i ≠ j) (n : ℕ) 
 def actingTransvection {i j : Index} (hij : i ≠ j) (n : ℕ) : K :=
   ⟨integralOrbitTransvection hij n, integralOrbitTransvection_mem_K hij n⟩
 
-theorem pi₂_actingTransvection {i j : Index} (hij : i ≠ j) (n : ℕ) :
+lemma pi₂_actingTransvection {i j : Index} (hij : i ≠ j) (n : ℕ) :
     pi₂ (actingTransvection hij n) = binaryTransvection hij n := by
   change Matrix.SpecialLinearGroup.map modTwoPolynomial
     (integralOrbitTransvection hij n) = binaryTransvection hij n
@@ -31440,7 +31440,7 @@ theorem pi₂_actingTransvection {i j : Index} (hij : i ≠ j) (n : ℕ) :
   change Polynomial.C (3 : ZMod 2) = Polynomial.C 1
   exact congrArg (Polynomial.C : ZMod 2 →+* R) hthree
 
-theorem transvection_smul_apply
+lemma transvection_smul_apply
     {i j : Index} (hij : i ≠ j) (f : R) (v : V) :
     (Matrix.SpecialLinearGroup.transvection hij f • v) i =
       v i + f * v j := by
@@ -31448,14 +31448,14 @@ theorem transvection_smul_apply
     Matrix.SpecialLinearGroup.transvection_coe,
     Matrix.add_mulVec, Matrix.single_mulVec_eq]
 
-theorem x_pow_mul_injective (p : R) (hp : p ≠ 0) :
+lemma x_pow_mul_injective (p : R) (hp : p ≠ 0) :
     Function.Injective (fun n : ℕ ↦ (Polynomial.X : R) ^ n * p) := by
   intro m n h
   have hpowers : (Polynomial.X : R) ^ m = (Polynomial.X : R) ^ n :=
     mul_right_cancel₀ hp h
   simpa using congrArg Polynomial.natDegree hpowers
 
-theorem binaryTransvection_smul_injective
+lemma binaryTransvection_smul_injective
     {i j : Index} (hij : i ≠ j) (v : V) (hvj : v j ≠ 0) :
     Function.Injective (fun n : ℕ ↦ binaryTransvection hij n • v) := by
   intro m n h
@@ -31463,7 +31463,7 @@ theorem binaryTransvection_smul_injective
   simp only [binaryTransvection, transvection_smul_apply] at hcoordinate
   exact x_pow_mul_injective (v j) hvj (add_left_cancel hcoordinate)
 
-theorem k_vector_orbit_infinite (v : V) (hv : v ≠ 0) :
+lemma k_vector_orbit_infinite (v : V) (hv : v ≠ 0) :
     (Set.range fun k : K ↦ kLinear k v).Infinite := by
   obtain ⟨j, hj⟩ : ∃ j : Index, v j ≠ 0 := by
     by_contra h
@@ -31486,7 +31486,7 @@ theorem k_vector_orbit_infinite (v : V) (hv : v ≠ 0) :
     rintro _ ⟨n, rfl⟩
     exact ⟨actingTransvection hij n, rfl⟩)
 
-theorem transvection_linear_apply_coordinate
+lemma transvection_linear_apply_coordinate
     {i j : Index} (hij : i ≠ j) (f : R) (v : V) (k : Index) :
     (Matrix.SpecialLinearGroup.toLin'
       (Matrix.SpecialLinearGroup.transvection hij f) v) k =
@@ -31502,7 +31502,7 @@ def transvectionTensor {i j : Index} (hij : i ≠ j) (f : R) : T ≃ₗ[F] T :=
     ((Matrix.SpecialLinearGroup.toLin'
       (Matrix.SpecialLinearGroup.transvection hij f)).restrictScalars F)
 
-theorem tensorCoords_transvection
+lemma tensorCoords_transvection
     {i j k : Index} (hij : i ≠ j) (hik : i ≠ k) (f : R) (w : T) :
     tensorCoords (transvectionTensor hij f w) i k =
       tensorCoords w i k +
@@ -31519,7 +31519,7 @@ theorem tensorCoords_transvection
       rw [hu, hv]
       ac_rfl
 
-theorem kTensorLinear_actingTransvection
+lemma kTensorLinear_actingTransvection
     {i j : Index} (hij : i ≠ j) (n : ℕ) :
     kTensorLinear (actingTransvection hij n) =
       transvectionTensor hij ((Polynomial.X : R) ^ n) := by
@@ -31531,7 +31531,7 @@ theorem kTensorLinear_actingTransvection
   rw [pi₂_actingTransvection]
   rfl
 
-theorem firstTensorPowerAction_injective
+lemma firstTensorPowerAction_injective
     (z : TensorProduct F R R) (hz : z ≠ 0) :
     Function.Injective (fun n : ℕ ↦
       (TensorProduct.map
@@ -31545,7 +31545,7 @@ theorem firstTensorPowerAction_injective
       congrArg (fun w : TensorProduct F R R ↦ blockCoefficients w r) h
   exact x_pow_mul_injective (blockCoefficients z r) hr hpoly
 
-theorem k_tensor_orbit_infinite (w : T) (hw : w ≠ 0) :
+lemma k_tensor_orbit_infinite (w : T) (hw : w ≠ 0) :
     (Set.range fun k : K ↦ kTensorLinear k w).Infinite := by
   obtain ⟨j, k, r, hr⟩ := exists_tensor_blockCoefficient_ne_zero hw
   have hz : tensorCoords w j k ≠ 0 := by
@@ -31570,7 +31570,7 @@ theorem k_tensor_orbit_infinite (w : T) (hw : w ≠ 0) :
     rintro _ ⟨n, rfl⟩
     exact ⟨actingTransvection hij n, rfl⟩)
 
-theorem k_dividedSquare_orbit_infinite (b : B) (hb : b ≠ 0) :
+lemma k_dividedSquare_orbit_infinite (b : B) (hb : b ≠ 0) :
     (Set.range fun k : K ↦ kDividedSquareLinear k b).Infinite := by
   have hval : (b : T) ≠ 0 := by
     intro hzero
@@ -31583,7 +31583,7 @@ theorem k_dividedSquare_orbit_infinite (b : B) (hb : b ≠ 0) :
   exact ⟨kDividedSquareLinear k b, ⟨k, rfl⟩,
     kDividedSquareLinear_val k b⟩
 
-theorem k_D_orbit_infinite (x : D) (hx : x ≠ 0) :
+lemma k_D_orbit_infinite (x : D) (hx : x ≠ 0) :
     (Set.range fun k : K ↦ kDLinear k x).Infinite := by
   by_cases hv : x.1 = 0
   · have hb : x.2 ≠ 0 := by
@@ -31611,7 +31611,7 @@ def splitConjugationOrbit
     (G H : CountableDiscreteGroup.{u}) (section_ : H →* G) (x : G) : Set G :=
   Set.range fun h : H ↦ section_ h * x * (section_ h)⁻¹
 
-theorem isICC_of_split_quotient
+lemma isICC_of_split_quotient
     (G H : CountableDiscreteGroup.{u})
     (projection : G →* H) (section_ : H →* G)
     (hsection : ∀ h : H, projection (section_ h) = h)
@@ -31643,7 +31643,7 @@ def semidirectCountableGroup
   group := inferInstance
   countable := SemidirectProduct.equivProd.injective.countable
 
-theorem semidirect_isICC
+lemma semidirect_isICC
     (A H : CountableDiscreteGroup.{u}) (action : H →* MulAut A)
     (hH : IsICC H)
     (horbit : ∀ a : A, a ≠ 1 →
@@ -31693,7 +31693,7 @@ def eKernelGroup (n : ℕ) : CountableDiscreteGroup where
   group := inferInstance
   countable := inferInstance
 
-theorem kEAction_iota (n : ℕ) (k : K) (v : V) :
+lemma kEAction_iota (n : ℕ) (k : K) (v : V) :
     kEAction n k (Multiplicative.ofAdd (iota n v)) =
       Multiplicative.ofAdd (iota n (kLinear k v)) := by
   apply PontryaginDual.ext
@@ -31711,15 +31711,15 @@ theorem kEAction_iota (n : ℕ) (k : K) (v : V) :
 def kEAddAction (n : ℕ) (k : K) : E n ≃+ E n :=
   MulEquiv.toAdditive (kEAction n k)
 
-@[simp] theorem kEAddAction_apply (n : ℕ) (k : K) (η : E n) :
+@[simp] lemma kEAddAction_apply (n : ℕ) (k : K) (η : E n) :
     kEAddAction n k η =
       Multiplicative.toAdd (kEAction n k (Multiplicative.ofAdd η)) := rfl
 
-@[simp] theorem kEAddAction_iota (n : ℕ) (k : K) (v : V) :
+@[simp] lemma kEAddAction_iota (n : ℕ) (k : K) (v : V) :
     kEAddAction n k (iota n v) = iota n (kLinear k v) := by
   exact congrArg Multiplicative.toAdd (kEAction_iota n k v)
 
-theorem kEAddAction_iota_orbit_infinite
+lemma kEAddAction_iota_orbit_infinite
     (n : ℕ) (v : V) (hv : v ≠ 0) :
     (Set.range fun k : K => kEAddAction n k (iota n v)).Infinite := by
   have hinfinite :
@@ -31730,7 +31730,7 @@ theorem kEAddAction_iota_orbit_infinite
   rw [← kEAddAction_iota n k v]
   exact Set.mem_range_self k
 
-theorem kEAddAction_orbit_infinite_of_exact
+lemma kEAddAction_orbit_infinite_of_exact
     (n : ℕ) (sigma : E n →+ B)
     (hsigma_ker : sigma.ker = (iota n).range)
     (hsigma_equivariant : ∀ (k : K) (η : E n),
@@ -31753,7 +31753,7 @@ theorem kEAddAction_orbit_infinite_of_exact
     exact ⟨kEAddAction n k η, ⟨k, rfl⟩,
       hsigma_equivariant k η⟩
 
-theorem gamma_isICC_of_infinite_orbits
+lemma gamma_isICC_of_infinite_orbits
     (n : ℕ)
     (horbit : ∀ η : Multiplicative (E n), η ≠ 1 →
       (Set.range fun k : K => kEAction n k η).Infinite) :
@@ -31761,7 +31761,7 @@ theorem gamma_isICC_of_infinite_orbits
   exact semidirect_isICC (eKernelGroup n) actingGroup (kEAction n)
     actingGroup_isICC horbit
 
-theorem gamma_isICC_of_additive_infinite_orbits
+lemma gamma_isICC_of_additive_infinite_orbits
     (n : ℕ)
     (horbit : ∀ η : E n, η ≠ 0 →
       (Set.range fun k : K => kEAddAction n k η).Infinite) :
@@ -31777,7 +31777,7 @@ theorem gamma_isICC_of_additive_infinite_orbits
     rintro _ ⟨k, rfl⟩
     exact ⟨kEAction n k η, ⟨k, rfl⟩, rfl⟩)
 
-theorem gamma_isICC_of_exact
+lemma gamma_isICC_of_exact
     (n : ℕ) (sigma : E n →+ B)
     (hsigma_ker : sigma.ker = (iota n).range)
     (hsigma_equivariant : ∀ (k : K) (η : E n),
@@ -31787,7 +31787,7 @@ theorem gamma_isICC_of_exact
     (kEAddAction_orbit_infinite_of_exact n sigma hsigma_ker
       hsigma_equivariant)
 
-theorem kEAddAction_quadratic_value (n : ℕ) (k : K)
+lemma kEAddAction_quadratic_value (n : ℕ) (k : K)
     (η : E n) (q : Y) :
     Additive.toMul (kEAddAction n k η)
       (Multiplicative.ofAdd (⟨0, q⟩ : CarryGroup n)) =
@@ -31804,7 +31804,7 @@ theorem kEAddAction_quadratic_value (n : ℕ) (k : K)
   rw [kEAction_apply]
   congr 1
 
-theorem sigma_equivariant_of_characterization
+lemma sigma_equivariant_of_characterization
     (n : ℕ) (s : E n →+ B)
     (hs : ∀ (η : E n) (q : Y),
       ZMod.toCircle (q (s η)) =
@@ -31830,7 +31830,7 @@ theorem sigma_equivariant_of_characterization
     _ = ZMod.toCircle (q (kDividedSquareLinear k (s η))) := by
       rw [kYLinear_apply, inv_inv]
 
-theorem gamma_isICC_of_characterized_exact
+lemma gamma_isICC_of_characterized_exact
     (n : ℕ) (s : E n →+ B)
     (hs_ker : s.ker = (iota n).range)
     (hs_characterization : ∀ (η : E n) (q : Y),
@@ -31841,20 +31841,20 @@ theorem gamma_isICC_of_characterized_exact
   gamma_isICC_of_exact n s hs_ker
     (sigma_equivariant_of_characterization n s hs_characterization)
 
-theorem sigma_equivariant (n : ℕ) (k : K) (η : E n) :
+lemma sigma_equivariant (n : ℕ) (k : K) (η : E n) :
     sigma n (kEAddAction n k η) =
       kDividedSquareLinear k (sigma n η) :=
   sigma_equivariant_of_characterization n (sigma n)
     (sigma_characterization n) k η
 
-theorem sigma_equivariant_raw (n : ℕ) (k : K) (η : E n) :
+lemma sigma_equivariant_raw (n : ℕ) (k : K) (η : E n) :
     sigma n
         (Multiplicative.toAdd
           (kEAction n k (Multiplicative.ofAdd η))) =
       kDividedSquareLinear k (sigma n η) :=
   sigma_equivariant n k η
 
-theorem gamma_isICC (n : ℕ) : IsICC (gammaGroup n) :=
+lemma gamma_isICC (n : ℕ) : IsICC (gammaGroup n) :=
   gamma_isICC_of_characterized_exact n (sigma n) (sigma_ker n)
     (sigma_characterization n)
 
@@ -31872,14 +31872,14 @@ variable (E : Type u) [AddCommGroup E]
 
 abbrev twoTorsion : AddSubgroup E := AddSubgroup.torsionBy E (2 : ℤ)
 
-@[simp] theorem mem_twoTorsion (x : E) :
+@[simp] lemma mem_twoTorsion (x : E) :
     x ∈ twoTorsion E ↔ (2 : ℕ) • x = 0 :=
   AddSubgroup.torsionBy.nsmul_iff
 
 def doubledSubgroup : AddSubgroup E :=
   (nsmulAddMonoidHom (α := E) 2).range
 
-@[simp] theorem mem_doubledSubgroup (x : E) :
+@[simp] lemma mem_doubledSubgroup (x : E) :
     x ∈ doubledSubgroup E ↔ ∃ y : E, (2 : ℕ) • y = x :=
   Iff.rfl
 
@@ -31896,13 +31896,13 @@ def doubleIntoTwoTorsion : E →+ twoTorsion E where
     apply Subtype.ext
     simp
 
-@[simp] theorem doubleIntoTwoTorsion_val (x : E) :
+@[simp] lemma doubleIntoTwoTorsion_val (x : E) :
     (doubleIntoTwoTorsion E hfour x : E) = (2 : ℕ) • x := rfl
 
 def doubledWithinTwoTorsion : AddSubgroup (twoTorsion E) :=
   (doubleIntoTwoTorsion E hfour).range
 
-@[simp] theorem mem_doubledWithinTwoTorsion (x : twoTorsion E) :
+@[simp] lemma mem_doubledWithinTwoTorsion (x : twoTorsion E) :
     x ∈ doubledWithinTwoTorsion E hfour ↔
       ∃ y : E, (2 : ℕ) • y = (x : E) := by
   constructor
@@ -31940,10 +31940,10 @@ def twoTorsionEquiv (e : E ≃+ E') : twoTorsion E ≃+ twoTorsion E' where
     apply Subtype.ext
     exact e.map_add x y
 
-@[simp] theorem twoTorsionEquiv_val (e : E ≃+ E') (x : twoTorsion E) :
+@[simp] lemma twoTorsionEquiv_val (e : E ≃+ E') (x : twoTorsion E) :
     (twoTorsionEquiv e x : E') = e x := rfl
 
-theorem twoTorsionEquiv_map_doubled
+lemma twoTorsionEquiv_map_doubled
     (e : E ≃+ E')
     (hfour : ∀ x : E, (4 : ℕ) • x = 0)
     (hfour' : ∀ x : E', (4 : ℕ) • x = 0) :
@@ -32009,13 +32009,13 @@ namespace ExponentFourExtension
 variable {P E B₀}
 variable (F : ExponentFourExtension P E B₀)
 
-@[simp] theorem sigma_iota (v : P) : F.sigma (F.iota v) = 0 := by
+@[simp] lemma sigma_iota (v : P) : F.sigma (F.iota v) = 0 := by
   have hv : F.iota v ∈ F.sigma.ker := by
     rw [F.sigma_ker]
     exact ⟨v, rfl⟩
   exact hv
 
-theorem exponent_four (F : ExponentFourExtension P E B₀) (x : E) :
+lemma exponent_four (F : ExponentFourExtension P E B₀) (x : E) :
     (4 : ℕ) • x = 0 := by
   calc
     (4 : ℕ) • x = (2 : ℕ) • ((2 : ℕ) • x) := by
@@ -32025,7 +32025,7 @@ theorem exponent_four (F : ExponentFourExtension P E B₀) (x : E) :
     _ = 0 := by
       rw [F.doubling x, F.sigma_iota, map_zero, map_zero, map_zero]
 
-theorem mem_twoTorsion_iff (x : E) :
+lemma mem_twoTorsion_iff (x : E) :
     x ∈ twoTorsion E ↔ F.retraction (F.sigma x) = 0 := by
   rw [mem_twoTorsion, F.doubling]
   constructor
@@ -32036,7 +32036,7 @@ theorem mem_twoTorsion_iff (x : E) :
   · intro h
     simp [h]
 
-theorem doubledSubgroup_eq_iota_shift_range :
+lemma doubledSubgroup_eq_iota_shift_range :
     doubledSubgroup E = F.shift.range.map F.iota := by
   ext x
   constructor
@@ -32062,10 +32062,10 @@ def iotaIntoTwoTorsion : P →+ twoTorsion E where
   map_zero' := Subtype.ext (F.iota.map_zero)
   map_add' x y := Subtype.ext (F.iota.map_add x y)
 
-@[simp] theorem iotaIntoTwoTorsion_val (v : P) :
+@[simp] lemma iotaIntoTwoTorsion_val (v : P) :
     (F.iotaIntoTwoTorsion v : E) = F.iota v := rfl
 
-theorem iota_mem_doubledWithinTwoTorsion_iff (v : P) :
+lemma iota_mem_doubledWithinTwoTorsion_iff (v : P) :
     F.iotaIntoTwoTorsion v ∈
         doubledWithinTwoTorsion E F.exponent_four ↔
       v ∈ F.shift.range := by
@@ -32102,12 +32102,12 @@ instance twoTorsionDistribMulAction : DistribMulAction K (twoTorsion E) where
   smul_zero k := Subtype.ext (smul_zero k)
   smul_add k x y := Subtype.ext (smul_add k (x : E) (y : E))
 
-@[simp] theorem twoTorsion_smul_val (k : K) (x : twoTorsion E) :
+@[simp] lemma twoTorsion_smul_val (k : K) (x : twoTorsion E) :
     ((k • x : twoTorsion E) : E) = k • (x : E) := rfl
 
 variable (hfour : ∀ x : E, (4 : ℕ) • x = 0)
 
-theorem smul_mem_doubledWithinTwoTorsion
+lemma smul_mem_doubledWithinTwoTorsion
     (k : K) {x : twoTorsion E} (hx : x ∈ doubledWithinTwoTorsion E hfour) :
     k • x ∈ doubledWithinTwoTorsion E hfour := by
   obtain ⟨y, hy⟩ := (mem_doubledWithinTwoTorsion E hfour x).1 hx
@@ -32126,7 +32126,7 @@ def twoTorsionQuotientSmulAddHom (k : K) :
 instance twoTorsionQuotientSMul : SMul K (twoTorsionQuotient E hfour) where
   smul k := twoTorsionQuotientSmulAddHom K E hfour k
 
-@[simp] theorem twoTorsionQuotient_smul_mk (k : K) (x : twoTorsion E) :
+@[simp] lemma twoTorsionQuotient_smul_mk (k : K) (x : twoTorsion E) :
     k • (QuotientAddGroup.mk' (doubledWithinTwoTorsion E hfour) x) =
       QuotientAddGroup.mk' (doubledWithinTwoTorsion E hfour) (k • x) := rfl
 
@@ -32161,7 +32161,7 @@ def finiteOrbitSubgroup : AddSubgroup A where
     refine ⟨g • x, ⟨g, rfl⟩, ?_⟩
     exact (smul_neg g x).symm
 
-@[simp] theorem mem_finiteOrbitSubgroup (a : A) :
+@[simp] lemma mem_finiteOrbitSubgroup (a : A) :
     a ∈ finiteOrbitSubgroup K A ↔ (MulAction.orbit K a).Finite :=
   Iff.rfl
 
@@ -32169,7 +32169,7 @@ variable {K A}
 variable {K' : Type w} {A' : Type z}
   [Group K'] [AddCommGroup A'] [DistribMulAction K' A']
 
-theorem orbit_image_eq_of_equivariant
+lemma orbit_image_eq_of_equivariant
     (φ : K ≃* K') (e : A ≃+ A')
     (he : ∀ (k : K) (a : A), e (k • a) = φ k • e a)
     (a : A) :
@@ -32185,7 +32185,7 @@ theorem orbit_image_eq_of_equivariant
       _ = k • e a := by simp
       _ = b := hk
 
-theorem finiteOrbit_iff_of_equivariant
+lemma finiteOrbit_iff_of_equivariant
     (φ : K ≃* K') (e : A ≃+ A')
     (he : ∀ (k : K) (a : A), e (k • a) = φ k • e a)
     (a : A) :
@@ -32207,7 +32207,7 @@ def finiteOrbitSubgroupEquiv
   right_inv b := Subtype.ext (e.apply_symm_apply b)
   map_add' a b := Subtype.ext (e.map_add a b)
 
-@[simp] theorem finiteOrbitSubgroupEquiv_val
+@[simp] lemma finiteOrbitSubgroupEquiv_val
     (φ : K ≃* K') (e : A ≃+ A')
     (he : ∀ (k : K) (a : A), e (k • a) = φ k • e a)
     (a : finiteOrbitSubgroup K A) :
@@ -32224,7 +32224,7 @@ variable {K : Type u} {K' : Type v} {E : Type w} {E' : Type z}
 variable (hfour : ∀ x : E, (4 : ℕ) • x = 0)
 variable (hfour' : ∀ x : E', (4 : ℕ) • x = 0)
 
-@[simp] theorem twoTorsionQuotientEquiv_mk
+@[simp] lemma twoTorsionQuotientEquiv_mk
     (e : E ≃+ E') (x : twoTorsion E) :
     twoTorsionQuotientEquiv e hfour hfour'
         (QuotientAddGroup.mk' (doubledWithinTwoTorsion E hfour) x) =
@@ -32239,7 +32239,7 @@ variable {K : Type u} {A : Type v} {B₀ : Type w}
   [Group K] [AddCommGroup A] [AddCommGroup B₀]
   [DistribMulAction K A] [DistribMulAction K B₀]
 
-theorem orbit_image_eq_of_equivariantHom
+lemma orbit_image_eq_of_equivariantHom
     (p : A →+ B₀)
     (hp : ∀ (k : K) (a : A), p (k • a) = k • p a)
     (a : A) :
@@ -32251,7 +32251,7 @@ theorem orbit_image_eq_of_equivariantHom
   · rintro ⟨k, hk⟩
     exact ⟨k • a, ⟨k, rfl⟩, (hp k a).trans hk⟩
 
-theorem finiteOrbit_iff_equivariantHom_eq_zero
+lemma finiteOrbit_iff_equivariantHom_eq_zero
     (p : A →+ B₀) [Finite p.ker]
     (hp : ∀ (k : K) (a : A), p (k • a) = k • p a)
     (hB : ∀ b : B₀, b ≠ 0 → ¬(MulAction.orbit K b).Finite)
@@ -32282,7 +32282,7 @@ noncomputable def finiteOrbitSubgroupKerEquiv
   right_inv _ := Subtype.ext rfl
   map_add' _ _ := Subtype.ext rfl
 
-theorem finite_ker_of_shiftedQuotient_equiv
+lemma finite_ker_of_shiftedQuotient_equiv
     (n : ℕ) (p : A →+ B₀)
     (e : ShiftedQuotient n ≃+ p.ker) : Finite p.ker :=
   Finite.of_injective
@@ -32298,7 +32298,7 @@ noncomputable def finiteOrbitSubgroupShiftedQuotientEquiv
   letI : Finite p.ker := finite_ker_of_shiftedQuotient_equiv n p e
   exact (finiteOrbitSubgroupKerEquiv p hp hB).trans e.symm
 
-theorem finiteOrbitSubgroup_card_eq_two_pow_four_mul
+lemma finiteOrbitSubgroup_card_eq_two_pow_four_mul
     (n : ℕ) (p : A →+ B₀)
     (hp : ∀ (k : K) (a : A), p (k • a) = k • p a)
     (hB : ∀ b : B₀, b ≠ 0 → ¬(MulAction.orbit K b).Finite)
@@ -32321,10 +32321,10 @@ def sigmaIntoRetractionKer : twoTorsion E →+ D.retraction.ker where
   map_zero' := Subtype.ext D.sigma.map_zero
   map_add' x y := Subtype.ext (D.sigma.map_add x y)
 
-@[simp] theorem sigmaIntoRetractionKer_val (x : twoTorsion E) :
+@[simp] lemma sigmaIntoRetractionKer_val (x : twoTorsion E) :
     (D.sigmaIntoRetractionKer x : B₀) = D.sigma (x : E) := rfl
 
-theorem doubledWithin_le_sigmaIntoRetractionKer_ker :
+lemma doubledWithin_le_sigmaIntoRetractionKer_ker :
     doubledWithinTwoTorsion E D.exponent_four ≤ D.sigmaIntoRetractionKer.ker := by
   intro x hx
   obtain ⟨e, he⟩ := (mem_doubledWithinTwoTorsion E D.exponent_four x).1 hx
@@ -32336,7 +32336,7 @@ def quotientSigma : twoTorsionQuotient E D.exponent_four →+ D.retraction.ker :
   QuotientAddGroup.lift (doubledWithinTwoTorsion E D.exponent_four)
     D.sigmaIntoRetractionKer D.doubledWithin_le_sigmaIntoRetractionKer_ker
 
-@[simp] theorem quotientSigma_mk (x : twoTorsion E) :
+@[simp] lemma quotientSigma_mk (x : twoTorsion E) :
     D.quotientSigma
       ((QuotientAddGroup.mk' (doubledWithinTwoTorsion E D.exponent_four)) x) =
       D.sigmaIntoRetractionKer x :=
@@ -32347,12 +32347,12 @@ def quotientIotaBase : P →+ twoTorsionQuotient E D.exponent_four :=
   (QuotientAddGroup.mk' (doubledWithinTwoTorsion E D.exponent_four)).comp
     D.iotaIntoTwoTorsion
 
-@[simp] theorem quotientIotaBase_apply (p : P) :
+@[simp] lemma quotientIotaBase_apply (p : P) :
     D.quotientIotaBase p =
       (QuotientAddGroup.mk' (doubledWithinTwoTorsion E D.exponent_four))
         (D.iotaIntoTwoTorsion p) := rfl
 
-theorem shift_range_le_quotientIotaBase_ker :
+lemma shift_range_le_quotientIotaBase_ker :
     D.shift.range ≤ D.quotientIotaBase.ker := by
   rintro _ ⟨p, rfl⟩
   change (QuotientAddGroup.mk' (doubledWithinTwoTorsion E D.exponent_four))
@@ -32365,12 +32365,12 @@ def quotientIota : (P ⧸ D.shift.range) →+
   QuotientAddGroup.lift D.shift.range D.quotientIotaBase
     D.shift_range_le_quotientIotaBase_ker
 
-@[simp] theorem quotientIota_mk (p : P) :
+@[simp] lemma quotientIota_mk (p : P) :
     D.quotientIota ((QuotientAddGroup.mk' D.shift.range) p) =
       D.quotientIotaBase p :=
   QuotientAddGroup.lift_mk' D.shift.range D.shift_range_le_quotientIotaBase_ker p
 
-theorem quotientIota_injective : Function.Injective D.quotientIota := by
+lemma quotientIota_injective : Function.Injective D.quotientIota := by
   apply (AddMonoidHom.ker_eq_bot_iff D.quotientIota).1
   apply bot_unique
   intro q hq
@@ -32391,7 +32391,7 @@ theorem quotientIota_injective : Function.Injective D.quotientIota := by
   apply (QuotientAddGroup.eq_zero_iff p).2
   exact ⟨D.retraction (D.sigma e), hp⟩
 
-theorem quotientSigma_ker_eq_quotientIota_range :
+lemma quotientSigma_ker_eq_quotientIota_range :
     D.quotientSigma.ker = D.quotientIota.range := by
   ext a
   obtain ⟨x, rfl⟩ :=
@@ -32464,11 +32464,11 @@ noncomputable def shiftedQuotientToKernelEquiv
 def quotientSigmaToB : twoTorsionQuotient E D.exponent_four →+ B₀ :=
   D.retraction.ker.subtype.comp D.quotientSigma
 
-@[simp] theorem quotientSigmaToB_apply
+@[simp] lemma quotientSigmaToB_apply
     (a : twoTorsionQuotient E D.exponent_four) :
     D.quotientSigmaToB a = (D.quotientSigma a : B₀) := rfl
 
-theorem quotientSigmaToB_ker_eq :
+lemma quotientSigmaToB_ker_eq :
     D.quotientSigmaToB.ker = D.quotientSigma.ker := by
   ext a
   change (D.quotientSigma a : B₀) = 0 ↔ D.quotientSigma a = 0
@@ -32478,7 +32478,7 @@ noncomputable def quotientSigmaToBKernelEquiv :
     D.quotientSigma.ker ≃+ D.quotientSigmaToB.ker := by
   rw [D.quotientSigmaToB_ker_eq]
 
-theorem quotientSigmaToB_smul
+lemma quotientSigmaToB_smul
     {K : Type z} [Group K]
     [DistribMulAction K E] [DistribMulAction K B₀]
     (hsigma : ∀ (k : K) (x : E), D.sigma (k • x) = k • D.sigma x)
@@ -32489,7 +32489,7 @@ theorem quotientSigmaToB_smul
       change D.sigma (k • (x : E)) = k • D.sigma (x : E)
       exact hsigma k x
 
-theorem finiteOrbitSubgroup_card_toB
+lemma finiteOrbitSubgroup_card_toB
     (D : ExponentFourExtension V E B₀)
     {K : Type z} [Group K]
     [DistribMulAction K E] [DistribMulAction K B₀]
@@ -32505,7 +32505,7 @@ theorem finiteOrbitSubgroup_card_toB
 
 end ExponentFourExtension
 
-theorem two_pow_four_injective {m n : ℕ}
+lemma two_pow_four_injective {m n : ℕ}
     (h : 2 ^ (4 * m) = 2 ^ (4 * n)) : m = n := by
   have hfour : 4 * m = 4 * n := Nat.pow_right_injective (by decide : 2 ≤ 2) h
   omega
@@ -32530,7 +32530,7 @@ section CharacteristicSubgroups
 
 variable {G : Type u} {H : Type v} [Group G] [Group H]
 
-theorem mulEquiv_map_involutionGenerated (e : G ≃* H) :
+lemma mulEquiv_map_involutionGenerated (e : G ≃* H) :
     (involutionGenerated G).map e.toMonoidHom = involutionGenerated H := by
   rw [involutionGenerated, involutionGenerated, MonoidHom.map_closure]
   congr 1
@@ -32546,7 +32546,7 @@ theorem mulEquiv_map_involutionGenerated (e : G ≃* H) :
     change e.symm y ^ (2 : ℕ) = 1
     simpa using congrArg e.symm hy
 
-theorem mulEquiv_map_torsionSquareGenerated (e : G ≃* H) :
+lemma mulEquiv_map_torsionSquareGenerated (e : G ≃* H) :
     (torsionSquareGenerated G).map e.toMonoidHom =
       torsionSquareGenerated H := by
   rw [torsionSquareGenerated, torsionSquareGenerated, MonoidHom.map_closure]
@@ -32561,11 +32561,11 @@ theorem mulEquiv_map_torsionSquareGenerated (e : G ≃* H) :
     · exact ⟨e.symm z, e.symm.toMonoidHom.isOfFinOrder hz, rfl⟩
     · simp
 
-theorem involutionGenerated_characteristic (G : Type u) [Group G] :
+lemma involutionGenerated_characteristic (G : Type u) [Group G] :
     (involutionGenerated G).Characteristic :=
   Subgroup.characteristic_iff_map_eq.mpr mulEquiv_map_involutionGenerated
 
-theorem torsionSquareGenerated_characteristic (G : Type u) [Group G] :
+lemma torsionSquareGenerated_characteristic (G : Type u) [Group G] :
     (torsionSquareGenerated G).Characteristic :=
   Subgroup.characteristic_iff_map_eq.mpr mulEquiv_map_torsionSquareGenerated
 
@@ -32594,7 +32594,7 @@ instance intrinsicDenominator_normal (I D : Subgroup G) [D.Normal] :
     (intrinsicDenominator I D).Normal :=
   Subgroup.normal_comap I.subtype
 
-theorem intrinsicDenominator_conj_map
+lemma intrinsicDenominator_conj_map
     (I D : Subgroup G) [I.Normal] [D.Normal] (g : G) :
     (intrinsicDenominator I D).map (MulAut.conjNormal g : I ≃* I) =
       intrinsicDenominator I D := by
@@ -32618,7 +32618,7 @@ def intrinsicConjugationAut
   QuotientGroup.congr (intrinsicDenominator I D) (intrinsicDenominator I D)
     (MulAut.conjNormal g) (intrinsicDenominator_conj_map I D g)
 
-@[simp] theorem intrinsicConjugationAut_mk
+@[simp] lemma intrinsicConjugationAut_mk
     (I D : Subgroup G) [I.Normal] [D.Normal] (g : G) (x : I) :
     intrinsicConjugationAut I D g
         (QuotientGroup.mk' (intrinsicDenominator I D) x) =
@@ -32658,12 +32658,12 @@ def intrinsicRestrictedEquiv
     (e : G ≃* H) (hI : I.map (e : G →* H) = I') : I ≃* I' :=
   (e.subgroupMap I).trans (MulEquiv.subgroupCongr hI)
 
-@[simp] theorem intrinsicRestrictedEquiv_apply_val
+@[simp] lemma intrinsicRestrictedEquiv_apply_val
     {I : Subgroup G} {I' : Subgroup H}
     (e : G ≃* H) (hI : I.map (e : G →* H) = I') (x : I) :
     (intrinsicRestrictedEquiv (I := I) (I' := I') e hI x : H) = e x := rfl
 
-theorem intrinsicRestrictedEquiv_map_denominator
+lemma intrinsicRestrictedEquiv_map_denominator
     {I D : Subgroup G} {I' D' : Subgroup H}
     (e : G ≃* H) (hI : I.map (e : G →* H) = I')
     (hD : D.map (e : G →* H) = D') :
@@ -32705,7 +32705,7 @@ def intrinsicSubquotientEquiv
     (intrinsicRestrictedEquiv e hI)
     (intrinsicRestrictedEquiv_map_denominator e hI hD)
 
-@[simp] theorem intrinsicSubquotientEquiv_mk
+@[simp] lemma intrinsicSubquotientEquiv_mk
     {I D : Subgroup G} {I' D' : Subgroup H}
     [I.Normal] [D.Normal] [I'.Normal] [D'.Normal]
     (e : G ≃* H) (hI : I.map (e : G →* H) = I')
@@ -32715,7 +32715,7 @@ def intrinsicSubquotientEquiv
       QuotientGroup.mk' (intrinsicDenominator I' D')
         (intrinsicRestrictedEquiv e hI x) := rfl
 
-theorem intrinsicSubquotientEquiv_conjugation
+lemma intrinsicSubquotientEquiv_conjugation
     {I D : Subgroup G} {I' D' : Subgroup H}
     [I.Normal] [D.Normal] [I'.Normal] [D'.Normal]
     (e : G ≃* H) (hI : I.map (e : G →* H) = I')
@@ -32740,7 +32740,7 @@ def HasFiniteIntrinsicOrbit
     (q : intrinsicSubquotient I D) : Prop :=
   Set.Finite (Set.range fun g : G => intrinsicConjugationAction I D g q)
 
-theorem intrinsic_conjugation_orbit_image
+lemma intrinsic_conjugation_orbit_image
     {I D : Subgroup G} {I' D' : Subgroup H}
     [I.Normal] [D.Normal] [I'.Normal] [D'.Normal]
     (e : G ≃* H) (hI : I.map (e : G →* H) = I')
@@ -32760,7 +32760,7 @@ theorem intrinsic_conjugation_orbit_image
     exact ⟨e g,
       (intrinsicSubquotientEquiv_conjugation e hI hD g q).symm⟩
 
-theorem hasFiniteIntrinsicOrbit_iff
+lemma hasFiniteIntrinsicOrbit_iff
     {I D : Subgroup G} {I' D' : Subgroup H}
     [I.Normal] [D.Normal] [I'.Normal] [D'.Normal]
     (e : G ≃* H) (hI : I.map (e : G →* H) = I')
@@ -32801,7 +32801,7 @@ variable {I D : Subgroup G} [I.Normal] [D.Normal]
 variable {K : Type v} [Group K]
 variable {A : Type w} [AddCommGroup A] [DistribMulAction K A]
 
-theorem intrinsic_conjugation_orbit_image_additive
+lemma intrinsic_conjugation_orbit_image_additive
     (projection : G →* K) (hprojection : Function.Surjective projection)
     (e : intrinsicSubquotient I D ≃* Multiplicative A)
     (he : ∀ (g : G) (q : intrinsicSubquotient I D),
@@ -32821,7 +32821,7 @@ theorem intrinsic_conjugation_orbit_image_additive
     refine ⟨intrinsicConjugationAction I D g q, ⟨g, rfl⟩, ?_⟩
     exact (he g q).trans hk
 
-theorem hasFiniteIntrinsicOrbit_iff_finiteOrbit
+lemma hasFiniteIntrinsicOrbit_iff_finiteOrbit
     (projection : G →* K) (hprojection : Function.Surjective projection)
     (e : intrinsicSubquotient I D ≃* Multiplicative A)
     (he : ∀ (g : G) (q : intrinsicSubquotient I D),
@@ -32866,7 +32866,7 @@ section SemidirectCanonicalSubgroups
 variable {E : Type u} {K : Type v} [AddCommGroup E] [Group K]
 variable (φ : K →* MulAut (Multiplicative E))
 
-theorem involutionGenerated_semidirect_eq
+lemma involutionGenerated_semidirect_eq
     (hK : ∀ k : K, IsOfFinOrder k → k = 1) :
     involutionGenerated (Multiplicative E ⋊[φ] K) =
       (twoTorsion E).toSubgroup.map
@@ -32914,7 +32914,7 @@ theorem involutionGenerated_semidirect_eq
       simpa using ha'
     simp [hone]
 
-theorem torsionSquareGenerated_semidirect_eq
+lemma torsionSquareGenerated_semidirect_eq
     (hfour : ∀ x : E, (4 : ℕ) • x = 0)
     (hK : ∀ k : K, IsOfFinOrder k → k = 1) :
     torsionSquareGenerated (Multiplicative E ⋊[φ] K) =
@@ -32966,13 +32966,13 @@ def semidirectTwoTorsionInl :
     (Multiplicative E ⋊[φ] K)).comp
       (AddMonoidHom.toMultiplicative (twoTorsion E).subtype)
 
-@[simp] theorem semidirectTwoTorsionInl_apply
+@[simp] lemma semidirectTwoTorsionInl_apply
     (x : Multiplicative (twoTorsion E)) :
     semidirectTwoTorsionInl φ x =
       SemidirectProduct.inl
         (Multiplicative.ofAdd (Multiplicative.toAdd x).val) := rfl
 
-theorem semidirectTwoTorsionInl_injective :
+lemma semidirectTwoTorsionInl_injective :
     Function.Injective (semidirectTwoTorsionInl φ) := by
   intro x y h
   apply Multiplicative.ofAdd.injective
@@ -32980,7 +32980,7 @@ theorem semidirectTwoTorsionInl_injective :
   exact congrArg Multiplicative.toAdd
     (SemidirectProduct.inl_injective (φ := φ) h)
 
-theorem semidirectTwoTorsionInl_range :
+lemma semidirectTwoTorsionInl_range :
     (semidirectTwoTorsionInl φ).range =
       (twoTorsion E).toSubgroup.map
         (SemidirectProduct.inl : Multiplicative E →*
@@ -33004,7 +33004,7 @@ def semidirectTwoTorsionInclusionEquiv
     (MulEquiv.subgroupCongr
       ((semidirectTwoTorsionInl_range φ).trans hI.symm))
 
-@[simp] theorem semidirectTwoTorsionInclusionEquiv_apply_val
+@[simp] lemma semidirectTwoTorsionInclusionEquiv_apply_val
     (I : Subgroup (Multiplicative E ⋊[φ] K))
     (hI : I = (twoTorsion E).toSubgroup.map
       (SemidirectProduct.inl : Multiplicative E →*
@@ -33015,7 +33015,7 @@ def semidirectTwoTorsionInclusionEquiv
       SemidirectProduct.inl
         (Multiplicative.ofAdd (Multiplicative.toAdd x).val) := rfl
 
-theorem semidirectTwoTorsionInclusionEquiv_map_doubled
+lemma semidirectTwoTorsionInclusionEquiv_map_doubled
     (hfour : ∀ x : E, (4 : ℕ) • x = 0)
     (I D : Subgroup (Multiplicative E ⋊[φ] K))
     (hI : I = (twoTorsion E).toSubgroup.map
@@ -33123,7 +33123,7 @@ section SemidirectRepresentative
 variable {E : Type u} {K : Type v} [AddCommGroup E] [Group K]
 variable (φ : K →* MulAut (Multiplicative E))
 
-@[simp] theorem multiplicativeTwoTorsionQuotientEquiv_mk
+@[simp] lemma multiplicativeTwoTorsionQuotientEquiv_mk
     (hfour : ∀ x : E, (4 : ℕ) • x = 0)
     (x : Multiplicative (twoTorsion E)) :
     multiplicativeTwoTorsionQuotientEquiv hfour
@@ -33136,7 +33136,7 @@ variable (φ : K →* MulAut (Multiplicative E))
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp] theorem semidirectIntrinsicSubquotientEquiv_mk_inclusion
+@[simp] lemma semidirectIntrinsicSubquotientEquiv_mk_inclusion
     (hfour : ∀ x : E, (4 : ℕ) • x = 0)
     (I D : Subgroup (Multiplicative E ⋊[φ] K)) [D.Normal]
     (hI : I = (twoTorsion E).toSubgroup.map
@@ -33178,7 +33178,7 @@ set_option backward.isDefEq.respectTransparency false in
             congrArg (multiplicativeTwoTorsionQuotientEquiv hfour) hx
     _ = _ := multiplicativeTwoTorsionQuotientEquiv_mk hfour x
 
-theorem semidirectIntrinsicSubquotientEquiv_conjugation
+lemma semidirectIntrinsicSubquotientEquiv_conjugation
     [DistribMulAction K E]
     (hact : ∀ (k : K) (x : E),
       k • x = Multiplicative.toAdd (φ k (Multiplicative.ofAdd x)))
@@ -33287,7 +33287,7 @@ def paperInvariant_semidirect_carrier_equiv
     (mulEquiv_map_torsionSquareGenerated eG)).trans
       (semidirectCanonicalFiniteOrbitEquiv φ hfour hK hact)
 
-theorem paperInvariant_semidirect_value_eq
+lemma paperInvariant_semidirect_value_eq
     [DistribMulAction K E]
     (hfour : ∀ x : E, (4 : ℕ) • x = 0)
     (hK : ∀ k : K, IsOfFinOrder k → k = 1)
@@ -33341,7 +33341,7 @@ def gammaLinearDetector (n : ℕ) : E n := iota n e
 
 def gammaQuadraticDetector (n : ℕ) : E n := epsilon n e
 
-theorem gamma_detectors_ne (n : ℕ) :
+lemma gamma_detectors_ne (n : ℕ) :
     gammaLinearDetector n ≠ gammaQuadraticDetector n := by
   intro h
   have htwo : (2 : ℕ) • gammaLinearDetector n = 0 := by
@@ -33374,7 +33374,7 @@ def gammaDetectionSet (n : ℕ) (η : E n) :
     Set (DiscreteCharacterSpace (E n)) :=
   {χ | χ (Multiplicative.ofAdd η) ≠ 1}
 
-theorem gammaDetectionSet_measurable (n : ℕ) (η : E n) :
+lemma gammaDetectionSet_measurable (n : ℕ) (η : E n) :
     MeasurableSet (gammaDetectionSet n η) := by
   unfold gammaDetectionSet
   have hcontinuous : Continuous
@@ -33386,7 +33386,7 @@ theorem gammaDetectionSet_measurable (n : ℕ) (η : E n) :
     exact continuous_eval_const _
   exact (hcontinuous.measurable (measurableSet_singleton (1 : Circle))).compl
 
-theorem gammaCharacter_pow_four (n : ℕ)
+lemma gammaCharacter_pow_four (n : ℕ)
     (χ : DiscreteCharacterSpace (E n)) (η : E n) :
     χ (Multiplicative.ofAdd η) ^ 4 = 1 := by
   rw [← map_pow]
@@ -33397,7 +33397,7 @@ theorem gammaCharacter_pow_four (n : ℕ)
   rw [hη, map_one]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem gammaFourthRootEnergy_lower_bound (z : Circle) (hz : z ^ 4 = 1)
+lemma gammaFourthRootEnergy_lower_bound (z : Circle) (hz : z ^ 4 = 1)
     (hne : z ≠ 1) : (2 : ℝ) ≤ ‖(z : ℂ) - 1‖ ^ 2 := by
   have hz' : (z : ℂ) ^ 4 = 1 := congrArg (fun w : Circle => (w : ℂ)) hz
   have hsq : ((z : ℂ) ^ 2) ^ 2 = 1 := by
@@ -33425,7 +33425,7 @@ theorem gammaFourthRootEnergy_lower_bound (z : Circle) (hz : z ^ 4 = 1)
     rw [Complex.normSq_apply] at hnorm
     nlinarith
 
-theorem gammaCharacterEnergy_indicator_le (n : ℕ)
+lemma gammaCharacterEnergy_indicator_le (n : ℕ)
     (χ : DiscreteCharacterSpace (E n)) (η : E n) :
     (gammaDetectionSet n η).indicator (fun _ ↦ (2 : ℝ)) χ ≤
       ‖((χ (Multiplicative.ofAdd η) : Circle) : ℂ) - 1‖ ^ 2 := by
@@ -33435,7 +33435,7 @@ theorem gammaCharacterEnergy_indicator_le (n : ℕ)
       gammaFourthRootEnergy_lower_bound (χ (Multiplicative.ofAdd η))
         (gammaCharacter_pow_four n χ η) h
 
-theorem gammaCharacterEnergy_integrable (n : ℕ)
+lemma gammaCharacterEnergy_integrable (n : ℕ)
     (μ : ProbabilityMeasure (DiscreteCharacterSpace (E n))) (η : E n) :
     Integrable
       (fun χ : DiscreteCharacterSpace (E n) ↦
@@ -33460,7 +33460,7 @@ theorem gammaCharacterEnergy_integrable (n : ℕ)
   simpa using hcont.continuousOn.integrableOn_compact
     (μ := (μ : Measure (DiscreteCharacterSpace (E n)))) isCompact_univ
 
-theorem gammaTwoMulDetectedMass_le_energy (n : ℕ)
+lemma gammaTwoMulDetectedMass_le_energy (n : ℕ)
     (μ : ProbabilityMeasure (DiscreteCharacterSpace (E n))) (η : E n) :
     2 * (μ : Measure (DiscreteCharacterSpace (E n))).real
       (gammaDetectionSet n η) ≤ spectralDetectionEnergy μ η := by
@@ -33489,7 +33489,7 @@ def gammaDetectedSet (n : ℕ) : Set (DiscreteCharacterSpace (E n)) :=
   gammaDetectionSet n (gammaLinearDetector n) ∪
     gammaDetectionSet n (gammaQuadraticDetector n)
 
-theorem gammaTwoMulDetectedUnionMass_le_energy (n : ℕ)
+lemma gammaTwoMulDetectedUnionMass_le_energy (n : ℕ)
     (μ : ProbabilityMeasure (DiscreteCharacterSpace (E n))) :
     2 * (μ : Measure (DiscreteCharacterSpace (E n))).real
       (gammaDetectedSet n) ≤
@@ -33507,7 +33507,7 @@ theorem gammaTwoMulDetectedUnionMass_le_energy (n : ℕ)
     (gammaDetectedSet n) ≤ _ at hunion
   nlinarith
 
-theorem gamma_hasFiniteSpectralDetection_of_measureGap (n : ℕ)
+lemma gamma_hasFiniteSpectralDetection_of_measureGap (n : ℕ)
     (hgap : ∀ μ : ProbabilityMeasure (DiscreteCharacterSpace (E n)),
       IsInvariantSpectralMeasure (gammaSplitAbelianExtension n).action μ →
         (1 / 7 : ℝ) * (1 - spectralTrivialAtom μ) ≤
@@ -33543,7 +33543,7 @@ noncomputable instance boundedPolynomialFintype (N : ℕ) :
     Fintype (BinaryBoundedPolynomial N) :=
   Fintype.ofEquiv (Fin N → ZMod 2) (boundedPolynomialEquiv N).symm
 
-theorem card_boundedPolynomial (N : ℕ) :
+lemma card_boundedPolynomial (N : ℕ) :
     Fintype.card (BinaryBoundedPolynomial N) = 2 ^ N := by
   rw [Fintype.card_congr (boundedPolynomialEquiv N), Fintype.card_fun,
     Fintype.card_fin, ZMod.card]
@@ -33556,18 +33556,18 @@ noncomputable instance monicPolynomialFintype (N : ℕ) :
     Fintype (BinaryMonicPolynomial N) :=
   Fintype.ofEquiv (BinaryBoundedPolynomial N) (monicPolynomialEquiv N).symm
 
-theorem card_monicPolynomial (N : ℕ) :
+lemma card_monicPolynomial (N : ℕ) :
     Fintype.card (BinaryMonicPolynomial N) = 2 ^ N := by
   rw [Fintype.card_congr (monicPolynomialEquiv N), card_boundedPolynomial]
 
-theorem card_binaryPolynomialVector (N : ℕ) :
+lemma card_binaryPolynomialVector (N : ℕ) :
     Fintype.card (BinaryPolynomialVector N) = 2 ^ (4 * N) := by
   rw [Fintype.card_fun, Fintype.card_fin, card_boundedPolynomial]
   simp [pow_mul, Nat.mul_comm]
 
 def countingScale (N : ℕ) : ℕ := 2 ^ (4 * N - 3)
 
-theorem eight_mul_countingScale (N : ℕ) (hN : 0 < N) :
+lemma eight_mul_countingScale (N : ℕ) (hN : 0 < N) :
     8 * countingScale N = 2 ^ (4 * N) := by
   unfold countingScale
   have hexp : 4 * N - 3 + 3 = 4 * N := by omega
@@ -33577,7 +33577,7 @@ theorem eight_mul_countingScale (N : ℕ) (hN : 0 < N) :
     _ = 2 ^ (4 * N - 3 + 3) := by rw [pow_add]
     _ = 2 ^ (4 * N) := by rw [hexp]
 
-theorem two_mul_previous_box (N : ℕ) (hN : 0 < N) :
+lemma two_mul_previous_box (N : ℕ) (hN : 0 < N) :
     2 * 2 ^ (4 * (N - 1)) = countingScale N := by
   unfold countingScale
   have hexp : 4 * (N - 1) + 1 = 4 * N - 3 := by omega
@@ -33590,14 +33590,14 @@ theorem two_mul_previous_box (N : ℕ) (hN : 0 < N) :
 def primitiveCount (N : ℕ) : ℕ :=
   if N = 0 then 0 else 7 * countingScale N + 1
 
-@[simp] theorem primitiveCount_zero : primitiveCount 0 = 0 := by
+@[simp] lemma primitiveCount_zero : primitiveCount 0 = 0 := by
   simp [primitiveCount]
 
-theorem primitiveCount_eq (N : ℕ) (hN : 0 < N) :
+lemma primitiveCount_eq (N : ℕ) (hN : 0 < N) :
     primitiveCount N = 7 * 2 ^ (4 * N - 3) + 1 := by
   simp [primitiveCount, countingScale, Nat.ne_of_gt hN]
 
-theorem primitiveCount_subtraction (N : ℕ) (hN : 0 < N) :
+lemma primitiveCount_subtraction (N : ℕ) (hN : 0 < N) :
     (2 ^ (4 * N) - 1) - 2 * (2 ^ (4 * (N - 1)) - 1) =
       primitiveCount N := by
   have hscale := eight_mul_countingScale N hN
@@ -33629,11 +33629,11 @@ abbrev PrimitivePolynomialVector (N : ℕ) :=
 def polynomialVectorVal {N : ℕ} (v : BinaryPolynomialVector N) : V :=
   fun i ↦ (v i : R)
 
-@[simp] theorem polynomialVectorVal_apply {N : ℕ}
+@[simp] lemma polynomialVectorVal_apply {N : ℕ}
     (v : BinaryPolynomialVector N) (i : Fin 4) :
     polynomialVectorVal v i = (v i : R) := rfl
 
-@[simp] theorem polynomialVectorVal_eq_zero_iff {N : ℕ}
+@[simp] lemma polynomialVectorVal_eq_zero_iff {N : ℕ}
     (v : BinaryPolynomialVector N) :
     polynomialVectorVal v = 0 ↔ v = 0 := by
   constructor
@@ -33652,11 +33652,11 @@ noncomputable instance primitivePolynomialVectorFintype (N : ℕ) :
   classical
   exact Fintype.ofFinite _
 
-theorem vectorGCD_dvd (v : V) (i : Fin 4) :
+lemma vectorGCD_dvd (v : V) (i : Fin 4) :
     vectorGCD v ∣ v i := by
   exact Finset.gcd_dvd (Finset.mem_univ i)
 
-theorem coordinateIdeal_eq_span_vectorGCD (v : V) :
+lemma coordinateIdeal_eq_span_vectorGCD (v : V) :
     coordinateIdeal v = Ideal.span ({vectorGCD v} : Set R) := by
   apply le_antisymm
   · rw [coordinateIdeal, Ideal.span_le]
@@ -33675,54 +33675,54 @@ theorem coordinateIdeal_eq_span_vectorGCD (v : V) :
         (show v i ∈ coordinateIdeal v from
           Ideal.mem_span_range_self))
 
-theorem isPrimitiveVector_iff_coordinateIdeal_eq_top (v : V) :
+lemma isPrimitiveVector_iff_coordinateIdeal_eq_top (v : V) :
     IsPrimitiveVector v ↔ coordinateIdeal v = ⊤ := by
   change vectorGCD v = 1 ↔ coordinateIdeal v = ⊤
   rw [coordinateIdeal_eq_span_vectorGCD,
     Ideal.span_singleton_eq_top, ← normalize_eq_one,
     show normalize (vectorGCD v) = vectorGCD v from Finset.normalize_gcd]
 
-@[simp] theorem vectorGCD_eq_zero_iff (v : V) :
+@[simp] lemma vectorGCD_eq_zero_iff (v : V) :
     vectorGCD v = 0 ↔ v = 0 := by
   rw [vectorGCD, Finset.gcd_eq_zero_iff]
   simp [funext_iff]
 
-theorem vectorGCD_ne_zero {v : V} (hv : v ≠ 0) :
+lemma vectorGCD_ne_zero {v : V} (hv : v ≠ 0) :
     vectorGCD v ≠ 0 := by
   simpa [vectorGCD_eq_zero_iff] using hv
 
-theorem vectorGCD_monic {v : V} (hv : v ≠ 0) :
+lemma vectorGCD_monic {v : V} (hv : v ≠ 0) :
     (vectorGCD v).Monic := by
   have hnormalized : normalize (vectorGCD v) = vectorGCD v := by
     exact Finset.normalize_gcd
   rw [← hnormalized]
   exact Polynomial.monic_normalize (vectorGCD_ne_zero hv)
 
-theorem IsPrimitiveVector.ne_zero {v : V} (hv : IsPrimitiveVector v) :
+lemma IsPrimitiveVector.ne_zero {v : V} (hv : IsPrimitiveVector v) :
     v ≠ 0 := by
   intro hzero
   have hgzero : vectorGCD v = 0 :=
     (vectorGCD_eq_zero_iff v).mpr hzero
   exact zero_ne_one (hgzero.symm.trans hv)
 
-theorem vectorGCD_mul (g : R) (hg : g.Monic) (v : V) :
+lemma vectorGCD_mul (g : R) (hg : g.Monic) (v : V) :
     vectorGCD (fun i ↦ g * v i) = g * vectorGCD v := by
   unfold vectorGCD
   rw [Finset.gcd_mul_left, hg.normalize_eq_self]
 
-theorem vectorGCD_div_eq_one {v : V} (hv : v ≠ 0) :
+lemma vectorGCD_div_eq_one {v : V} (hv : v ≠ 0) :
     vectorGCD (fun i ↦ v i / vectorGCD v) = 1 := by
   obtain ⟨i, _, hi⟩ := Finset.gcd_ne_zero_iff.mp (vectorGCD_ne_zero hv)
   change Finset.univ.gcd (fun i ↦ v i / Finset.univ.gcd v) = 1
   exact Finset.gcd_div_eq_one (Finset.mem_univ i) hi
 
-theorem bounded_natDegree_lt {N : ℕ}
+lemma bounded_natDegree_lt {N : ℕ}
     (p : BinaryBoundedPolynomial N) (hp : (p : R) ≠ 0) :
     (p : R).natDegree < N := by
   apply (Polynomial.natDegree_lt_iff_degree_lt hp).mpr
   exact Polynomial.mem_degreeLT.mp p.property
 
-theorem mem_degreeLT_of_natDegree_lt {N : ℕ} (p : R)
+lemma mem_degreeLT_of_natDegree_lt {N : ℕ} (p : R)
     (hp : p = 0 ∨ p.natDegree < N) :
     p ∈ Polynomial.degreeLT F N := by
   rcases hp with rfl | hp
@@ -33732,16 +33732,16 @@ theorem mem_degreeLT_of_natDegree_lt {N : ℕ} (p : R)
     · simp [hpzero]
     · exact (Polynomial.natDegree_lt_iff_degree_lt hpzero).mp hp
 
-@[simp] theorem divX_X_mul_add_C (h : R) (b : F) :
+@[simp] lemma divX_X_mul_add_C (h : R) (b : F) :
     (Polynomial.X * h + Polynomial.C b).divX = h := by
   ext n
   simp [Polynomial.coeff_divX, Polynomial.coeff_X_mul]
 
-@[simp] theorem coeff_zero_X_mul_add_C (h : R) (b : F) :
+@[simp] lemma coeff_zero_X_mul_add_C (h : R) (b : F) :
     (Polynomial.X * h + Polynomial.C b).coeff 0 = b := by
   simp
 
-theorem card_eq_sum_card_fibers {α β : Type*} [Fintype α] [Fintype β]
+lemma card_eq_sum_card_fibers {α β : Type*} [Fintype α] [Fintype β]
     [DecidableEq β] (f : α → β) :
     Fintype.card α = ∑ b : β, Fintype.card {a : α // f a = b} := by
   classical
@@ -33750,7 +33750,7 @@ theorem card_eq_sum_card_fibers {α β : Type*} [Fintype α] [Fintype β]
       (Fintype.card_congr (Equiv.sigmaFiberEquiv f)).symm
     _ = ∑ b : β, Fintype.card {a : α // f a = b} := Fintype.card_sigma
 
-theorem card_eq_sum_card_products {α β : Type*} [Fintype α] [Fintype β]
+lemma card_eq_sum_card_products {α β : Type*} [Fintype α] [Fintype β]
     [DecidableEq β]
     (G P : β → Type*) [∀ b, Fintype (G b)] [∀ b, Fintype (P b)]
     (f : α → β) (e : ∀ b, {a : α // f a = b} ≃ G b × P b) :
@@ -33764,7 +33764,7 @@ theorem card_eq_sum_card_products {α β : Type*} [Fintype α] [Fintype β]
       intro b _
       rw [Fintype.card_congr (e b), Fintype.card_prod]
 
-theorem card_nonzeroPolynomialVector (N : ℕ) :
+lemma card_nonzeroPolynomialVector (N : ℕ) :
     Fintype.card (NonzeroPolynomialVector N) = 2 ^ (4 * N) - 1 := by
   classical
   rw [show Fintype.card (NonzeroPolynomialVector N) =
@@ -33773,7 +33773,7 @@ theorem card_nonzeroPolynomialVector (N : ℕ) :
       Fintype.card_subtype_compl (fun v : BinaryPolynomialVector N ↦ v = 0)]
   rw [Fintype.card_subtype_eq, card_binaryPolynomialVector]
 
-theorem vectorGCD_natDegree_lt {N : ℕ}
+lemma vectorGCD_natDegree_lt {N : ℕ}
     (v : NonzeroPolynomialVector N) :
     (vectorGCD (polynomialVectorVal v.val)).natDegree < N := by
   obtain ⟨i, hi⟩ : ∃ i : Fin 4, v.val i ≠ 0 := by
@@ -33795,20 +33795,20 @@ def gcdDegreeMap (N : ℕ) : NonzeroPolynomialVector N → Fin N :=
   fun v ↦ ⟨(vectorGCD (polynomialVectorVal v.val)).natDegree,
     vectorGCD_natDegree_lt v⟩
 
-theorem nonzeroVector_coe_ne_zero {N : ℕ}
+lemma nonzeroVector_coe_ne_zero {N : ℕ}
     (v : NonzeroPolynomialVector N) :
     polynomialVectorVal v.val ≠ 0 := by
   exact fun hzero ↦ v.property
     ((polynomialVectorVal_eq_zero_iff v.val).mp hzero)
 
-theorem quotient_isPrimitive {N : ℕ}
+lemma quotient_isPrimitive {N : ℕ}
     (v : NonzeroPolynomialVector N) :
     IsPrimitiveVector
       (fun i ↦ (v.val i : R) /
         vectorGCD (polynomialVectorVal v.val)) := by
   exact vectorGCD_div_eq_one (nonzeroVector_coe_ne_zero v)
 
-theorem quotient_mem_degreeLT {N : ℕ} {d : Fin N}
+lemma quotient_mem_degreeLT {N : ℕ} {d : Fin N}
     (v : {v : NonzeroPolynomialVector N // gcdDegreeMap N v = d})
     (i : Fin 4) :
     (v.val.val i : R) / vectorGCD (polynomialVectorVal v.val.val) ∈
@@ -33852,7 +33852,7 @@ def fiberToProduct {N : ℕ} {d : Fin N}
     BinaryMonicPolynomial d.val × PrimitivePolynomialVector (N - d.val) :=
   ⟨fiberFactor v, fiberPrimitive v⟩
 
-theorem product_mem_degreeLT {N : ℕ} (d : Fin N)
+lemma product_mem_degreeLT {N : ℕ} (d : Fin N)
     (x : BinaryMonicPolynomial d.val × PrimitivePolynomialVector (N - d.val))
     (i : Fin 4) :
     x.1.val * (x.2.val i : R) ∈ Polynomial.degreeLT F N := by
@@ -33870,13 +33870,13 @@ def productVector {N : ℕ} (d : Fin N)
     BinaryPolynomialVector N :=
   fun i ↦ ⟨x.1.val * (x.2.val i : R), product_mem_degreeLT d x i⟩
 
-theorem productVector_gcd {N : ℕ} (d : Fin N)
+lemma productVector_gcd {N : ℕ} (d : Fin N)
     (x : BinaryMonicPolynomial d.val × PrimitivePolynomialVector (N - d.val)) :
     vectorGCD (polynomialVectorVal (productVector d x)) = x.1.val := by
   change vectorGCD (fun i ↦ x.1.val * (x.2.val i : R)) = x.1.val
   rw [vectorGCD_mul x.1.val x.1.property.1, x.2.property, mul_one]
 
-theorem productVector_ne_zero {N : ℕ} (d : Fin N)
+lemma productVector_ne_zero {N : ℕ} (d : Fin N)
     (x : BinaryMonicPolynomial d.val × PrimitivePolynomialVector (N - d.val)) :
     productVector d x ≠ 0 := by
   intro hzero
@@ -33894,7 +33894,7 @@ def productToNonzero {N : ℕ} (d : Fin N)
     NonzeroPolynomialVector N :=
   ⟨productVector d x, productVector_ne_zero d x⟩
 
-theorem productToNonzero_gcdDegree {N : ℕ} (d : Fin N)
+lemma productToNonzero_gcdDegree {N : ℕ} (d : Fin N)
     (x : BinaryMonicPolynomial d.val × PrimitivePolynomialVector (N - d.val)) :
     gcdDegreeMap N (productToNonzero d x) = d := by
   apply Fin.ext
@@ -33906,7 +33906,7 @@ def productToFiber {N : ℕ} (d : Fin N)
     {v : NonzeroPolynomialVector N // gcdDegreeMap N v = d} :=
   ⟨productToNonzero d x, productToNonzero_gcdDegree d x⟩
 
-theorem productToFiber_fiberToProduct {N : ℕ} {d : Fin N}
+lemma productToFiber_fiberToProduct {N : ℕ} {d : Fin N}
     (v : {v : NonzeroPolynomialVector N // gcdDegreeMap N v = d}) :
     productToFiber d (fiberToProduct v) = v := by
   apply Subtype.ext
@@ -33922,7 +33922,7 @@ theorem productToFiber_fiberToProduct {N : ℕ} {d : Fin N}
     (vectorGCD_monic (nonzeroVector_coe_ne_zero v.val)).ne_zero
     (vectorGCD_dvd _ i)
 
-theorem fiberToProduct_productToFiber {N : ℕ} (d : Fin N)
+lemma fiberToProduct_productToFiber {N : ℕ} (d : Fin N)
     (x : BinaryMonicPolynomial d.val × PrimitivePolynomialVector (N - d.val)) :
     fiberToProduct (productToFiber d x) = x := by
   apply Prod.ext
@@ -33947,7 +33947,7 @@ noncomputable def gcdDegreeFiberEquiv {N : ℕ} (d : Fin N) :
   left_inv := productToFiber_fiberToProduct
   right_inv := fiberToProduct_productToFiber d
 
-theorem primitive_gcd_convolution (N : ℕ) :
+lemma primitive_gcd_convolution (N : ℕ) :
     2 ^ (4 * N) - 1 =
       ∑ d : Fin N,
         2 ^ d.val * Fintype.card (PrimitivePolynomialVector (N - d.val)) := by
@@ -33962,14 +33962,14 @@ theorem primitive_gcd_convolution (N : ℕ) :
             (gcdDegreeMap N) gcdDegreeFiberEquiv
     _ = _ := by simp_rw [card_monicPolynomial]
 
-theorem primitive_gcd_convolution_range (N : ℕ) :
+lemma primitive_gcd_convolution_range (N : ℕ) :
     2 ^ (4 * N) - 1 =
       ∑ d ∈ Finset.range N,
         2 ^ d * Fintype.card (PrimitivePolynomialVector (N - d)) := by
   rw [← Fin.sum_univ_eq_sum_range]
   exact primitive_gcd_convolution N
 
-theorem primitive_convolution_shift (P : ℕ → ℕ) (n : ℕ) :
+lemma primitive_convolution_shift (P : ℕ → ℕ) (n : ℕ) :
     (∑ d ∈ Finset.range (n + 1), 2 ^ d * P (n + 1 - d)) =
       P (n + 1) + 2 * ∑ d ∈ Finset.range n, 2 ^ d * P (n - d) := by
   rw [Finset.sum_range_succ']
@@ -33981,7 +33981,7 @@ theorem primitive_convolution_shift (P : ℕ → ℕ) (n : ℕ) :
   rw [Finset.mul_sum]
   simp [Nat.mul_left_comm, Nat.mul_comm, Nat.add_comm]
 
-theorem primitive_card_of_convolution (P : ℕ → ℕ)
+lemma primitive_card_of_convolution (P : ℕ → ℕ)
     (hP : ∀ N : ℕ, 2 ^ (4 * N) - 1 =
       ∑ d ∈ Finset.range N, 2 ^ d * P (N - d))
     (N : ℕ) (hN : 0 < N) :
@@ -33997,14 +33997,14 @@ theorem primitive_card_of_convolution (P : ℕ → ℕ)
   have hpositive : 0 < 2 ^ (4 * n) := pow_pos (by omega) _
   omega
 
-theorem card_primitivePolynomialVector (N : ℕ) (hN : 0 < N) :
+lemma card_primitivePolynomialVector (N : ℕ) (hN : 0 < N) :
     Fintype.card (PrimitivePolynomialVector N) =
       7 * 2 ^ (4 * N - 3) + 1 := by
   exact primitive_card_of_convolution
     (fun n ↦ Fintype.card (PrimitivePolynomialVector n))
     primitive_gcd_convolution_range N hN
 
-theorem binaryPolynomial_unit_eq_one {p : R} (hp : IsUnit p) : p = 1 := by
+lemma binaryPolynomial_unit_eq_one {p : R} (hp : IsUnit p) : p = 1 := by
   obtain ⟨a, ha, hpa⟩ := Polynomial.isUnit_iff.mp hp
   have ha' : a = 1 := by
     fin_cases a
@@ -34012,7 +34012,7 @@ theorem binaryPolynomial_unit_eq_one {p : R} (hp : IsUnit p) : p = 1 := by
     · rfl
   simpa [ha'] using hpa.symm
 
-theorem primitiveVector_specialLinear_completion_of_coordinateIdeal (v : V)
+lemma primitiveVector_specialLinear_completion_of_coordinateIdeal (v : V)
     (hv : Ideal.span (Set.range v) = ⊤) :
     ∃ g : Q, Matrix.SpecialLinearGroup.toLin' g e = v := by
   have hone : (1 : R) ∈ Ideal.span (Set.range v) := by rw [hv]; trivial
@@ -34060,7 +34060,7 @@ theorem primitiveVector_specialLinear_completion_of_coordinateIdeal (v : V)
   simp [A, Matrix.mulVec, dotProduct, e, Module.Basis.toMatrix_apply,
     hbzero]
 
-theorem primitiveVector_specialLinear_completion (v : V)
+lemma primitiveVector_specialLinear_completion (v : V)
     (hv : IsPrimitiveVector v) :
     ∃ g : Q, Matrix.SpecialLinearGroup.toLin' g e = v := by
   apply primitiveVector_specialLinear_completion_of_coordinateIdeal
@@ -34070,7 +34070,7 @@ end
 
 noncomputable section
 
-theorem e_isPrimitiveVector : IsPrimitiveVector e := by
+lemma e_isPrimitiveVector : IsPrimitiveVector e := by
   apply (isPrimitiveVector_iff_coordinateIdeal_eq_top e).mpr
   apply Ideal.eq_top_of_isUnit_mem
     (I := coordinateIdeal e)
@@ -34080,7 +34080,7 @@ theorem e_isPrimitiveVector : IsPrimitiveVector e := by
     simpa [e] using h
   · exact isUnit_one
 
-theorem primitiveVector_actingGroup_completion_of_surjective
+lemma primitiveVector_actingGroup_completion_of_surjective
     (hsurj : Function.Surjective pi₂)
     (v : V) (hv : IsPrimitiveVector v) :
     ∃ k : K, kLinear k e = v := by
@@ -34091,7 +34091,7 @@ theorem primitiveVector_actingGroup_completion_of_surjective
   rw [hk]
   exact hg
 
-theorem primitiveVector_actingGroup_completion
+lemma primitiveVector_actingGroup_completion
     (v : V) (hv : IsPrimitiveVector v) :
     ∃ k : K, kLinear k e = v :=
   primitiveVector_actingGroup_completion_of_surjective pi₂_surjective v hv
@@ -34100,14 +34100,14 @@ def linearDetectorAt (v : V) : D := (v, 0)
 
 def quadraticDetectorAt (v : V) : D := (0, diagonal v)
 
-@[simp] theorem kDLinear_linearDetectorAt (k : K) (v : V) :
+@[simp] lemma kDLinear_linearDetectorAt (k : K) (v : V) :
     kDLinear k (linearDetectorAt v) =
       linearDetectorAt (kLinear k v) := by
   apply Prod.ext
   · rfl
   · exact map_zero (kDividedSquareLinear k).toLinearMap
 
-@[simp] theorem kDLinear_quadraticDetectorAt (k : K) (v : V) :
+@[simp] lemma kDLinear_quadraticDetectorAt (k : K) (v : V) :
     kDLinear k (quadraticDetectorAt v) =
       quadraticDetectorAt (kLinear k v) := by
   apply Prod.ext
@@ -34122,7 +34122,7 @@ open scoped BigOperators
 
 variable {W : Type*} [AddCommGroup W] [Module F W] [Fintype W]
 
-theorem binary_quadratic_support_quarter_direct
+lemma binary_quadratic_support_quarter_direct
     (f : W → F) (b : W → W → F)
     (_hzero : f 0 = 0)
     (hadd : ∀ x y, f (x + y) = f x + f y + b x y)
@@ -34195,7 +34195,7 @@ theorem binary_quadratic_support_quarter_direct
     refine ⟨(⟨x + u, by simpa [support] using hxu⟩, (1, 0)), ?_⟩
     simp [cover, offset, add_assoc, add_self_eq_zero]
 
-theorem polarization_add_left_direct (u v w : V) :
+lemma polarization_add_left_direct (u v w : V) :
     polarization (u + v) w = polarization u w + polarization v w := by
   apply Subtype.ext
   change
@@ -34214,11 +34214,11 @@ def boundedVectorLinearDirect (N : ℕ) : BinaryPolynomialVector N →ₗ[F] V w
     funext i
     rfl
 
-@[simp] theorem boundedVectorLinearDirect_apply (N : ℕ)
+@[simp] lemma boundedVectorLinearDirect_apply (N : ℕ)
     (x : BinaryPolynomialVector N) :
     boundedVectorLinearDirect N x = polynomialVectorVal x := rfl
 
-theorem divided_square_truncated_support_quarter_direct
+lemma divided_square_truncated_support_quarter_direct
     (N : ℕ) (q : Y)
     (hq : ∃ x : BinaryPolynomialVector N,
       q (diagonal (polynomialVectorVal x)) ≠ 0) :
@@ -34245,7 +34245,7 @@ theorem divided_square_truncated_support_quarter_direct
     rw [map_add, polarization_add_left_direct, map_add]
   · exact hq
 
-theorem character_truncated_detection_quarter_direct
+lemma character_truncated_detection_quarter_direct
     (N : ℕ) (z : X × Y)
     (hz : ∃ x : BinaryPolynomialVector N,
       z.1 (polynomialVectorVal x) ≠ 0 ∨
@@ -34304,14 +34304,14 @@ noncomputable def primitiveTruncationFinset (N : ℕ) :
   exact Finset.univ.filter
     (fun v ↦ IsPrimitiveVector (polynomialVectorVal v))
 
-@[simp] theorem mem_primitiveTruncationFinset (N : ℕ)
+@[simp] lemma mem_primitiveTruncationFinset (N : ℕ)
     (v : BinaryPolynomialVector N) :
     v ∈ primitiveTruncationFinset N ↔
       IsPrimitiveVector (polynomialVectorVal v) := by
   classical
   simp [primitiveTruncationFinset]
 
-theorem primitiveTruncationFinset_card (N : ℕ) (hN : 0 < N) :
+lemma primitiveTruncationFinset_card (N : ℕ) (hN : 0 < N) :
     (primitiveTruncationFinset N).card =
       7 * 2 ^ (4 * N - 3) + 1 := by
   classical
@@ -34326,7 +34326,7 @@ theorem primitiveTruncationFinset_card (N : ℕ) (hN : 0 < N) :
         Fintype.card_congr (Equiv.refl _)
     _ = _ := card_primitivePolynomialVector N hN
 
-theorem character_truncated_detection_primitive_seventh
+lemma character_truncated_detection_primitive_seventh
     (N : ℕ) (hN : 0 < N) (z : X × Y)
     (hz : ∃ x : BinaryPolynomialVector N,
       z.1 (polynomialVectorVal x) ≠ 0 ∨
@@ -34368,7 +34368,7 @@ open scoped ENNReal Topology BigOperators
 
 set_option maxHeartbeats 800000
 
-theorem measure_detection_gap_of_uniform_primitive_counts
+lemma measure_detection_gap_of_uniform_primitive_counts
     {α ι : Type*} [MeasurableSpace α]
     (μ : Measure α) (primitive : Finset ι)
     (detect : ι → Set α) [DecidableRel (fun x v ↦ x ∈ detect v)]
@@ -34423,7 +34423,7 @@ theorem measure_detection_gap_of_uniform_primitive_counts
   apply (ENNReal.mul_le_mul_iff_left hcardzero hcardtop).mp
   simpa [mul_assoc, mul_left_comm, mul_comm] using hweighted
 
-theorem measureReal_detection_gap_of_uniform_primitive_counts
+lemma measureReal_detection_gap_of_uniform_primitive_counts
     {α ι : Type*} [MeasurableSpace α]
     (μ : Measure α) [IsFiniteMeasure μ] (primitive : Finset ι)
     (detect : ι → Set α) [DecidableRel (fun x v ↦ x ∈ detect v)]
@@ -34443,7 +34443,7 @@ theorem measureReal_detection_gap_of_uniform_primitive_counts
     (ENNReal.toReal_le_toReal (measure_ne_top μ _) hfinite).2 hgap
   simpa [measureReal_def, ENNReal.toReal_mul] using hreal
 
-theorem measureReal_iUnion_le_of_monotone
+lemma measureReal_iUnion_le_of_monotone
     {α : Type*} [MeasurableSpace α]
     (μ : Measure α) [IsFiniteMeasure μ] (U : ℕ → Set α)
     (hmono : Monotone U)
@@ -34456,7 +34456,7 @@ theorem measureReal_iUnion_le_of_monotone
       (tendsto_measure_iUnion_atTop (μ := μ) hmono)
   exact le_of_tendsto' hlim hbound
 
-theorem probability_detection_gap_of_exhaustion
+lemma probability_detection_gap_of_exhaustion
     {α : Type*} [MeasurableSpace α]
     (μ : ProbabilityMeasure α) (zero : α) (U : ℕ → Set α)
     (hzero : MeasurableSet ({zero} : Set α))
@@ -34478,13 +34478,13 @@ def dualPointAction (k : K) (z : X × Y) : X × Y :=
   (z.1.comp (kLinear k⁻¹).toLinearMap,
     z.2.comp (kDividedSquareLinear k⁻¹).toLinearMap)
 
-@[simp] theorem dualPointAction_linear (k : K) (z : X × Y) (v : V) :
+@[simp] lemma dualPointAction_linear (k : K) (z : X × Y) (v : V) :
     (dualPointAction k z).1 v = z.1 (kLinear k⁻¹ v) := rfl
 
-@[simp] theorem dualPointAction_quadratic (k : K) (z : X × Y) (b : B) :
+@[simp] lemma dualPointAction_quadratic (k : K) (z : X × Y) (b : B) :
     (dualPointAction k z).2 b = z.2 (kDividedSquareLinear k⁻¹ b) := rfl
 
-theorem continuous_dualPointAction (k : K) :
+lemma continuous_dualPointAction (k : K) :
     Continuous (dualPointAction k) := by
   exact ((continuous_X_precomp (kLinear k⁻¹).toLinearMap).comp
     continuous_fst).prodMk
@@ -34500,7 +34500,7 @@ def dualDetects (z : X × Y) (v : V) : Prop :=
 def dualDetectionSet (v : V) : Set (X × Y) :=
   {z | dualDetects z v}
 
-theorem dualDetectionSet_measurable (v : V) :
+lemma dualDetectionSet_measurable (v : V) :
     MeasurableSet (dualDetectionSet v) := by
   have hlinear : Continuous (fun z : X × Y ↦ z.1 v) :=
     (continuous_X_eval v).comp continuous_fst
@@ -34511,7 +34511,7 @@ theorem dualDetectionSet_measurable (v : V) :
   exact ((isClosed_eq hlinear continuous_const).measurableSet.compl).union
     ((isClosed_eq hquadratic continuous_const).measurableSet.compl)
 
-theorem dualDetects_action (k : K) (z : X × Y) (v : V) :
+lemma dualDetects_action (k : K) (z : X × Y) (v : V) :
     dualDetects (dualPointAction k z) (kLinear k v) ↔
       dualDetects z v := by
   have hv : kLinear k⁻¹ (kLinear k v) = v := by
@@ -34526,13 +34526,13 @@ theorem dualDetects_action (k : K) (z : X × Y) (v : V) :
         (z.1 v ≠ 0 ∨ z.2 (diagonal v) ≠ 0)
   rw [hv, hdiag]
 
-theorem dualDetectionSet_action_preimage (k : K) (v : V) :
+lemma dualDetectionSet_action_preimage (k : K) (v : V) :
     dualPointAction k ⁻¹' dualDetectionSet (kLinear k v) =
       dualDetectionSet v := by
   ext z
   exact dualDetects_action k z v
 
-theorem invariantDual_detection_measure
+lemma invariantDual_detection_measure
     (μ : ProbabilityMeasure (X × Y))
     (hμ : IsInvariantDualProbability μ)
     (v : V) (hv : IsPrimitiveVector v) :
@@ -34554,19 +34554,19 @@ def boxDetectionSet (N : ℕ) : Set (X × Y) :=
   ⋃ v : BinaryPolynomialVector N,
     dualDetectionSet (polynomialVectorVal v)
 
-theorem boxDetectionSet_measurable (N : ℕ) :
+lemma boxDetectionSet_measurable (N : ℕ) :
     MeasurableSet (boxDetectionSet N) := by
   exact MeasurableSet.iUnion fun v ↦
     dualDetectionSet_measurable (polynomialVectorVal v)
 
-theorem monotone_boxDetectionSet : Monotone boxDetectionSet := by
+lemma monotone_boxDetectionSet : Monotone boxDetectionSet := by
   intro n m hnm z hz
   obtain ⟨v, hv⟩ := Set.mem_iUnion.mp hz
   let w : BinaryPolynomialVector m :=
     fun i ↦ ⟨(v i : R), Polynomial.degreeLT_mono hnm (v i).property⟩
   exact Set.mem_iUnion.mpr ⟨w, hv⟩
 
-theorem exists_boundedPolynomialVector (v : V) :
+lemma exists_boundedPolynomialVector (v : V) :
     ∃ (N : ℕ) (w : BinaryPolynomialVector N), polynomialVectorVal w = v := by
   classical
   let N : ℕ := (∑ i : Fin 4, (v i).natDegree) + 1
@@ -34581,7 +34581,7 @@ theorem exists_boundedPolynomialVector (v : V) :
   exact lt_of_le_of_lt Polynomial.degree_le_natDegree
     (WithBot.coe_lt_coe.mpr (hbound i))
 
-theorem dualPair_eq_zero_of_no_detection (z : X × Y)
+lemma dualPair_eq_zero_of_no_detection (z : X × Y)
     (h : ∀ v : V, ¬ dualDetects z v) : z = 0 := by
   have hlinear : z.1 = 0 := by
     apply LinearMap.ext
@@ -34597,7 +34597,7 @@ theorem dualPair_eq_zero_of_no_detection (z : X × Y)
     exact hv.2
   exact Prod.ext hlinear hquadratic
 
-theorem iUnion_boxDetectionSet :
+lemma iUnion_boxDetectionSet :
     (⋃ N : ℕ, boxDetectionSet N) = ({(0, 0)} : Set (X × Y))ᶜ := by
   ext z
   constructor
@@ -34629,19 +34629,19 @@ def boundedStandardVector (N : ℕ) (hN : 0 < N) :
   · simp [e, hi, hN]
   · simp [e, hi]
 
-@[simp] theorem polynomialVectorVal_boundedStandardVector
+@[simp] lemma polynomialVectorVal_boundedStandardVector
     (N : ℕ) (hN : 0 < N) :
     polynomialVectorVal (boundedStandardVector N hN) = e := by
   rfl
 
-theorem boundedStandardVector_mem_primitiveTruncationFinset
+lemma boundedStandardVector_mem_primitiveTruncationFinset
     (N : ℕ) (hN : 0 < N) :
     boundedStandardVector N hN ∈ primitiveTruncationFinset N := by
   rw [mem_primitiveTruncationFinset]
   exact e_isPrimitiveVector
 
 set_option backward.isDefEq.respectTransparency false in
-theorem invariantDual_boxDetection_bound
+lemma invariantDual_boxDetection_bound
     (μ : ProbabilityMeasure (X × Y))
     (hμ : IsInvariantDualProbability μ)
     (N : ℕ) (hN : 0 < N) :
@@ -34679,7 +34679,7 @@ theorem invariantDual_boxDetection_bound
     (boxDetectionSet_measurable N) hpoint huniform
   simpa [standard] using hbound
 
-theorem dualProbability_detection_gap
+lemma dualProbability_detection_gap
     (μ : ProbabilityMeasure (X × Y))
     (hμ : IsInvariantDualProbability μ) :
     (1 / 7 : ℝ) *
@@ -34714,12 +34714,12 @@ def homeomorphPushProbability (e : α ≃ₜ β)
     (μ : ProbabilityMeasure α) : ProbabilityMeasure β :=
   μ.map e.continuous.measurable.aemeasurable
 
-@[simp] theorem homeomorphPushProbability_toMeasure
+@[simp] lemma homeomorphPushProbability_toMeasure
     (e : α ≃ₜ β) (μ : ProbabilityMeasure α) :
     ((homeomorphPushProbability e μ : ProbabilityMeasure β) : Measure β) =
       (μ : Measure α).map e := rfl
 
-theorem homeomorphPushProbability_invariant
+lemma homeomorphPushProbability_invariant
     (e : α ≃ₜ β) (μ : ProbabilityMeasure α)
     (sourceAction : ι → α → α) (targetAction : ι → β → β)
     (hsource : ∀ i, Measurable (sourceAction i))
@@ -34737,14 +34737,14 @@ theorem homeomorphPushProbability_invariant
     exact (hequiv i x).symm
   rw [hcomp, ← Measure.map_map e.continuous.measurable (hsource i), hμ i]
 
-theorem homeomorphPushProbability_measureReal
+lemma homeomorphPushProbability_measureReal
     (e : α ≃ₜ β) (μ : ProbabilityMeasure α)
     (s : Set β) (hs : MeasurableSet s) :
     ((homeomorphPushProbability e μ : ProbabilityMeasure β) : Measure β).real s =
       (μ : Measure α).real (e ⁻¹' s) := by
   exact map_measureReal_apply e.continuous.measurable hs
 
-theorem homeomorphPushProbability_measureReal_singleton
+lemma homeomorphPushProbability_measureReal_singleton
     [MeasurableSingletonClass β]
     (e : α ≃ₜ β) (μ : ProbabilityMeasure α) (x : α) :
     ((homeomorphPushProbability e μ : ProbabilityMeasure β) : Measure β).real
@@ -34784,7 +34784,7 @@ def gammaPairHomeomorph (n : ℕ)
     DiscreteCharacterSpace (E n) ≃ₜ X × Y :=
   bidual.symm.trans (carryHomeomorph n)
 
-theorem carry_evalFour_ne_zero_of_quadratic_ne_zero
+lemma carry_evalFour_ne_zero_of_quadratic_ne_zero
     (n : ℕ) (v : V) (z : CarryGroup n)
     (h : z.quadratic (diagonal v) ≠ 0) :
     CarryGroup.evalFour n v z ≠ 0 := by
@@ -34804,7 +34804,7 @@ variable (hbidual : ∀ (z : CarryGroup n) (η : E n),
 
 include hbidual
 
-theorem gammaBidual_equivariant (k : K) (z : CarryGroup n) :
+lemma gammaBidual_equivariant (k : K) (z : CarryGroup n) :
     dualCharacterAction (gammaSplitAbelianExtension n).action k (bidual z) =
       bidual (kCarryAddAut n k z) := by
   apply PontryaginDual.ext
@@ -34820,7 +34820,7 @@ theorem gammaBidual_equivariant (k : K) (z : CarryGroup n) :
   rw [map_inv, inv_inv]
   rfl
 
-theorem gammaPairHomeomorph_equivariant (k : K)
+lemma gammaPairHomeomorph_equivariant (k : K)
     (χ : DiscreteCharacterSpace (E n)) :
     gammaPairHomeomorph n bidual
         (dualCharacterAction (gammaSplitAbelianExtension n).action k χ) =
@@ -34845,7 +34845,7 @@ theorem gammaPairHomeomorph_equivariant (k : K)
   rw [hcarry]
   rfl
 
-theorem gammaDualCharacterAction_continuous (k : K) :
+lemma gammaDualCharacterAction_continuous (k : K) :
     Continuous (dualCharacterAction (gammaSplitAbelianExtension n).action k) := by
   have h := (gammaPairHomeomorph n bidual).symm.continuous.comp
     ((continuous_dualPointAction k).comp
@@ -34864,7 +34864,7 @@ def gammaPairProbability
     ProbabilityMeasure (X × Y) :=
   homeomorphPushProbability (gammaPairHomeomorph n bidual) μ
 
-theorem gammaPairProbability_invariant
+lemma gammaPairProbability_invariant
     (μ : ProbabilityMeasure (DiscreteCharacterSpace (E n)))
     (hμ : IsInvariantSpectralMeasure
       (gammaSplitAbelianExtension n).action μ) :
@@ -34879,7 +34879,7 @@ theorem gammaPairProbability_invariant
     (gammaPairHomeomorph_equivariant n bidual hbidual)
     hμ
 
-theorem gammaBidual_zero :
+lemma gammaBidual_zero :
     bidual (0 : CarryGroup n) =
       (1 : DiscreteCharacterSpace (E n)) := by
   apply PontryaginDual.ext
@@ -34889,7 +34889,7 @@ theorem gammaBidual_zero :
   rw [hbidual]
   exact map_one _
 
-theorem gammaPairHomeomorph_trivial :
+lemma gammaPairHomeomorph_trivial :
     gammaPairHomeomorph n bidual
         (1 : DiscreteCharacterSpace (E n)) = (0, 0) := by
   rw [← gammaBidual_zero n bidual hbidual]
@@ -34897,7 +34897,7 @@ theorem gammaPairHomeomorph_trivial :
   rw [bidual.symm_apply_apply]
   rfl
 
-theorem gammaDetectedSet_preimage_subset :
+lemma gammaDetectedSet_preimage_subset :
     gammaPairHomeomorph n bidual ⁻¹' dualDetectionSet e ⊆
       gammaDetectedSet n := by
   intro χ hχ
@@ -34920,7 +34920,7 @@ theorem gammaDetectedSet_preimage_subset :
     exact ZMod.injective_toCircle
       (hzero.trans ZMod.toCircle.map_zero_eq_one.symm)
 
-theorem gammaProbability_detection_gap_of_bidual
+lemma gammaProbability_detection_gap_of_bidual
     (μ : ProbabilityMeasure (DiscreteCharacterSpace (E n)))
     (hμ : IsInvariantSpectralMeasure
       (gammaSplitAbelianExtension n).action μ) :
@@ -34955,7 +34955,7 @@ theorem gammaProbability_detection_gap_of_bidual
 
 end EvaluationHomeomorphism
 
-theorem gamma_probability_detection_gap (n : ℕ)
+lemma gamma_probability_detection_gap (n : ℕ)
     (μ : ProbabilityMeasure (DiscreteCharacterSpace (E n)))
     (hμ : IsInvariantSpectralMeasure
       (gammaSplitAbelianExtension n).action μ) :
@@ -34966,13 +34966,13 @@ theorem gamma_probability_detection_gap (n : ℕ)
     (carryBidualHomeomorph n)
     (fun z η ↦ carryBidualHomeomorph_apply n z η) μ hμ
 
-theorem gamma_hasFiniteSpectralDetection (n : ℕ) :
+lemma gamma_hasFiniteSpectralDetection (n : ℕ) :
     HasFiniteSpectralDetection (gammaSplitAbelianExtension n)
       {gammaLinearDetector n, gammaQuadraticDetector n} (2 / 7 : ℝ) :=
   gamma_hasFiniteSpectralDetection_of_measureGap n
     (gamma_probability_detection_gap n)
 
-theorem gamma_hasKazhdanPropertyT_unconditional (n : ℕ)
+lemma gamma_hasKazhdanPropertyT_unconditional (n : ℕ)
     (hUniversalLattice : ErshovJaikinUniversalLatticePropertyT) :
     HasKazhdanPropertyT (gammaGroup n) := by
   classical
@@ -35005,7 +35005,7 @@ private def l2CurryFiber {ι : Type u} {κ : Type v}
     exact ((lp.memℓp ξ).summable
       (by norm_num : 0 < (2 : ℝ≥0∞).toReal)).prod_factor i⟩
 
-private theorem l2Curry_mem {ι : Type u} {κ : Type v}
+private lemma l2Curry_mem {ι : Type u} {κ : Type v}
     (ξ : GroupL2 (ι × κ)) :
     (fun i => l2CurryFiber ξ i) ∈ lp (fun _ : ι => GroupL2 κ) 2 := by
   change Memℓp (fun i => l2CurryFiber ξ i) 2
@@ -35018,7 +35018,7 @@ private theorem l2Curry_mem {ι : Type u} {κ : Type v}
   rw [lp.norm_rpow_eq_tsum (by norm_num : 0 < (2 : ℝ≥0∞).toReal)]
   rfl
 
-private theorem l2Uncurry_mem {ι : Type u} {κ : Type v}
+private lemma l2Uncurry_mem {ι : Type u} {κ : Type v}
     (ξ : lp (fun _ : ι => GroupL2 κ) 2) :
     (fun p : ι × κ => ξ p.1 p.2) ∈ GroupL2 (ι × κ) := by
   change Memℓp (fun p : ι × κ => ξ p.1 p.2) 2
@@ -35076,11 +35076,11 @@ def l2Curry (ι : Type u) (κ : Type v) :
     rw [lp.norm_rpow_eq_tsum (by norm_num : 0 < (2 : ℝ≥0∞).toReal)]
     rfl
 
-@[simp] theorem l2Curry_apply {ι : Type u} {κ : Type v}
+@[simp] lemma l2Curry_apply {ι : Type u} {κ : Type v}
     (ξ : GroupL2 (ι × κ)) (i : ι) (k : κ) :
     l2Curry ι κ ξ i k = ξ (i, k) := rfl
 
-@[simp] theorem l2Curry_symm_apply {ι : Type u} {κ : Type v}
+@[simp] lemma l2Curry_symm_apply {ι : Type u} {κ : Type v}
     (ξ : lp (fun _ : ι => GroupL2 κ) 2) (i : ι) (k : κ) :
     (l2Curry ι κ).symm ξ (i, k) = ξ i k := rfl
 
@@ -35090,7 +35090,7 @@ def semidirectFubiniCoordinates (φ : K →* MulAut A) :
     SemidirectProduct A K φ ≃ K × A :=
   SemidirectProduct.equivProd.trans (Equiv.prodComm A K)
 
-@[simp] theorem semidirectFubiniCoordinates_apply
+@[simp] lemma semidirectFubiniCoordinates_apply
     (φ : K →* MulAut A) (g : SemidirectProduct A K φ) :
     semidirectFubiniCoordinates φ g = (g.right, g.left) := rfl
 
@@ -35099,20 +35099,20 @@ def semidirectFubini (φ : K →* MulAut A) :
       lp (fun _ : K => GroupL2 A) 2 :=
   (l2Reindex (semidirectFubiniCoordinates φ)).trans (l2Curry K A)
 
-@[simp] theorem semidirectFubini_apply
+@[simp] lemma semidirectFubini_apply
     (φ : K →* MulAut A)
     (ξ : GroupL2 (SemidirectProduct A K φ)) (k : K) (a : A) :
     semidirectFubini φ ξ k a =
       ξ (⟨a, k⟩ : SemidirectProduct A K φ) := rfl
 
-@[simp] theorem semidirectFubini_symm_apply
+@[simp] lemma semidirectFubini_symm_apply
     (φ : K →* MulAut A)
     (ξ : lp (fun _ : K => GroupL2 A) 2)
     (a : A) (k : K) :
     (semidirectFubini φ).symm ξ (⟨a, k⟩ : SemidirectProduct A K φ) =
       ξ k a := rfl
 
-theorem semidirectFubini_leftRegular_apply
+lemma semidirectFubini_leftRegular_apply
     (φ : K →* MulAut A)
     (g : SemidirectProduct A K φ)
     (ξ : GroupL2 (SemidirectProduct A K φ))
@@ -35128,7 +35128,7 @@ theorem semidirectFubini_leftRegular_apply
       g.right⁻¹ * k⟩
   rw [map_mul]
 
-@[simp] theorem semidirectFubini_leftRegular_inl_apply
+@[simp] lemma semidirectFubini_leftRegular_inl_apply
     (φ : K →* MulAut A) (b : A)
     (ξ : GroupL2 (SemidirectProduct A K φ))
     (k : K) (a : A) :
@@ -35141,7 +35141,7 @@ theorem semidirectFubini_leftRegular_apply
   simpa using semidirectFubini_leftRegular_apply φ
     (SemidirectProduct.inl b) ξ k a
 
-@[simp] theorem semidirectFubini_leftRegular_inr_apply
+@[simp] lemma semidirectFubini_leftRegular_inr_apply
     (φ : K →* MulAut A) (h : K)
     (ξ : GroupL2 (SemidirectProduct A K φ))
     (k : K) (a : A) :
@@ -35154,7 +35154,7 @@ theorem semidirectFubini_leftRegular_apply
   simpa using semidirectFubini_leftRegular_apply φ
     (SemidirectProduct.inr h) ξ k a
 
-theorem semidirectFubini_conj_leftRegular_apply
+lemma semidirectFubini_conj_leftRegular_apply
     (φ : K →* MulAut A)
     (g : SemidirectProduct A K φ)
     (ξ : lp (fun _ : K => GroupL2 A) 2)
@@ -35168,7 +35168,7 @@ theorem semidirectFubini_conj_leftRegular_apply
     semidirectFubini_leftRegular_apply,
     LinearIsometryEquiv.apply_symm_apply]
 
-@[simp] theorem semidirectFubini_leftRegular_inl
+@[simp] lemma semidirectFubini_leftRegular_inl
     (φ : K →* MulAut A) (b : A)
     (ξ : lp (fun _ : K => GroupL2 A) 2)
     (k : K) (a : A) :
@@ -35181,7 +35181,7 @@ theorem semidirectFubini_conj_leftRegular_apply
   simpa using semidirectFubini_conj_leftRegular_apply φ
     (SemidirectProduct.inl b) ξ k a
 
-@[simp] theorem semidirectFubini_leftRegular_inr
+@[simp] lemma semidirectFubini_leftRegular_inr
     (φ : K →* MulAut A) (h : K)
     (ξ : lp (fun _ : K => GroupL2 A) 2)
     (k : K) (a : A) :
@@ -35227,7 +35227,7 @@ def groupFactorUnitary
   (semidirectFubini φ).trans
     (crossedFiberwiseEquiv (K := H) (normalFourierCoordinates X F))
 
-@[simp] theorem groupFactorUnitary_apply
+@[simp] lemma groupFactorUnitary_apply
     (φ : H →* MulAut (Multiplicative A))
     (X : HaarProbabilityAction H Ω)
     (F : GroupL2 A ≃ₗᵢ[ℂ] crossedBaseHilbert X)
@@ -35238,7 +35238,7 @@ def groupFactorUnitary
         (semidirectFubini φ ξ h)) := rfl
 
 omit [AddCommGroup A] in
-@[simp] theorem normalFourierCoordinates_apply
+@[simp] lemma normalFourierCoordinates_apply
     (X : HaarProbabilityAction H Ω)
     (F : GroupL2 A ≃ₗᵢ[ℂ] crossedBaseHilbert X)
     (ξ : GroupL2 (Multiplicative A)) :
@@ -35246,7 +35246,7 @@ omit [AddCommGroup A] in
       F (l2Reindex (Multiplicative.toAdd : Multiplicative A ≃ A) ξ) := rfl
 
 omit [AddCommGroup A] in
-@[simp] theorem normalFourierCoordinates_symm_apply
+@[simp] lemma normalFourierCoordinates_symm_apply
     (X : HaarProbabilityAction H Ω)
     (F : GroupL2 A ≃ₗᵢ[ℂ] crossedBaseHilbert X)
     (ξ : crossedBaseHilbert X) :
@@ -35254,7 +35254,7 @@ omit [AddCommGroup A] in
       (l2Reindex (Multiplicative.toAdd : Multiplicative A ≃ A)).symm
         (F.symm ξ) := rfl
 
-theorem groupFactorUnitary_conj_inl
+lemma groupFactorUnitary_conj_inl
     (φ : H →* MulAut (Multiplicative A))
     (X : HaarProbabilityAction H Ω)
     (F : GroupL2 A ≃ₗᵢ[ℂ] crossedBaseHilbert X)
@@ -35319,7 +35319,7 @@ noncomputable section
 open ConnesRigidity MeasureTheory
 open scoped ENNReal
 
-theorem splitComplexCharacter_kDLinear (k : K) (d : D) (z : X × Y) :
+lemma splitComplexCharacter_kDLinear (k : K) (d : D) (z : X × Y) :
     splitComplexCharacter (kDLinear k d) z =
       splitComplexCharacter d (paperSplitHaarAction.action k⁻¹ z) := by
   change
@@ -35330,7 +35330,7 @@ theorem splitComplexCharacter_kDLinear (k : K) (d : D) (z : X × Y) :
           (kYLinear k⁻¹ z.2) d.2) : ℂ)
   simp only [kXLinear_apply, kYLinear_apply, inv_inv]
 
-theorem splitCharacterL2_kDLinear (k : K) (d : D) :
+lemma splitCharacterL2_kDLinear (k : K) (d : D) :
     splitCharacterL2 (kDLinear k d) =
       crossedActionL2Equiv paperSplitHaarAction k (splitCharacterL2 d) := by
   let hp : MeasurePreserving
@@ -35358,7 +35358,7 @@ theorem splitCharacterL2_kDLinear (k : K) (d : D) :
     _ = Lp.compMeasurePreserving (paperSplitPerm k⁻¹) hp
         (splitCharacterL2 d) z := hcomp.symm
 
-theorem splitL2Reindex_single [DecidableEq D]
+lemma splitL2Reindex_single [DecidableEq D]
     (k : K) (d : D) (c : ℂ) :
     l2Reindex (kDLinear k).toEquiv (lp.single 2 d c) =
       lp.single 2 (kDLinear k d) c := by
@@ -35367,7 +35367,7 @@ theorem splitL2Reindex_single [DecidableEq D]
     Equiv.symm_apply_eq]
   rfl
 
-theorem splitFourierEquiv_single_smul [DecidableEq D]
+lemma splitFourierEquiv_single_smul [DecidableEq D]
     (d : D) (c : ℂ) :
     splitFourierEquiv (lp.single 2 d c) = c • splitCharacterL2 d := by
   classical
@@ -35376,7 +35376,7 @@ theorem splitFourierEquiv_single_smul [DecidableEq D]
     simpa using (lp.single_smul (E := fun _ : D => ℂ) 2 d c (1 : ℂ))
   rw [hsingle, map_smul, splitFourierEquiv_single]
 
-theorem splitCharacterL2_zero :
+lemma splitCharacterL2_zero :
     splitCharacterL2 0 = Lp.const 2 productHaar (1 : ℂ) := by
   apply Lp.ext
   filter_upwards [
@@ -35389,12 +35389,12 @@ theorem splitCharacterL2_zero :
     _ = 1 := by rw [splitComplexCharacter_zero]; rfl
     _ = Lp.const 2 productHaar (1 : ℂ) z := hone.symm
 
-theorem splitFourierEquiv_zero_single [DecidableEq D] :
+lemma splitFourierEquiv_zero_single [DecidableEq D] :
     splitFourierEquiv (lp.single 2 (0 : D) (1 : ℂ)) =
       Lp.const 2 productHaar (1 : ℂ) :=
   (splitFourierEquiv_single (0 : D)).trans splitCharacterL2_zero
 
-theorem splitFourierEquiv_kDLinear (k : K) (ξ : GroupL2 D) :
+lemma splitFourierEquiv_kDLinear (k : K) (ξ : GroupL2 D) :
     splitFourierEquiv (l2Reindex (kDLinear k).toEquiv ξ) =
       crossedActionL2Equiv paperSplitHaarAction k
         (splitFourierEquiv ξ) := by
@@ -35445,7 +35445,7 @@ variable {H : Type v} [Group H]
 variable {Ω : Type w} [AddCommGroup Ω] [TopologicalSpace Ω]
   [MeasurableSpace Ω]
 
-theorem groupFactorUnitary_conj_inr
+lemma groupFactorUnitary_conj_inr
     (φ : H →* MulAut (Multiplicative A))
     (X : HaarProbabilityAction H Ω)
     (F : GroupL2 A ≃ₗᵢ[ℂ] crossedBaseHilbert X)
@@ -35498,7 +35498,7 @@ theorem groupFactorUnitary_conj_inr
   exact congrArg (fun z => z (k⁻¹ * h))
     ((groupFactorUnitary φ X F).apply_symm_apply ξ)
 
-theorem carryTaggedFourierCovariance (n : ℕ) (k : K)
+lemma carryTaggedFourierCovariance (n : ℕ) (k : K)
     (ξ : GroupL2 (Multiplicative (E n))) :
     normalFourierCoordinates (paperCarryHaarAction n) (carryFourierEquiv n)
       (l2Reindex (kEAction n k).toEquiv ξ) =
@@ -35523,7 +35523,7 @@ theorem carryTaggedFourierCovariance (n : ℕ) (k : K)
   exact carryFourier_kEAction n k
     (l2Reindex (Multiplicative.toAdd : Multiplicative (E n) ≃ E n) ξ)
 
-theorem splitTaggedFourierCovariance (k : K)
+lemma splitTaggedFourierCovariance (k : K)
     (ξ : GroupL2 (Multiplicative D)) :
     normalFourierCoordinates paperSplitHaarAction splitFourierEquiv
       (l2Reindex (kDAction k).toEquiv ξ) =
@@ -35547,7 +35547,7 @@ theorem splitTaggedFourierCovariance (k : K)
   exact splitFourierEquiv_kDLinear k
     (l2Reindex (Multiplicative.toAdd : Multiplicative D ≃ D) ξ)
 
-theorem gammaGroupFactorUnitary_conj_inr (n : ℕ) (k : K) :
+lemma gammaGroupFactorUnitary_conj_inr (n : ℕ) (k : K) :
     (gammaGroupFactorUnitary n).conjStarAlgEquiv
       (leftRegularUnitary
         (SemidirectProduct.inr k : Gamma n) :
@@ -35567,7 +35567,7 @@ theorem gammaGroupFactorUnitary_conj_inr (n : ℕ) (k : K) :
     (kEAction n) (paperCarryHaarAction n) (carryFourierEquiv n)
     (carryTaggedFourierCovariance n) k
 
-theorem lambdaGroupFactorUnitary_conj_inr (k : K) :
+lemma lambdaGroupFactorUnitary_conj_inr (k : K) :
     lambdaGroupFactorUnitary.conjStarAlgEquiv
       (leftRegularUnitary
         (SemidirectProduct.inr k : Lambda) :
@@ -35586,7 +35586,7 @@ theorem lambdaGroupFactorUnitary_conj_inr (k : K) :
   exact splitTaggedFourierCovariance
 
 set_option backward.isDefEq.respectTransparency false in
-theorem gammaGroupFactorUnitary_conj_inl (n : ℕ) (η : E n) :
+lemma gammaGroupFactorUnitary_conj_inl (n : ℕ) (η : E n) :
     (gammaGroupFactorUnitary n).conjStarAlgEquiv
       (leftRegularUnitary
         (SemidirectProduct.inl (Multiplicative.ofAdd η) : Gamma n) :
@@ -35616,7 +35616,7 @@ theorem gammaGroupFactorUnitary_conj_inl (n : ℕ) (η : E n) :
           (carryCharacterCoefficient n η))
   rw [carryFourier_conjugates_normal_generator]
 
-theorem split_normalFourierCoordinates_eq :
+lemma split_normalFourierCoordinates_eq :
     normalFourierCoordinates paperSplitHaarAction splitFourierEquiv =
       splitFourierEquiv := by
   apply LinearIsometryEquiv.ext
@@ -35626,7 +35626,7 @@ theorem split_normalFourierCoordinates_eq :
 set_option synthInstance.maxHeartbeats 1000000 in
 set_option maxHeartbeats 4000000 in
 set_option backward.isDefEq.respectTransparency false in
-theorem lambdaGroupFactorUnitary_conj_inl (d : D) :
+lemma lambdaGroupFactorUnitary_conj_inl (d : D) :
     lambdaGroupFactorUnitary.conjStarAlgEquiv
       (leftRegularUnitary
         (SemidirectProduct.inl (Multiplicative.ofAdd d) : Lambda) :
@@ -35721,14 +35721,14 @@ def toStarAlgEquiv (U : PaperFactorUnitaryWitness G H) :
     exact map_smul U.unitary.conjStarAlgEquiv c
       (x : GroupL2 G →L[ℂ] GroupL2 G)
 
-@[simp] theorem toStarAlgEquiv_coe
+@[simp] lemma toStarAlgEquiv_coe
     (U : PaperFactorUnitaryWitness G H)
     (x : GroupVonNeumannAlgebra G) :
     (U.toStarAlgEquiv x : GroupL2 H →L[ℂ] GroupL2 H) =
       U.unitary.conjStarAlgEquiv
         (x : GroupL2 G →L[ℂ] GroupL2 G) := rfl
 
-private theorem starAlgEquiv_isNormal
+private lemma starAlgEquiv_isNormal
     {A : Type u} {B : Type v}
     [Semiring A] [StarRing A] [Algebra ℂ A] [StarModule ℂ A]
     [Semiring B] [StarRing B] [Algebra ℂ B] [StarModule ℂ B]
@@ -35771,7 +35771,7 @@ private theorem starAlgEquiv_isNormal
           congrArg e.symm (hq.2.2 (e r) hr' hbound)) S p hp
   exact h
 
-theorem trace_preserving (U : PaperFactorUnitaryWitness G H)
+lemma trace_preserving (U : PaperFactorUnitaryWitness G H)
     (x : GroupVonNeumannAlgebra G) :
     canonicalTrace H (U.toStarAlgEquiv x) = canonicalTrace G x := by
   change inner ℂ (delta H 1)
@@ -35910,7 +35910,7 @@ noncomputable section
 
 universe u
 
-theorem vonNeumannClosure_eq_of_factor_generators
+lemma vonNeumannClosure_eq_of_factor_generators
     {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     [CompleteSpace H]
     (S T : Set (H →L[ℂ] H))
@@ -35950,7 +35950,7 @@ theorem vonNeumannClosure_eq_of_factor_generators
       (StarSubalgebra.centralizer ℂ T : Set (H →L[ℂ] H))
   rw [hcent]
 
-theorem semidirect_vonNeumannClosure_eq_inl_inr
+lemma semidirect_vonNeumannClosure_eq_inl_inr
     {A K : Type u} [Group A] [Group K] (φ : K →* MulAut A) :
     vonNeumannClosure
       (Set.range fun x : A ⋊[φ] K =>
@@ -36006,14 +36006,14 @@ variable {H : Type v} [Group H]
 variable {Ω : Type w} [AddCommGroup Ω] [TopologicalSpace Ω]
   [MeasurableSpace Ω]
 
-private theorem delta_eq_single (G : CountableDiscreteGroup)
+private lemma delta_eq_single (G : CountableDiscreteGroup)
     [d : DecidableEq G] (g : G) :
     delta G g = lp.single 2 g (1 : ℂ) := by
   have heq : d = Classical.decEq G := Subsingleton.elim _ _
   cases heq
   rfl
 
-theorem groupFactorUnitary_vacuum
+lemma groupFactorUnitary_vacuum
     (φ : H →* MulAut (Multiplicative A))
     (X : HaarProbabilityAction H Ω)
     (F : GroupL2 A ≃ₗᵢ[ℂ] crossedBaseHilbert X)
@@ -36051,7 +36051,7 @@ theorem groupFactorUnitary_vacuum
     rw [hcoord, map_zero]
     simp [crossedVacuum, lp.single_apply, hh]
 
-theorem gammaGroupFactorUnitary_vacuum (n : ℕ) :
+lemma gammaGroupFactorUnitary_vacuum (n : ℕ) :
     gammaGroupFactorUnitary n (delta (gammaGroup n) 1) =
       crossedVacuum (paperCarryHaarAction n) := by
   change
@@ -36065,7 +36065,7 @@ theorem gammaGroupFactorUnitary_vacuum (n : ℕ) :
     (paperCarryHaarAction n) (carryFourierEquiv n)
     (@carryFourierEquiv_zero_single n (Classical.decEq (E n)))
 
-private theorem lambdaDelta_apply (g : Lambda) :
+private lemma lambdaDelta_apply (g : Lambda) :
     delta lambdaGroup 1 (show lambdaGroup from g) =
       if g = (1 : Lambda) then 1 else 0 := by
   classical
@@ -36079,7 +36079,7 @@ private theorem lambdaDelta_apply (g : Lambda) :
     exact lp.single_apply_ne (E := fun _ : lambdaGroup => ℂ)
       2 (1 : lambdaGroup) (1 : ℂ) hg
 
-private theorem splitVacuum_apply (k : K) :
+private lemma splitVacuum_apply (k : K) :
     crossedVacuum paperSplitHaarAction k =
       if k = 1 then Lp.const 2 productHaar (1 : ℂ) else 0 := by
   classical
@@ -36097,7 +36097,7 @@ private theorem splitVacuum_apply (k : K) :
 set_option synthInstance.maxHeartbeats 1000000 in
 set_option maxHeartbeats 4000000 in
 set_option backward.isDefEq.respectTransparency false in
-theorem lambdaGroupFactorUnitary_vacuum :
+lemma lambdaGroupFactorUnitary_vacuum :
     lambdaGroupFactorUnitary (delta lambdaGroup 1) =
       crossedVacuum paperSplitHaarAction := by
   classical
@@ -36171,7 +36171,7 @@ noncomputable section
 
 universe u v w
 
-private theorem conj_image_union_range_eq
+private lemma conj_image_union_range_eq
     {H : Type u} {J : Type v}
     [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
     [NormedAddCommGroup J] [InnerProductSpace ℂ J] [CompleteSpace J]
@@ -36192,7 +36192,7 @@ private theorem conj_image_union_range_eq
     · exact ⟨A i, Or.inl ⟨i, rfl⟩, hA i⟩
     · exact ⟨B k, Or.inr ⟨k, rfl⟩, hB k⟩
 
-private theorem maps_group_factor_of_two_generator_families
+private lemma maps_group_factor_of_two_generator_families
     (G : CountableDiscreteGroup.{u})
     {H : Type v}
     [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
@@ -36307,7 +36307,7 @@ universe u v w
 def HasNoOrderFour (G : Type u) [Group G] : Prop :=
   ∀ g : G, g ^ 4 = 1 → g ^ 2 = 1
 
-theorem orderOf_eq_four_iff {G : Type u} [Group G] (g : G) :
+lemma orderOf_eq_four_iff {G : Type u} [Group G] (g : G) :
     orderOf g = 4 ↔ g ^ 4 = 1 ∧ g ^ 2 ≠ 1 := by
   constructor
   · intro hg
@@ -36321,7 +36321,7 @@ theorem orderOf_eq_four_iff {G : Type u} [Group G] (g : G) :
       (orderOf_eq_prime_pow (p := 2) (n := 1)
         (by simpa using hsquare) (by simpa using hfour))
 
-theorem mem_ker_of_pow_four_eq_one_of_no_nontrivial_torsion
+lemma mem_ker_of_pow_four_eq_one_of_no_nontrivial_torsion
     {G : Type u} {Q : Type v} [Group G] [Group Q]
     (π : G →* Q)
     (hQ : ∀ q : Q, IsOfFinOrder q → q = 1)
@@ -36333,7 +36333,7 @@ theorem mem_ker_of_pow_four_eq_one_of_no_nontrivial_torsion
   refine ⟨4, by norm_num, ?_⟩
   simpa using congrArg π hg
 
-theorem hasNoOrderFour_of_quotient_without_nontrivial_torsion
+lemma hasNoOrderFour_of_quotient_without_nontrivial_torsion
     {G : Type u} {Q : Type v} [Group G] [Group Q]
     (π : G →* Q)
     (hQ : ∀ q : Q, IsOfFinOrder q → q = 1)
@@ -36343,7 +36343,7 @@ theorem hasNoOrderFour_of_quotient_without_nontrivial_torsion
   exact hker g
     (mem_ker_of_pow_four_eq_one_of_no_nontrivial_torsion π hQ hg)
 
-theorem hasNoOrderFour_of_quotient_without_nontrivial_torsion_of_kernel_le_range
+lemma hasNoOrderFour_of_quotient_without_nontrivial_torsion_of_kernel_le_range
     {G : Type u} {Q : Type v} {N : Type w}
     [Group G] [Group Q] [Group N]
     (π : G →* Q) (ι : N →* G)
@@ -36357,7 +36357,7 @@ theorem hasNoOrderFour_of_quotient_without_nontrivial_torsion_of_kernel_le_range
   subst g
   simpa using congrArg ι (hN n)
 
-theorem semidirect_hasNoOrderFour_of_no_nontrivial_torsion_of_exponentTwo
+lemma semidirect_hasNoOrderFour_of_no_nontrivial_torsion_of_exponentTwo
     {N : Type u} {Q : Type v} [Group N] [Group Q]
     (φ : Q →* MulAut N)
     (hQ : ∀ q : Q, IsOfFinOrder q → q = 1)
@@ -36392,7 +36392,7 @@ local instance spectralGapPairMeasurable : MeasurableSpace (X × Y) :=
 
 local instance spectralGapPairBorel : BorelSpace (X × Y) := ⟨rfl⟩
 
-theorem pairDualHomeomorph_zero :
+lemma pairDualHomeomorph_zero :
     pairDualHomeomorph ((0 : X), (0 : Y)) =
       (1 : DiscreteCharacterSpace D) := by
   apply PontryaginDual.ext
@@ -36401,7 +36401,7 @@ theorem pairDualHomeomorph_zero :
     (0 : Y) (Multiplicative.toAdd d).2) = 1
   simp
 
-theorem spectralPairAction_equivariance
+lemma spectralPairAction_equivariance
     (k : K) (χ : DiscreteCharacterSpace D) :
     dualPointAction k (pairDualHomeomorph.symm χ) =
       pairDualHomeomorph.symm
@@ -36415,7 +36415,7 @@ theorem spectralPairAction_equivariance
   rw [pairDualHomeomorph_equivariant,
     pairDualHomeomorph.apply_symm_apply]
 
-theorem spectralDualCharacterAction_continuous (k : K) :
+lemma spectralDualCharacterAction_continuous (k : K) :
     Continuous (dualCharacterAction (A := D) (H := actingGroup)
       moduleAddAction k) := by
   have hcont := pairDualHomeomorph.continuous.comp
@@ -36433,13 +36433,13 @@ def spectralPairProbability
     ProbabilityMeasure (X × Y) :=
   homeomorphPushProbability pairDualHomeomorph.symm μ
 
-@[simp] theorem spectralPairProbability_toMeasure
+@[simp] lemma spectralPairProbability_toMeasure
     (μ : ProbabilityMeasure (DiscreteCharacterSpace D)) :
     (spectralPairProbability μ : Measure (X × Y)) =
       (μ : Measure (DiscreteCharacterSpace D)).map
         pairDualHomeomorph.symm := rfl
 
-theorem spectralPairProbability_invariant
+lemma spectralPairProbability_invariant
     (μ : ProbabilityMeasure (DiscreteCharacterSpace D))
     (hμ : IsInvariantSpectralMeasure moduleAddAction μ) :
     IsInvariantDualProbability (spectralPairProbability μ) := by
@@ -36452,7 +36452,7 @@ theorem spectralPairProbability_invariant
     (fun k χ ↦ (spectralPairAction_equivariance k χ).symm)
     hμ
 
-theorem spectralZeroAtom_preimage :
+lemma spectralZeroAtom_preimage :
     pairDualHomeomorph.symm ⁻¹' ({(0, 0)} : Set (X × Y)) =
       ({1} : Set (DiscreteCharacterSpace D)) := by
   ext χ
@@ -36474,7 +36474,7 @@ def spectralDetectedSet : Set (DiscreteCharacterSpace D) :=
   {χ | χ (Multiplicative.ofAdd (e, 0)) ≠ 1 ∨
     χ (Multiplicative.ofAdd (0, diagonal e)) ≠ 1}
 
-theorem spectralDetectedSet_preimage :
+lemma spectralDetectedSet_preimage :
     pairDualHomeomorph.symm ⁻¹' dualDetectionSet e =
       spectralDetectedSet := by
   ext χ
@@ -36496,7 +36496,7 @@ theorem spectralDetectedSet_preimage :
         (dualToPair χ) (diagonal e)).symm
   exact or_congr hlinear hquadratic
 
-theorem spectral_probability_detection_gap
+lemma spectral_probability_detection_gap
     (μ : ProbabilityMeasure (DiscreteCharacterSpace D))
     (hμ : IsInvariantSpectralMeasure moduleAddAction μ) :
     (1 / 7 : ℝ) * (1 - spectralTrivialAtom μ) ≤
@@ -36536,7 +36536,7 @@ private def lambdaModuleGroup : CountableDiscreteGroup where
   group := inferInstance
   countable := inferInstance
 
-theorem lambda_isICC_of_infinite_module_orbits
+lemma lambda_isICC_of_infinite_module_orbits
     (hK : IsICC actingGroup)
     (hD : ∀ d : D, d ≠ 0 →
       (Set.range fun k : K ↦ kDLinear k d).Infinite) :
@@ -36563,13 +36563,13 @@ theorem lambda_isICC_of_infinite_module_orbits
     rfl
   exact semidirect_isICC lambdaModuleGroup actingGroup kDAction hK horbit
 
-theorem lambda_isICC_of_module_orbits
+lemma lambda_isICC_of_module_orbits
     (hD : ∀ d : D, d ≠ 0 →
       (Set.range fun k : K ↦ kDLinear k d).Infinite) :
     IsICC lambdaGroup :=
   lambda_isICC_of_infinite_module_orbits actingGroup_isICC hD
 
-theorem lambda_isICC : IsICC lambdaGroup :=
+lemma lambda_isICC : IsICC lambdaGroup :=
   lambda_isICC_of_module_orbits k_D_orbit_infinite
 
 local instance lambdaDiscreteTopology : TopologicalSpace D := ⊥
@@ -36608,7 +36608,7 @@ def lambdaLinearDetector : D := (e, 0)
 
 def lambdaQuadraticDetector : D := (0, diagonal e)
 
-theorem lambda_detectors_ne :
+lemma lambda_detectors_ne :
     lambdaLinearDetector ≠ lambdaQuadraticDetector := by
   intro h
   apply e_ne_zero
@@ -36617,7 +36617,7 @@ theorem lambda_detectors_ne :
 def lambdaDetectionSet (d : D) : Set (DiscreteCharacterSpace D) :=
   {χ | χ (Multiplicative.ofAdd d) ≠ 1}
 
-theorem lambdaDetectionSet_measurable (d : D) :
+lemma lambdaDetectionSet_measurable (d : D) :
     MeasurableSet (lambdaDetectionSet d) := by
   unfold lambdaDetectionSet
   have hcontinuous : Continuous
@@ -36627,7 +36627,7 @@ theorem lambdaDetectionSet_measurable (d : D) :
     exact continuous_eval_const _
   exact (hcontinuous.measurable (measurableSet_singleton (1 : Circle))).compl
 
-theorem lambdaCharacter_sq (χ : DiscreteCharacterSpace D) (d : D) :
+lemma lambdaCharacter_sq (χ : DiscreteCharacterSpace D) (d : D) :
     (χ (Multiplicative.ofAdd d) : ℂ) ^ 2 = 1 := by
   have hcircle : χ (Multiplicative.ofAdd d) ^ 2 = 1 := by
     rw [← map_pow, pow_two]
@@ -36636,7 +36636,7 @@ theorem lambdaCharacter_sq (χ : DiscreteCharacterSpace D) (d : D) :
     exact map_one χ
   exact congrArg (fun z : Circle ↦ (z : ℂ)) hcircle
 
-theorem lambdaCharacterEnergy_eq_indicator
+lemma lambdaCharacterEnergy_eq_indicator
     (χ : DiscreteCharacterSpace D) (d : D) :
     ‖((χ (Multiplicative.ofAdd d) : Circle) : ℂ) - 1‖ ^ 2 =
       (lambdaDetectionSet d).indicator (fun _ ↦ (4 : ℝ)) χ := by
@@ -36651,7 +36651,7 @@ theorem lambdaCharacterEnergy_eq_indicator
     simp [lambdaDetectionSet, h, hneg]
     norm_num [Complex.norm_def]
 
-theorem lambdaSpectralEnergy_eq_four_mul_measure
+lemma lambdaSpectralEnergy_eq_four_mul_measure
     (μ : ProbabilityMeasure (DiscreteCharacterSpace D)) (d : D) :
     spectralDetectionEnergy μ d =
       4 * (μ : Measure (DiscreteCharacterSpace D)).real
@@ -36665,7 +36665,7 @@ def lambdaDetectedSet : Set (DiscreteCharacterSpace D) :=
   lambdaDetectionSet lambdaLinearDetector ∪
     lambdaDetectionSet lambdaQuadraticDetector
 
-theorem lambdaFourMulDetectedMass_le_energy
+lemma lambdaFourMulDetectedMass_le_energy
     (μ : ProbabilityMeasure (DiscreteCharacterSpace D)) :
     4 * (μ : Measure (DiscreteCharacterSpace D)).real lambdaDetectedSet ≤
       spectralDetectionEnergy μ lambdaLinearDetector +
@@ -36703,7 +36703,7 @@ theorem lambdaFourMulDetectedMass_le_energy
             lambdaSpectralEnergy_eq_four_mul_measure]
           simp [μ', S₁, S₂, mul_comm]
 
-theorem lambda_spectral_detection_gap
+lemma lambda_spectral_detection_gap
     (μ : ProbabilityMeasure (DiscreteCharacterSpace D))
     (hμ : IsInvariantSpectralMeasure
       lambdaSplitAbelianExtension.action μ) :
@@ -36714,7 +36714,7 @@ theorem lambda_spectral_detection_gap
       (μ : Measure (DiscreteCharacterSpace D)).real spectralDetectedSet
   exact spectral_probability_detection_gap μ hμ
 
-theorem lambda_hasFiniteSpectralDetection :
+lemma lambda_hasFiniteSpectralDetection :
     HasFiniteSpectralDetection lambdaSplitAbelianExtension
       {lambdaLinearDetector, lambdaQuadraticDetector} (4 / 7 : ℝ) := by
   intro μ hμ
@@ -36727,7 +36727,7 @@ theorem lambda_hasFiniteSpectralDetection :
     nlinarith
   simpa [lambda_detectors_ne] using hcombined
 
-theorem lambda_hasKazhdanPropertyT_unconditional
+lemma lambda_hasKazhdanPropertyT_unconditional
     (hUniversalLattice : ErshovJaikinUniversalLatticePropertyT) :
     HasKazhdanPropertyT lambdaGroup :=
   spectral_criterion_unconditional
@@ -36755,7 +36755,7 @@ def paperTracialGroupFactorEquiv (n : ℕ) :
     TracialGroupFactorEquiv (gammaGroup n) lambdaGroup :=
   (paperFactorUnitaryWitness n).toTracialGroupFactorEquiv
 
-theorem paper_factors_isomorphic (n : ℕ) :
+lemma paper_factors_isomorphic (n : ℕ) :
     TracialGroupFactorsIsomorphic (gammaGroup n) lambdaGroup :=
   ⟨paperTracialGroupFactorEquiv n⟩
 
@@ -36781,7 +36781,7 @@ instance paperVectorDistribMulAction : DistribMulAction K V where
     exact (kLinear k).map_zero
   smul_add k v w := (kLinear k).map_add v w
 
-@[simp] theorem paperVector_smul (k : K) (v : V) :
+@[simp] lemma paperVector_smul (k : K) (v : V) :
     k • v = kLinear k v := rfl
 
 instance paperDividedSquareDistribMulAction : DistribMulAction K B where
@@ -36799,7 +36799,7 @@ instance paperDividedSquareDistribMulAction : DistribMulAction K B where
     exact (kDividedSquareLinear k).map_zero
   smul_add k b c := (kDividedSquareLinear k).map_add b c
 
-@[simp] theorem paperDividedSquare_smul (k : K) (b : B) :
+@[simp] lemma paperDividedSquare_smul (k : K) (b : B) :
     k • b = kDividedSquareLinear k b := rfl
 
 instance paperDualDistribMulAction (n : ℕ) : DistribMulAction K (E n) where
@@ -36829,15 +36829,15 @@ instance paperDualDistribMulAction (n : ℕ) : DistribMulAction K (E n) where
     rw [map_mul]
     rfl
 
-@[simp] theorem paperDual_smul (n : ℕ) (k : K) (η : E n) :
+@[simp] lemma paperDual_smul (n : ℕ) (k : K) (η : E n) :
     k • η = Multiplicative.toAdd (kEAction n k (Multiplicative.ofAdd η)) := rfl
 
-@[simp] theorem paperDual_smul_toAdd (n : ℕ) (k : K)
+@[simp] lemma paperDual_smul_toAdd (n : ℕ) (k : K)
     (η : Multiplicative (E n)) :
     Multiplicative.toAdd (kEAction n k η) =
       k • Multiplicative.toAdd η := rfl
 
-@[simp] theorem paperDual_smul_ofAdd (n : ℕ) (k : K) (η : E n) :
+@[simp] lemma paperDual_smul_ofAdd (n : ℕ) (k : K) (η : E n) :
     kEAction n k (Multiplicative.ofAdd η) =
       Multiplicative.ofAdd (k • η) := rfl
 
@@ -36847,7 +36847,7 @@ abbrev paperTwoTorsionQuotient (n : ℕ) :=
 abbrev paperFiniteOrbitSubgroup (n : ℕ) :=
   finiteOrbitSubgroup K (paperTwoTorsionQuotient n)
 
-theorem paperDividedSquare_orbit_infinite (b : B) (hb : b ≠ 0) :
+lemma paperDividedSquare_orbit_infinite (b : B) (hb : b ≠ 0) :
     ¬(MulAction.orbit K b).Finite := by
   simpa [MulAction.orbit] using k_dividedSquare_orbit_infinite b hb
 
@@ -36863,14 +36863,14 @@ def paperExponentFourExtension (n : ℕ) : ExponentFourExtension V (E n) B where
   shift_injective := shiftVector_injective n
   doubling := two_nsmul_eta n
 
-theorem paperFiniteOrbit_card (n : ℕ) :
+lemma paperFiniteOrbit_card (n : ℕ) :
     Nat.card (paperFiniteOrbitSubgroup n) = 2 ^ (4 * n) := by
   let D := paperExponentFourExtension n
   exact D.finiteOrbitSubgroup_card_toB
     (fun k η => sigma_equivariant_raw n k η)
     paperDividedSquare_orbit_infinite n rfl
 
-theorem paperInvariant_card (n : ℕ) :
+lemma paperInvariant_card (n : ℕ) :
     paperGroupCardinalInvariant.value (gammaGroup n) = 2 ^ (4 * n) := by
   calc
     paperGroupCardinalInvariant.value (gammaGroup n) =
@@ -36880,7 +36880,7 @@ theorem paperInvariant_card (n : ℕ) :
         (gammaGroup n) (MulEquiv.refl (Gamma n))
     _ = 2 ^ (4 * n) := paperFiniteOrbit_card n
 
-theorem gamma_parameter_eq_of_mulEquiv {m n : ℕ}
+lemma gamma_parameter_eq_of_mulEquiv {m n : ℕ}
     (f : gammaGroup m ≃* gammaGroup n) : m = n := by
   apply two_pow_four_injective
   calc
@@ -36890,7 +36890,7 @@ theorem gamma_parameter_eq_of_mulEquiv {m n : ℕ}
       paperGroupCardinalInvariant.value_mulEquiv f
     _ = 2 ^ (4 * n) := paperInvariant_card n
 
-theorem gamma_pairwise_nonisomorphic {m n : ℕ} (hmn : m ≠ n) :
+lemma gamma_pairwise_nonisomorphic {m n : ℕ} (hmn : m ≠ n) :
     ¬GroupsIsomorphic (gammaGroup m) (gammaGroup n) := by
   rintro ⟨f⟩
   exact hmn (gamma_parameter_eq_of_mulEquiv f)
@@ -36898,7 +36898,7 @@ theorem gamma_pairwise_nonisomorphic {m n : ℕ} (hmn : m ≠ n) :
 structure PaperAnalyticInput where
   suslinRelative : SuslinRelativeElementaryGeneration
 
-theorem paperLambda_hasNoOrderFour : HasNoOrderFour Lambda := by
+lemma paperLambda_hasNoOrderFour : HasNoOrderFour Lambda := by
   change HasNoOrderFour (SemidirectProduct (Multiplicative D) K kDAction)
   apply semidirect_hasNoOrderFour_of_no_nontrivial_torsion_of_exponentTwo
     (N := Multiplicative D) (Q := K) kDAction K_no_nontrivial_torsion
@@ -36908,7 +36908,7 @@ theorem paperLambda_hasNoOrderFour : HasNoOrderFour Lambda := by
   change Multiplicative.toAdd d + Multiplicative.toAdd d = 0
   exact D_add_self _
 
-theorem paperLambda_orderOf_ne_four (g : lambdaGroup) : orderOf g ≠ 4 := by
+lemma paperLambda_orderOf_ne_four (g : lambdaGroup) : orderOf g ≠ 4 := by
   intro hg
   obtain ⟨hfour, htwo⟩ := (orderOf_eq_four_iff g).mp hg
   exact htwo (paperLambda_hasNoOrderFour g hfour)
@@ -36935,25 +36935,25 @@ def paperFamilyInput_of_universalLattice
 
 namespace PaperAnalyticInput
 
-theorem universalLattice (input : PaperAnalyticInput) :
+lemma universalLattice (input : PaperAnalyticInput) :
     ErshovJaikinUniversalLatticePropertyT :=
   universalLatticePropertyT_of_suslinRelative input.suslinRelative
 
-theorem lambda_propertyT (input : PaperAnalyticInput) :
+lemma lambda_propertyT (input : PaperAnalyticInput) :
     HasKazhdanPropertyT lambdaGroup :=
   lambda_hasKazhdanPropertyT_unconditional input.universalLattice
 
-theorem gamma_propertyT (input : PaperAnalyticInput) (n : ℕ) :
+lemma gamma_propertyT (input : PaperAnalyticInput) (n : ℕ) :
     HasKazhdanPropertyT (gammaGroup n) :=
   gamma_hasKazhdanPropertyT_unconditional n input.universalLattice
 
-theorem lambda_icc : IsICC lambdaGroup :=
+lemma lambda_icc : IsICC lambdaGroup :=
   lambda_isICC
 
-theorem gamma_icc (n : ℕ) : IsICC (gammaGroup n) :=
+lemma gamma_icc (n : ℕ) : IsICC (gammaGroup n) :=
   gamma_isICC n
 
-theorem gamma_not_isomorphic_lambda (n : ℕ) :
+lemma gamma_not_isomorphic_lambda (n : ℕ) :
     ¬GroupsIsomorphic (gammaGroup n) lambdaGroup :=
   not_groupsIsomorphic_of_orderFour (gamma_has_order_four n)
     paperLambda_orderOf_ne_four
@@ -36962,11 +36962,11 @@ def toPaperFamilyInput (input : PaperAnalyticInput) :
     PaperFamilyInput :=
   paperFamilyInput_of_universalLattice input.universalLattice
 
-@[simp] theorem toPaperFamilyInput_lambda
+@[simp] lemma toPaperFamilyInput_lambda
     (input : PaperAnalyticInput) :
     input.toPaperFamilyInput.Lambda = lambdaGroup := rfl
 
-@[simp] theorem toPaperFamilyInput_gamma
+@[simp] lemma toPaperFamilyInput_gamma
     (input : PaperAnalyticInput) (n : ℕ) :
     input.toPaperFamilyInput.Gamma n = gammaGroup n := rfl
 
@@ -36974,17 +36974,17 @@ def infinitePropertyTFiber (input : PaperAnalyticInput) :
     InfinitePropertyTFiber :=
   input.toPaperFamilyInput.toInfinitePropertyTFiber
 
-@[simp] theorem infinitePropertyTFiber_lambda
+@[simp] lemma infinitePropertyTFiber_lambda
     (input : PaperAnalyticInput) :
     input.infinitePropertyTFiber.Lambda = lambdaGroup := rfl
 
-@[simp] theorem infinitePropertyTFiber_gamma
+@[simp] lemma infinitePropertyTFiber_gamma
     (input : PaperAnalyticInput) (n : ℕ) :
     input.infinitePropertyTFiber.Gamma n = gammaGroup n := rfl
 
 end PaperAnalyticInput
 
-theorem paperAnalyticInput : PaperAnalyticInput :=
+lemma paperAnalyticInput : PaperAnalyticInput :=
   ⟨suslinRelativeElementaryGeneration⟩
 
 def paperInfinitePropertyTFiber : InfinitePropertyTFiber :=

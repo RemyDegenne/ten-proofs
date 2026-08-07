@@ -4,7 +4,7 @@ set_option synthInstance.maxHeartbeats 100000
 
 namespace MvPolynomial.IsWeightedHomogeneous
 
-theorem eq_monomial_of_unique_weight
+lemma eq_monomial_of_unique_weight
     {σ R M : Type*} [CommSemiring R] [AddCommMonoid M]
     {w : σ → M} {p : MvPolynomial σ R} {m : M} {d : σ →₀ ℕ}
     (hp : MvPolynomial.IsWeightedHomogeneous w p m)
@@ -25,7 +25,7 @@ end MvPolynomial.IsWeightedHomogeneous
 
 namespace PermanentCircuitCompatibility
 
-theorem ofList_take_succ {R : Type*} [CommRing R]
+lemma ofList_take_succ {R : Type*} [CommRing R]
     {k : ℕ} (G : Fin k → R) (j : ℕ) (hj : j < k) :
     Ideal.ofList ((List.ofFn G).take j) ⊔
         Ideal.span ({G ⟨j, hj⟩} : Set R) =
@@ -119,13 +119,13 @@ section Standalone_Geometry
 
 open scoped BigOperators
 
-@[simp] theorem mem_criticalLocus_iff {ι : Type} (P : MvPolynomial ι ℂ)
+@[simp] lemma mem_criticalLocus_iff {ι : Type} (P : MvPolynomial ι ℂ)
     (point : ι → ℂ) :
     point ∈ criticalLocus P ↔
       ∀ i : ι, MvPolynomial.eval point (MvPolynomial.pderiv i P) = 0 := by
   rfl
 
-theorem criticalLocus_eq_zeroLocus_pderiv_span {ι : Type} (P : MvPolynomial ι ℂ) :
+lemma criticalLocus_eq_zeroLocus_pderiv_span {ι : Type} (P : MvPolynomial ι ℂ) :
     criticalLocus P =
       MvPolynomial.zeroLocus ℂ
         (Ideal.span (Set.range fun i : ι => MvPolynomial.pderiv i P)) := by
@@ -139,7 +139,7 @@ noncomputable def linearSubspaceCoordinatePolynomial {k m : ℕ}
   ∑ j : Fin k,
     MvPolynomial.C ((E (Pi.single j 1)) i) * MvPolynomial.X j
 
-theorem eval_linearSubspaceCoordinatePolynomial {k m : ℕ}
+lemma eval_linearSubspaceCoordinatePolynomial {k m : ℕ}
     (E : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ))
     (i : Fin m) (u : Fin k → ℂ) :
     MvPolynomial.eval u (linearSubspaceCoordinatePolynomial E i) = E u i := by
@@ -157,7 +157,7 @@ noncomputable def linearSubspacePolynomialPullback {k m : ℕ}
     MvPolynomial (Fin m) ℂ →ₐ[ℂ] MvPolynomial (Fin k) ℂ :=
   MvPolynomial.aeval (linearSubspaceCoordinatePolynomial E)
 
-theorem eval_linearSubspacePolynomialPullback {k m : ℕ}
+lemma eval_linearSubspacePolynomialPullback {k m : ℕ}
     (E : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ))
     (u : Fin k → ℂ) (p : MvPolynomial (Fin m) ℂ) :
     MvPolynomial.eval u (linearSubspacePolynomialPullback E p) =
@@ -174,7 +174,7 @@ theorem eval_linearSubspacePolynomialPullback {k m : ℕ}
     exact eval_linearSubspaceCoordinatePolynomial E i u
   rw [MvPolynomial.comp_aeval_apply, hcoordinates]
 
-theorem linearSubspacePolynomialPullback_surjective_of_leftInverse
+lemma linearSubspacePolynomialPullback_surjective_of_leftInverse
     {k m : ℕ}
     (E : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ))
     (R : (Fin m → ℂ) →ₗ[ℂ] (Fin k → ℂ))
@@ -197,7 +197,7 @@ noncomputable def submoduleCoordinateRetraction {t : ℕ}
     (Fin t → ℂ) →ₗ[ℂ] (Fin (Module.finrank ℂ W) → ℂ) :=
   (Module.finBasis ℂ W).equivFun.toLinearMap.comp W.subtype.leftInverse
 
-theorem submoduleCoordinateRetraction_leftInverse {t : ℕ}
+lemma submoduleCoordinateRetraction_leftInverse {t : ℕ}
     (W : Submodule ℂ (Fin t → ℂ)) :
     Function.LeftInverse (submoduleCoordinateRetraction W)
       (submoduleCoordinateEmbedding W) := by
@@ -215,14 +215,14 @@ noncomputable def submodulePolynomialRestriction {t : ℕ}
       MvPolynomial (Fin (Module.finrank ℂ W)) ℂ :=
   linearSubspacePolynomialPullback (submoduleCoordinateEmbedding W)
 
-theorem submodulePolynomialRestriction_surjective {t : ℕ}
+lemma submodulePolynomialRestriction_surjective {t : ℕ}
     (W : Submodule ℂ (Fin t → ℂ)) :
     Function.Surjective (submodulePolynomialRestriction W) :=
   linearSubspacePolynomialPullback_surjective_of_leftInverse
     (submoduleCoordinateEmbedding W) (submoduleCoordinateRetraction W)
     (submoduleCoordinateRetraction_leftInverse W)
 
-theorem ker_submodulePolynomialRestriction_eq_vanishingIdeal {t : ℕ}
+lemma ker_submodulePolynomialRestriction_eq_vanishingIdeal {t : ℕ}
     (W : Submodule ℂ (Fin t → ℂ)) :
     RingHom.ker (submodulePolynomialRestriction W).toRingHom =
       MvPolynomial.vanishingIdeal ℂ
@@ -272,7 +272,7 @@ noncomputable def submoduleVanishingIdealCoordinateRingEquiv {t : ℕ}
       (Ideal.quotientKerAlgEquivOfSurjective
         (submodulePolynomialRestriction_surjective W))
 
-theorem submoduleVanishingIdealCoordinateRing_ringKrullDim {t : ℕ}
+lemma submoduleVanishingIdealCoordinateRing_ringKrullDim {t : ℕ}
     (W : Submodule ℂ (Fin t → ℂ)) :
     ringKrullDim
       (MvPolynomial (Fin t) ℂ ⧸
@@ -288,7 +288,7 @@ end Standalone_Geometry
 
 section Standalone_Bezout
 
-theorem multiplication_gate_equation_totalDegree_le_two
+lemma multiplication_gate_equation_totalDegree_le_two
     {ι : Type*} (j : ι) (left right : MvPolynomial ι ℂ)
     (hleft : left.totalDegree ≤ 1)
     (hright : right.totalDegree ≤ 1) :
@@ -303,7 +303,7 @@ theorem multiplication_gate_equation_totalDegree_le_two
           (Nat.add_le_add hleft hright))
     _ = 2 := by decide
 
-theorem affine_output_equation_totalDegree_le_one
+lemma affine_output_equation_totalDegree_le_one
     {ι : Type*} (output : MvPolynomial ι ℂ) (η : ℂ)
     (houtput : output.totalDegree ≤ 1) :
     (output - MvPolynomial.C η).totalDegree ≤ 1 :=
@@ -317,7 +317,7 @@ open Ideal
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-theorem ringKrullDim_le_of_isIntegral
+lemma ringKrullDim_le_of_isIntegral
     [Algebra.IsIntegral R S] :
     ringKrullDim S ≤ ringKrullDim R := by
   unfold ringKrullDim
@@ -336,7 +336,7 @@ open scoped BigOperators ENNReal
 
 noncomputable section
 
-theorem permanent_rollout_exists_avoiding_finite_smooth_chart_images
+lemma permanent_rollout_exists_avoiding_finite_smooth_chart_images
     {ι E F : Type*} [Finite ι]
     [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] [SecondCountableTopology E]
@@ -397,7 +397,7 @@ def permanentRolloutOutputChart {k m : ℕ}
         g (permanentRolloutNormalizedInput j z.1) ell)
       (z.2 r)
 
-theorem permanent_rollout_complex_div_contDiffAt
+lemma permanent_rollout_complex_div_contDiffAt
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {f h : E → ℂ} {x : E}
     (hf : ContDiffAt ℝ 1 f x) (hh : ContDiffAt ℝ 1 h x)
@@ -444,7 +444,7 @@ theorem permanent_rollout_complex_div_contDiffAt
           (f y).re * (h y).im / Complex.normSq (h y)
     exact Complex.div_im (f y) (h y)
 
-theorem permanent_rollout_normalized_input_contDiff
+lemma permanent_rollout_normalized_input_contDiff
     {k m : ℕ} (j : Fin (k + 1)) :
     ContDiff ℝ 1
       (fun z : permanentRolloutUniformOutputChartDomain k m =>
@@ -461,7 +461,7 @@ theorem permanent_rollout_normalized_input_contDiff
         Fin.insertNth_apply_succAbove]
       fun_prop
 
-theorem permanent_rollout_output_chart_contDiffAt
+lemma permanent_rollout_output_chart_contDiffAt
     {k m : ℕ}
     (g : (Fin (k + 1) → ℂ) → (Fin (m + 1) → ℂ))
     (hg : ContDiff ℝ 1 g)
@@ -497,7 +497,7 @@ theorem permanent_rollout_output_chart_contDiffAt
         Fin.insertNth_apply_succAbove]
       fun_prop
 
-theorem permanent_rollout_uniform_output_chart_real_finrank_lt
+lemma permanent_rollout_uniform_output_chart_real_finrank_lt
     (k m : ℕ) :
     finrank ℝ (permanentRolloutUniformOutputChartDomain k m) <
       finrank ℝ (Fin (k + 1) → Fin (m + 1) → ℂ) := by
@@ -511,7 +511,7 @@ theorem permanent_rollout_uniform_output_chart_real_finrank_lt
     Finset.sum_const, Finset.card_univ, nsmul_eq_mul]
   nlinarith
 
-theorem permanent_rollout_output_chart_eq_of_mulVec_zero
+lemma permanent_rollout_output_chart_eq_of_mulVec_zero
     {k m : ℕ}
     (g : (Fin (k + 1) → ℂ) → (Fin (m + 1) → ℂ))
     (j : Fin (k + 1)) (ell : Fin (m + 1))
@@ -540,7 +540,7 @@ theorem permanent_rollout_output_chart_eq_of_mulVec_zero
       field_simp
       linear_combination -hrow
 
-theorem permanent_rollout_exists_output_matrix_of_smooth_homogeneous
+lemma permanent_rollout_exists_output_matrix_of_smooth_homogeneous
     {k m e : ℕ}
     (g : (Fin k → ℂ) → (Fin m → ℂ))
     (hg : ContDiff ℝ 1 g)
@@ -626,7 +626,7 @@ theorem permanent_rollout_exists_output_matrix_of_smooth_homogeneous
               Fin.insertNth_self_removeNth j w
           rwa [hnormalize]
 
-theorem permanent_rollout_minimalPrime_isHomogeneous
+lemma permanent_rollout_minimalPrime_isHomogeneous
     {ι σ R : Type*} [CommRing R]
     [AddCommMonoid ι] [LinearOrder ι] [IsOrderedCancelAddMonoid ι]
     [SetLike σ R] [AddSubmonoidClass σ R]
@@ -656,7 +656,7 @@ noncomputable def permanentRolloutLinearCoordinateCombination
   map_smul' a c := by
     simp [Finset.smul_sum, smul_smul]
 
-theorem permanent_rollout_exists_linear_avoiding_minimalPrimes
+lemma permanent_rollout_exists_linear_avoiding_minimalPrimes
     {m : ℕ} (I : Ideal (MvPolynomial (Fin m) ℂ))
     (hcoordinate : ∀ p ∈ I.minimalPrimes,
       ∃ i : Fin m, MvPolynomial.X i ∉ p) :
@@ -694,7 +694,7 @@ section HomogeneousPrimeInputAvoidance
 
 attribute [local instance] MvPolynomial.gradedAlgebra
 
-theorem permanent_rollout_homogeneousPrime_le_idealOfVars
+lemma permanent_rollout_homogeneousPrime_le_idealOfVars
     {m : ℕ} (p : Ideal (MvPolynomial (Fin m) ℂ))
     (hprime : p.IsPrime)
     (hhomogeneous :
@@ -721,7 +721,7 @@ theorem permanent_rollout_homogeneousPrime_le_idealOfVars
       (Nat.lt_one_iff.mp hexponent)
   simpa [hezero] using hconstant
 
-theorem permanent_rollout_idealOfVars_isMaximal (m : ℕ) :
+lemma permanent_rollout_idealOfVars_isMaximal (m : ℕ) :
     (MvPolynomial.idealOfVars (Fin m) ℂ).IsMaximal := by
   have hkernel :
       RingHom.ker
@@ -745,7 +745,7 @@ theorem permanent_rollout_idealOfVars_isMaximal (m : ℕ) :
   intro a
   exact ⟨MvPolynomial.C a, MvPolynomial.constantCoeff_C _ a⟩
 
-theorem permanent_rollout_minimalPrime_exists_variable_of_positive_dimension
+lemma permanent_rollout_minimalPrime_exists_variable_of_positive_dimension
     {m : ℕ} (I : Ideal (MvPolynomial (Fin m) ℂ))
     (hI : I.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin m) ℂ))
@@ -789,7 +789,7 @@ theorem permanent_rollout_minimalPrime_exists_variable_of_positive_dimension
     Ring.krullDimLE_iff.mp hzero
   exact (not_lt_of_ge hnonpositive) hdimension
 
-theorem permanent_rollout_supportDim_quotSMulTop_idealQuotient_eq_ringKrullDim_sup
+lemma permanent_rollout_supportDim_quotSMulTop_idealQuotient_eq_ringKrullDim_sup
     {R : Type*} [CommRing R] (I : Ideal R) (x : R) :
     Module.supportDim R (QuotSMulTop x (R ⧸ I)) =
       ringKrullDim (R ⧸ (I ⊔ Ideal.span ({x} : Set R))) := by
@@ -798,7 +798,7 @@ theorem permanent_rollout_supportDim_quotSMulTop_idealQuotient_eq_ringKrullDim_s
     ringKrullDim_quotient, PrimeSpectrum.zeroLocus_sup,
     PrimeSpectrum.zeroLocus_span]
 
-theorem permanent_rollout_linearCoordinateCombination_isHomogeneousElem
+lemma permanent_rollout_linearCoordinateCombination_isHomogeneousElem
     {m : ℕ} (c : Fin m → ℂ) :
     SetLike.IsHomogeneousElem
       (MvPolynomial.homogeneousSubmodule (Fin m) ℂ)
@@ -816,7 +816,7 @@ noncomputable def permanentRolloutHomogeneousLinearSliceIdeal
   I ⊔ Ideal.span (Set.range fun j =>
     permanentRolloutLinearCoordinateCombination m (c j))
 
-theorem permanent_rollout_homogeneous_linear_slice_ideal_isHomogeneous
+lemma permanent_rollout_homogeneous_linear_slice_ideal_isHomogeneous
     {m n : ℕ} (I : Ideal (MvPolynomial (Fin m) ℂ))
     (hI : I.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin m) ℂ))
@@ -829,7 +829,7 @@ theorem permanent_rollout_homogeneous_linear_slice_ideal_isHomogeneous
   rintro _ ⟨j, rfl⟩
   exact permanent_rollout_linearCoordinateCombination_isHomogeneousElem (c j)
 
-theorem permanent_rollout_homogeneous_linear_slice_ideal_snoc
+lemma permanent_rollout_homogeneous_linear_slice_ideal_snoc
     {m n : ℕ} (I : Ideal (MvPolynomial (Fin m) ℂ))
     (c : Fin n → Fin m → ℂ) (x : Fin m → ℂ) :
     permanentRolloutHomogeneousLinearSliceIdeal I (Fin.snoc c x) =
@@ -850,7 +850,7 @@ theorem permanent_rollout_homogeneous_linear_slice_ideal_snoc
   rw [hsnoc, Fin.range_snoc, Ideal.span_insert]
   ac_rfl
 
-theorem permanent_rollout_homogeneous_linear_slice_coefficient_span_le_minimalPrime
+lemma permanent_rollout_homogeneous_linear_slice_coefficient_span_le_minimalPrime
     {m n : ℕ} (I : Ideal (MvPolynomial (Fin m) ℂ))
     (c : Fin n → Fin m → ℂ)
     (p : Ideal (MvPolynomial (Fin m) ℂ))
@@ -867,7 +867,7 @@ theorem permanent_rollout_homogeneous_linear_slice_coefficient_span_le_minimalPr
         permanentRolloutHomogeneousLinearSliceIdeal I c from
       le_sup_right) (Ideal.subset_span ⟨j, rfl⟩)
 
-theorem permanent_rollout_homogeneous_linear_slice_exists_independent_dimension_drop
+lemma permanent_rollout_homogeneous_linear_slice_exists_independent_dimension_drop
     {m n : ℕ} (I : Ideal (MvPolynomial (Fin m) ℂ))
     (hI : I.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin m) ℂ))
@@ -925,7 +925,7 @@ theorem permanent_rollout_homogeneous_linear_slice_exists_independent_dimension_
   rw [permanent_rollout_homogeneous_linear_slice_ideal_snoc]
   exact hdrop
 
-theorem permanent_rollout_exists_iterated_independent_linear_ideal_dimension_zero
+lemma permanent_rollout_exists_iterated_independent_linear_ideal_dimension_zero
     {m n : ℕ} (I : Ideal (MvPolynomial (Fin m) ℂ))
     (hI : I.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin m) ℂ))
@@ -968,7 +968,7 @@ theorem permanent_rollout_exists_iterated_independent_linear_ideal_dimension_zer
       · exact ⟨n, c, le_rfl, by omega, hindependent,
           le_of_not_gt hpositive⟩
 
-theorem permanent_rollout_exists_independent_linear_ideal_dimension_zero
+lemma permanent_rollout_exists_independent_linear_ideal_dimension_zero
     {m : ℕ} (I : Ideal (MvPolynomial (Fin m) ℂ))
     (hI : I.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin m) ℂ))
@@ -1031,12 +1031,12 @@ abbrev homogeneousMapClosedFiber {ι : Type*}
     (F : ι → MvPolynomial ι ℂ) (point : ι → ℂ) :=
   MvPolynomial ι ℂ ⧸ homogeneousMapFiberIdeal F point
 
-theorem homogeneousMapFiberIdeal_zero {ι : Type*}
+lemma homogeneousMapFiberIdeal_zero {ι : Type*}
     (F : ι → MvPolynomial ι ℂ) :
     homogeneousMapFiberIdeal F 0 = homogeneousMapIdeal F := by
   simp [homogeneousMapFiberIdeal, homogeneousMapIdeal]
 
-theorem zeroLocus_homogeneousMapIdeal {ι : Type*}
+lemma zeroLocus_homogeneousMapIdeal {ι : Type*}
     (F : ι → MvPolynomial ι ℂ) :
     MvPolynomial.zeroLocus ℂ (homogeneousMapIdeal F) =
       {point : ι → ℂ | ∀ i, MvPolynomial.eval point (F i) = 0} := by
@@ -1044,20 +1044,20 @@ theorem zeroLocus_homogeneousMapIdeal {ι : Type*}
   ext point
   simp [MvPolynomial.aeval_def]
 
-theorem zeroLocus_idealOfVars {ι : Type*} :
+lemma zeroLocus_idealOfVars {ι : Type*} :
     MvPolynomial.zeroLocus ℂ (MvPolynomial.idealOfVars ι ℂ) =
       ({0} : Set (ι → ℂ)) := by
   rw [MvPolynomial.idealOfVars, MvPolynomial.zeroLocus_span]
   ext point
   simp [MvPolynomial.aeval_def, funext_iff]
 
-theorem homogeneous_eval_zero_of_pos {ι : Type*} {f : MvPolynomial ι ℂ}
+lemma homogeneous_eval_zero_of_pos {ι : Type*} {f : MvPolynomial ι ℂ}
     {e : ℕ} (he : 0 < e) (hf : f.IsHomogeneous e) :
     MvPolynomial.eval (0 : ι → ℂ) f = 0 := by
   rw [MvPolynomial.eval_zero, MvPolynomial.constantCoeff_eq]
   exact hf.coeff_eq_zero (by simpa using he.ne)
 
-theorem vanishingIdeal_origin_eq_idealOfVars {ι : Type*} :
+lemma vanishingIdeal_origin_eq_idealOfVars {ι : Type*} :
     MvPolynomial.vanishingIdeal ℂ ({0} : Set (ι → ℂ)) =
       MvPolynomial.idealOfVars ι ℂ := by
   ext p
@@ -1075,7 +1075,7 @@ theorem vanishingIdeal_origin_eq_idealOfVars {ι : Type*} :
   · intro hp
     simpa [← MvPolynomial.constantCoeff_eq] using hp 0 (by simp)
 
-theorem radical_homogeneousMapIdeal_eq_idealOfVars {ι : Type*} [Finite ι]
+lemma radical_homogeneousMapIdeal_eq_idealOfVars {ι : Type*} [Finite ι]
     (F : ι → MvPolynomial ι ℂ)
     (hzero : ∀ point : ι → ℂ,
       (∀ i, MvPolynomial.eval point (F i) = 0) ↔ point = 0) :
@@ -1088,7 +1088,7 @@ theorem radical_homogeneousMapIdeal_eq_idealOfVars {ι : Type*} [Finite ι]
   rw [← MvPolynomial.vanishingIdeal_zeroLocus_eq_radical (K := ℂ), hfiber,
     vanishingIdeal_origin_eq_idealOfVars]
 
-theorem exists_idealOfVars_pow_le_homogeneousMapIdeal {ι : Type*} [Finite ι]
+lemma exists_idealOfVars_pow_le_homogeneousMapIdeal {ι : Type*} [Finite ι]
     (F : ι → MvPolynomial ι ℂ)
     (hzero : ∀ point : ι → ℂ,
       (∀ i, MvPolynomial.eval point (F i) = 0) ↔ point = 0) :
@@ -1098,7 +1098,7 @@ theorem exists_idealOfVars_pow_le_homogeneousMapIdeal {ι : Type*} [Finite ι]
     (hrad.symm ▸ MvPolynomial.idealOfVars_fg ι ℂ)
   exact ⟨n, hrad ▸ hn⟩
 
-theorem finiteFree_maximalFiber_finrank
+lemma finiteFree_maximalFiber_finrank
     {R S : Type*} [CommRing R] [IsDomain R]
     [CommRing S] [Algebra R S] [Module.Free R S]
     (p : Ideal R) [p.IsMaximal] :
@@ -1113,7 +1113,7 @@ theorem finiteFree_maximalFiber_finrank
       (Algebra.TensorProduct.quotIdealMapEquivQuotTensor S p).toLinearEquiv.finrank_eq
     _ = Module.finrank R S := Module.finrank_baseChange
 
-theorem finiteFree_complexTargetFiber_finrank
+lemma finiteFree_complexTargetFiber_finrank
     {R S : Type*} [CommRing R] [IsDomain R]
     [CommRing S] [Algebra ℂ R] [Algebra ℂ S] [Algebra R S]
     [IsScalarTower ℂ R S] [Module.Free R S]
@@ -1154,7 +1154,7 @@ open scoped BigOperators
 
 attribute [local instance] MvPolynomial.gradedAlgebra
 
-theorem homogeneousMap_coordinate_mem_subalgebra
+lemma homogeneousMap_coordinate_mem_subalgebra
     {ι : Type*} (F : ι → MvPolynomial ι ℂ) (i : ι) :
     F i ∈ homogeneousMapSubalgebra F := by
   exact Algebra.subset_adjoin (Set.mem_range_self i)
@@ -1163,7 +1163,7 @@ noncomputable def homogeneousMapLowDegreeSubmodule
     (ι : Type*) (N : ℕ) : Submodule ℂ (MvPolynomial ι ℂ) :=
   ⨆ n ∈ Finset.range N, MvPolynomial.homogeneousSubmodule ι ℂ n
 
-theorem homogeneousMapLowDegreeSubmodule_fg
+lemma homogeneousMapLowDegreeSubmodule_fg
     {ι : Type*} [Finite ι] (N : ℕ) :
     (homogeneousMapLowDegreeSubmodule ι N).FG := by
   unfold homogeneousMapLowDegreeSubmodule
@@ -1171,7 +1171,7 @@ theorem homogeneousMapLowDegreeSubmodule_fg
     (MvPolynomial.homogeneousSubmodule ι ℂ)
     (fun n _ => MvPolynomial.homogeneousSubmodule_fg ι ℂ n)
 
-theorem homogeneous_mem_homogeneousMapLowDegreeSubmodule
+lemma homogeneous_mem_homogeneousMapLowDegreeSubmodule
     {ι : Type*} {p : MvPolynomial ι ℂ} {n N : ℕ}
     (hp : p.IsHomogeneous n) (hn : n < N) :
     p ∈ homogeneousMapLowDegreeSubmodule ι N := by
@@ -1184,7 +1184,7 @@ theorem homogeneous_mem_homogeneousMapLowDegreeSubmodule
     (Finset.mem_range.mpr hn))
   exact hp
 
-theorem homogeneous_mem_idealOfVars_pow_of_le
+lemma homogeneous_mem_idealOfVars_pow_of_le
     {ι : Type*} {p : MvPolynomial ι ℂ} {n N : ℕ}
     (hp : p.IsHomogeneous n) (hN : N ≤ n) :
     p ∈ MvPolynomial.idealOfVars ι ℂ ^ N := by
@@ -1193,7 +1193,7 @@ theorem homogeneous_mem_idealOfVars_pow_of_le
   apply hp.coeff_eq_zero
   omega
 
-theorem exists_high_homogeneousSubmodule_le_homogeneousMapIdeal
+lemma exists_high_homogeneousSubmodule_le_homogeneousMapIdeal
     {ι : Type*} [Finite ι]
     (F : ι → MvPolynomial ι ℂ)
     (hzero : ∀ point : ι → ℂ,
@@ -1207,7 +1207,7 @@ theorem exists_high_homogeneousSubmodule_le_homogeneousMapIdeal
   intro n hn p hp
   exact hN (homogeneous_mem_idealOfVars_pow_of_le hp hn)
 
-theorem homogeneousMapIdeal_isHomogeneous
+lemma homogeneousMapIdeal_isHomogeneous
     {ι : Type*} (F : ι → MvPolynomial ι ℂ) (e : ℕ)
     (hF : ∀ i, (F i).IsHomogeneous e) :
     Ideal.IsHomogeneous (MvPolynomial.homogeneousSubmodule ι ℂ)
@@ -1218,7 +1218,7 @@ theorem homogeneousMapIdeal_isHomogeneous
   rintro _ ⟨i, rfl⟩
   exact ⟨e, hF i⟩
 
-theorem homogeneousComponent_mul_of_right_isHomogeneous
+lemma homogeneousComponent_mul_of_right_isHomogeneous
     {ι : Type*} (g f : MvPolynomial ι ℂ) {e n : ℕ}
     (hf : f.IsHomogeneous e) (hen : e ≤ n) :
     MvPolynomial.homogeneousComponent n (g * f) =
@@ -1241,7 +1241,7 @@ theorem homogeneousComponent_mul_of_right_isHomogeneous
       (a := g) (b := f) (n := n) (i := e) hf hen
   simpa only [hcomponent] using hprojection
 
-theorem homogeneousMapIdeal_homogeneous_representation
+lemma homogeneousMapIdeal_homogeneous_representation
     {ι : Type*} [Fintype ι]
     (F : ι → MvPolynomial ι ℂ) {e n : ℕ}
     (hF : ∀ i, (F i).IsHomogeneous e) (hen : e ≤ n)
@@ -1266,7 +1266,7 @@ theorem homogeneousMapIdeal_homogeneous_representation
     at hcomponent
   simpa [MvPolynomial.homogeneousComponent_eq_self hp] using hcomponent
 
-theorem homogeneousMap_moduleFinite
+lemma homogeneousMap_moduleFinite
     {ι : Type*} [Finite ι]
     (F : ι → MvPolynomial ι ℂ)
     (e : ℕ) (he : 0 < e)
@@ -1325,7 +1325,7 @@ theorem homogeneousMap_moduleFinite
     hgraded n (MvPolynomial.homogeneousComponent n p)
       (MvPolynomial.homogeneousComponent_isHomogeneous n p)
 
-theorem homogeneousMap_isIntegral
+lemma homogeneousMap_isIntegral
     {ι : Type*} [Finite ι]
     (F : ι → MvPolynomial ι ℂ)
     (e : ℕ) (he : 0 < e)
@@ -1337,7 +1337,7 @@ theorem homogeneousMap_isIntegral
   letI := homogeneousMap_moduleFinite F e he hF hzero
   exact Algebra.IsIntegral.of_finite _ _
 
-theorem homogeneousMap_isTranscendenceBasis
+lemma homogeneousMap_isTranscendenceBasis
     {ι : Type*} [Finite ι]
     (F : ι → MvPolynomial ι ℂ)
     (e : ℕ) (he : 0 < e)
@@ -1351,7 +1351,7 @@ theorem homogeneousMap_isTranscendenceBasis
   apply Algebra.IsAlgebraic.isTranscendenceBasis_of_le_trdeg_of_finite ℂ F
   simp
 
-theorem homogeneousMap_algebraicIndependent
+lemma homogeneousMap_algebraicIndependent
     {ι : Type*} [Finite ι]
     (F : ι → MvPolynomial ι ℂ)
     (e : ℕ) (he : 0 < e)
@@ -1373,7 +1373,7 @@ noncomputable def homogeneousMapCoordinateAlgEquiv
 
 section FractionField
 
-theorem finite_of_totalDegree_power_reductions
+lemma finite_of_totalDegree_power_reductions
     {ι B A : Type*} [Fintype ι] [CommRing B] [CommRing A] [Algebra B A]
     (x : ι → A) (q : ℕ) (_hq : 0 < q)
     (remainder : ι → MvPolynomial ι B)
@@ -1494,7 +1494,7 @@ noncomputable def deletedCoordinateEsymmPolynomial (t q : ℕ) (i : Fin t) :
   (((Finset.univ : Finset (Fin t)).erase i).val.map
     (fun j => (MvPolynomial.X j : MvPolynomial (Fin t) ℂ))).esymm q
 
-theorem eval_deletedCoordinateEsymmPolynomial {t : ℕ}
+lemma eval_deletedCoordinateEsymmPolynomial {t : ℕ}
     (u : Fin t → ℂ) (i : Fin t) (q : ℕ) :
     MvPolynomial.eval u (deletedCoordinateEsymmPolynomial t q i) =
       deletedCoordinateEsymm u i q := by
@@ -1502,7 +1502,7 @@ theorem eval_deletedCoordinateEsymmPolynomial {t : ℕ}
   simp only [deletedCoordinateEsymmPolynomial, deletedCoordinateEsymm,
     Finset.esymm_map_val, map_sum, map_prod, MvPolynomial.eval_X]
 
-theorem coordinateEsymm_succ_eq_deleted {t : ℕ}
+lemma coordinateEsymm_succ_eq_deleted {t : ℕ}
     (u : Fin t → ℂ) (i : Fin t) (q : ℕ) :
     coordinateEsymm u (q + 1) =
       deletedCoordinateEsymm u i (q + 1) +
@@ -1518,7 +1518,7 @@ theorem coordinateEsymm_succ_eq_deleted {t : ℕ}
     Multiset.esymm, Multiset.map_add, Multiset.map_map,
     Multiset.sum_add, Multiset.sum_map_mul_left]
 
-theorem powersetCard_erase_eq_filter_not_mem {α : Type*} [DecidableEq α]
+lemma powersetCard_erase_eq_filter_not_mem {α : Type*} [DecidableEq α]
     (s : Finset α) (i : α) (q : ℕ) :
     (s.erase i).powersetCard q =
       (s.powersetCard q).filter (fun rows => i ∉ rows) := by
@@ -1534,7 +1534,7 @@ theorem powersetCard_erase_eq_filter_not_mem {α : Type*} [DecidableEq α]
     intro heq
     exact hi (heq ▸ hj)
 
-theorem sum_deletedCoordinateEsymm {t : ℕ}
+lemma sum_deletedCoordinateEsymm {t : ℕ}
     (u : Fin t → ℂ) (q : ℕ) :
     (∑ i : Fin t, deletedCoordinateEsymm u i q) =
       ((t - q : ℕ) : ℂ) * coordinateEsymm u q := by
@@ -1582,12 +1582,12 @@ section AlgebraicProjectiveLeadingForms
 
 attribute [local instance] MvPolynomial.gradedAlgebra
 
-theorem leadingFormProjective_idealOfVars_isPrime (t : ℕ) :
+lemma leadingFormProjective_idealOfVars_isPrime (t : ℕ) :
     (MvPolynomial.idealOfVars (Fin t) ℂ).IsPrime := by
   rw [← vanishingIdeal_origin_eq_idealOfVars]
   infer_instance
 
-theorem homogeneousIdeal_minimalPrime_isHomogeneous {t : ℕ}
+lemma homogeneousIdeal_minimalPrime_isHomogeneous {t : ℕ}
     (I P : Ideal (MvPolynomial (Fin t) ℂ))
     (hI : I.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin t) ℂ))
@@ -1611,7 +1611,7 @@ theorem homogeneousIdeal_minimalPrime_isHomogeneous {t : ℕ}
   rw [← heq]
   exact core.isHomogeneous
 
-theorem homogeneousPrime_le_idealOfVars {t : ℕ}
+lemma homogeneousPrime_le_idealOfVars {t : ℕ}
     (P : Ideal (MvPolynomial (Fin t) ℂ)) (hP : P.IsPrime)
     (hhomogeneous : P.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin t) ℂ)) :
@@ -1634,7 +1634,7 @@ theorem homogeneousPrime_le_idealOfVars {t : ℕ}
         MvPolynomial.C
   exact (Ideal.notMem_of_isUnit P hunit) hcomponent
 
-theorem homogeneousIdeal_radical_eq_idealOfVars_of_vertex_minimal {t : ℕ}
+lemma homogeneousIdeal_radical_eq_idealOfVars_of_vertex_minimal {t : ℕ}
     (I : Ideal (MvPolynomial (Fin t) ℂ))
     (hI : I.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin t) ℂ))
@@ -1651,7 +1651,7 @@ theorem homogeneousIdeal_radical_eq_idealOfVars_of_vertex_minimal {t : ℕ}
       homogeneousPrime_le_idealOfVars P hP.isPrime hPhomogeneous
     exact hvertex.2 ⟨hP.isPrime, hP.le⟩ hPvertex
 
-theorem homogeneousIdeal_vertex_not_minimal_of_ringKrullDim_pos {t : ℕ}
+lemma homogeneousIdeal_vertex_not_minimal_of_ringKrullDim_pos {t : ℕ}
     (I : Ideal (MvPolynomial (Fin t) ℂ))
     (hI : I.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin t) ℂ))
@@ -1687,7 +1687,7 @@ theorem homogeneousIdeal_vertex_not_minimal_of_ringKrullDim_pos {t : ℕ}
   rw [hzero] at hpositive
   exact (lt_irrefl _ hpositive)
 
-theorem homogeneousIdeal_minimalPrime_exists_variable_notMem
+lemma homogeneousIdeal_minimalPrime_exists_variable_notMem
     {t : ℕ} (I : Ideal (MvPolynomial (Fin t) ℂ))
     (hI : I.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin t) ℂ))
@@ -1712,7 +1712,7 @@ theorem homogeneousIdeal_minimalPrime_exists_variable_notMem
   exact homogeneousIdeal_vertex_not_minimal_of_ringKrullDim_pos
     I hI hpositive (heq ▸ hP)
 
-theorem homogeneousIdeal_radical_eq_idealOfVars_of_ringKrullDim_le_zero
+lemma homogeneousIdeal_radical_eq_idealOfVars_of_ringKrullDim_le_zero
     {t : ℕ} (I : Ideal (MvPolynomial (Fin t) ℂ))
     (hI : I.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin t) ℂ))
@@ -1747,7 +1747,7 @@ theorem homogeneousIdeal_radical_eq_idealOfVars_of_ringKrullDim_le_zero
       (hallmaximal P hP).eq_of_le hvertexprime.ne_top hPvertex
     exact hPeq.symm.le
 
-theorem supportDim_quotSMulTop_idealQuotient_eq_ringKrullDim_sup
+lemma supportDim_quotSMulTop_idealQuotient_eq_ringKrullDim_sup
     {R : Type*} [CommRing R] (I : Ideal R) (x : R) :
     Module.supportDim R (QuotSMulTop x (R ⧸ I)) =
       ringKrullDim (R ⧸ (I ⊔ Ideal.span ({x} : Set R))) := by
@@ -1756,7 +1756,7 @@ theorem supportDim_quotSMulTop_idealQuotient_eq_ringKrullDim_sup
     ringKrullDim_quotient, PrimeSpectrum.zeroLocus_sup,
     PrimeSpectrum.zeroLocus_span]
 
-theorem permanentRolloutLinearCoordinateCombination_isHomogeneous
+lemma permanentRolloutLinearCoordinateCombination_isHomogeneous
     {t : ℕ} (c : Fin t → ℂ) :
     (permanentRolloutLinearCoordinateCombination t c).IsHomogeneous 1 := by
   change (∑ i, c i • MvPolynomial.X i) ∈
@@ -1771,7 +1771,7 @@ noncomputable def homogeneousLinearSliceIdeal {t n : ℕ}
   I ⊔ Ideal.span (Set.range fun j =>
     permanentRolloutLinearCoordinateCombination t (c j))
 
-theorem homogeneousLinearSliceIdeal_isHomogeneous {t n : ℕ}
+lemma homogeneousLinearSliceIdeal_isHomogeneous {t n : ℕ}
     (I : Ideal (MvPolynomial (Fin t) ℂ))
     (hI : I.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin t) ℂ))
@@ -1784,7 +1784,7 @@ theorem homogeneousLinearSliceIdeal_isHomogeneous {t n : ℕ}
   rintro _ ⟨j, rfl⟩
   exact ⟨1, permanentRolloutLinearCoordinateCombination_isHomogeneous (c j)⟩
 
-theorem homogeneousLinearSliceIdeal_snoc {t n : ℕ}
+lemma homogeneousLinearSliceIdeal_snoc {t n : ℕ}
     (I : Ideal (MvPolynomial (Fin t) ℂ))
     (c : Fin n → Fin t → ℂ) (x : Fin t → ℂ) :
     homogeneousLinearSliceIdeal I (Fin.snoc c x) =
@@ -1805,7 +1805,7 @@ theorem homogeneousLinearSliceIdeal_snoc {t n : ℕ}
   rw [hsnoc, Fin.range_snoc, Ideal.span_insert]
   ac_rfl
 
-theorem homogeneousLinearSliceIdeal_coefficient_span_le_minimalPrime
+lemma homogeneousLinearSliceIdeal_coefficient_span_le_minimalPrime
     {t n : ℕ} (I : Ideal (MvPolynomial (Fin t) ℂ))
     (c : Fin n → Fin t → ℂ)
     (P : Ideal (MvPolynomial (Fin t) ℂ))
@@ -1822,7 +1822,7 @@ theorem homogeneousLinearSliceIdeal_coefficient_span_le_minimalPrime
       homogeneousLinearSliceIdeal I c from le_sup_right)
     (Ideal.subset_span ⟨j, rfl⟩)
 
-theorem homogeneousLinearSliceIdeal_exists_independent_dimension_drop
+lemma homogeneousLinearSliceIdeal_exists_independent_dimension_drop
     {t n : ℕ} (I : Ideal (MvPolynomial (Fin t) ℂ))
     (hI : I.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin t) ℂ))
@@ -1880,7 +1880,7 @@ theorem homogeneousLinearSliceIdeal_exists_independent_dimension_drop
   rw [homogeneousLinearSliceIdeal_snoc]
   exact hdrop
 
-theorem homogeneousLinearSliceIdeal_exists_independent_zeroDimensional_extension
+lemma homogeneousLinearSliceIdeal_exists_independent_zeroDimensional_extension
     {t p : ℕ} (I : Ideal (MvPolynomial (Fin t) ℂ))
     (hI : I.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin t) ℂ))
@@ -1956,7 +1956,7 @@ theorem homogeneousLinearSliceIdeal_exists_independent_zeroDimensional_extension
         rw [← hindex]
         exact ih (Fin.snoc c a) hindependent' hlength' hdimension'
 
-theorem homogeneousIdeal_exists_independent_linear_zeroDimensional_slices
+lemma homogeneousIdeal_exists_independent_linear_zeroDimensional_slices
     {t n : ℕ} (I : Ideal (MvPolynomial (Fin t) ℂ))
     (hI : I.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin t) ℂ))
@@ -1984,7 +1984,7 @@ theorem homogeneousIdeal_exists_independent_linear_zeroDimensional_slices
   rw [zero_add] at hresult
   exact hresult
 
-theorem homogeneousIdeal_le_idealOfVars_of_ne_top
+lemma homogeneousIdeal_le_idealOfVars_of_ne_top
     {t : ℕ} (I : Ideal (MvPolynomial (Fin t) ℂ))
     (hI : I.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin t) ℂ))
@@ -1995,7 +1995,7 @@ theorem homogeneousIdeal_le_idealOfVars_of_ne_top
     (homogeneousPrime_le_idealOfVars P hP.isPrime
       (homogeneousIdeal_minimalPrime_isHomogeneous I P hI hP))
 
-theorem homogeneousLinearSliceIdeal_le_idealOfVars
+lemma homogeneousLinearSliceIdeal_le_idealOfVars
     {t n : ℕ} (I : Ideal (MvPolynomial (Fin t) ℂ))
     (hI : I.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin t) ℂ))
@@ -2014,7 +2014,7 @@ theorem homogeneousLinearSliceIdeal_le_idealOfVars
     apply Submodule.smul_mem
     exact Ideal.subset_span ⟨i, rfl⟩
 
-theorem homogeneousIdeal_zeroLocus_eq_singleton_of_ringKrullDim_le_zero
+lemma homogeneousIdeal_zeroLocus_eq_singleton_of_ringKrullDim_le_zero
     {t : ℕ} (I : Ideal (MvPolynomial (Fin t) ℂ))
     (hI : I.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin t) ℂ))
@@ -2039,7 +2039,7 @@ theorem homogeneousIdeal_zeroLocus_eq_singleton_of_ringKrullDim_le_zero
           (MvPolynomial.idealOfVars (Fin t) ℂ) := by rw [hradical]
     _ = ({0} : Set (Fin t → ℂ)) := zeroLocus_idealOfVars
 
-theorem homogeneousIdeal_exists_independent_linear_origin_slices
+lemma homogeneousIdeal_exists_independent_linear_origin_slices
     {t n : ℕ} (I : Ideal (MvPolynomial (Fin t) ℂ))
     (hI : I.IsHomogeneous
       (MvPolynomial.homogeneousSubmodule (Fin t) ℂ))
@@ -2081,7 +2081,7 @@ noncomputable def criticalLocusDimension {m : ℕ}
     (P : MvPolynomial (Fin m) ℂ) : WithBot ℕ∞ :=
   ringKrullDim (criticalCoordinateRing P)
 
-theorem zeroLocus_gradientIdeal_eq_criticalLocus {m : ℕ}
+lemma zeroLocus_gradientIdeal_eq_criticalLocus {m : ℕ}
     (P : MvPolynomial (Fin m) ℂ) :
     MvPolynomial.zeroLocus ℂ
         (homogeneousMapIdeal (fun i : Fin m => MvPolynomial.pderiv i P)) =
@@ -2093,7 +2093,7 @@ noncomputable def gradientVector {m : ℕ}
     (P : MvPolynomial (Fin m) ℂ) (v : Fin m → ℂ) : Fin m → ℂ :=
   fun i => MvPolynomial.eval v (MvPolynomial.pderiv i P)
 
-theorem gradientVector_eq_zero_iff {m : ℕ}
+lemma gradientVector_eq_zero_iff {m : ℕ}
     (P : MvPolynomial (Fin m) ℂ) (v : Fin m → ℂ) :
     gradientVector P v = 0 ↔ v ∈ criticalLocus P := by
   simp [gradientVector, criticalLocus, funext_iff]
@@ -2103,7 +2103,7 @@ def projectiveCriticalLocus {m : ℕ}
   {point | ∃ (v : Fin m → ℂ) (hv : v ≠ 0),
     Projectivization.mk ℂ v hv = point ∧ v ∈ criticalLocus P}
 
-theorem mk_mem_projectiveCriticalLocus {m : ℕ}
+lemma mk_mem_projectiveCriticalLocus {m : ℕ}
     (P : MvPolynomial (Fin m) ℂ) (v : Fin m → ℂ)
     (hv : v ≠ 0) (hcritical : v ∈ criticalLocus P) :
     Projectivization.mk ℂ v hv ∈ projectiveCriticalLocus P :=
@@ -2115,14 +2115,14 @@ noncomputable def linearCoordinatePolynomial {k m : ℕ}
   ∑ j : Fin k,
     MvPolynomial.C ((W (Pi.single j 1)) row) * MvPolynomial.X j
 
-theorem linearCoordinatePolynomial_isHomogeneous {k m : ℕ}
+lemma linearCoordinatePolynomial_isHomogeneous {k m : ℕ}
     (W : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ)) (row : Fin m) :
     (linearCoordinatePolynomial W row).IsHomogeneous 1 := by
   unfold linearCoordinatePolynomial
   exact MvPolynomial.IsHomogeneous.sum Finset.univ _ 1
     (fun j _ => MvPolynomial.isHomogeneous_C_mul_X _ j)
 
-theorem linearCoordinatePolynomial_eval {k m : ℕ}
+lemma linearCoordinatePolynomial_eval {k m : ℕ}
     (W : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ))
     (row : Fin m) (u : Fin k → ℂ) :
     MvPolynomial.eval u (linearCoordinatePolynomial W row) = W u row := by
@@ -2135,7 +2135,7 @@ theorem linearCoordinatePolynomial_eval {k m : ℕ}
       conv_rhs => rw [pi_eq_sum_univ' u]
       simp [Finset.sum_apply, mul_comm]
 
-theorem eval_aeval_linearCoordinatePolynomial {k m : ℕ}
+lemma eval_aeval_linearCoordinatePolynomial {k m : ℕ}
     (W : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ))
     (u : Fin k → ℂ) (f : MvPolynomial (Fin m) ℂ) :
     MvPolynomial.eval u
@@ -2164,7 +2164,7 @@ noncomputable def slicedGradientPolynomial {m k : ℕ}
         (fun row => linearCoordinatePolynomial W row)
         (MvPolynomial.pderiv j P)
 
-theorem slicedGradientPolynomial_eval {m k : ℕ}
+lemma slicedGradientPolynomial_eval {m k : ℕ}
     (P : MvPolynomial (Fin m) ℂ)
     (W : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ))
     (A : (Fin m → ℂ) →ₗ[ℂ] (Fin k → ℂ))
@@ -2186,7 +2186,7 @@ theorem slicedGradientPolynomial_eval {m k : ℕ}
       conv_rhs => rw [pi_eq_sum_univ' (gradientVector P (W u))]
       simp [gradientVector, Finset.sum_apply, mul_comm]
 
-theorem slicedGradientPolynomial_isHomogeneous {m k d : ℕ}
+lemma slicedGradientPolynomial_isHomogeneous {m k d : ℕ}
     (P : MvPolynomial (Fin m) ℂ)
     (hP : P.IsHomogeneous d)
     (W : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ))
@@ -2202,7 +2202,7 @@ theorem slicedGradientPolynomial_isHomogeneous {m k d : ℕ}
       (fun row => linearCoordinatePolynomial_isHomogeneous W row)).C_mul
         ((A (Pi.single j 1)) i)
 
-theorem homogeneous_fin_one_eq_C_mul_X_pow
+lemma homogeneous_fin_one_eq_C_mul_X_pow
     {f : MvPolynomial (Fin 1) ℂ} {e : ℕ}
     (hf : f.IsHomogeneous e) :
     f =
@@ -2221,7 +2221,7 @@ theorem homogeneous_fin_one_eq_C_mul_X_pow
     exact ha
   simpa [Finsupp.degree_eq_sum] using hdegree
 
-theorem homogeneous_fin_one_eval
+lemma homogeneous_fin_one_eval
     {f : MvPolynomial (Fin 1) ℂ} {e : ℕ}
     (hf : f.IsHomogeneous e) (u : Fin 1 → ℂ) :
     MvPolynomial.eval u f =
@@ -2234,7 +2234,7 @@ noncomputable def oneDimensionalInputSlice {m : ℕ}
   LinearMap.smulRight
     (LinearMap.proj (0 : Fin 1) : (Fin 1 → ℂ) →ₗ[ℂ] ℂ) v
 
-theorem slicedGradientPolynomial_eval_zero {m k d : ℕ}
+lemma slicedGradientPolynomial_eval_zero {m k d : ℕ}
     (P : MvPolynomial (Fin m) ℂ)
     (hd : 2 ≤ d) (hP : P.IsHomogeneous d)
     (W : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ))
@@ -2245,7 +2245,7 @@ theorem slicedGradientPolynomial_eval_zero {m k d : ℕ}
   exact homogeneous_eval_zero_of_pos (by omega)
     (slicedGradientPolynomial_isHomogeneous P hP W A i)
 
-theorem slicedGradient_zero_iff_mem_kernel {m k : ℕ}
+lemma slicedGradient_zero_iff_mem_kernel {m k : ℕ}
     (P : MvPolynomial (Fin m) ℂ)
     (W : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ))
     (A : (Fin m → ℂ) →ₗ[ℂ] (Fin k → ℂ))
@@ -2255,7 +2255,7 @@ theorem slicedGradient_zero_iff_mem_kernel {m k : ℕ}
   rw [LinearMap.mem_ker]
   simp [slicedGradientPolynomial_eval, funext_iff]
 
-theorem slicedGradient_zero_fiber_of_kernel_avoidance {m k d : ℕ}
+lemma slicedGradient_zero_fiber_of_kernel_avoidance {m k d : ℕ}
     (P : MvPolynomial (Fin m) ℂ)
     (hd : 2 ≤ d) (hP : P.IsHomogeneous d)
     (W : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ))
@@ -2282,7 +2282,7 @@ def projectiveSlicedGradientImage {m k : ℕ}
       (hgradient : gradientVector P (W u) ≠ 0),
     Projectivization.mk ℂ (gradientVector P (W u)) hgradient = point}
 
-theorem gradientVector_after_embedding_ne_zero_of_projective_disjoint
+lemma gradientVector_after_embedding_ne_zero_of_projective_disjoint
     {m k : ℕ} (P : MvPolynomial (Fin m) ℂ)
     (W : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ))
     (hW : Function.Injective W)
@@ -2305,7 +2305,7 @@ theorem gradientVector_after_embedding_ne_zero_of_projective_disjoint
       ((gradientVector_eq_zero_iff P (W u)).mp hgradient)
   exact Set.disjoint_left.mp hdisjoint hpoint_range hpoint_critical
 
-theorem projective_input_disjoint_iff {m k : ℕ}
+lemma projective_input_disjoint_iff {m k : ℕ}
     (P : MvPolynomial (Fin m) ℂ)
     (W : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ))
     (hW : Function.Injective W) :
@@ -2333,7 +2333,7 @@ theorem projective_input_disjoint_iff {m k : ℕ}
     rw [hu]
     exact (gradientVector_eq_zero_iff P v).mpr hcritical
 
-theorem slicedGradient_kernel_avoidance_of_projective_disjoint
+lemma slicedGradient_kernel_avoidance_of_projective_disjoint
     {m k : ℕ} (P : MvPolynomial (Fin m) ℂ)
     (W : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ))
     (A : (Fin m → ℂ) →ₗ[ℂ] (Fin k → ℂ))
@@ -2356,7 +2356,7 @@ theorem slicedGradient_kernel_avoidance_of_projective_disjoint
     (Submodule.mk_mem_projectivization_iff _ hgradient).mpr hkernel
   exact Set.disjoint_left.mp hdisjoint himage hprojective_kernel
 
-theorem projective_output_disjoint_iff {m k : ℕ}
+lemma projective_output_disjoint_iff {m k : ℕ}
     (P : MvPolynomial (Fin m) ℂ)
     (W : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ))
     (A : (Fin m → ℂ) →ₗ[ℂ] (Fin k → ℂ))
@@ -2377,7 +2377,7 @@ theorem projective_output_disjoint_iff {m k : ℕ}
     exact havoid u hu
       ((Submodule.mk_mem_projectivization_iff _ hgradient).mp hpoint_kernel)
 
-theorem slicedGradient_of_projective_disjoint {m k d : ℕ}
+lemma slicedGradient_of_projective_disjoint {m k d : ℕ}
     (P : MvPolynomial (Fin m) ℂ)
     (hd : 2 ≤ d) (hP : P.IsHomogeneous d)
     (W : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ))
@@ -2402,7 +2402,7 @@ theorem slicedGradient_of_projective_disjoint {m k d : ℕ}
       P W hW hinput)
     houtput
 
-theorem homogeneous_eval_smul {m e : ℕ}
+lemma homogeneous_eval_smul {m e : ℕ}
     (f : MvPolynomial (Fin m) ℂ) (hf : f.IsHomogeneous e)
     (a : ℂ) (v : Fin m → ℂ) :
     MvPolynomial.eval (a • v) f = a ^ e * MvPolynomial.eval v f := by
@@ -2426,7 +2426,7 @@ theorem homogeneous_eval_smul {m e : ℕ}
     eval_aeval_linearCoordinatePolynomial] at hline
   simpa [W, oneDimensionalInputSlice] using hline
 
-theorem gradientVector_smul_of_isHomogeneous {m d : ℕ}
+lemma gradientVector_smul_of_isHomogeneous {m d : ℕ}
     (P : MvPolynomial (Fin m) ℂ) (hP : P.IsHomogeneous d)
     (a : ℂ) (v : Fin m → ℂ) :
     gradientVector P (a • v) = a ^ (d - 1) • gradientVector P v := by
@@ -2434,7 +2434,7 @@ theorem gradientVector_smul_of_isHomogeneous {m d : ℕ}
   simpa [gradientVector] using
     homogeneous_eval_smul (MvPolynomial.pderiv i P) (hP.pderiv (i := i)) a v
 
-theorem gradientVector_comp_linearMap_contDiff {m k : ℕ}
+lemma gradientVector_comp_linearMap_contDiff {m k : ℕ}
     (P : MvPolynomial (Fin m) ℂ)
     (W : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ)) :
     ContDiff ℝ 1 (fun u : Fin k → ℂ => gradientVector P (W u)) := by
@@ -2446,7 +2446,7 @@ theorem gradientVector_comp_linearMap_contDiff {m k : ℕ}
   exact (AnalyticOnNhd.eval_linearMap W
     (MvPolynomial.pderiv i P)).contDiff.restrict_scalars ℝ
 
-theorem exists_outputSlice_projective_disjoint {m k d : ℕ}
+lemma exists_outputSlice_projective_disjoint {m k d : ℕ}
     (P : MvPolynomial (Fin m) ℂ) (hP : P.IsHomogeneous d)
     (W : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ))
     (hnonzero : ∀ (u : Fin k → ℂ), u ≠ 0 →
@@ -2468,7 +2468,7 @@ theorem exists_outputSlice_projective_disjoint {m k d : ℕ}
   apply hB u hu
   exact (LinearMap.mem_ker.mp hkernel)
 
-theorem exists_slicedGradient_of_projective_input_disjoint {m k d : ℕ}
+lemma exists_slicedGradient_of_projective_input_disjoint {m k d : ℕ}
     (P : MvPolynomial (Fin m) ℂ)
     (hd : 2 ≤ d) (hP : P.IsHomogeneous d)
     (W : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ))
@@ -2493,7 +2493,7 @@ theorem exists_slicedGradient_of_projective_input_disjoint {m k d : ℕ}
 
 attribute [local instance] MvPolynomial.gradedAlgebra
 
-theorem criticalGradientIdeal_isHomogeneous {m d : ℕ}
+lemma criticalGradientIdeal_isHomogeneous {m d : ℕ}
     (P : MvPolynomial (Fin m) ℂ) (hP : P.IsHomogeneous d) :
     (homogeneousMapIdeal
       (fun i : Fin m => MvPolynomial.pderiv i P)).IsHomogeneous
@@ -2506,7 +2506,7 @@ theorem criticalGradientIdeal_isHomogeneous {m d : ℕ}
   rintro _ ⟨i, rfl⟩
   exact ⟨d - 1, hP.pderiv (i := i)⟩
 
-theorem criticalGradientIdeal_ne_top {m d : ℕ}
+lemma criticalGradientIdeal_ne_top {m d : ℕ}
     (P : MvPolynomial (Fin m) ℂ)
     (hd : 2 ≤ d) (hP : P.IsHomogeneous d) :
     homogeneousMapIdeal
@@ -2525,7 +2525,7 @@ theorem criticalGradientIdeal_ne_top {m d : ℕ}
   rw [htop, MvPolynomial.zeroLocus_top] at hzero
   exact hzero
 
-theorem exists_injective_inputMap_into_linearCoordinateKernel
+lemma exists_injective_inputMap_into_linearCoordinateKernel
     {m k n : ℕ} (c : Fin n → Fin m → ℂ)
     (hk : k + n ≤ m) :
     ∃ W : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ),
@@ -2553,7 +2553,7 @@ theorem exists_injective_inputMap_into_linearCoordinateKernel
   intro u
   exact (f u).property
 
-theorem eq_zero_of_mem_zeroLocus_of_linearCoordinateKernel_of_radical
+lemma eq_zero_of_mem_zeroLocus_of_linearCoordinateKernel_of_radical
     {m n : ℕ} (I : Ideal (MvPolynomial (Fin m) ℂ))
     (c : Fin n → Fin m → ℂ)
     (hradical :
@@ -2597,7 +2597,7 @@ theorem eq_zero_of_mem_zeroLocus_of_linearCoordinateKernel_of_radical
       v hvJ
   simpa [MvPolynomial.aeval_def] using hzero
 
-theorem criticalLinearSliceIdeal_radical_eq_idealOfVars_of_dimension_le_zero
+lemma criticalLinearSliceIdeal_radical_eq_idealOfVars_of_dimension_le_zero
     {m n d : ℕ} (P : MvPolynomial (Fin m) ℂ)
     (hd : 2 ≤ d) (hP : P.IsHomogeneous d)
     (c : Fin n → Fin m → ℂ)
@@ -2671,7 +2671,7 @@ theorem criticalLinearSliceIdeal_radical_eq_idealOfVars_of_dimension_le_zero
       (hallmaximal p hp).eq_of_le hvertexproper hpvertex
     exact hpeq.symm.le
 
-theorem exists_inputSlice_projective_disjoint_of_criticalLocusDimension
+lemma exists_inputSlice_projective_disjoint_of_criticalLocusDimension
     {m k d : ℕ} (P : MvPolynomial (Fin m) ℂ)
     (hd : 2 ≤ d) (hP : P.IsHomogeneous d)
     (hk : k ≤ m)
@@ -2718,7 +2718,7 @@ theorem exists_inputSlice_projective_disjoint_of_criticalLocusDimension
       I c hradical' hvanishing (hkernel u)
   exact hu (hW (by simpa using hWu))
 
-theorem exists_inputSlice_projective_disjoint_of_criticalLocus_codimension
+lemma exists_inputSlice_projective_disjoint_of_criticalLocus_codimension
     {m k c d : ℕ} (P : MvPolynomial (Fin m) ℂ)
     (hd : 2 ≤ d) (hP : P.IsHomogeneous d)
     (hk : k ≤ c) (hm : k < m)
@@ -2737,7 +2737,7 @@ theorem exists_inputSlice_projective_disjoint_of_criticalLocus_codimension
   exact exists_inputSlice_projective_disjoint_of_criticalLocusDimension
     P hd hP hm.le (hcodimension.trans hcast)
 
-theorem exists_slicedGradient_of_criticalLocus_codimension
+lemma exists_slicedGradient_of_criticalLocus_codimension
     {m k c d : ℕ} (P : MvPolynomial (Fin m) ℂ)
     (hd : 2 ≤ d) (hP : P.IsHomogeneous d)
     (hk : k ≤ c) (hm : k < m)
@@ -2768,7 +2768,7 @@ open scoped nonZeroDivisors Pointwise
 
 attribute [local instance] MvPolynomial.gradedAlgebra
 
-theorem homogeneousMap_subalgebra_sub_target_mem_fiberIdeal
+lemma homogeneousMap_subalgebra_sub_target_mem_fiberIdeal
     {ι : Type*} [Finite ι]
     (F : ι → MvPolynomial ι ℂ)
     (e : ℕ) (he : 0 < e)
@@ -2828,7 +2828,7 @@ theorem homogeneousMap_subalgebra_sub_target_mem_fiberIdeal
       convert hmem using 1
       ring
 
-theorem homogeneousMapFiber_finiteDimensional
+lemma homogeneousMapFiber_finiteDimensional
     {ι : Type*} [Finite ι]
     (F : ι → MvPolynomial ι ℂ)
     (e : ℕ) (he : 0 < e)
@@ -2911,7 +2911,7 @@ noncomputable def homogeneousMapGradedQuotientMulLinearMap
       change f * (p : MvPolynomial ι ℂ) ∈ I
       exact I.mul_mem_left f hp)
 
-theorem homogeneousMapGradedQuotientMulLinearMap_injective_iff
+lemma homogeneousMapGradedQuotientMulLinearMap_injective_iff
     {ι : Type*} (I : Ideal (MvPolynomial ι ℂ))
     (f : MvPolynomial ι ℂ) {e : ℕ} (hf : f.IsHomogeneous e) (n : ℕ) :
     Function.Injective (homogeneousMapGradedQuotientMulLinearMap I f hf n) ↔
@@ -2947,7 +2947,7 @@ theorem homogeneousMapGradedQuotientMulLinearMap_injective_iff
       exact (Submodule.Quotient.mk_eq_zero
         (homogeneousMapGradedIdealPiece I (e + n))).mp hx
 
-theorem isSMulRegular_iff_avoid_associatedPrimes
+lemma isSMulRegular_iff_avoid_associatedPrimes
     {R M : Type*} [CommRing R] [IsNoetherianRing R]
     [AddCommGroup M] [Module R M] (r : R) :
     IsSMulRegular M r ↔
@@ -2969,7 +2969,7 @@ theorem isSMulRegular_iff_avoid_associatedPrimes
     obtain ⟨hassoc, hrP⟩ := Set.mem_iUnion.mp hP
     exact havoid P hassoc hrP
 
-theorem isSMulRegular_of_maximal_radical_and_regular_witness
+lemma isSMulRegular_of_maximal_radical_and_regular_witness
     {R : Type*} [CommRing R] [IsNoetherianRing R]
     (I : Ideal R) (g ell : R) (m : Ideal R)
     (hm : m.IsMaximal)
@@ -2995,7 +2995,7 @@ theorem isSMulRegular_of_maximal_radical_and_regular_witness
   exact ((isSMulRegular_iff_avoid_associatedPrimes ell).mp
     hellregular) P hP hellP
 
-theorem homogeneousMapGradedQuotientMulLinearMap_finrank_quotient_add_kernel
+lemma homogeneousMapGradedQuotientMulLinearMap_finrank_quotient_add_kernel
     {ι : Type*} [Finite ι] (I : Ideal (MvPolynomial ι ℂ))
     (f : MvPolynomial ι ℂ) {e : ℕ} (hf : f.IsHomogeneous e) (n : ℕ) :
     Module.finrank ℂ
@@ -3020,7 +3020,7 @@ theorem homogeneousMapGradedQuotientMulLinearMap_finrank_quotient_add_kernel
   dsimp [m] at hrange hkernel
   omega
 
-theorem homogeneousMapGradedQuotientMulLinearMap_finrank_quotient_add
+lemma homogeneousMapGradedQuotientMulLinearMap_finrank_quotient_add
     {ι : Type*} [Finite ι] (I : Ideal (MvPolynomial ι ℂ))
     (f : MvPolynomial ι ℂ) {e : ℕ} (hf : f.IsHomogeneous e) (n : ℕ)
     (hcolon : ∀ p : MvPolynomial.homogeneousSubmodule ι ℂ n,
@@ -3050,7 +3050,7 @@ theorem homogeneousMapGradedQuotientMulLinearMap_finrank_quotient_add
       I f hf n
   omega
 
-theorem homogeneousMap_degreeSupport_eq_antidiagonal
+lemma homogeneousMap_degreeSupport_eq_antidiagonal
     {ι : Type*} [Fintype ι] [DecidableEq ι] (n : ℕ) :
     {d : ι →₀ ℕ | d.degree = n} =
       (((Finset.univ : Finset ι).finsuppAntidiag n : Finset (ι →₀ ℕ)) :
@@ -3059,7 +3059,7 @@ theorem homogeneousMap_degreeSupport_eq_antidiagonal
   ext d
   simp [Finsupp.degree_eq_sum]
 
-theorem homogeneousMap_homogeneousSubmodule_finrank
+lemma homogeneousMap_homogeneousSubmodule_finrank
     {ι : Type*} [Fintype ι] (n : ℕ) :
     Module.finrank ℂ (MvPolynomial.homogeneousSubmodule ι ℂ n) =
       (Fintype.card ι + n - 1).choose n := by
@@ -3077,7 +3077,7 @@ theorem homogeneousMap_homogeneousSubmodule_finrank
     (MvPolynomial.basisRestrictSupport ℂ (a : Set (ι →₀ ℕ)))]
   exact Finset.card_finsuppAntidiag_nat_eq_choose n
 
-theorem homogeneousMap_coordinateSubset_quotient_ringKrullDim_le
+lemma homogeneousMap_coordinateSubset_quotient_ringKrullDim_le
     {ι : Type*} [Fintype ι]
     (F : ι → MvPolynomial ι ℂ)
     (e : ℕ) (he : 0 < e)
@@ -3152,7 +3152,7 @@ theorem homogeneousMap_coordinateSubset_quotient_ringKrullDim_le
       congr 1
       simp [remaining]
 
-theorem homogeneousMap_exists_coordinateSubset_independent_linear_origin_slices
+lemma homogeneousMap_exists_coordinateSubset_independent_linear_origin_slices
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (e : ℕ) (he : 0 < e)
     (hF : ∀ i, (F i).IsHomogeneous e)
@@ -3208,7 +3208,7 @@ noncomputable def homogeneousMapFiniteGradedQuotientSumLinearMap
       (I.restrictScalars ℂ).comap
         (MvPolynomial.homogeneousSubmodule ι ℂ i).subtype from le_rfl)
 
-theorem homogeneousMapFiniteGradedQuotientSumLinearMap_injective
+lemma homogeneousMapFiniteGradedQuotientSumLinearMap_injective
     {ι : Type*} (I : Ideal (MvPolynomial ι ℂ))
     (hI : I.IsHomogeneous (MvPolynomial.homogeneousSubmodule ι ℂ))
     (N : ℕ) :
@@ -3280,7 +3280,7 @@ theorem homogeneousMapFiniteGradedQuotientSumLinearMap_injective
     exact hcomponent
   exact sub_eq_zero.mp hz0
 
-theorem homogeneousMapFiniteGradedQuotientSumLinearMap_surjective
+lemma homogeneousMapFiniteGradedQuotientSumLinearMap_surjective
     {ι : Type*} (I : Ideal (MvPolynomial ι ℂ)) (N : ℕ)
     (hhigh : ∀ n : ℕ, N ≤ n →
       ∀ p : MvPolynomial ι ℂ, p.IsHomogeneous n → p ∈ I) :
@@ -3369,7 +3369,7 @@ noncomputable def homogeneousMapFiniteGradedQuotientEquiv
     ⟨homogeneousMapFiniteGradedQuotientSumLinearMap_injective I hI N,
       homogeneousMapFiniteGradedQuotientSumLinearMap_surjective I N hhigh⟩
 
-theorem homogeneousMapFiniteGradedQuotient_finrank_eq_sum
+lemma homogeneousMapFiniteGradedQuotient_finrank_eq_sum
     {ι : Type*} [Finite ι] (I : Ideal (MvPolynomial ι ℂ))
     (hI : I.IsHomogeneous (MvPolynomial.homogeneousSubmodule ι ℂ))
     (N : ℕ)
@@ -3399,7 +3399,7 @@ theorem homogeneousMapFiniteGradedQuotient_finrank_eq_sum
         Module.finrank ℂ (homogeneousMapGradedQuotientPiece I i) :=
       Module.finrank_pi_fintype ℂ
 
-theorem homogeneousComponent_mul_of_right_isHomogeneous_of_lt
+lemma homogeneousComponent_mul_of_right_isHomogeneous_of_lt
     {ι : Type*} (g f : MvPolynomial ι ℂ) {e n : ℕ}
     (hf : f.IsHomogeneous e) (hn : n < e) :
     MvPolynomial.homogeneousComponent n (g * f) = 0 := by
@@ -3429,7 +3429,7 @@ open scoped Pointwise
 
 attribute [local instance] MvPolynomial.gradedAlgebra
 
-theorem homogeneousMapGradedSupSpanPiece_eq_sup
+lemma homogeneousMapGradedSupSpanPiece_eq_sup
     {ι : Type*}
     (I : Ideal (MvPolynomial ι ℂ))
     (hI : I.IsHomogeneous (MvPolynomial.homogeneousSubmodule ι ℂ))
@@ -3516,7 +3516,7 @@ noncomputable def homogeneousMapGradedSupSpanQuotientEquivCokernel
     ((Submodule.quotientQuotientEquivQuotientSup S0 T).trans
       (Submodule.quotEquivOfEq _ _ hfull))
 
-theorem homogeneousMapGradedSupSpan_finrank_add_of_regular
+lemma homogeneousMapGradedSupSpan_finrank_add_of_regular
     {ι : Type*} [Finite ι]
     (I : Ideal (MvPolynomial ι ℂ))
     (hI : I.IsHomogeneous (MvPolynomial.homogeneousSubmodule ι ℂ))
@@ -3558,7 +3558,7 @@ noncomputable def homogeneousMapFinSuccLinearPlaneRoot
   -(MvPolynomial.C ((c 0)⁻¹) *
     ∑ i : Fin n, MvPolynomial.C (c (Fin.succ i)) * MvPolynomial.X i)
 
-theorem homogeneousMap_allRank_finSucc_linearCoordinateCombination_finSucc
+lemma homogeneousMap_allRank_finSucc_linearCoordinateCombination_finSucc
     {n : ℕ} (c : Fin (n + 1) → ℂ) :
     MvPolynomial.finSuccEquiv ℂ n
         (permanentRolloutLinearCoordinateCombination (n + 1) c) =
@@ -3574,7 +3574,7 @@ theorem homogeneousMap_allRank_finSucc_linearCoordinateCombination_finSucc
     Fin.sum_univ_succ, MvPolynomial.finSuccEquiv_X_zero,
     MvPolynomial.finSuccEquiv_X_succ, Algebra.smul_def, hC]
 
-theorem homogeneousMap_allRank_finSucc_linearCoordinateCombination_normalized
+lemma homogeneousMap_allRank_finSucc_linearCoordinateCombination_normalized
     {n : ℕ} (c : Fin (n + 1) → ℂ) (hc : c 0 ≠ 0) :
     Ideal.span
       ({MvPolynomial.finSuccEquiv ℂ n
@@ -3660,7 +3660,7 @@ noncomputable def homogeneousMapFinSuccFirstPivotPlaneQuotientEquiv
       ((Polynomial.quotientSpanXSubCAlgEquiv
         (homogeneousMapFinSuccLinearPlaneRoot c)).restrictScalars ℂ)
 
-theorem homogeneousMap_allRank_linearCoordinateCombination_rename
+lemma homogeneousMap_allRank_linearCoordinateCombination_rename
     {m : ℕ} (equiv : Fin m ≃ Fin m) (c : Fin m → ℂ) :
     MvPolynomial.rename equiv
       (permanentRolloutLinearCoordinateCombination m c) =
@@ -3678,7 +3678,7 @@ theorem homogeneousMap_allRank_linearCoordinateCombination_rename
       MvPolynomial.C (c (equiv.symm i)) * MvPolynomial.X i)
     (by intro i; simp)
 
-theorem homogeneousMap_allRank_finSucc_swappedPlaneIdeal
+lemma homogeneousMap_allRank_finSucc_swappedPlaneIdeal
     {n : ℕ} (c : Fin (n + 1) → ℂ) (j : Fin (n + 1)) :
     Ideal.span
       ({permanentRolloutLinearCoordinateCombination (n + 1)
@@ -3719,7 +3719,7 @@ noncomputable def homogeneousMapFinSuccArbitraryPivotPlaneQuotientEquiv
       (homogeneousMap_allRank_finSucc_swappedPlaneIdeal c j)).trans
         (homogeneousMapFinSuccFirstPivotPlaneQuotientEquiv d hd)
 
-theorem homogeneousMap_allRank_finSucc_arbitraryPivotPlaneQuotientEquiv_mk
+lemma homogeneousMap_allRank_finSucc_arbitraryPivotPlaneQuotientEquiv_mk
     {n : ℕ} (c : Fin (n + 1) → ℂ)
     (j : Fin (n + 1)) (hj : c j ≠ 0)
     (p : MvPolynomial (Fin (n + 1)) ℂ) :
@@ -3745,7 +3745,7 @@ noncomputable def homogeneousMapFinSuccFirstPivotPlaneMap
         ∑ i : Fin n, (c i.succ) • LinearMap.proj i)
       (fun i : Fin n => LinearMap.proj i) row
 
-theorem homogeneousMapFinSuccFirstPivotPlaneMap_injective
+lemma homogeneousMapFinSuccFirstPivotPlaneMap_injective
     {n : ℕ} (c : Fin (n + 1) → ℂ) :
     Function.Injective (homogeneousMapFinSuccFirstPivotPlaneMap c) := by
   intro u v huv
@@ -3754,7 +3754,7 @@ theorem homogeneousMapFinSuccFirstPivotPlaneMap_injective
     LinearMap.pi_apply, Fin.cases_succ, LinearMap.proj_apply] using
     congrFun huv i.succ
 
-theorem homogeneousMapFinSuccFirstPivotPlaneMap_kernel
+lemma homogeneousMapFinSuccFirstPivotPlaneMap_kernel
     {n : ℕ} (c : Fin (n + 1) → ℂ)
     (hc : c 0 ≠ 0) (u : Fin n → ℂ) :
     ∑ i : Fin (n + 1),
@@ -3770,7 +3770,7 @@ noncomputable def homogeneousMapFinSuccFirstPivotPlaneRoot
   -(MvPolynomial.C ((c 0)⁻¹) *
     ∑ i : Fin n, MvPolynomial.C (c i.succ) * MvPolynomial.X i)
 
-theorem homogeneousMapFinSuccFirstPivotPlaneMap_coordinate_zero
+lemma homogeneousMapFinSuccFirstPivotPlaneMap_coordinate_zero
     {n : ℕ} (c : Fin (n + 1) → ℂ) :
     linearCoordinatePolynomial
       (homogeneousMapFinSuccFirstPivotPlaneMap c) 0 =
@@ -3782,7 +3782,7 @@ theorem homogeneousMapFinSuccFirstPivotPlaneMap_coordinate_zero
   simp [homogeneousMapFinSuccFirstPivotPlaneMap,
     homogeneousMapFinSuccFirstPivotPlaneRoot]
 
-theorem homogeneousMapFinSuccFirstPivotPlaneMap_coordinate_succ
+lemma homogeneousMapFinSuccFirstPivotPlaneMap_coordinate_succ
     {n : ℕ} (c : Fin (n + 1) → ℂ) (i : Fin n) :
     linearCoordinatePolynomial
       (homogeneousMapFinSuccFirstPivotPlaneMap c) i.succ =
@@ -3793,7 +3793,7 @@ theorem homogeneousMapFinSuccFirstPivotPlaneMap_coordinate_succ
   rw [linearCoordinatePolynomial_eval]
   simp [homogeneousMapFinSuccFirstPivotPlaneMap]
 
-theorem homogeneousMapFinSuccFirstPivotPlaneMap_substitution
+lemma homogeneousMapFinSuccFirstPivotPlaneMap_substitution
     {n : ℕ} (c : Fin (n + 1) → ℂ)
     (p : MvPolynomial (Fin (n + 1)) ℂ) :
     (MvPolynomial.finSuccEquiv ℂ n p).eval
@@ -3833,7 +3833,7 @@ noncomputable def homogeneousMapFinSuccArbitraryPivotPlaneMap
     (homogeneousMapFinSuccFirstPivotPlaneMap
       (fun i => c ((Equiv.swap (0 : Fin (n + 1)) j).symm i)))
 
-theorem homogeneousMapFinSuccArbitraryPivotPlaneMap_injective
+lemma homogeneousMapFinSuccArbitraryPivotPlaneMap_injective
     {n : ℕ} (c : Fin (n + 1) → ℂ) (j : Fin (n + 1)) :
     Function.Injective (homogeneousMapFinSuccArbitraryPivotPlaneMap c j) := by
   intro u v huv
@@ -3845,7 +3845,7 @@ theorem homogeneousMapFinSuccArbitraryPivotPlaneMap_injective
   simpa [homogeneousMapFinSuccArbitraryPivotPlaneMap,
     homogeneousMapFinSuccPivotPermutation] using hi
 
-theorem homogeneousMapFinSuccArbitraryPivotPlaneMap_coordinate
+lemma homogeneousMapFinSuccArbitraryPivotPlaneMap_coordinate
     {n : ℕ} (c : Fin (n + 1) → ℂ)
     (j i : Fin (n + 1)) :
     linearCoordinatePolynomial
@@ -3858,7 +3858,7 @@ theorem homogeneousMapFinSuccArbitraryPivotPlaneMap_coordinate
     homogeneousMapFinSuccArbitraryPivotPlaneMap,
     homogeneousMapFinSuccPivotPermutation]
 
-theorem homogeneousMapFinSuccArbitraryPivotPlaneMap_substitution
+lemma homogeneousMapFinSuccArbitraryPivotPlaneMap_substitution
     {n : ℕ} (c : Fin (n + 1) → ℂ)
     (j : Fin (n + 1))
     (p : MvPolynomial (Fin (n + 1)) ℂ) :
@@ -3877,7 +3877,7 @@ theorem homogeneousMapFinSuccArbitraryPivotPlaneMap_substitution
   funext i
   exact (homogeneousMapFinSuccArbitraryPivotPlaneMap_coordinate c j i).symm
 
-theorem homogeneousMapFinSuccArbitraryPivotPlaneMap_kernel
+lemma homogeneousMapFinSuccArbitraryPivotPlaneMap_kernel
     {n : ℕ} (c : Fin (n + 1) → ℂ)
     (j : Fin (n + 1)) (hj : c j ≠ 0)
     (u : Fin n → ℂ) :
@@ -3904,7 +3904,7 @@ theorem homogeneousMapFinSuccArbitraryPivotPlaneMap_kernel
   rw [hreindex]
   exact hsum
 
-theorem homogeneousMapFinSuccArbitraryPivotPlaneMap_restricted_zeroFiber
+lemma homogeneousMapFinSuccArbitraryPivotPlaneMap_restricted_zeroFiber
     {n : ℕ}
     (F : Fin (n + 1) → MvPolynomial (Fin (n + 1)) ℂ)
     (e : ℕ) (he : 0 < e)
@@ -3959,7 +3959,7 @@ theorem homogeneousMapFinSuccArbitraryPivotPlaneMap_restricted_zeroFiber
       map_zero]
     exact homogeneous_eval_zero_of_pos he (hF i.castSucc)
 
-theorem homogeneousMapFinSucc_source_prefix_plane_data
+lemma homogeneousMapFinSucc_source_prefix_plane_data
     {n : ℕ}
     (F : Fin (n + 1) → MvPolynomial (Fin (n + 1)) ℂ)
     (e : ℕ) (he : 0 < e)
@@ -4018,7 +4018,7 @@ theorem homogeneousMapFinSucc_source_prefix_plane_data
   rw [himage] at hslice
   exact hslice
 
-theorem homogeneousMapFinSucc_exists_source_arbitraryPivot_restricted_zeroFiber
+lemma homogeneousMapFinSucc_exists_source_arbitraryPivot_restricted_zeroFiber
     {n : ℕ}
     (F : Fin (n + 1) → MvPolynomial (Fin (n + 1)) ℂ)
     (e : ℕ) (he : 0 < e)
@@ -4086,7 +4086,7 @@ theorem homogeneousMapFinSucc_exists_source_arbitraryPivot_restricted_zeroFiber
     (fun row => linearCoordinatePolynomial_isHomogeneous
       (homogeneousMapFinSuccArbitraryPivotPlaneMap (c 0) j) row)
 
-theorem homogeneousMap_allRank_finSucc_arbitraryPivotPlaneQuotientEquiv_mk_eq_aeval
+lemma homogeneousMap_allRank_finSucc_arbitraryPivotPlaneQuotientEquiv_mk_eq_aeval
     {n : ℕ} (c : Fin (n + 1) → ℂ)
     (j : Fin (n + 1)) (hj : c j ≠ 0)
     (p : MvPolynomial (Fin (n + 1)) ℂ) :
@@ -4106,7 +4106,7 @@ theorem homogeneousMap_allRank_finSucc_arbitraryPivotPlaneQuotientEquiv_mk_eq_ae
           (fun i => c ((Equiv.swap (0 : Fin (n + 1)) j).symm i))) = _
   exact homogeneousMapFinSuccArbitraryPivotPlaneMap_substitution c j p
 
-theorem homogeneousMap_allRank_finSucc_exists_source_arbitraryPivotPlaneQuotient_induction
+lemma homogeneousMap_allRank_finSucc_exists_source_arbitraryPivotPlaneQuotient_induction
     {n : ℕ}
     (F : Fin (n + 1) → MvPolynomial (Fin (n + 1)) ℂ)
     (e : ℕ) (he : 0 < e)
@@ -4145,7 +4145,7 @@ open scoped Pointwise BigOperators
 
 attribute [local instance] MvPolynomial.gradedAlgebra
 
-theorem homogeneousMap_allRank_fin_last_mem_span_of_weaklyRegular_aux
+lemma homogeneousMap_allRank_fin_last_mem_span_of_weaklyRegular_aux
     {R : Type*} [CommRing R] {n : ℕ}
     (f : Fin (n + 1) → R)
     (hregular : RingTheory.Sequence.IsWeaklyRegular R (List.ofFn f))
@@ -4194,7 +4194,7 @@ theorem homogeneousMap_allRank_fin_last_mem_span_of_weaklyRegular_aux
   rw [hideal]
   simpa [smul_eq_mul] using ha
 
-theorem homogeneousMap_allRank_weaklyRegular_fin_syzygy_lifts_aux
+lemma homogeneousMap_allRank_weaklyRegular_fin_syzygy_lifts_aux
     {R S : Type*} [CommRing R] [CommRing S]
     (q : R →+* S) (hq : Function.Surjective q) :
     ∀ (n : ℕ) (f : Fin n → R),
@@ -4322,7 +4322,7 @@ theorem homogeneousMap_allRank_weaklyRegular_fin_syzygy_lifts_aux
         rw [hfactor]
         ring
 
-theorem homogeneousMap_allRank_fin_hyperplane_isSMulRegular_of_quotient_weaklyRegular_aux
+lemma homogeneousMap_allRank_fin_hyperplane_isSMulRegular_of_quotient_weaklyRegular_aux
     {R : Type*} [CommRing R] [IsDomain R]
     {n : ℕ} (f : Fin n → R) (ell : R) (hell : ell ≠ 0)
     (hregular :
@@ -4378,7 +4378,7 @@ theorem homogeneousMap_allRank_fin_hyperplane_isSMulRegular_of_quotient_weaklyRe
       rw [Finset.sum_sub_distrib]
     _ = ell * p := by rw [ha, hbsum, sub_zero]
 
-theorem homogeneousMap_allRank_homogeneous_isSMulRegular_of_linear_hyperplane_aux
+lemma homogeneousMap_allRank_homogeneous_isSMulRegular_of_linear_hyperplane_aux
     {ι : Type*}
     (I : Ideal (MvPolynomial ι ℂ))
     (hI : I.IsHomogeneous (MvPolynomial.homogeneousSubmodule ι ℂ))
@@ -4468,7 +4468,7 @@ open scoped Pointwise BigOperators
 
 attribute [local instance] MvPolynomial.gradedAlgebra
 
-theorem homogeneousMap_allRank_isSMulRegular_sup_of_quotient_map_aux
+lemma homogeneousMap_allRank_isSMulRegular_sup_of_quotient_map_aux
     {R : Type*} [CommRing R]
     (I J : Ideal R) (g : R)
     (hregular : IsSMulRegular
@@ -4493,7 +4493,7 @@ theorem homogeneousMap_allRank_isSMulRegular_sup_of_quotient_map_aux
   have hmember := hcolon (Ideal.Quotient.mk J p) hproduct
   exact Ideal.mem_quotient_iff_mem_sup.mp hmember
 
-theorem homogeneousMap_allRank_homogeneous_fin_isWeaklyRegular_of_linear_quotient_aux
+lemma homogeneousMap_allRank_homogeneous_fin_isWeaklyRegular_of_linear_quotient_aux
     {ι : Type*} {e : ℕ}
     (ell : MvPolynomial ι ℂ)
     (hell : ell ≠ 0)
@@ -4596,7 +4596,7 @@ theorem homogeneousMap_allRank_homogeneous_fin_isWeaklyRegular_of_linear_quotien
 
 open scoped Pointwise BigOperators
 
-theorem homogeneousMap_allRank_fin_last_mem_span_of_weaklyRegular
+lemma homogeneousMap_allRank_fin_last_mem_span_of_weaklyRegular
     {R : Type*} [CommRing R] {n : ℕ}
     (f : Fin (n + 1) → R)
     (hregular : RingTheory.Sequence.IsWeaklyRegular R (List.ofFn f))
@@ -4645,7 +4645,7 @@ theorem homogeneousMap_allRank_fin_last_mem_span_of_weaklyRegular
   rw [hideal]
   simpa [smul_eq_mul] using ha
 
-theorem homogeneousMap_allRank_weaklyRegular_fin_syzygy_lifts
+lemma homogeneousMap_allRank_weaklyRegular_fin_syzygy_lifts
     {R S : Type*} [CommRing R] [CommRing S]
     (q : R →+* S) (hq : Function.Surjective q) :
     ∀ (n : ℕ) (f : Fin n → R),
@@ -4765,7 +4765,7 @@ theorem homogeneousMap_allRank_weaklyRegular_fin_syzygy_lifts
         rw [hcomm]
         exact neg_add_cancel _
 
-theorem homogeneousMap_allRank_ringEquiv_isWeaklyRegular_iff_aux
+lemma homogeneousMap_allRank_ringEquiv_isWeaklyRegular_iff_aux
     {R S : Type*} [CommRing R] [CommRing S]
     (e : R ≃+* S) (rs : List R) :
     RingTheory.Sequence.IsWeaklyRegular R rs ↔
@@ -4777,7 +4777,7 @@ theorem homogeneousMap_allRank_ringEquiv_isWeaklyRegular_iff_aux
   change e (r * x) = e r * e x
   exact e.map_mul r x
 
-theorem homogeneousMap_allRank_ringEquiv_isWeaklyRegular_ofFn_image
+lemma homogeneousMap_allRank_ringEquiv_isWeaklyRegular_ofFn_image
     {R S : Type*} [CommRing R] [CommRing S]
     (e : R ≃+* S) {n : ℕ} (f : Fin n → R)
     (hregular : RingTheory.Sequence.IsWeaklyRegular S
@@ -4789,7 +4789,7 @@ theorem homogeneousMap_allRank_ringEquiv_isWeaklyRegular_ofFn_image
 
 open scoped BigOperators
 
-theorem homogeneousMap_allRank_fin_hyperplane_isSMulRegular_of_quotient_weaklyRegular
+lemma homogeneousMap_allRank_fin_hyperplane_isSMulRegular_of_quotient_weaklyRegular
     {R : Type*} [CommRing R] [IsDomain R]
     {n : ℕ} (f : Fin n → R) (ell : R) (hell : ell ≠ 0)
     (hregular :
@@ -4847,7 +4847,7 @@ theorem homogeneousMap_allRank_fin_hyperplane_isSMulRegular_of_quotient_weaklyRe
           rw [Finset.sum_sub_distrib]
     _ = ell * p := by rw [ha, hbsum, sub_zero]
 
-theorem homogeneousMap_allRank_finSucc_lastCoordinate_isSMulRegular_of_slice_weaklyRegular
+lemma homogeneousMap_allRank_finSucc_lastCoordinate_isSMulRegular_of_slice_weaklyRegular
     {n : ℕ}
     (F : Fin (n + 1) → MvPolynomial (Fin (n + 1)) ℂ)
     (hzero : ∀ point : Fin (n + 1) → ℂ,
@@ -4928,7 +4928,7 @@ theorem homogeneousMap_allRank_finSucc_lastCoordinate_isSMulRegular_of_slice_wea
 
 open scoped Pointwise
 
-theorem homogeneousMap_coordinatePolynomials_isWeaklyRegular
+lemma homogeneousMap_coordinatePolynomials_isWeaklyRegular
     (k : ℕ)
     (F : Fin k → MvPolynomial (Fin k) ℂ)
     (e : ℕ) (he : 0 < e)
@@ -5017,7 +5017,7 @@ noncomputable def homogeneousMapAllKBoundedHomogeneousHilbertCoefficient
   (((Finset.univ : Finset (Fin k)).finsuppAntidiag n).filter
     (fun d => ∀ i ∈ restricted, d i < e)).card
 
-theorem homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_empty
+lemma homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_empty
     (k e n : ℕ) :
     homogeneousMapAllKBoundedHomogeneousHilbertCoefficient k e n ∅ =
       (k + n - 1).choose n := by
@@ -5026,7 +5026,7 @@ theorem homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_empty
     (Finset.card_finsuppAntidiag_nat_eq_choose
       (s := (Finset.univ : Finset (Fin k))) n)
 
-theorem homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_insert_of_lt
+lemma homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_insert_of_lt
     (k e n : ℕ) (restricted : Finset (Fin k)) (j : Fin k)
     (hn : n < e) :
     homogeneousMapAllKBoundedHomogeneousHilbertCoefficient k e n
@@ -5048,7 +5048,7 @@ theorem homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_insert_of
     have hi := Finsupp.le_degree i d
     omega
 
-theorem homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_insert_recurrence
+lemma homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_insert_recurrence
     (k e n : ℕ) (restricted : Finset (Fin k)) (j : Fin k)
     (hj : j ∉ restricted) :
     homogeneousMapAllKBoundedHomogeneousHilbertCoefficient k e (e + n)
@@ -5126,7 +5126,7 @@ theorem homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_insert_re
   rw [← hgood, hbad]
   exact hsplit
 
-theorem homogeneousMap_allRank_hilbert_coefficient_eq_bounded_of_insert_recurrence
+lemma homogeneousMap_allRank_hilbert_coefficient_eq_bounded_of_insert_recurrence
     (k e : ℕ) (restricted : Finset (Fin k)) (j : Fin k)
     (hj : j ∉ restricted) (Hprev Hnext : ℕ → ℕ)
     (hprev : ∀ n, Hprev n =
@@ -5160,7 +5160,7 @@ noncomputable def homogeneousMapAllKBoxHilbertCoefficient
   ((Finset.univ : Finset (Fin k → Fin e)).filter
     (fun a => (∑ i : Fin k, (a i : ℕ)) = n)).card
 
-theorem homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_univ
+lemma homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_univ
     (k e n : ℕ) :
     homogeneousMapAllKBoundedHomogeneousHilbertCoefficient k e n Finset.univ =
       homogeneousMapAllKBoxHilbertCoefficient k e n := by
@@ -5206,7 +5206,7 @@ theorem homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_univ
     apply Fin.ext
     exact hdapply i
 
-theorem homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_univ_sum
+lemma homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_univ_sum
     (k e : ℕ) (hk : 0 < k) :
     (∑ n ∈ Finset.range (k * e),
       homogeneousMapAllKBoundedHomogeneousHilbertCoefficient k e n Finset.univ) =
@@ -5239,7 +5239,7 @@ theorem homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_univ_sum
   simp_rw [homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_univ]
   simpa [homogeneousMapAllKBoxHilbertCoefficient, f] using hcard.symm
 
-theorem homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_univ_eq_zero_of_le
+lemma homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_univ_eq_zero_of_le
     (k e n : ℕ) (hk : 0 < k) (hn : k * e ≤ n) :
     homogeneousMapAllKBoundedHomogeneousHilbertCoefficient k e n Finset.univ = 0 := by
   classical
@@ -5258,7 +5258,7 @@ theorem homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_univ_eq_z
     simpa using hstrict
   omega
 
-theorem homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_univ_sum_of_cutoff
+lemma homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_univ_sum_of_cutoff
     (k e N : ℕ) (hk : 0 < k) (hN : k * e ≤ N) :
     (∑ n ∈ Finset.range N,
       homogeneousMapAllKBoundedHomogeneousHilbertCoefficient k e n Finset.univ) =
@@ -5284,17 +5284,17 @@ attribute [local instance] MvPolynomial.gradedAlgebra
 def homogeneousMapAllKSourcePrefix (k j : ℕ) : Finset (Fin k) :=
   Finset.univ.filter fun i => i.val < j
 
-@[simp] theorem homogeneousMap_allRank_sourcePrefix_zero (k : ℕ) :
+@[simp] lemma homogeneousMap_allRank_sourcePrefix_zero (k : ℕ) :
     homogeneousMapAllKSourcePrefix k 0 = ∅ := by
   ext i
   simp [homogeneousMapAllKSourcePrefix]
 
-@[simp] theorem homogeneousMap_allRank_sourcePrefix_full (k : ℕ) :
+@[simp] lemma homogeneousMap_allRank_sourcePrefix_full (k : ℕ) :
     homogeneousMapAllKSourcePrefix k k = Finset.univ := by
   ext i
   simp [homogeneousMapAllKSourcePrefix]
 
-theorem homogeneousMap_allRank_sourcePrefix_succ
+lemma homogeneousMap_allRank_sourcePrefix_succ
     {k j : ℕ} (hj : j < k) :
     homogeneousMapAllKSourcePrefix k (j + 1) =
       insert (⟨j, hj⟩ : Fin k) (homogeneousMapAllKSourcePrefix k j) := by
@@ -5312,12 +5312,12 @@ theorem homogeneousMap_allRank_sourcePrefix_succ
       simp
     · omega
 
-theorem homogeneousMap_allRank_sourcePrefix_not_mem
+lemma homogeneousMap_allRank_sourcePrefix_not_mem
     {k j : ℕ} (hj : j < k) :
     (⟨j, hj⟩ : Fin k) ∉ homogeneousMapAllKSourcePrefix k j := by
   simp [homogeneousMapAllKSourcePrefix]
 
-theorem homogeneousMap_allRank_sourcePrefix_ofList
+lemma homogeneousMap_allRank_sourcePrefix_ofList
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (j : ℕ) :
     Ideal.ofList ((List.ofFn F).take j) =
@@ -5344,7 +5344,7 @@ theorem homogeneousMap_allRank_sourcePrefix_ofList
     · simpa only [List.length_ofFn] using (lt_min hij i.isLt)
     · simp
 
-theorem homogeneousMap_allRank_sourcePrefix_isSMulRegular
+lemma homogeneousMap_allRank_sourcePrefix_isSMulRegular
     (k : ℕ) (F : Fin k → MvPolynomial (Fin k) ℂ)
     (e : ℕ) (he : 0 < e)
     (hF : ∀ i, (F i).IsHomogeneous e)
@@ -5386,7 +5386,7 @@ noncomputable def homogeneousMapAllKCoordinateSubsetIdeal
     (restricted : Finset (Fin k)) : Ideal (MvPolynomial (Fin k) ℂ) :=
   Ideal.span (F '' (restricted : Set (Fin k)))
 
-theorem homogeneousMap_allRank_coordinateSubsetIdeal_isHomogeneous
+lemma homogeneousMap_allRank_coordinateSubsetIdeal_isHomogeneous
     {k e : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (hF : ∀ i, (F i).IsHomogeneous e)
     (restricted : Finset (Fin k)) :
@@ -5396,7 +5396,7 @@ theorem homogeneousMap_allRank_coordinateSubsetIdeal_isHomogeneous
   rintro _ ⟨i, _, rfl⟩
   exact ⟨e, hF i⟩
 
-theorem homogeneousMap_allRank_coordinateSubsetIdeal_insert
+lemma homogeneousMap_allRank_coordinateSubsetIdeal_insert
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (restricted : Finset (Fin k)) (j : Fin k) :
     homogeneousMapAllKCoordinateSubsetIdeal F (insert j restricted) =
@@ -5408,7 +5408,7 @@ theorem homogeneousMap_allRank_coordinateSubsetIdeal_insert
   ext p
   simp [eq_comm]
 
-theorem homogeneousMap_allRank_coordinateSubsetIdeal_univ
+lemma homogeneousMap_allRank_coordinateSubsetIdeal_univ
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ) :
     homogeneousMapAllKCoordinateSubsetIdeal F Finset.univ =
       homogeneousMapIdeal F := by
@@ -5417,12 +5417,12 @@ theorem homogeneousMap_allRank_coordinateSubsetIdeal_univ
   ext p
   simp
 
-theorem homogeneousMap_allRank_coordinateSubsetIdeal_empty
+lemma homogeneousMap_allRank_coordinateSubsetIdeal_empty
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ) :
     homogeneousMapAllKCoordinateSubsetIdeal F ∅ = ⊥ := by
   simp [homogeneousMapAllKCoordinateSubsetIdeal]
 
-theorem homogeneousMap_allRank_coordinateSubsetGradedIdealPiece_eq_bot_of_lt
+lemma homogeneousMap_allRank_coordinateSubsetGradedIdealPiece_eq_bot_of_lt
     {k e : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (hF : ∀ i, (F i).IsHomogeneous e)
     (restricted : Finset (Fin k)) (n : ℕ) (hn : n < e) :
@@ -5464,7 +5464,7 @@ noncomputable def homogeneousMapAllKActualCoordinateHilbert
     (homogeneousMapGradedQuotientPiece
       (homogeneousMapAllKCoordinateSubsetIdeal F restricted) n)
 
-theorem homogeneousMap_allRank_actualCoordinateHilbert_empty
+lemma homogeneousMap_allRank_actualCoordinateHilbert_empty
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ) (n : ℕ) :
     homogeneousMapAllKActualCoordinateHilbert F ∅ n =
       (k + n - 1).choose n := by
@@ -5500,7 +5500,7 @@ theorem homogeneousMap_allRank_actualCoordinateHilbert_empty
       simpa using
         (homogeneousMap_homogeneousSubmodule_finrank (ι := Fin k) n)
 
-theorem homogeneousMap_allRank_actualCoordinateHilbert_insert_of_lt
+lemma homogeneousMap_allRank_actualCoordinateHilbert_insert_of_lt
     {k e : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (hF : ∀ i, (F i).IsHomogeneous e)
     (restricted : Finset (Fin k)) (j : Fin k)
@@ -5520,7 +5520,7 @@ theorem homogeneousMap_allRank_actualCoordinateHilbert_insert_of_lt
   exact (Submodule.quotEquivOfEq _ _
     (hleft.trans hright.symm)).finrank_eq
 
-theorem homogeneousMap_allRank_actualCoordinateHilbert_insert_recurrence_of_regular
+lemma homogeneousMap_allRank_actualCoordinateHilbert_insert_recurrence_of_regular
     {k e : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (hF : ∀ i, (F i).IsHomogeneous e)
     (restricted : Finset (Fin k)) (j : Fin k)
@@ -5538,7 +5538,7 @@ theorem homogeneousMap_allRank_actualCoordinateHilbert_insert_recurrence_of_regu
   rw [← homogeneousMap_allRank_coordinateSubsetIdeal_insert] at hrec
   exact hrec
 
-theorem homogeneousMap_allRank_actualSourcePrefixHilbert_eq_bounded
+lemma homogeneousMap_allRank_actualSourcePrefixHilbert_eq_bounded
     (k : ℕ)
     (F : Fin k → MvPolynomial (Fin k) ℂ)
     (e : ℕ) (he : 0 < e)
@@ -5591,7 +5591,7 @@ theorem homogeneousMap_allRank_actualSourcePrefixHilbert_eq_bounded
       rw [homogeneousMap_allRank_sourcePrefix_succ hjlt]
       exact hnext n
 
-theorem homogeneousMap_zeroFiberIdeal_finrank_of_pos_rank
+lemma homogeneousMap_zeroFiberIdeal_finrank_of_pos_rank
     (k : ℕ) (hk : 0 < k)
     (F : Fin k → MvPolynomial (Fin k) ℂ)
     (e : ℕ) (he : 0 < e)
@@ -5637,7 +5637,7 @@ theorem homogeneousMap_zeroFiberIdeal_finrank_of_pos_rank
       homogeneousMap_allRank_bounded_homogeneous_hilbert_coefficient_univ_sum_of_cutoff
         k e N hk (Nat.le_max_right _ _)
 
-theorem homogeneousMap_zeroFiberIdeal_finrank
+lemma homogeneousMap_zeroFiberIdeal_finrank
     (k : ℕ)
     (F : Fin k → MvPolynomial (Fin k) ℂ)
     (e : ℕ) (he : 0 < e)
@@ -5666,7 +5666,7 @@ theorem homogeneousMap_zeroFiberIdeal_finrank
       exact homogeneousMap_zeroFiberIdeal_finrank_of_pos_rank
         (k + 1) (Nat.zero_lt_succ k) F e he hF hzero
 
-theorem homogeneousMap_zeroClosedFiber_finrank
+lemma homogeneousMap_zeroClosedFiber_finrank
     (k : ℕ)
     (F : Fin k → MvPolynomial (Fin k) ℂ)
     (e : ℕ) (he : 0 < e)
@@ -5684,7 +5684,7 @@ open scoped Pointwise BigOperators
 
 attribute [local instance] MvPolynomial.gradedAlgebra
 
-theorem homogeneousMap_allTarget_totalDegree_sub_homogeneousComponent_le
+lemma homogeneousMap_allTarget_totalDegree_sub_homogeneousComponent_le
     {σ B : Type*} [CommRing B]
     (f : MvPolynomial σ B) {q : ℕ}
     (hf : f.totalDegree ≤ q) :
@@ -5712,7 +5712,7 @@ theorem homogeneousMap_allTarget_totalDegree_sub_homogeneousComponent_le
   change m.degree ≤ q - 1
   omega
 
-theorem homogeneousMap_allTarget_homogeneous_linear_sub_constant_isSMulRegular
+lemma homogeneousMap_allTarget_homogeneous_linear_sub_constant_isSMulRegular
     {ι : Type*}
     (I : Ideal (MvPolynomial ι ℂ))
     (hI : I.IsHomogeneous (MvPolynomial.homogeneousSubmodule ι ℂ))
@@ -5779,7 +5779,7 @@ theorem homogeneousMap_allTarget_homogeneous_linear_sub_constant_isSMulRegular
         exact I.add_mem hq'mem htop
   exact haux p.totalDegree p (le_refl _) hp'
 
-theorem homogeneousMap_allTarget_homogeneous_aeval_isSMulRegular
+lemma homogeneousMap_allTarget_homogeneous_aeval_isSMulRegular
     {ι : Type*}
     (I : Ideal (MvPolynomial ι ℂ))
     (hI : I.IsHomogeneous (MvPolynomial.homogeneousSubmodule ι ℂ))
@@ -5834,7 +5834,7 @@ noncomputable def homogeneousMapReesTargetHom
     Polynomial.C (target i) * Polynomial.X ^ e).comp
     (homogeneousMapCoordinateAlgEquiv F e he hF hzero).symm.toAlgHom
 
-theorem homogeneousMapReesTargetHom_coordinate
+lemma homogeneousMapReesTargetHom_coordinate
     {ι : Type*} [Finite ι]
     (F : ι → MvPolynomial ι ℂ)
     (e : ℕ) (he : 0 < e)
@@ -5871,7 +5871,7 @@ noncomputable def homogeneousMapAllTargetReesCoordinate
   MvPolynomial.rename Fin.succ (F i) -
     MvPolynomial.C (target i) * MvPolynomial.X (0 : Fin (k + 1)) ^ e
 
-theorem homogeneousMap_allTarget_reesCoordinate_isHomogeneous
+lemma homogeneousMap_allTarget_reesCoordinate_isHomogeneous
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ)
     (hF : ∀ i, (F i).IsHomogeneous e) (i : Fin k) :
@@ -5899,7 +5899,7 @@ noncomputable def homogeneousMapAllTargetReesZeroHyperplaneEquiv (k : ℕ) :
     ((Polynomial.quotientSpanXSubCAlgEquiv
       (0 : MvPolynomial (Fin k) ℂ)).restrictScalars ℂ)
 
-theorem homogeneousMap_allTarget_reesZeroHyperplaneEquiv_mk
+lemma homogeneousMap_allTarget_reesZeroHyperplaneEquiv_mk
     {k : ℕ} (p : MvPolynomial (Fin (k + 1)) ℂ) :
     homogeneousMapAllTargetReesZeroHyperplaneEquiv k
       (Ideal.Quotient.mk
@@ -5908,7 +5908,7 @@ theorem homogeneousMap_allTarget_reesZeroHyperplaneEquiv_mk
       (MvPolynomial.finSuccEquiv ℂ k p).eval 0 := by
   rfl
 
-theorem homogeneousMap_allTarget_finSucc_rename_eval_zero
+lemma homogeneousMap_allTarget_finSucc_rename_eval_zero
     {k : ℕ} (p : MvPolynomial (Fin k) ℂ) :
     (MvPolynomial.finSuccEquiv ℂ k
       (MvPolynomial.rename Fin.succ p)).eval 0 = p := by
@@ -5923,7 +5923,7 @@ theorem homogeneousMap_allTarget_finSucc_rename_eval_zero
       simp [map_mul, Polynomial.eval_mul,
         MvPolynomial.finSuccEquiv_X_succ, hp]
 
-theorem homogeneousMap_allTarget_reesZeroHyperplaneEquiv_coordinate
+lemma homogeneousMap_allTarget_reesZeroHyperplaneEquiv_coordinate
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) (he : 0 < e)
     (i : Fin k) :
@@ -5940,7 +5940,7 @@ theorem homogeneousMap_allTarget_reesZeroHyperplaneEquiv_coordinate
     zero_pow (Nat.ne_of_gt he), mul_zero, sub_zero]
   exact homogeneousMap_allTarget_finSucc_rename_eval_zero (F i)
 
-theorem homogeneousMap_allTarget_reesCoordinate_quotient_isWeaklyRegular
+lemma homogeneousMap_allTarget_reesCoordinate_quotient_isWeaklyRegular
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) (he : 0 < e)
     (hF : ∀ i, (F i).IsHomogeneous e)
@@ -5974,7 +5974,7 @@ theorem homogeneousMap_allTarget_reesCoordinate_quotient_isWeaklyRegular
         (homogeneousMapAllTargetReesCoordinate F target e i))
   simpa only [hcoord] using hsource
 
-theorem homogeneousMap_allTarget_rees_parameter_isSMulRegular
+lemma homogeneousMap_allTarget_rees_parameter_isSMulRegular
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) (he : 0 < e)
     (hF : ∀ i, (F i).IsHomogeneous e)
@@ -5991,7 +5991,7 @@ theorem homogeneousMap_allTarget_rees_parameter_isSMulRegular
   exact homogeneousMap_allTarget_reesCoordinate_quotient_isWeaklyRegular
     F target e he hF hzero
 
-theorem homogeneousMap_allTarget_rees_polynomial_parameter_isSMulRegular
+lemma homogeneousMap_allTarget_rees_polynomial_parameter_isSMulRegular
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) (he : 0 < e)
     (hF : ∀ i, (F i).IsHomogeneous e)
@@ -6035,7 +6035,7 @@ noncomputable abbrev homogeneousMapAllTargetReesParameterAlgebra
     Algebra (Polynomial ℂ) (homogeneousMapAllTargetReesQuotient F target e) :=
   (homogeneousMapAllTargetReesParameterRingHom F target e).toAlgebra
 
-theorem homogeneousMap_allTarget_reesParameter_isTorsionFree
+lemma homogeneousMap_allTarget_reesParameter_isTorsionFree
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) (he : 0 < e)
     (hF : ∀ i, (F i).IsHomogeneous e)
@@ -6086,7 +6086,7 @@ noncomputable def homogeneousMapAllTargetReesChartHyperplaneEquiv
     ((Polynomial.quotientSpanXSubCAlgEquiv
       (MvPolynomial.C a : MvPolynomial (Fin k) ℂ)).restrictScalars ℂ)
 
-theorem homogeneousMap_allTarget_reesChartHyperplaneEquiv_mk
+lemma homogeneousMap_allTarget_reesChartHyperplaneEquiv_mk
     {k : ℕ} (a : ℂ) (p : MvPolynomial (Fin (k + 1)) ℂ) :
     homogeneousMapAllTargetReesChartHyperplaneEquiv k a
       (Ideal.Quotient.mk
@@ -6095,7 +6095,7 @@ theorem homogeneousMap_allTarget_reesChartHyperplaneEquiv_mk
         (MvPolynomial.C a) := by
   rfl
 
-theorem homogeneousMap_allTarget_finSucc_rename_eval_constant
+lemma homogeneousMap_allTarget_finSucc_rename_eval_constant
     {k : ℕ} (a : ℂ) (p : MvPolynomial (Fin k) ℂ) :
     (MvPolynomial.finSuccEquiv ℂ k
       (MvPolynomial.rename Fin.succ p)).eval
@@ -6111,7 +6111,7 @@ theorem homogeneousMap_allTarget_finSucc_rename_eval_constant
       simp [map_mul, Polynomial.eval_mul,
         MvPolynomial.finSuccEquiv_X_succ, hp]
 
-theorem homogeneousMap_allTarget_reesChartHyperplaneEquiv_coordinate
+lemma homogeneousMap_allTarget_reesChartHyperplaneEquiv_coordinate
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) (a : ℂ)
     (i : Fin k) :
@@ -6150,7 +6150,7 @@ noncomputable abbrev homogeneousMapAllTargetReesSourceAlgebra
       (homogeneousMapAllTargetReesQuotient F target e) :=
   (homogeneousMapAllTargetReesSourceRingHom F target e).toAlgebra
 
-theorem homogeneousMap_allTarget_rees_source_coordinate
+lemma homogeneousMap_allTarget_rees_source_coordinate
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) (i : Fin k) :
     homogeneousMapAllTargetReesSourceRingHom F target e
@@ -6179,7 +6179,7 @@ theorem homogeneousMap_allTarget_rees_source_coordinate
   apply sub_eq_zero.mp
   simpa [homogeneousMapAllTargetReesCoordinate, map_sub] using hzero
 
-theorem homogeneousMap_allTarget_rees_isScalarTower
+lemma homogeneousMap_allTarget_rees_isScalarTower
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) (he : 0 < e)
     (hF : ∀ i, (F i).IsHomogeneous e)
@@ -6253,7 +6253,7 @@ theorem homogeneousMap_allTarget_rees_isScalarTower
 
 open scoped TensorProduct
 
-theorem homogeneousMap_allTarget_rees_moduleFinite
+lemma homogeneousMap_allTarget_rees_moduleFinite
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) (he : 0 < e)
     (hF : ∀ i, (F i).IsHomogeneous e)
@@ -6334,7 +6334,7 @@ theorem homogeneousMap_allTarget_rees_moduleFinite
     exact hrange
   exact Module.Finite.of_surjective L.toLinearMap hsurj
 
-theorem homogeneousMap_allTarget_rees_complex_isScalarTower
+lemma homogeneousMap_allTarget_rees_complex_isScalarTower
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) :
     letI : Algebra (Polynomial ℂ)
@@ -6359,7 +6359,7 @@ theorem homogeneousMap_allTarget_rees_complex_isScalarTower
         (Polynomial.C c))
   simp
 
-theorem homogeneousMap_allTarget_rees_free_of_finite
+lemma homogeneousMap_allTarget_rees_free_of_finite
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) (he : 0 < e)
     (hF : ∀ i, (F i).IsHomogeneous e)
@@ -6387,7 +6387,7 @@ theorem homogeneousMap_allTarget_rees_free_of_finite
       F target e he hF hzero
   exact Module.free_of_finite_type_torsion_free'
 
-theorem homogeneousMap_allTarget_rees_parameterFiber_finrank
+lemma homogeneousMap_allTarget_rees_parameterFiber_finrank
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) (he : 0 < e)
     (hF : ∀ i, (F i).IsHomogeneous e)
@@ -6430,7 +6430,7 @@ noncomputable def homogeneousMapAllTargetReesChart
   (homogeneousMapAllTargetReesChartHyperplaneEquiv k a).toAlgHom.comp
     (Ideal.Quotient.mkₐ ℂ (homogeneousMapAllTargetReesChartIdeal k a))
 
-theorem homogeneousMapAllTargetReesChart_ker
+lemma homogeneousMapAllTargetReesChart_ker
     (k : ℕ) (a : ℂ) :
     RingHom.ker (homogeneousMapAllTargetReesChart k a).toRingHom =
       homogeneousMapAllTargetReesChartIdeal k a := by
@@ -6449,13 +6449,13 @@ theorem homogeneousMapAllTargetReesChart_ker
   · intro hp
     rw [Ideal.Quotient.eq_zero_iff_mem.mpr hp, map_zero]
 
-theorem homogeneousMapAllTargetReesChart_surjective
+lemma homogeneousMapAllTargetReesChart_surjective
     (k : ℕ) (a : ℂ) :
     Function.Surjective (homogeneousMapAllTargetReesChart k a) :=
   (homogeneousMapAllTargetReesChartHyperplaneEquiv k a).surjective.comp
     Ideal.Quotient.mk_surjective
 
-theorem homogeneousMapAllTargetReesEquationIdeal_map_chart
+lemma homogeneousMapAllTargetReesEquationIdeal_map_chart
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) (a : ℂ) :
     (Ideal.span (Set.range (homogeneousMapAllTargetReesCoordinate F target e))).map
@@ -6526,7 +6526,7 @@ noncomputable def homogeneousMapAllTargetReesDoubleQuotientFiberEquiv
     (homogeneousMapAllTargetReesChartIdeal k a)).trans
       (homogeneousMapAllTargetReesChartFiberEquiv F target e a)
 
-theorem homogeneousMapAllTargetReesParameterMaximalIdeal_map
+lemma homogeneousMapAllTargetReesParameterMaximalIdeal_map
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) (a : ℂ) :
     letI : Algebra (Polynomial ℂ)
@@ -6581,7 +6581,7 @@ noncomputable def homogeneousMapAllTargetReesPolynomialParameterFiberEquiv
   exact (Ideal.quotientEquivAlgOfEq ℂ hideal).trans
     (homogeneousMapAllTargetReesDoubleQuotientFiberEquiv F target e a)
 
-theorem homogeneousMap_closedFiber_finrank_of_rees_finite
+lemma homogeneousMap_closedFiber_finrank_of_rees_finite
     (k : ℕ) (F : Fin k → MvPolynomial (Fin k) ℂ)
     (e : ℕ) (he : 0 < e)
     (hF : ∀ i, (F i).IsHomogeneous e)
@@ -6634,7 +6634,7 @@ theorem homogeneousMap_closedFiber_finrank_of_rees_finite
     _ = Module.finrank ℂ (homogeneousMapClosedFiber F 0) := hzeroFiber
     _ = e ^ k := homogeneousMap_zeroClosedFiber_finrank k F e he hF hzero
 
-theorem homogeneousMap_closedFiber_finrank
+lemma homogeneousMap_closedFiber_finrank
     (k : ℕ) (F : Fin k → MvPolynomial (Fin k) ℂ)
     (e : ℕ) (he : 0 < e)
     (hF : ∀ i, (F i).IsHomogeneous e)
@@ -6705,7 +6705,7 @@ def input {ι : Type*} (index : ι) : FreeAffineForm ι :=
 def gate {ι : Type*} (index : ℕ) : FreeAffineForm ι :=
   ⟨0, 0, Finsupp.single index 1⟩
 
-@[simp] theorem eval_zero {ι : Type*}
+@[simp] lemma eval_zero {ι : Type*}
     (values : Array (MvPolynomial ι ℂ)) :
     (0 : FreeAffineForm ι).eval values = 0 := by
   change
@@ -6715,23 +6715,23 @@ def gate {ι : Type*} (index : ℕ) : FreeAffineForm ι :=
         (0 : ℕ →₀ ℂ) = 0
   simp
 
-@[simp] theorem eval_scalar {ι : Type*} (coefficient : ℂ)
+@[simp] lemma eval_scalar {ι : Type*} (coefficient : ℂ)
     (values : Array (MvPolynomial ι ℂ)) :
     (scalar coefficient : FreeAffineForm ι).eval values =
       MvPolynomial.C coefficient := by
   simp [eval, scalar]
 
-@[simp] theorem eval_input {ι : Type*} (index : ι)
+@[simp] lemma eval_input {ι : Type*} (index : ι)
     (values : Array (MvPolynomial ι ℂ)) :
     (input index).eval values = MvPolynomial.X index := by
   simp [eval, input]
 
-@[simp] theorem eval_gate {ι : Type*} (index : ℕ)
+@[simp] lemma eval_gate {ι : Type*} (index : ℕ)
     (values : Array (MvPolynomial ι ℂ)) :
     (gate index : FreeAffineForm ι).eval values = values.getD index 0 := by
   simp [eval, gate]
 
-@[simp] theorem eval_add {ι : Type*} (left right : FreeAffineForm ι)
+@[simp] lemma eval_add {ι : Type*} (left right : FreeAffineForm ι)
     (values : Array (MvPolynomial ι ℂ)) :
     (left + right).eval values = left.eval values + right.eval values := by
   change
@@ -6742,7 +6742,7 @@ def gate {ι : Type*} (index : ℕ) : FreeAffineForm ι :=
         (left.gateCoefficients + right.gateCoefficients) = _
   simp [eval, add_assoc, add_left_comm, add_comm]
 
-@[simp] theorem eval_sub {ι : Type*} (left right : FreeAffineForm ι)
+@[simp] lemma eval_sub {ι : Type*} (left right : FreeAffineForm ι)
     (values : Array (MvPolynomial ι ℂ)) :
     (left - right).eval values = left.eval values - right.eval values := by
   change
@@ -6753,7 +6753,7 @@ def gate {ι : Type*} (index : ℕ) : FreeAffineForm ι :=
         (left.gateCoefficients - right.gateCoefficients) = _
   simp [eval, sub_eq_add_neg, add_assoc, add_left_comm, add_comm]
 
-@[simp] theorem eval_smul {ι : Type*} (coefficient : ℂ)
+@[simp] lemma eval_smul {ι : Type*} (coefficient : ℂ)
     (form : FreeAffineForm ι) (values : Array (MvPolynomial ι ℂ)) :
     (coefficient • form).eval values = coefficient • form.eval values := by
   change
@@ -6791,7 +6791,7 @@ def substituteInputs {ι κ : Type*} (form : FreeAffineForm ι)
     form.inputCoefficients
   gateCoefficients := form.gateCoefficients
 
-theorem eval_substituteInputs {ι κ : Type*} (form : FreeAffineForm ι)
+lemma eval_substituteInputs {ι κ : Type*} (form : FreeAffineForm ι)
     (substitution : ι → FreeAffineInput κ)
     (values : Array (MvPolynomial ι ℂ)) :
     (form.substituteInputs substitution).eval
@@ -6921,14 +6921,14 @@ def substituteInputs {ι κ : Type*}
   | .affine form => .affine (form.substituteInputs substitution)
   | .mul left right => .mul left right
 
-@[simp] theorem referencesBounded_substituteInputs {ι κ : Type*}
+@[simp] lemma referencesBounded_substituteInputs {ι κ : Type*}
     (substitution : ι → FreeAffineInput κ)
     (instruction : FreeAffineInstruction ι) (position : ℕ) :
     (instruction.substituteInputs substitution).referencesBounded position =
       instruction.referencesBounded position := by
   cases instruction <;> rfl
 
-theorem eval_substituteInputs {ι κ : Type*}
+lemma eval_substituteInputs {ι κ : Type*}
     (substitution : ι → FreeAffineInput κ)
     (instruction : FreeAffineInstruction ι)
     (values : Array (MvPolynomial ι ℂ)) :
@@ -6961,13 +6961,13 @@ def ofInstruction {ι : Type} : Instruction ι → FreeAffineInstruction ι
     .affine (FreeAffineForm.gate left - FreeAffineForm.gate right)
   | .mul left right => .mul left right
 
-@[simp] theorem eval_ofInstruction {ι : Type}
+@[simp] lemma eval_ofInstruction {ι : Type}
     (instruction : Instruction ι) (values : Array (MvPolynomial ι ℂ)) :
     (ofInstruction instruction).eval values = instruction.eval values := by
   cases instruction <;>
     simp [ofInstruction, eval, Instruction.eval]
 
-theorem referencesBounded_ofInstruction {ι : Type}
+lemma referencesBounded_ofInstruction {ι : Type}
     (instruction : Instruction ι) (position : ℕ)
     (valid : instruction.referencesBounded position) :
     (ofInstruction instruction).referencesBounded position := by
@@ -7053,7 +7053,7 @@ def substituteInputs {ι κ : Type*} (circuit : FreeAffineCircuit ι)
     obtain ⟨original, horiginal, rfl⟩ := List.mem_map.mp hform
     simpa using circuit.validOutputs original horiginal index hindex
 
-@[simp] theorem multiplicationCount_substituteInputs {ι κ : Type*}
+@[simp] lemma multiplicationCount_substituteInputs {ι κ : Type*}
     (circuit : FreeAffineCircuit ι)
     (substitution : ι → FreeAffineInput κ) :
     (circuit.substituteInputs substitution).multiplicationCount =
@@ -7071,7 +7071,7 @@ def substituteInputs {ι κ : Type*} (circuit : FreeAffineCircuit ι)
       simp [FreeAffineInstruction.substituteInputs,
         FreeAffineInstruction.isMultiplication, ih, List.filter_cons]
 
-theorem values_substituteInputs {ι κ : Type*}
+lemma values_substituteInputs {ι κ : Type*}
     (circuit : FreeAffineCircuit ι)
     (substitution : ι → FreeAffineInput κ) :
     (circuit.substituteInputs substitution).values =
@@ -7128,13 +7128,13 @@ def ofArithmetic {ι : Type} (circuit : ArithmeticCircuit ι) :
       (Finsupp.single_apply_ne_zero.mp hindex).1
     simpa [heq] using circuit.output_lt
 
-@[simp] theorem values_ofArithmetic {ι : Type}
+@[simp] lemma values_ofArithmetic {ι : Type}
     (circuit : ArithmeticCircuit ι) :
     (ofArithmetic circuit).values = circuit.values := by
   simp only [values, ofArithmetic, ArithmeticCircuit.values, List.foldl_map]
   simp_rw [FreeAffineInstruction.eval_ofInstruction]
 
-theorem multiplicationCount_ofArithmetic_le {ι : Type}
+lemma multiplicationCount_ofArithmetic_le {ι : Type}
     (circuit : ArithmeticCircuit ι) :
     (ofArithmetic circuit).multiplicationCount ≤ circuit.size := by
   change
@@ -7158,7 +7158,7 @@ noncomputable section Standalone_ReverseMode
 
 open scoped BigOperators
 
-theorem pderiv_linearCombination {ι κ : Type*} (input : ι)
+lemma pderiv_linearCombination {ι κ : Type*} (input : ι)
     (family : κ → MvPolynomial ι ℂ) (coefficients : κ →₀ ℂ) :
     MvPolynomial.pderiv input
         (Finsupp.linearCombination ℂ family coefficients) =
@@ -7169,7 +7169,7 @@ theorem pderiv_linearCombination {ι κ : Type*} (input : ι)
     Finsupp.apply_linearCombination ℂ
       (MvPolynomial.pderiv input).toLinearMap family coefficients
 
-theorem pderiv_input_linearCombination {ι : Type*} (input : ι)
+lemma pderiv_input_linearCombination {ι : Type*} (input : ι)
     (coefficients : ι →₀ ℂ) :
     MvPolynomial.pderiv input
         (Finsupp.linearCombination ℂ MvPolynomial.X coefficients) =
@@ -7184,7 +7184,7 @@ theorem pderiv_input_linearCombination {ι : Type*} (input : ι)
       MvPolynomial.pderiv_X, Pi.single_apply, hinput,
       Finsupp.mem_support_iff, MvPolynomial.smul_eq_C_mul]
 
-theorem FreeAffineForm.pderiv_eval {ι : Type*}
+lemma FreeAffineForm.pderiv_eval {ι : Type*}
     (form : FreeAffineForm ι) (values : Array (MvPolynomial ι ℂ))
     (input : ι) :
     MvPolynomial.pderiv input (form.eval values) =
@@ -7209,14 +7209,14 @@ def scaleCoefficients {ι κ : Type*}
   coefficients.mapRange (fun coefficient =>
     MvPolynomial.C coefficient * adjoint) (by simp)
 
-@[simp] theorem scaleCoefficients_apply {ι κ : Type*}
+@[simp] lemma scaleCoefficients_apply {ι κ : Type*}
     (adjoint : MvPolynomial ι ℂ) (coefficients : κ →₀ ℂ)
     (index : κ) :
     scaleCoefficients adjoint coefficients index =
       MvPolynomial.C (coefficients index) * adjoint := by
   simp [scaleCoefficients]
 
-theorem linearCombination_scaleCoefficients {ι κ : Type*}
+lemma linearCombination_scaleCoefficients {ι κ : Type*}
     (adjoint : MvPolynomial ι ℂ) (coefficients : κ →₀ ℂ)
     (family : κ → MvPolynomial ι ℂ) :
     Finsupp.linearCombination (MvPolynomial ι ℂ) family
@@ -7230,7 +7230,7 @@ theorem linearCombination_scaleCoefficients {ι κ : Type*}
   simp [Finsupp.sum, Finset.mul_sum, MvPolynomial.smul_eq_C_mul,
     mul_assoc, mul_left_comm]
 
-theorem linearCombination_erase_add {ι κ : Type*}
+lemma linearCombination_erase_add {ι κ : Type*}
     (adjoints : κ →₀ MvPolynomial ι ℂ)
     (family : κ → MvPolynomial ι ℂ) (index : κ) :
     Finsupp.linearCombination (MvPolynomial ι ℂ) family
@@ -7263,7 +7263,7 @@ def affine {ι : Type*} (state : ReverseAdjoint ι)
       form.gateCoefficients
   multiplicationCount := state.multiplicationCount
 
-@[simp] theorem affine_inputAdjoints_apply {ι : Type*}
+@[simp] lemma affine_inputAdjoints_apply {ι : Type*}
     (state : ReverseAdjoint ι) (position : ℕ)
     (form : FreeAffineForm ι) (input : ι) :
     (state.affine position form).inputAdjoints input =
@@ -7303,7 +7303,7 @@ def potential {ι : Type*} (state : ReverseAdjoint ι)
       (fun gate => MvPolynomial.pderiv input (values.getD gate 0))
       state.gateAdjoints
 
-theorem initial_potential {ι : Type*}
+lemma initial_potential {ι : Type*}
     (output : FreeAffineForm ι)
     (values : Array (MvPolynomial ι ℂ)) (input : ι) :
     (initial output).potential values input =
@@ -7311,7 +7311,7 @@ theorem initial_potential {ι : Type*}
   rw [FreeAffineForm.pderiv_eval]
   simp [potential, initial, linearCombination_scaleCoefficients]
 
-theorem potential_affine {ι : Type*}
+lemma potential_affine {ι : Type*}
     (state : ReverseAdjoint ι)
     (values : Array (MvPolynomial ι ℂ))
     (position : ℕ) (form : FreeAffineForm ι) (input : ι)
@@ -7343,7 +7343,7 @@ theorem potential_affine {ι : Type*}
     hderivative]
   ring
 
-theorem potential_mul {ι : Type*}
+lemma potential_mul {ι : Type*}
     (state : ReverseAdjoint ι)
     (values : Array (MvPolynomial ι ℂ))
     (position left right : ℕ) (input : ι)
@@ -7377,7 +7377,7 @@ theorem potential_mul {ι : Type*}
   simp only [smul_eq_mul]
   ring
 
-theorem step_potential {ι : Type*}
+lemma step_potential {ι : Type*}
     (values : Array (MvPolynomial ι ℂ))
     (state : ReverseAdjoint ι)
     (instruction : FreeAffineInstruction ι × ℕ) (input : ι)
@@ -7393,7 +7393,7 @@ theorem step_potential {ι : Type*}
     | mul left right =>
       exact potential_mul state values position left right input hgate
 
-theorem foldl_potential {ι : Type*}
+lemma foldl_potential {ι : Type*}
     (values : Array (MvPolynomial ι ℂ))
     (instructions : List (FreeAffineInstruction ι × ℕ))
     (state : ReverseAdjoint ι) (input : ι)
@@ -7414,7 +7414,7 @@ def forwardStep {ι : Type*} (values : Array (MvPolynomial ι ℂ))
     Array (MvPolynomial ι ℂ) :=
   values.push (instruction.eval values)
 
-theorem forwardFold_size {ι : Type*}
+lemma forwardFold_size {ι : Type*}
     (program : List (FreeAffineInstruction ι))
     (values : Array (MvPolynomial ι ℂ)) :
     (program.foldl forwardStep values).size =
@@ -7426,7 +7426,7 @@ theorem forwardFold_size {ι : Type*}
       Nat.add_left_comm] using
       ih (forwardStep values instruction)
 
-theorem forwardFold_getD_of_lt {ι : Type*}
+lemma forwardFold_getD_of_lt {ι : Type*}
     (program : List (FreeAffineInstruction ι))
     (values : Array (MvPolynomial ι ℂ))
     (index : ℕ) (hindex : index < values.size) :
@@ -7442,7 +7442,7 @@ theorem forwardFold_getD_of_lt {ι : Type*}
     simp [forwardStep, Array.getD_eq_getD_getElem?,
       Array.getElem?_push, Nat.ne_of_lt hindex]
 
-theorem eval_congr_of_referencesBounded {ι : Type*}
+lemma eval_congr_of_referencesBounded {ι : Type*}
     (instruction : FreeAffineInstruction ι) (position : ℕ)
     (before after : Array (MvPolynomial ι ℂ))
     (hvalid : instruction.referencesBounded position)
@@ -7466,7 +7466,7 @@ theorem eval_congr_of_referencesBounded {ι : Type*}
     simp [FreeAffineInstruction.eval,
       hvalues left hvalid.1, hvalues right hvalid.2]
 
-theorem forwardFold_gateEquation {ι : Type*}
+lemma forwardFold_gateEquation {ι : Type*}
     (program : List (FreeAffineInstruction ι))
     (values : Array (MvPolynomial ι ℂ))
     (hvalid : ∀ position : Fin program.length,
@@ -7521,7 +7521,7 @@ def run {ι : Type*} (circuit : FreeAffineCircuit ι)
   (circuit.program.zipIdx.reverse).foldl
     (step circuit.values) (initial output)
 
-theorem circuit_values_size {ι : Type*}
+lemma circuit_values_size {ι : Type*}
     (circuit : FreeAffineCircuit ι) :
     circuit.values.size = circuit.program.length := by
   change
@@ -7530,7 +7530,7 @@ theorem circuit_values_size {ι : Type*}
   simpa using
     forwardFold_size circuit.program (#[] : Array (MvPolynomial ι ℂ))
 
-theorem circuit_gateEquation {ι : Type*}
+lemma circuit_gateEquation {ι : Type*}
     (circuit : FreeAffineCircuit ι)
     (position : Fin circuit.program.length) :
     circuit.values.getD position.val 0 =
@@ -7550,7 +7550,7 @@ theorem circuit_gateEquation {ι : Type*}
     forwardFold_gateEquation circuit.program
       (#[] : Array (MvPolynomial ι ℂ)) hvalid position
 
-theorem run_potential {ι : Type*}
+lemma run_potential {ι : Type*}
     (circuit : FreeAffineCircuit ι)
     (output : FreeAffineForm ι) (input : ι) :
     (run circuit output).potential circuit.values input =
@@ -7566,7 +7566,7 @@ theorem run_potential {ι : Type*}
     simpa [hgate] using
       circuit_gateEquation circuit ⟨position, hposition⟩
 
-theorem step_gateAdjoints_lt {ι : Type*}
+lemma step_gateAdjoints_lt {ι : Type*}
     (values : Array (MvPolynomial ι ℂ))
     (state : ReverseAdjoint ι)
     (instruction : FreeAffineInstruction ι) (position : ℕ)
@@ -7605,7 +7605,7 @@ theorem step_gateAdjoints_lt {ι : Type*}
     have hright : right ≠ index := by omega
     simp [step, mul, herase, hleft, hright] at hnonzero
 
-theorem reverseFold_gateAdjoints_lt {ι : Type*}
+lemma reverseFold_gateAdjoints_lt {ι : Type*}
     (program : List (FreeAffineInstruction ι))
     (values : Array (MvPolynomial ι ℂ)) (start : ℕ)
     (state : ReverseAdjoint ι)
@@ -7642,7 +7642,7 @@ theorem reverseFold_gateAdjoints_lt {ι : Type*}
         (step values) state)
       instruction start hhead hmid
 
-theorem initial_gateAdjoints_lt {ι : Type*}
+lemma initial_gateAdjoints_lt {ι : Type*}
     (circuit : FreeAffineCircuit ι)
     (output : FreeAffineForm ι) (houtput : output ∈ circuit.outputs) :
     ∀ index, (initial output).gateAdjoints index ≠ 0 →
@@ -7654,7 +7654,7 @@ theorem initial_gateAdjoints_lt {ι : Type*}
     simp [initial, scaleCoefficients_apply, hzero]
   exact circuit.validOutputs output houtput index hcoefficient
 
-theorem run_gateAdjoints_eq_zero {ι : Type*}
+lemma run_gateAdjoints_eq_zero {ι : Type*}
     (circuit : FreeAffineCircuit ι)
     (output : FreeAffineForm ι) (houtput : output ∈ circuit.outputs) :
     (run circuit output).gateAdjoints = 0 := by
@@ -7676,7 +7676,7 @@ theorem run_gateAdjoints_eq_zero {ι : Type*}
     exact hnonzero
   omega
 
-theorem run_inputAdjoints {ι : Type*}
+lemma run_inputAdjoints {ι : Type*}
     (circuit : FreeAffineCircuit ι)
     (output : FreeAffineForm ι) (houtput : output ∈ circuit.outputs)
     (input : ι) :
@@ -7716,7 +7716,7 @@ def appendInstruction {ι : Type*} (circuit : FreeAffineCircuit ι)
     simp only [List.length_append, List.length_singleton]
     omega
 
-theorem appendInstruction_values {ι : Type*}
+lemma appendInstruction_values {ι : Type*}
     (circuit : FreeAffineCircuit ι)
     (instruction : FreeAffineInstruction ι)
     (hvalid : instruction.referencesBounded circuit.program.length) :
@@ -7774,7 +7774,7 @@ def appendReverseProducts {ι : Type*}
   exact appendInstruction second
     (.mul circuit.program.length left) hleftProduct
 
-theorem appendReverseProducts_program_length {ι : Type*}
+lemma appendReverseProducts_program_length {ι : Type*}
     (circuit : FreeAffineCircuit ι) (adjoint : FreeAffineForm ι)
     (left right : ℕ)
     (hadjoint : ∀ index, adjoint.gateCoefficients index ≠ 0 →
@@ -7786,7 +7786,7 @@ theorem appendReverseProducts_program_length {ι : Type*}
         circuit.program.length + 3 := by
   simp [appendReverseProducts, appendInstruction]
 
-theorem appendReverseProducts_values {ι : Type*}
+lemma appendReverseProducts_values {ι : Type*}
     (circuit : FreeAffineCircuit ι) (adjoint : FreeAffineForm ι)
     (left right : ℕ)
     (hadjoint : ∀ index, adjoint.gateCoefficients index ≠ 0 →
@@ -7838,7 +7838,7 @@ theorem appendReverseProducts_values {ι : Type*}
     FreeAffineInstruction.eval, hfirst, hrightFirst, hsecond,
     hleftSecond]
 
-theorem appendReverseProducts_values_getD_of_lt {ι : Type*}
+lemma appendReverseProducts_values_getD_of_lt {ι : Type*}
     (circuit : FreeAffineCircuit ι) (adjoint : FreeAffineForm ι)
     (left right : ℕ)
     (hadjoint : ∀ index, adjoint.gateCoefficients index ≠ 0 →
@@ -7862,7 +7862,7 @@ theorem appendReverseProducts_values_getD_of_lt {ι : Type*}
   simp [Array.getD_eq_getD_getElem?, Array.getElem?_push,
     hzero, hone, htwo]
 
-theorem appendReverseProducts_values_right {ι : Type*}
+lemma appendReverseProducts_values_right {ι : Type*}
     (circuit : FreeAffineCircuit ι) (adjoint : FreeAffineForm ι)
     (left right : ℕ)
     (hadjoint : ∀ index, adjoint.gateCoefficients index ≠ 0 →
@@ -7910,7 +7910,7 @@ theorem appendReverseProducts_values_right {ι : Type*}
           (x := adjoint.eval circuit.values *
             circuit.values.getD right 0))
 
-theorem appendReverseProducts_values_left {ι : Type*}
+lemma appendReverseProducts_values_left {ι : Type*}
     (circuit : FreeAffineCircuit ι) (adjoint : FreeAffineForm ι)
     (left right : ℕ)
     (hadjoint : ∀ index, adjoint.gateCoefficients index ≠ 0 →
@@ -7951,7 +7951,7 @@ theorem appendReverseProducts_values_left {ι : Type*}
           (x := adjoint.eval circuit.values *
             circuit.values.getD left 0))
 
-theorem appendReverseProducts_eval_form {ι : Type*}
+lemma appendReverseProducts_eval_form {ι : Type*}
     (circuit : FreeAffineCircuit ι) (adjoint : FreeAffineForm ι)
     (left right : ℕ)
     (hadjoint : ∀ index, adjoint.gateCoefficients index ≠ 0 →
@@ -7972,7 +7972,7 @@ theorem appendReverseProducts_eval_form {ι : Type*}
     left right hadjoint hleft hright index
       (hform index (Finsupp.mem_support_iff.mp hindex))]
 
-theorem appendReverseProducts_multiplicationCount {ι : Type*}
+lemma appendReverseProducts_multiplicationCount {ι : Type*}
     (circuit : FreeAffineCircuit ι) (adjoint : FreeAffineForm ι)
     (left right : ℕ)
     (hadjoint : ∀ index, adjoint.gateCoefficients index ≠ 0 →
@@ -7986,7 +7986,7 @@ theorem appendReverseProducts_multiplicationCount {ι : Type*}
     FreeAffineCircuit.multiplicationCount,     FreeAffineInstruction.isMultiplication,
     List.filter_cons]
 
-theorem affineForm_gateBound_mono {ι : Type*}
+lemma affineForm_gateBound_mono {ι : Type*}
     (form : FreeAffineForm ι) {oldBound newBound : ℕ}
     (hbound : oldBound ≤ newBound)
     (hvalid : ∀ index, form.gateCoefficients index ≠ 0 →
@@ -7995,7 +7995,7 @@ theorem affineForm_gateBound_mono {ι : Type*}
   intro index hindex
   exact Nat.lt_of_lt_of_le (hvalid index hindex) hbound
 
-theorem affineForm_gateBound_add {ι : Type*}
+lemma affineForm_gateBound_add {ι : Type*}
     (left right : FreeAffineForm ι) (bound : ℕ)
     (hleft : ∀ index, left.gateCoefficients index ≠ 0 → index < bound)
     (hright : ∀ index, right.gateCoefficients index ≠ 0 → index < bound) :
@@ -8011,7 +8011,7 @@ theorem affineForm_gateBound_add {ι : Type*}
     simp [hleftZero, hrightZero]
   · exact hleft index hleftZero
 
-theorem affineForm_gateBound_smul {ι : Type*}
+lemma affineForm_gateBound_smul {ι : Type*}
     (coefficient : ℂ) (form : FreeAffineForm ι) (bound : ℕ)
     (hvalid : ∀ index, form.gateCoefficients index ≠ 0 →
       index < bound) :
@@ -8024,7 +8024,7 @@ theorem affineForm_gateBound_smul {ι : Type*}
   apply hindex
   simp [hzero]
 
-theorem affineForm_gateBound_gate {ι : Type*}
+lemma affineForm_gateBound_gate {ι : Type*}
     (position bound : ℕ) (hposition : position < bound) :
     ∀ index,
       (FreeAffineForm.gate position : FreeAffineForm ι).gateCoefficients
@@ -8202,7 +8202,7 @@ def mul {ι : Type*} (state : CircuitAdjoint ι)
         next.program.length hbase hleftForm)
       hrightForm index hindex
 
-@[simp] theorem mul_circuit {ι : Type*}
+@[simp] lemma mul_circuit {ι : Type*}
     (state : CircuitAdjoint ι) (position left right : ℕ)
     (hleft : left < state.sourceLength)
     (hright : right < state.sourceLength) :
@@ -8213,14 +8213,14 @@ def mul {ι : Type*} (state : CircuitAdjoint ι)
         (Nat.lt_of_lt_of_le hleft state.sourceLength_le)
         (Nat.lt_of_lt_of_le hright state.sourceLength_le) := rfl
 
-@[simp] theorem mul_inputAdjoints_apply {ι : Type*}
+@[simp] lemma mul_inputAdjoints_apply {ι : Type*}
     (state : CircuitAdjoint ι) (position left right : ℕ)
     (hleft : left < state.sourceLength)
     (hright : right < state.sourceLength) (input : ι) :
     (state.mul position left right hleft hright).inputAdjoints input =
       state.inputAdjoints input := rfl
 
-@[simp] theorem mul_gateAdjoints_apply {ι : Type*}
+@[simp] lemma mul_gateAdjoints_apply {ι : Type*}
     (state : CircuitAdjoint ι) (position left right : ℕ)
     (hleft : left < state.sourceLength)
     (hright : right < state.sourceLength) (gate : ℕ) :
@@ -8233,7 +8233,7 @@ def mul {ι : Type*} (state : CircuitAdjoint ι)
           FreeAffineForm.gate (state.circuit.program.length + 2)
         else 0) := rfl
 
-theorem mul_eval_form {ι : Type*}
+lemma mul_eval_form {ι : Type*}
     (state : CircuitAdjoint ι) (position left right : ℕ)
     (hleft : left < state.sourceLength)
     (hright : right < state.sourceLength)
@@ -8250,7 +8250,7 @@ theorem mul_eval_form {ι : Type*}
     (Nat.lt_of_lt_of_le hright state.sourceLength_le)
     form hform
 
-theorem mul_values_getD_of_lt {ι : Type*}
+lemma mul_values_getD_of_lt {ι : Type*}
     (state : CircuitAdjoint ι) (position left right : ℕ)
     (hleft : left < state.sourceLength)
     (hright : right < state.sourceLength)
@@ -8264,7 +8264,7 @@ theorem mul_values_getD_of_lt {ι : Type*}
     (Nat.lt_of_lt_of_le hleft state.sourceLength_le)
     (Nat.lt_of_lt_of_le hright state.sourceLength_le) gate hgate
 
-theorem mul_multiplicationCount {ι : Type*}
+lemma mul_multiplicationCount {ι : Type*}
     (state : CircuitAdjoint ι) (position left right : ℕ)
     (hleft : left < state.sourceLength)
     (hright : right < state.sourceLength) :
@@ -8282,7 +8282,7 @@ def instructionCost {ι : Type*} : FreeAffineInstruction ι → ℕ
   | .affine _ => 0
   | .mul _ _ => 2
 
-theorem instructionCost_sum {ι : Type*}
+lemma instructionCost_sum {ι : Type*}
     (program : List (FreeAffineInstruction ι)) :
     (program.map instructionCost).sum =
       2 * (program.filter FreeAffineInstruction.isMultiplication).length := by
@@ -8297,7 +8297,7 @@ theorem instructionCost_sum {ι : Type*}
       simp [instructionCost, FreeAffineInstruction.isMultiplication,
         ih, List.filter_cons, Nat.mul_add, Nat.add_comm]
 
-theorem zipIdx_instructionCost_sum {ι : Type*}
+lemma zipIdx_instructionCost_sum {ι : Type*}
     (program : List (FreeAffineInstruction ι)) (start : ℕ) :
     ((program.zipIdx start).map (fun instruction =>
       instructionCost instruction.1)).sum =
@@ -8310,7 +8310,7 @@ theorem zipIdx_instructionCost_sum {ι : Type*}
 
 namespace CircuitAdjoint
 
-theorem affine_inputAdjoints_eval {ι : Type*}
+lemma affine_inputAdjoints_eval {ι : Type*}
     (state : CircuitAdjoint ι) (position : ℕ)
     (form : FreeAffineForm ι) (input : ι) :
     ((state.affine position form).inputAdjoints input).eval
@@ -8324,7 +8324,7 @@ theorem affine_inputAdjoints_eval {ι : Type*}
         state.circuit.values = _
   simp [MvPolynomial.smul_eq_C_mul]
 
-theorem affine_gateAdjoints_eval {ι : Type*}
+lemma affine_gateAdjoints_eval {ι : Type*}
     (state : CircuitAdjoint ι) (position : ℕ)
     (form : FreeAffineForm ι) (gate : ℕ) :
     ((state.affine position form).gateAdjoints gate).eval
@@ -8342,7 +8342,7 @@ theorem affine_gateAdjoints_eval {ι : Type*}
   · simp
   · simp [MvPolynomial.smul_eq_C_mul]
 
-theorem mul_new_right {ι : Type*}
+lemma mul_new_right {ι : Type*}
     (state : CircuitAdjoint ι) (position left right : ℕ)
     (hleft : left < state.sourceLength)
     (hright : right < state.sourceLength) :
@@ -8357,7 +8357,7 @@ theorem mul_new_right {ι : Type*}
     (Nat.lt_of_lt_of_le hleft state.sourceLength_le)
     (Nat.lt_of_lt_of_le hright state.sourceLength_le)
 
-theorem mul_new_left {ι : Type*}
+lemma mul_new_left {ι : Type*}
     (state : CircuitAdjoint ι) (position left right : ℕ)
     (hleft : left < state.sourceLength)
     (hright : right < state.sourceLength) :
@@ -8372,7 +8372,7 @@ theorem mul_new_left {ι : Type*}
     (Nat.lt_of_lt_of_le hleft state.sourceLength_le)
     (Nat.lt_of_lt_of_le hright state.sourceLength_le)
 
-theorem mul_inputAdjoints_eval {ι : Type*}
+lemma mul_inputAdjoints_eval {ι : Type*}
     (state : CircuitAdjoint ι) (position left right : ℕ)
     (hleft : left < state.sourceLength)
     (hright : right < state.sourceLength) (input : ι) :
@@ -8383,7 +8383,7 @@ theorem mul_inputAdjoints_eval {ι : Type*}
   exact mul_eval_form state position left right hleft hright
     (state.inputAdjoints input) (state.validInputAdjoints input)
 
-theorem mul_gateAdjoints_eval {ι : Type*}
+lemma mul_gateAdjoints_eval {ι : Type*}
     (state : CircuitAdjoint ι) (position left right : ℕ)
     (hleft : left < state.sourceLength)
     (hright : right < state.sourceLength) (gate : ℕ) :
@@ -8448,7 +8448,7 @@ def step {ι : Type*} (state : CircuitAdjoint ι)
     else
       state
 
-@[simp] theorem step_sourceLength {ι : Type*}
+@[simp] lemma step_sourceLength {ι : Type*}
     (state : CircuitAdjoint ι)
     (instruction : FreeAffineInstruction ι × ℕ) :
     (step state instruction).sourceLength = state.sourceLength := by
@@ -8461,7 +8461,7 @@ def step {ι : Type*} (state : CircuitAdjoint ι)
     · simp [step, h, mul]
     · simp [step, h]
 
-theorem step_multiplicationCount {ι : Type*}
+lemma step_multiplicationCount {ι : Type*}
     (state : CircuitAdjoint ι)
     (instruction : FreeAffineInstruction ι × ℕ)
     (hposition : instruction.2 < state.sourceLength)
@@ -8484,7 +8484,7 @@ theorem step_multiplicationCount {ι : Type*}
       mul_multiplicationCount state position left right
         hbounds.1 hbounds.2
 
-theorem foldl_multiplicationCount {ι : Type*}
+lemma foldl_multiplicationCount {ι : Type*}
     (instructions : List (FreeAffineInstruction ι × ℕ))
     (state : CircuitAdjoint ι)
     (hposition : ∀ instruction ∈ instructions,
@@ -8521,7 +8521,7 @@ def run {ι : Type*} (circuit : FreeAffineCircuit ι)
     (output : FreeAffineForm ι) : CircuitAdjoint ι :=
   circuit.program.zipIdx.reverse.foldl step (initial circuit output)
 
-theorem run_multiplicationCount {ι : Type*}
+lemma run_multiplicationCount {ι : Type*}
     (circuit : FreeAffineCircuit ι) (output : FreeAffineForm ι) :
     (run circuit output).circuit.multiplicationCount =
       3 * circuit.multiplicationCount := by
@@ -8552,7 +8552,7 @@ theorem run_multiplicationCount {ι : Type*}
         3 * circuit.multiplicationCount
   omega
 
-theorem step_realizes {ι : Type*}
+lemma step_realizes {ι : Type*}
     (state : CircuitAdjoint ι) (adjoints : ReverseAdjoint ι)
     (sourceValues : Array (MvPolynomial ι ℂ))
     (instruction : FreeAffineInstruction ι × ℕ)
@@ -8670,7 +8670,7 @@ theorem step_realizes {ι : Type*}
         Finsupp.single_apply, hgate gate, hgate position,
         hleftValue, hrightValue, eq_comm]
 
-theorem foldl_realizes {ι : Type*}
+lemma foldl_realizes {ι : Type*}
     (instructions : List (FreeAffineInstruction ι × ℕ))
     (state : CircuitAdjoint ι) (adjoints : ReverseAdjoint ι)
     (sourceValues : Array (MvPolynomial ι ℂ))
@@ -8733,7 +8733,7 @@ theorem foldl_realizes {ι : Type*}
       hrestPosition hrestValid hnextForward' hnextInput hnextGate
     simpa [List.foldl_cons, step_sourceLength] using hresult
 
-theorem run_realizes {ι : Type*}
+lemma run_realizes {ι : Type*}
     (circuit : FreeAffineCircuit ι) (output : FreeAffineForm ι) :
     (∀ gate, gate < circuit.program.length →
       (run circuit output).circuit.values.getD gate 0 =
@@ -8787,7 +8787,7 @@ theorem run_realizes {ι : Type*}
       (initial circuit output) (ReverseAdjoint.initial output)
       circuit.values hposition hvalid hforward hinput hgate
 
-theorem run_inputAdjoints {ι : Type*}
+lemma run_inputAdjoints {ι : Type*}
     (circuit : FreeAffineCircuit ι)
     (output : FreeAffineForm ι) (houtput : output ∈ circuit.outputs)
     (input : ι) :
@@ -8816,7 +8816,7 @@ open Filter Asymptotics
 
 attribute [local instance] MvPolynomial.gradedAlgebra
 
-theorem finiteDimensional_quotient_radical_of_zeroLocus_finite
+lemma finiteDimensional_quotient_radical_of_zeroLocus_finite
     {ι : Type*} [Finite ι]
     (I : Ideal (MvPolynomial ι ℂ))
     (hfinite : (MvPolynomial.zeroLocus ℂ I).Finite) :
@@ -8846,7 +8846,7 @@ theorem finiteDimensional_quotient_radical_of_zeroLocus_finite
     rw [map_sub, hvalue, sub_self]
   exact Module.Finite.of_injective E hinj
 
-theorem finiteDimensional_quotient_of_zeroLocus_finite
+lemma finiteDimensional_quotient_of_zeroLocus_finite
     {ι : Type*} [Finite ι]
     (I : Ideal (MvPolynomial ι ℂ))
     (hfinite : (MvPolynomial.zeroLocus ℂ I).Finite) :
@@ -8889,7 +8889,7 @@ noncomputable def affineTotalDegreeFilteredProjection
         apply Submodule.mem_map.mpr
         exact ⟨p, p.property, rfl⟩)
 
-theorem affine_total_degree_filtered_projection_surjective
+lemma affine_total_degree_filtered_projection_surjective
     {ι : Type*} (I : Ideal (MvPolynomial ι ℂ)) (n : ℕ) :
     Function.Surjective (affineTotalDegreeFilteredProjection I n) := by
   intro x
@@ -8906,7 +8906,7 @@ noncomputable instance affine_total_degree_filtered_piece_finite
     (affineTotalDegreeFilteredProjection I n)
     (affine_total_degree_filtered_projection_surjective I n)
 
-theorem affine_total_degree_filtered_piece_mem_iff
+lemma affine_total_degree_filtered_piece_mem_iff
     {ι : Type*} (I : Ideal (MvPolynomial ι ℂ)) (n : ℕ)
     (x : MvPolynomial ι ℂ ⧸ I) :
     x ∈ affineTotalDegreeFilteredPiece I n ↔
@@ -8915,7 +8915,7 @@ theorem affine_total_degree_filtered_piece_mem_iff
   simp [affineTotalDegreeFilteredPiece,
     MvPolynomial.mem_restrictTotalDegree]
 
-theorem affine_total_degree_filtered_piece_mono
+lemma affine_total_degree_filtered_piece_mono
     {ι : Type*} (I : Ideal (MvPolynomial ι ℂ))
     {m n : ℕ} (h : m ≤ n) :
     affineTotalDegreeFilteredPiece I m ≤
@@ -8925,7 +8925,7 @@ theorem affine_total_degree_filtered_piece_mono
   apply (MvPolynomial.mem_restrictTotalDegree _ _ p).mpr
   exact ((MvPolynomial.mem_restrictTotalDegree _ _ p).mp hp).trans h
 
-theorem affine_restrictTotalDegree_finrank
+lemma affine_restrictTotalDegree_finrank
     {ι : Type*} [Fintype ι] (N : ℕ) :
     Module.finrank ℂ (MvPolynomial.restrictTotalDegree ι ℂ N) =
       (N + Fintype.card ι).choose (Fintype.card ι) := by
@@ -8988,7 +8988,7 @@ theorem affine_restrictTotalDegree_finrank
     _ = (N + Fintype.card ι).choose (Fintype.card ι) :=
       Nat.sum_range_multichoose N (Fintype.card ι)
 
-theorem affine_total_degree_filtered_bot_finrank
+lemma affine_total_degree_filtered_bot_finrank
     {ι : Type*} [Fintype ι] (N : ℕ) :
     Module.finrank ℂ
         (affineTotalDegreeFilteredPiece
@@ -9020,7 +9020,7 @@ theorem affine_total_degree_filtered_bot_finrank
     _ = (N + Fintype.card ι).choose (Fintype.card ι) :=
       affine_restrictTotalDegree_finrank N
 
-theorem affine_total_degree_filtered_piece_exists_eq_top
+lemma affine_total_degree_filtered_piece_exists_eq_top
     {ι : Type*} (I : Ideal (MvPolynomial ι ℂ))
     [Module.Finite ℂ (MvPolynomial ι ℂ ⧸ I)] :
     ∃ n : ℕ, affineTotalDegreeFilteredPiece I n = ⊤ := by
@@ -9047,7 +9047,7 @@ theorem affine_total_degree_filtered_piece_exists_eq_top
       (Fin (Module.finrank ℂ (MvPolynomial ι ℂ ⧸ I)))))
     (f := fun j => (p j).totalDegree) (Finset.mem_univ i)
 
-theorem affine_total_degree_filtered_piece_eventually_eq_top
+lemma affine_total_degree_filtered_piece_eventually_eq_top
     {ι : Type*} (I : Ideal (MvPolynomial ι ℂ))
     [Module.Finite ℂ (MvPolynomial ι ℂ ⧸ I)] :
     ∃ n : ℕ, ∀ m : ℕ, n ≤ m →
@@ -9058,7 +9058,7 @@ theorem affine_total_degree_filtered_piece_eventually_eq_top
   rw [← hn]
   exact affine_total_degree_filtered_piece_mono I hm
 
-theorem affine_total_degree_filtered_piece_eventual_finrank
+lemma affine_total_degree_filtered_piece_eventual_finrank
     {ι : Type*} (I : Ideal (MvPolynomial ι ℂ))
     [Module.Finite ℂ (MvPolynomial ι ℂ ⧸ I)] :
     ∃ n : ℕ, ∀ m : ℕ, n ≤ m →
@@ -9087,7 +9087,7 @@ noncomputable def affineTotalDegreeFilteredFactor
         rw [← hpimage]
         rfl)
 
-theorem affine_total_degree_filtered_factor_surjective
+lemma affine_total_degree_filtered_factor_surjective
     {ι : Type*} {I J : Ideal (MvPolynomial ι ℂ)}
     (hIJ : I ≤ J) (n : ℕ) :
     Function.Surjective (affineTotalDegreeFilteredFactor hIJ n) := by
@@ -9105,7 +9105,7 @@ theorem affine_total_degree_filtered_factor_surjective
   change Ideal.Quotient.mk J p = _
   exact hpimage
 
-theorem affine_total_degree_filtered_factor_finrank_le
+lemma affine_total_degree_filtered_factor_finrank_le
     {ι : Type*} [Finite ι] {I J : Ideal (MvPolynomial ι ℂ)}
     (hIJ : I ≤ J) (n : ℕ) :
     Module.finrank ℂ (affineTotalDegreeFilteredPiece J n) ≤
@@ -9134,7 +9134,7 @@ noncomputable def affineTotalDegreeFilteredMul
         Ideal.Quotient.mk I g * (x : MvPolynomial ι ℂ ⧸ I)
       rw [map_mul, hpimage])
 
-theorem affine_total_degree_filtered_mul_injective
+lemma affine_total_degree_filtered_mul_injective
     {ι : Type*} (I : Ideal (MvPolynomial ι ℂ))
     (g : MvPolynomial ι ℂ)
     (hregular : IsSMulRegular (MvPolynomial ι ℂ ⧸ I) g)
@@ -9158,7 +9158,7 @@ theorem affine_total_degree_filtered_mul_injective
   rw [← hp]
   exact Ideal.Quotient.eq_zero_iff_mem.mpr hpI
 
-theorem affine_total_degree_filtered_mul_range_le_factor_ker
+lemma affine_total_degree_filtered_mul_range_le_factor_ker
     {ι : Type*} (I : Ideal (MvPolynomial ι ℂ))
     (g : MvPolynomial ι ℂ) (n : ℕ) :
     (affineTotalDegreeFilteredMul I g n).range ≤
@@ -9190,7 +9190,7 @@ theorem affine_total_degree_filtered_mul_range_le_factor_ker
       _ = 0
   rw [hg, zero_mul]
 
-theorem affine_total_degree_filtered_regular_finrank_inequality
+lemma affine_total_degree_filtered_regular_finrank_inequality
     {ι : Type*} [Finite ι]
     (I : Ideal (MvPolynomial ι ℂ)) (g : MvPolynomial ι ℂ)
     (hregular : IsSMulRegular (MvPolynomial ι ℂ ⧸ I) g)
@@ -9234,7 +9234,7 @@ theorem affine_total_degree_filtered_regular_finrank_inequality
 def affineCumulative (H : ℕ → ℕ) (m : ℕ) : ℕ :=
   ∑ i ∈ Finset.range (m + 1), H i
 
-theorem affine_sum_range_degree_shift
+lemma affine_sum_range_degree_shift
     (H : ℕ → ℕ) (d N : ℕ) :
     (∑ m ∈ Finset.range N, if d ≤ m then H (m - d) else 0) =
       ∑ m ∈ Finset.range (N - d), H m := by
@@ -9249,7 +9249,7 @@ theorem affine_sum_range_degree_shift
         have hs : N + 1 - d = 0 := by omega
         simp [h, hN, hs]
 
-theorem affine_cumulative_le_degree_mul_of_filtered_step
+lemma affine_cumulative_le_degree_mul_of_filtered_step
     (Hprev Hnext : ℕ → ℕ) (d : ℕ)
     (hmono : Monotone Hprev)
     (hstep : ∀ m : ℕ,
@@ -9298,13 +9298,13 @@ theorem affine_cumulative_le_degree_mul_of_filtered_step
   exact hcancel.trans
     (htail.trans (Nat.mul_le_mul_right _ hrd))
 
-theorem affine_cumulative_mono
+lemma affine_cumulative_mono
     {H K : ℕ → ℕ} (h : ∀ m, H m ≤ K m) (M : ℕ) :
     affineCumulative H M ≤ affineCumulative K M := by
   unfold affineCumulative
   exact Finset.sum_le_sum (fun i _ => h i)
 
-theorem affine_cumulative_iterate_mono
+lemma affine_cumulative_iterate_mono
     {H K : ℕ → ℕ} (h : ∀ m, H m ≤ K m)
     (j M : ℕ) :
     (affineCumulative^[j]) H M ≤ (affineCumulative^[j]) K M := by
@@ -9315,7 +9315,7 @@ theorem affine_cumulative_iterate_mono
       rw [Function.iterate_succ_apply']
       exact affine_cumulative_mono (fun m => ih m) M
 
-theorem affine_cumulative_iterate_const_mul
+lemma affine_cumulative_iterate_const_mul
     (d : ℕ) (H : ℕ → ℕ) (j M : ℕ) :
     (affineCumulative^[j]) (fun m => d * H m) M =
       d * (affineCumulative^[j]) H M := by
@@ -9332,7 +9332,7 @@ theorem affine_cumulative_iterate_const_mul
       simp_rw [ih]
       rw [← Finset.mul_sum]
 
-theorem affine_cumulative_iterate_le_degree_product
+lemma affine_cumulative_iterate_le_degree_product
     (H : ℕ → ℕ → ℕ) (d : ℕ → ℕ) (n : ℕ)
     (hmono : ∀ i, i < n → Monotone (H i))
     (hstep : ∀ i, i < n → ∀ m,
@@ -9374,7 +9374,7 @@ theorem affine_cumulative_iterate_le_degree_product
               ac_rfl
   exact aux n le_rfl M
 
-theorem affine_cumulative_iterate_eventual_constant_lower
+lemma affine_cumulative_iterate_eventual_constant_lower
     (H : ℕ → ℕ) (L M₀ : ℕ)
     (heventual : ∀ m, M₀ ≤ m → H m = L)
     (n m : ℕ) :
@@ -9412,7 +9412,7 @@ theorem affine_cumulative_iterate_eventual_constant_lower
             rw [hsplit]
             omega
 
-theorem affine_tendsto_shifted_choose_ratio
+lemma affine_tendsto_shifted_choose_ratio
     (n M₀ : ℕ) :
     Tendsto
       (fun m : ℕ =>
@@ -9469,7 +9469,7 @@ theorem affine_tendsto_shifted_choose_ratio
       field_simp
   exact hequiv.symm.tendsto_nhds hpow
 
-theorem affine_le_of_shifted_choose_bounds
+lemma affine_le_of_shifted_choose_bounds
     (L P n M₀ : ℕ)
     (hbound : ∀ m : ℕ,
       L * (m + n).choose n ≤
@@ -9506,14 +9506,14 @@ noncomputable def affineTotalDegreeHilbert
     {ι : Type*} (I : Ideal (MvPolynomial ι ℂ)) (n : ℕ) : ℕ :=
   Module.finrank ℂ (affineTotalDegreeFilteredPiece I n)
 
-theorem affine_total_degree_hilbert_mono
+lemma affine_total_degree_hilbert_mono
     {ι : Type*} [Finite ι] (I : Ideal (MvPolynomial ι ℂ)) :
     Monotone (affineTotalDegreeHilbert I) := by
   intro m n hmn
   exact Submodule.finrank_mono
     (affine_total_degree_filtered_piece_mono I hmn)
 
-theorem affine_total_degree_hilbert_regular_step
+lemma affine_total_degree_hilbert_regular_step
     {ι : Type*} [Finite ι]
     (I : Ideal (MvPolynomial ι ℂ)) (g : MvPolynomial ι ℂ)
     (hregular : IsSMulRegular (MvPolynomial ι ℂ ⧸ I) g)
@@ -9546,7 +9546,7 @@ theorem affine_total_degree_hilbert_regular_step
       (show I ≤ I ⊔ Ideal.span ({g} : Set (MvPolynomial ι ℂ)) from
         le_sup_left) m
 
-theorem affine_total_degree_cumulative_iterate_regular
+lemma affine_total_degree_cumulative_iterate_regular
     {ι : Type*} [Fintype ι]
     (I : ℕ → Ideal (MvPolynomial ι ℂ))
     (g : ℕ → MvPolynomial ι ℂ)
@@ -9577,7 +9577,7 @@ theorem affine_total_degree_cumulative_iterate_regular
     exact affine_total_degree_filtered_bot_finrank M
   rwa [hbase] at hbound
 
-theorem affine_finrank_le_degree_product_of_regular_prefix
+lemma affine_finrank_le_degree_product_of_regular_prefix
     {ι : Type*} [Fintype ι]
     (I : ℕ → Ideal (MvPolynomial ι ℂ))
     (g : ℕ → MvPolynomial ι ℂ)
@@ -9613,7 +9613,7 @@ theorem affine_finrank_le_degree_product_of_regular_prefix
     _ = P * (m + N + n).choose n := by
       simp [Nat.add_comm]
 
-theorem affine_finrank_le_degree_product_of_weaklyRegular
+lemma affine_finrank_le_degree_product_of_weaklyRegular
     {ι : Type*} [Fintype ι]
     (f : Fin (Fintype.card ι) → MvPolynomial ι ℂ)
     (hweak : RingTheory.Sequence.IsWeaklyRegular
@@ -9687,7 +9687,7 @@ theorem affine_finrank_le_degree_product_of_weaklyRegular
   rw [hIn, hproduct] at hbound
   exact hbound
 
-theorem affine_isSMulRegular_sup_span_swap
+lemma affine_isSMulRegular_sup_span_swap
     {R : Type*} [CommRing R]
     (I : Ideal R) (f ell : R)
     (hf : IsSMulRegular (R ⧸ I) f)
@@ -9756,7 +9756,7 @@ noncomputable def affineGateGraphEvaluation {k q : ℕ}
       MvPolynomial (Fin k) ℂ :=
   MvPolynomial.aeval (Sum.elim MvPolynomial.X gate)
 
-theorem affineGateGraphEvaluation_kills {k q : ℕ}
+lemma affineGateGraphEvaluation_kills {k q : ℕ}
     (gate : Fin q → MvPolynomial (Fin k) ℂ)
     (f : MvPolynomial (Fin k ⊕ Fin q) ℂ)
     (hf : f ∈ affineGateGraphIdeal gate) :
@@ -9790,7 +9790,7 @@ noncomputable def affineGateGraphFromInput {k q : ℕ}
   (Ideal.Quotient.mkₐ ℂ (affineGateGraphIdeal gate)).comp
     (MvPolynomial.rename Sum.inl)
 
-theorem affineGateGraph_mk_gate_eq {k q : ℕ}
+lemma affineGateGraph_mk_gate_eq {k q : ℕ}
     (gate : Fin q → MvPolynomial (Fin k) ℂ) (j : Fin q) :
     Ideal.Quotient.mk (affineGateGraphIdeal gate)
         (MvPolynomial.X (Sum.inr j)) =
@@ -9799,7 +9799,7 @@ theorem affineGateGraph_mk_gate_eq {k q : ℕ}
   rw [← sub_eq_zero, ← map_sub, Ideal.Quotient.eq_zero_iff_mem]
   exact Ideal.subset_span ⟨j, rfl⟩
 
-theorem affineGateGraphToInput_comp_fromInput {k q : ℕ}
+lemma affineGateGraphToInput_comp_fromInput {k q : ℕ}
     (gate : Fin q → MvPolynomial (Fin k) ℂ) :
     (affineGateGraphToInput gate).comp (affineGateGraphFromInput gate) =
       AlgHom.id ℂ (MvPolynomial (Fin k) ℂ) := by
@@ -9810,7 +9810,7 @@ theorem affineGateGraphToInput_comp_fromInput {k q : ℕ}
     MvPolynomial.X i
   simp
 
-theorem affineGateGraphFromInput_comp_toInput {k q : ℕ}
+lemma affineGateGraphFromInput_comp_toInput {k q : ℕ}
     (gate : Fin q → MvPolynomial (Fin k) ℂ) :
     (affineGateGraphFromInput gate).comp (affineGateGraphToInput gate) =
       AlgHom.id ℂ
@@ -9849,7 +9849,7 @@ noncomputable def affineGateGraphOutputIdeal {k q : ℕ}
   (affineGateRawOutputIdeal output target).map
     (Ideal.Quotient.mkₐ ℂ (affineGateGraphIdeal gate))
 
-theorem affineGateRawOutputIdeal_map_evaluation {k q : ℕ}
+lemma affineGateRawOutputIdeal_map_evaluation {k q : ℕ}
     (gate : Fin q → MvPolynomial (Fin k) ℂ)
     (output : Fin k → MvPolynomial (Fin k ⊕ Fin q) ℂ)
     (F : Fin k → MvPolynomial (Fin k) ℂ)
@@ -9870,7 +9870,7 @@ theorem affineGateRawOutputIdeal_map_evaluation {k q : ℕ}
     refine ⟨_, ⟨i, rfl⟩, ?_⟩
     simp [houtput i]
 
-theorem affineGateGraphOutputIdeal_map {k q : ℕ}
+lemma affineGateGraphOutputIdeal_map {k q : ℕ}
     (gate : Fin q → MvPolynomial (Fin k) ℂ)
     (output : Fin k → MvPolynomial (Fin k ⊕ Fin q) ℂ)
     (F : Fin k → MvPolynomial (Fin k) ℂ)
@@ -9935,7 +9935,7 @@ noncomputable def affineGateGraphTotalClosedFiberAlgEquiv {k q : ℕ}
     (affineGateRawOutputIdeal output target)).symm.trans
       (affineGateGraphClosedFiberAlgEquiv gate output F target houtput)
 
-theorem homogeneousMap_allTarget_reesCoordinate_isWeaklyRegular
+lemma homogeneousMap_allTarget_reesCoordinate_isWeaklyRegular
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) (he : 0 < e)
     (hF : ∀ i, (F i).IsHomogeneous e)
@@ -9953,7 +9953,7 @@ theorem homogeneousMap_allTarget_reesCoordinate_isWeaklyRegular
   · exact homogeneousMap_allTarget_reesCoordinate_quotient_isWeaklyRegular
       F target e he hF hzero
 
-theorem homogeneousMap_allTarget_rees_prefix_parameter_isSMulRegular
+lemma homogeneousMap_allTarget_rees_prefix_parameter_isSMulRegular
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) (he : 0 < e)
     (hF : ∀ i, (F i).IsHomogeneous e)
@@ -10017,7 +10017,7 @@ theorem homogeneousMap_allTarget_rees_prefix_parameter_isSMulRegular
   exact homogeneousMap_allRank_fin_hyperplane_isSMulRegular_of_quotient_weaklyRegular
     gp z (MvPolynomial.X_ne_zero (R := ℂ) (0 : Fin (k + 1))) hprefix
 
-theorem homogeneousMap_allTarget_rees_prefix_parameter_sub_isSMulRegular
+lemma homogeneousMap_allTarget_rees_prefix_parameter_sub_isSMulRegular
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) (he : 0 < e)
     (hF : ∀ i, (F i).IsHomogeneous e)
@@ -10052,7 +10052,7 @@ theorem homogeneousMap_allTarget_rees_prefix_parameter_sub_isSMulRegular
   · exact homogeneousMap_allTarget_rees_prefix_parameter_isSMulRegular
       F target e he hF hzero j hj
 
-theorem homogeneousMap_allTarget_rees_chartCoordinate_isWeaklyRegular
+lemma homogeneousMap_allTarget_rees_chartCoordinate_isWeaklyRegular
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) (he : 0 < e)
     (hF : ∀ i, (F i).IsHomogeneous e)
@@ -10153,7 +10153,7 @@ theorem homogeneousMap_allTarget_rees_chartCoordinate_isWeaklyRegular
     ((Submodule.quotEquivOfEq _ _ hsub).isSMulRegular_congr
       (q (G idx))).mpr hdouble
 
-theorem homogeneousMap_allTarget_translated_isWeaklyRegular
+lemma homogeneousMap_allTarget_translated_isWeaklyRegular
     {k : ℕ} (F : Fin k → MvPolynomial (Fin k) ℂ)
     (target : Fin k → ℂ) (e : ℕ) (he : 0 < e)
     (hF : ∀ i, (F i).IsHomogeneous e)
@@ -10199,7 +10199,7 @@ noncomputable def affineGatePrefixEvaluation {k q : ℕ}
       MvPolynomial.rename Sum.inl (gate j) else
       MvPolynomial.X (Sum.inr j)))
 
-theorem affine_gate_prefix_graph_ideal_eq_ker {k q : ℕ}
+lemma affine_gate_prefix_graph_ideal_eq_ker {k q : ℕ}
     (gate : Fin q → MvPolynomial (Fin k) ℂ) (n : ℕ) :
     affineGatePrefixGraphIdeal gate n =
       RingHom.ker (affineGatePrefixEvaluation gate n).toRingHom := by
@@ -10270,14 +10270,14 @@ theorem affine_gate_prefix_graph_ideal_eq_ker {k q : ℕ}
     change affineGatePrefixEvaluation gate n p = 0 at hp
     rw [hp, map_zero]
 
-theorem affine_gate_prefix_graph_ideal_isPrime {k q : ℕ}
+lemma affine_gate_prefix_graph_ideal_isPrime {k q : ℕ}
     (gate : Fin q → MvPolynomial (Fin k) ℂ) (n : ℕ) :
     (affineGatePrefixGraphIdeal gate n).IsPrime := by
   rw [affine_gate_prefix_graph_ideal_eq_ker gate n]
   exact RingHom.ker_isPrime
     (affineGatePrefixEvaluation gate n).toRingHom
 
-theorem affine_gate_graph_equation_ne_zero {k q : ℕ}
+lemma affine_gate_graph_equation_ne_zero {k q : ℕ}
     (gate : Fin q → MvPolynomial (Fin k) ℂ) (j : Fin q) :
     MvPolynomial.X (Sum.inr j) -
       MvPolynomial.rename Sum.inl (gate j) ≠ 0 := by
@@ -10293,7 +10293,7 @@ theorem affine_gate_graph_equation_ne_zero {k q : ℕ}
     Sum.inl (gate j) hvar
   cases hi
 
-theorem affine_gate_prefix_evaluation_eq_graph_of_previous
+lemma affine_gate_prefix_evaluation_eq_graph_of_previous
     {k q : ℕ} (gate : Fin q → MvPolynomial (Fin k) ℂ)
     (n : ℕ) (p : MvPolynomial (Fin k ⊕ Fin q) ℂ)
     (hprevious : ∀ i : Fin q, Sum.inr i ∈ p.vars → i.val < n) :
@@ -10322,7 +10322,7 @@ theorem affine_gate_prefix_evaluation_eq_graph_of_previous
     simp [φ, ψ, affineGatePrefixEvaluation,
       affineGateGraphEvaluation, hi]
 
-theorem affine_gate_prefix_evaluation_instruction_eq_graph
+lemma affine_gate_prefix_evaluation_instruction_eq_graph
     {k q : ℕ}
     (gate : Fin q → MvPolynomial (Fin k) ℂ)
     (rhs : Fin q → MvPolynomial (Fin k ⊕ Fin q) ℂ)
@@ -10343,7 +10343,7 @@ theorem affine_gate_prefix_evaluation_instruction_eq_graph
     simp [affineGatePrefixEvaluation]
   rw [hX, ← hgate]
 
-theorem affine_instruction_not_mem_prefix_graph
+lemma affine_instruction_not_mem_prefix_graph
     {k q : ℕ}
     (gate : Fin q → MvPolynomial (Fin k) ℂ)
     (rhs : Fin q → MvPolynomial (Fin k ⊕ Fin q) ℂ)
@@ -10361,7 +10361,7 @@ theorem affine_instruction_not_mem_prefix_graph
     gate rhs j hprevious hgate] at hmem
   exact affine_gate_graph_equation_ne_zero gate j hmem
 
-theorem affine_instruction_isSMulRegular_mod_prefix_graph
+lemma affine_instruction_isSMulRegular_mod_prefix_graph
     {k q : ℕ}
     (gate : Fin q → MvPolynomial (Fin k) ℂ)
     (rhs : Fin q → MvPolynomial (Fin k ⊕ Fin q) ℂ)
@@ -10391,7 +10391,7 @@ noncomputable def affineTriangularInstructionPrefixIdeal {k q : ℕ}
   Ideal.span (Set.range fun j : {j : Fin q // j.val < n} =>
     MvPolynomial.X (Sum.inr (j : Fin q)) - rhs j)
 
-theorem affine_triangular_instruction_prefix_ideal_eq_graph
+lemma affine_triangular_instruction_prefix_ideal_eq_graph
     {k q : ℕ}
     (rhs : Fin q → MvPolynomial (Fin k ⊕ Fin q) ℂ)
     (gate : Fin q → MvPolynomial (Fin k) ℂ)
@@ -10478,7 +10478,7 @@ theorem affine_triangular_instruction_prefix_ideal_eq_graph
     rintro _ ⟨⟨j, hj⟩, rfl⟩
     exact hgraph j.val j rfl hj
 
-theorem affine_triangular_instruction_prefix_ideal_ofList
+lemma affine_triangular_instruction_prefix_ideal_ofList
     {k q : ℕ}
     (rhs : Fin q → MvPolynomial (Fin k ⊕ Fin q) ℂ) (n : ℕ) :
     Ideal.ofList
@@ -10509,7 +10509,7 @@ theorem affine_triangular_instruction_prefix_ideal_ofList
     · simpa only [List.length_ofFn] using (lt_min hi i.isLt)
     · simp
 
-theorem affine_triangular_instructions_isWeaklyRegular
+lemma affine_triangular_instructions_isWeaklyRegular
     {k q : ℕ}
     (rhs : Fin q → MvPolynomial (Fin k ⊕ Fin q) ℂ)
     (gate : Fin q → MvPolynomial (Fin k) ℂ)
@@ -10552,7 +10552,7 @@ noncomputable def affineTriangularInstructionIdeal {k q : ℕ}
   Ideal.span (Set.range fun j : Fin q =>
     MvPolynomial.X (Sum.inr j) - rhs j)
 
-theorem affine_triangular_instruction_ideal_eq_graph
+lemma affine_triangular_instruction_ideal_eq_graph
     {k q : ℕ}
     (rhs : Fin q → MvPolynomial (Fin k ⊕ Fin q) ℂ)
     (gate : Fin q → MvPolynomial (Fin k) ℂ)
@@ -10598,7 +10598,7 @@ noncomputable def affineTriangularInstructionInputAlgEquiv
       rhs gate hgate htop)).trans
         (affineGateGraphInputAlgEquiv gate)
 
-theorem affineTriangularInstructionInputAlgEquiv_mk
+lemma affineTriangularInstructionInputAlgEquiv_mk
     {k q : ℕ}
     (rhs : Fin q → MvPolynomial (Fin k ⊕ Fin q) ℂ)
     (gate : Fin q → MvPolynomial (Fin k) ℂ)
@@ -10613,7 +10613,7 @@ theorem affineTriangularInstructionInputAlgEquiv_mk
     Ideal.quotientEquivAlgOfEq_mk]
   rfl
 
-theorem affine_triangular_instruction_output_isWeaklyRegular
+lemma affine_triangular_instruction_output_isWeaklyRegular
     {k q : ℕ}
     (rhs : Fin q → MvPolynomial (Fin k ⊕ Fin q) ℂ)
     (gate : Fin q → MvPolynomial (Fin k) ℂ)
@@ -10659,7 +10659,7 @@ theorem affine_triangular_instruction_output_isWeaklyRegular
   rw [hfun]
   exact hregular
 
-theorem affine_triangular_instruction_output_equations_isWeaklyRegular
+lemma affine_triangular_instruction_output_equations_isWeaklyRegular
     {k q : ℕ}
     (rhs : Fin q → MvPolynomial (Fin k ⊕ Fin q) ℂ)
     (gate : Fin q → MvPolynomial (Fin k) ℂ)
@@ -10755,7 +10755,7 @@ noncomputable def affineTriangularInstructionOutputClosedFiberAlgEquiv
     (affineGateGraphTotalClosedFiberAlgEquiv
       gate output F target houtput)
 
-theorem affineTriangularInstructionOutputClosedFiber_finrank
+lemma affineTriangularInstructionOutputClosedFiber_finrank
     {k q : ℕ}
     (rhs : Fin q → MvPolynomial (Fin k ⊕ Fin q) ℂ)
     (gate : Fin q → MvPolynomial (Fin k) ℂ)
@@ -10779,7 +10779,7 @@ theorem affineTriangularInstructionOutputClosedFiber_finrank
   exact E.toLinearEquiv.finrank_eq.trans
     (homogeneousMap_closedFiber_finrank k F e he hF hzero target)
 
-theorem affine_zeroLocus_finite_of_moduleFinite_quotient
+lemma affine_zeroLocus_finite_of_moduleFinite_quotient
     {ι : Type*}
     (I : Ideal (MvPolynomial ι ℂ))
     (hfinite : Module.Finite ℂ (MvPolynomial ι ℂ ⧸ I)) :
@@ -10852,14 +10852,14 @@ noncomputable def freeAffineCircuitGate
     (j : Fin circuit.program.length) : MvPolynomial (Fin k) ℂ :=
   circuit.values.getD j.val 0
 
-theorem freeAffineGateReference_totalDegree_le_one
+lemma freeAffineGateReference_totalDegree_le_one
     {k n : ℕ} (r : ℕ) :
     (freeAffineGateReference (k := k) (n := n) r).totalDegree ≤ 1 := by
   classical
   unfold freeAffineGateReference
   split <;> simp
 
-theorem freeAffineExtendedForm_totalDegree_le_one
+lemma freeAffineExtendedForm_totalDegree_le_one
     {k n : ℕ} (form : FreeAffineForm (Fin k)) :
     (freeAffineExtendedForm (n := n) form).totalDegree ≤ 1 := by
   classical
@@ -10882,7 +10882,7 @@ theorem freeAffineExtendedForm_totalDegree_le_one
       (by simpa using
         freeAffineGateReference_totalDegree_le_one (k := k) (n := n) i)
 
-theorem freeAffineGateReference_mem_vars
+lemma freeAffineGateReference_mem_vars
     {k n : ℕ} (r : ℕ) (i : Fin n)
     (hi : Sum.inr i ∈
       (freeAffineGateReference (k := k) (n := n) r).vars) :
@@ -10896,7 +10896,7 @@ theorem freeAffineGateReference_mem_vars
   next h =>
     simp at hi
 
-theorem freeAffineGateCombination_mem_vars
+lemma freeAffineGateCombination_mem_vars
     {k n : ℕ} (coefficients : ℕ →₀ ℂ) (i : Fin n)
     (hi : Sum.inr i ∈
       (Finsupp.linearCombination ℂ
@@ -10920,7 +10920,7 @@ theorem freeAffineGateCombination_mem_vars
     simpa using hproduct
   exact ⟨r, hr, freeAffineGateReference_mem_vars r i href⟩
 
-theorem freeAffineInputCombination_not_mem_gate_vars
+lemma freeAffineInputCombination_not_mem_gate_vars
     {k n : ℕ} (coefficients : Fin k →₀ ℂ) (i : Fin n) :
     Sum.inr i ∉
       (Finsupp.linearCombination ℂ
@@ -10940,7 +10940,7 @@ theorem freeAffineInputCombination_not_mem_gate_vars
     (MvPolynomial.X (Sum.inl r)) hvar
   simp at hproduct
 
-theorem freeAffineExtendedForm_mem_gate_vars
+lemma freeAffineExtendedForm_mem_gate_vars
     {k n : ℕ} (form : FreeAffineForm (Fin k))
     (position : ℕ)
     (hposition : ∀ r ∈ form.gateCoefficients.support, r < position)
@@ -10980,7 +10980,7 @@ theorem freeAffineExtendedForm_mem_gate_vars
         form.gateCoefficients i hgate
     simpa [heq] using hposition r hr
 
-theorem freeAffineInstructionRhs_mem_gate_vars
+lemma freeAffineInstructionRhs_mem_gate_vars
     {k n : ℕ} (instruction : FreeAffineInstruction (Fin k))
     (position : Fin n)
     (hvalid : instruction.referencesBounded position.val)
@@ -11018,7 +11018,7 @@ noncomputable def freeAffineCircuitGraphEvaluation
   MvPolynomial.aeval
     (Sum.elim MvPolynomial.X (freeAffineCircuitGate circuit))
 
-theorem freeAffineCircuitGraphEvaluation_reference
+lemma freeAffineCircuitGraphEvaluation_reference
     {k : ℕ} (circuit : FreeAffineCircuit (Fin k)) (r : ℕ) :
     freeAffineCircuitGraphEvaluation circuit
       (freeAffineGateReference
@@ -11035,7 +11035,7 @@ theorem freeAffineCircuitGraphEvaluation_reference
     have hout : circuit.values.size ≤ r := by omega
     simp [Array.getD_eq_getD_getElem?, hout]
 
-theorem freeAffineCircuitGraphEvaluation_extendedForm
+lemma freeAffineCircuitGraphEvaluation_extendedForm
     {k : ℕ} (circuit : FreeAffineCircuit (Fin k))
     (form : FreeAffineForm (Fin k)) :
     freeAffineCircuitGraphEvaluation circuit
@@ -11054,7 +11054,7 @@ theorem freeAffineCircuitGraphEvaluation_extendedForm
     MvPolynomial.aeval_def, Array.getD_eq_getD_getElem?] using
     freeAffineCircuitGraphEvaluation_reference circuit r
 
-theorem freeAffineCircuitGraphEvaluation_instructionRhs
+lemma freeAffineCircuitGraphEvaluation_instructionRhs
     {k : ℕ} (circuit : FreeAffineCircuit (Fin k))
     (instruction : FreeAffineInstruction (Fin k)) :
     freeAffineCircuitGraphEvaluation circuit
@@ -11074,7 +11074,7 @@ theorem freeAffineCircuitGraphEvaluation_instructionRhs
         freeAffineCircuitGraphEvaluation_reference]
       rfl
 
-theorem freeAffineCircuitGate_eq_graphEvaluation_rhs
+lemma freeAffineCircuitGate_eq_graphEvaluation_rhs
     {k : ℕ} (circuit : FreeAffineCircuit (Fin k))
     (j : Fin circuit.program.length) :
     freeAffineCircuitGate circuit j =
@@ -11092,7 +11092,7 @@ noncomputable def freeAffineCircuitInstructionEquation
     freeAffineInstructionRhs
       (n := circuit.program.length) (circuit.program.get j)
 
-theorem freeAffineCircuitInstructionEquation_totalDegree_le
+lemma freeAffineCircuitInstructionEquation_totalDegree_le
     {k : ℕ} (circuit : FreeAffineCircuit (Fin k))
     (j : Fin circuit.program.length) :
     (freeAffineCircuitInstructionEquation circuit j).totalDegree ≤
@@ -11117,7 +11117,7 @@ theorem freeAffineCircuitInstructionEquation_totalDegree_le
         (freeAffineGateReference_totalDegree_le_one left)
         (freeAffineGateReference_totalDegree_le_one right)
 
-theorem freeAffineInstruction_program_cost_product
+lemma freeAffineInstruction_program_cost_product
     {k : ℕ} (program : List (FreeAffineInstruction (Fin k))) :
     (program.map fun instruction =>
       if instruction.isMultiplication then (2 : ℕ) else 1).prod =
@@ -11145,7 +11145,7 @@ theorem freeAffineInstruction_program_cost_product
             _ = 2 ^ ((rest.filter FreeAffineInstruction.isMultiplication).length + 1) := by
                   rw [pow_succ, Nat.mul_comm]
 
-theorem freeAffineCircuitInstructionEquation_degree_product_le
+lemma freeAffineCircuitInstructionEquation_degree_product_le
     {k : ℕ} (circuit : FreeAffineCircuit (Fin k)) :
     (∏ j : Fin circuit.program.length,
       (freeAffineCircuitInstructionEquation circuit j).totalDegree) ≤
@@ -11186,11 +11186,11 @@ def powerSumParameter (d : ℕ) : ℕ := 2 ^ blockWidth d - 1
 
 def sliceRank (n d : ℕ) : ℕ := blockVariables n d / 4
 
-theorem two_mul_blockRows_le (n d : ℕ) : 2 * blockRows n d ≤ n := by
+lemma two_mul_blockRows_le (n d : ℕ) : 2 * blockRows n d ≤ n := by
   simpa [blockRows, blockCount, mul_assoc, mul_comm, mul_left_comm] using
     Nat.div_mul_le_self n (2 * blockWidth d)
 
-theorem three_le_blockCount {n d : ℕ} (hd : 3 ≤ d)
+lemma three_le_blockCount {n d : ℕ} (hd : 3 ≤ d)
     (hn : 6 * blockWidth d ≤ n) : 3 ≤ blockCount n d := by
   have hden : 0 < 2 * blockWidth d := by
     simp only [blockWidth]
@@ -11199,12 +11199,12 @@ theorem three_le_blockCount {n d : ℕ} (hd : 3 ≤ d)
   apply (Nat.le_div_iff_mul_le hden).2
   omega
 
-theorem three_mul_blockWidth_le_blockRows {n d : ℕ} (hd : 3 ≤ d)
+lemma three_mul_blockWidth_le_blockRows {n d : ℕ} (hd : 3 ≤ d)
     (hn : 6 * blockWidth d ≤ n) : 3 * blockWidth d ≤ blockRows n d := by
   simpa [blockRows, mul_comm] using
     Nat.mul_le_mul_right (blockWidth d) (three_le_blockCount hd hn)
 
-theorem le_three_mul_blockRows {n d : ℕ} (hd : 3 ≤ d)
+lemma le_three_mul_blockRows {n d : ℕ} (hd : 3 ≤ d)
     (hn : 6 * blockWidth d ≤ n) : n ≤ 3 * blockRows n d := by
   have hden : 0 < 2 * blockWidth d := by
     simp only [blockWidth]
@@ -11217,29 +11217,29 @@ theorem le_three_mul_blockRows {n d : ℕ} (hd : 3 ≤ d)
       Nat.mod_add_div n (2 * blockWidth d)
   omega
 
-theorem degree_le_blockRows {n d : ℕ} (hd : 3 ≤ d)
+lemma degree_le_blockRows {n d : ℕ} (hd : 3 ≤ d)
     (hn : 6 * blockWidth d ≤ n) : d ≤ blockRows n d := by
   have hrows := three_mul_blockWidth_le_blockRows hd hn
   simp only [blockWidth] at hrows
   omega
 
-theorem degree_le_blockColumns (n d : ℕ) : d ≤ blockColumns n d := by
+lemma degree_le_blockColumns (n d : ℕ) : d ≤ blockColumns n d := by
   have hrows := two_mul_blockRows_le n d
   unfold blockColumns
   omega
 
-theorem block_size_identity (n d : ℕ) :
+lemma block_size_identity (n d : ℕ) :
     blockRows n d + blockColumns n d - d = n := by
   have hrows := two_mul_blockRows_le n d
   unfold blockColumns
   omega
 
-theorem le_two_mul_blockColumns (n d : ℕ) : n ≤ 2 * blockColumns n d := by
+lemma le_two_mul_blockColumns (n d : ℕ) : n ≤ 2 * blockColumns n d := by
   have hrows := two_mul_blockRows_le n d
   unfold blockColumns
   omega
 
-theorem square_le_six_mul_blockVariables {n d : ℕ} (hd : 3 ≤ d)
+lemma square_le_six_mul_blockVariables {n d : ℕ} (hd : 3 ≤ d)
     (hn : 6 * blockWidth d ≤ n) : n ^ 2 ≤ 6 * blockVariables n d := by
   have hproduct := Nat.mul_le_mul (le_three_mul_blockRows hd hn)
     (le_two_mul_blockColumns n d)
@@ -11250,23 +11250,23 @@ theorem square_le_six_mul_blockVariables {n d : ℕ} (hd : 3 ≤ d)
       unfold blockVariables
       ring
 
-theorem blockVariables_eq_four_mul (n d : ℕ) :
+lemma blockVariables_eq_four_mul (n d : ℕ) :
     blockVariables n d = 4 * (blockCount n d * blockColumns n d * d) := by
   simp [blockVariables, blockRows, blockWidth, mul_assoc, mul_comm, mul_left_comm]
 
-theorem blockVariables_div_four (n d : ℕ) :
+lemma blockVariables_div_four (n d : ℕ) :
     blockVariables n d / 4 = blockCount n d * blockColumns n d * d := by
   rw [blockVariables_eq_four_mul]
   simp
 
-theorem powerSum_cost_le_quarter {n d : ℕ}
+lemma powerSum_cost_le_quarter {n d : ℕ}
     (hscale : 4 * powerSumParameter d ≤ blockWidth d * blockColumns n d) :
     blockCount n d * powerSumParameter d ≤ blockVariables n d / 4 := by
   apply (Nat.le_div_iff_mul_le (by omega : 0 < (4 : ℕ))).2
   have hmul := Nat.mul_le_mul_left (blockCount n d) hscale
   simpa [blockVariables, blockRows, mul_assoc, mul_comm, mul_left_comm] using hmul
 
-theorem minorSum_cost_lt_quarter {n d : ℕ} (hd : 3 ≤ d)
+lemma minorSum_cost_lt_quarter {n d : ℕ} (hd : 3 ≤ d)
     (hn : 6 * blockWidth d ≤ n) :
     blockCount n d * blockColumns n d * (d - 2) < blockVariables n d / 4 := by
   have hb : 0 < blockCount n d := by
@@ -11278,7 +11278,7 @@ theorem minorSum_cost_lt_quarter {n d : ℕ} (hd : 3 ≤ d)
   rw [blockVariables_div_four]
   exact Nat.mul_lt_mul_of_pos_left (by omega : d - 2 < d) (Nat.mul_pos hb hs)
 
-theorem eight_le_blockVariables {n d : ℕ} (hd : 3 ≤ d)
+lemma eight_le_blockVariables {n d : ℕ} (hd : 3 ≤ d)
     (hn : 6 * blockWidth d ≤ n) : 8 ≤ blockVariables n d := by
   have hdegrees := Nat.mul_le_mul (degree_le_blockRows hd hn)
     (degree_le_blockColumns n d)
@@ -11286,7 +11286,7 @@ theorem eight_le_blockVariables {n d : ℕ} (hd : 3 ≤ d)
   unfold blockVariables
   omega
 
-theorem twice_criticalDimension_lt_blockVariables {n d dimension : ℕ}
+lemma twice_criticalDimension_lt_blockVariables {n d dimension : ℕ}
     (hd : 3 ≤ d) (hn : 6 * blockWidth d ≤ n)
     (hscale : 4 * powerSumParameter d ≤ blockWidth d * blockColumns n d)
     (hdimension : dimension ≤ blockCount n d *
@@ -11300,12 +11300,12 @@ theorem twice_criticalDimension_lt_blockVariables {n d dimension : ℕ}
     simpa [mul_add, mul_assoc] using hdimension
   omega
 
-theorem sliceRank_lt_blockVariables {n d : ℕ} (hm : 8 ≤ blockVariables n d) :
+lemma sliceRank_lt_blockVariables {n d : ℕ} (hm : 8 ≤ blockVariables n d) :
     sliceRank n d < blockVariables n d := by
   unfold sliceRank
   exact Nat.div_lt_self (by omega) (by omega)
 
-theorem blockVariables_le_eight_mul_sliceRank {n d : ℕ}
+lemma blockVariables_le_eight_mul_sliceRank {n d : ℕ}
     (hm : 8 ≤ blockVariables n d) :
     blockVariables n d ≤ 8 * sliceRank n d := by
   unfold sliceRank
@@ -11313,7 +11313,7 @@ theorem blockVariables_le_eight_mul_sliceRank {n d : ℕ}
   have hdecomp := Nat.mod_add_div (blockVariables n d) 4
   omega
 
-theorem sliceRank_le_codimension {n d dimension : ℕ}
+lemma sliceRank_le_codimension {n d dimension : ℕ}
     (hd : 3 ≤ d) (hn : 6 * blockWidth d ≤ n)
     (hscale : 4 * powerSumParameter d ≤ blockWidth d * blockColumns n d)
     (hdimension : dimension ≤ blockCount n d *
@@ -11324,14 +11324,14 @@ theorem sliceRank_le_codimension {n d dimension : ℕ}
   unfold sliceRank
   omega
 
-theorem square_le_fortyEight_mul_sliceRank {n d : ℕ} (hd : 3 ≤ d)
+lemma square_le_fortyEight_mul_sliceRank {n d : ℕ} (hd : 3 ≤ d)
     (hn : 6 * blockWidth d ≤ n) : n ^ 2 ≤ 48 * sliceRank n d := by
   have hmass := square_le_six_mul_blockVariables hd hn
   have height := blockVariables_le_eight_mul_sliceRank
     (eight_le_blockVariables hd hn)
   omega
 
-theorem exists_eventual_source_parameter_bounds {d : ℕ} (hd : 3 ≤ d) :
+lemma exists_eventual_source_parameter_bounds {d : ℕ} (hd : 3 ≤ d) :
     ∃ N : ℕ, ∀ n : ℕ, N ≤ n →
       6 * blockWidth d ≤ n ∧
       8 * powerSumParameter d ≤ n * blockWidth d ∧
@@ -11357,7 +11357,7 @@ theorem exists_eventual_source_parameter_bounds {d : ℕ} (hd : 3 ≤ d) :
   exact ⟨hlarge, le_trans hrho hwidth_n, hscale,
     eight_le_blockVariables hd hlarge⟩
 
-theorem logarithmic_lower_bound_of_gradient {n d q : ℕ} (hd : 3 ≤ d)
+lemma logarithmic_lower_bound_of_gradient {n d q : ℕ} (hd : 3 ≤ d)
     (hn : 6 * blockWidth d ≤ n)
     (hgradient : (sliceRank n d : ℝ) * Real.logb 2 ((d : ℝ) - 1) ≤
       3 * (q : ℝ)) :
@@ -11376,7 +11376,7 @@ end Standalone_ParameterBounds
 
 section Standalone_Asymptotics
 
-theorem superquadratic_of_logarithmic_degree_bounds
+lemma superquadratic_of_logarithmic_degree_bounds
     (complexity : ℕ → ℕ)
     (bound : ∀ d : ℕ, 3 ≤ d → ∃ N : ℕ, ∀ n : ℕ, N ≤ n →
       (n : ℝ) ^ 2 * Real.logb 2 ((d : ℝ) - 1) / 144 ≤ complexity n) :
@@ -11405,7 +11405,7 @@ theorem superquadratic_of_logarithmic_degree_bounds
       rw [hlog] at hbound
       exact hbound
 
-theorem complexity_ratio_tendsto_atTop_of_superquadratic
+lemma complexity_ratio_tendsto_atTop_of_superquadratic
     (complexity : ℕ → ℕ)
     (bound : ∀ C : ℝ, 0 < C → ∃ N : ℕ, ∀ n : ℕ, N ≤ n →
       C * (n : ℝ) ^ 2 ≤ (complexity n : ℝ)) :
@@ -11446,7 +11446,7 @@ noncomputable def sourceBlockMatrix
     (fun (_ : Fin (s - d)) (_ : Fin s) => 1)
     (0 : Matrix (Fin (s - d)) (Fin (r - d)) R)
 
-@[simp] theorem sourceBlockMatrix_apply₁₁
+@[simp] lemma sourceBlockMatrix_apply₁₁
     {R : Type*} [CommSemiring R] (r s d : ℕ)
     (X : Matrix (Fin r) (Fin s) R)
     (U : Matrix (Fin r) (Fin (r - d)) R)
@@ -11454,7 +11454,7 @@ noncomputable def sourceBlockMatrix
     sourceBlockMatrix r s d X U (.inl row) (.inl column) = X row column := by
   rfl
 
-@[simp] theorem sourceBlockMatrix_apply₁₂
+@[simp] lemma sourceBlockMatrix_apply₁₂
     {R : Type*} [CommSemiring R] (r s d : ℕ)
     (X : Matrix (Fin r) (Fin s) R)
     (U : Matrix (Fin r) (Fin (r - d)) R)
@@ -11462,7 +11462,7 @@ noncomputable def sourceBlockMatrix
     sourceBlockMatrix r s d X U (.inl row) (.inr column) = U row column := by
   rfl
 
-@[simp] theorem sourceBlockMatrix_apply₂₁
+@[simp] lemma sourceBlockMatrix_apply₂₁
     {R : Type*} [CommSemiring R] (r s d : ℕ)
     (X : Matrix (Fin r) (Fin s) R)
     (U : Matrix (Fin r) (Fin (r - d)) R)
@@ -11470,7 +11470,7 @@ noncomputable def sourceBlockMatrix
     sourceBlockMatrix r s d X U (.inr row) (.inl column) = 1 := by
   rfl
 
-@[simp] theorem sourceBlockMatrix_apply₂₂
+@[simp] lemma sourceBlockMatrix_apply₂₂
     {R : Type*} [CommSemiring R] (r s d : ℕ)
     (X : Matrix (Fin r) (Fin s) R)
     (U : Matrix (Fin r) (Fin (r - d)) R)
@@ -11532,7 +11532,7 @@ noncomputable def sourceBlockMatchingOf
       (Equiv.sumCompl (fun column : Fin s => column ∈ J)).sumCongr
         (Equiv.refl (Fin (r - d)))
 
-@[simp] theorem sourceBlockMatchingOf_apply_selected
+@[simp] lemma sourceBlockMatchingOf_apply_selected
     (r s d : ℕ) (I : Finset (Fin r)) (J : Finset (Fin s))
     (variableMatching : I ≃ J)
     (constantMatching : {row : Fin r // row ∉ I} ≃ Fin (r - d))
@@ -11543,7 +11543,7 @@ noncomputable def sourceBlockMatchingOf
       .inl (variableMatching row).val := by
   simp [sourceBlockMatchingOf, row.property]
 
-@[simp] theorem sourceBlockMatchingOf_apply_complement
+@[simp] lemma sourceBlockMatchingOf_apply_complement
     (r s d : ℕ) (I : Finset (Fin r)) (J : Finset (Fin s))
     (variableMatching : I ≃ J)
     (constantMatching : {row : Fin r // row ∉ I} ≃ Fin (r - d))
@@ -11554,7 +11554,7 @@ noncomputable def sourceBlockMatchingOf
       .inr (constantMatching row) := by
   simp [sourceBlockMatchingOf, row.property]
 
-@[simp] theorem sourceBlockMatchingOf_apply_lower
+@[simp] lemma sourceBlockMatchingOf_apply_lower
     (r s d : ℕ) (I : Finset (Fin r)) (J : Finset (Fin s))
     (variableMatching : I ≃ J)
     (constantMatching : {row : Fin r // row ∉ I} ≃ Fin (r - d))
@@ -11579,7 +11579,7 @@ noncomputable def sourceBlockSelectedColumns
   Finset.univ.filter
     (fun column => ∃ row : Fin r, matching (.inl row) = .inl column)
 
-@[simp] theorem sourceBlock_mem_selectedRows
+@[simp] lemma sourceBlock_mem_selectedRows
     (r s d : ℕ)
     (matching : (Fin r ⊕ Fin (s - d)) ≃
       (Fin s ⊕ Fin (r - d)))
@@ -11588,7 +11588,7 @@ noncomputable def sourceBlockSelectedColumns
       ∃ column : Fin s, matching (.inl row) = .inl column := by
   simp [sourceBlockSelectedRows]
 
-@[simp] theorem sourceBlock_mem_selectedColumns
+@[simp] lemma sourceBlock_mem_selectedColumns
     (r s d : ℕ)
     (matching : (Fin r ⊕ Fin (s - d)) ≃
       (Fin s ⊕ Fin (r - d)))
@@ -11597,7 +11597,7 @@ noncomputable def sourceBlockSelectedColumns
       ∃ row : Fin r, matching (.inl row) = .inl column := by
   simp [sourceBlockSelectedColumns]
 
-theorem sourceBlockMatchingOf_isValid
+lemma sourceBlockMatchingOf_isValid
     (r s d : ℕ) (I : Finset (Fin r)) (J : Finset (Fin s))
     (variableMatching : I ≃ J)
     (constantMatching : {row : Fin r // row ∉ I} ≃ Fin (r - d))
@@ -11625,7 +11625,7 @@ noncomputable def sourceBlockVariableFunction
   exact (sourceBlock_mem_selectedColumns r s d matching _).mpr
     ⟨row.val, Classical.choose_spec hcolumn⟩
 
-theorem sourceBlockVariableFunction_spec
+lemma sourceBlockVariableFunction_spec
     (r s d : ℕ)
     (matching : (Fin r ⊕ Fin (s - d)) ≃
       (Fin s ⊕ Fin (r - d)))
@@ -11636,7 +11636,7 @@ theorem sourceBlockVariableFunction_spec
   exact Classical.choose_spec
     ((sourceBlock_mem_selectedRows r s d matching row.val).mp row.property)
 
-theorem sourceBlockVariableFunction_bijective
+lemma sourceBlockVariableFunction_bijective
     (r s d : ℕ)
     (matching : (Fin r ⊕ Fin (s - d)) ≃
       (Fin s ⊕ Fin (r - d))) :
@@ -11677,7 +11677,7 @@ noncomputable def sourceBlockVariableMatchingOf
   Equiv.ofBijective (sourceBlockVariableFunction r s d matching)
     (sourceBlockVariableFunction_bijective r s d matching)
 
-theorem sourceBlockVariableMatchingOf_spec
+lemma sourceBlockVariableMatchingOf_spec
     (r s d : ℕ)
     (matching : (Fin r ⊕ Fin (s - d)) ≃
       (Fin s ⊕ Fin (r - d)))
@@ -11686,7 +11686,7 @@ theorem sourceBlockVariableMatchingOf_spec
       .inl (sourceBlockVariableMatchingOf r s d matching row).val := by
   exact sourceBlockVariableFunction_spec r s d matching row
 
-theorem sourceBlockConstant_exists
+lemma sourceBlockConstant_exists
     (r s d : ℕ)
     (matching : (Fin r ⊕ Fin (s - d)) ≃
       (Fin s ⊕ Fin (r - d)))
@@ -11710,7 +11710,7 @@ noncomputable def sourceBlockConstantFunction
       row ∉ sourceBlockSelectedRows r s d matching}) : Fin (r - d) :=
   Classical.choose (sourceBlockConstant_exists r s d matching row)
 
-theorem sourceBlockConstantFunction_spec
+lemma sourceBlockConstantFunction_spec
     (r s d : ℕ)
     (matching : (Fin r ⊕ Fin (s - d)) ≃
       (Fin s ⊕ Fin (r - d)))
@@ -11720,7 +11720,7 @@ theorem sourceBlockConstantFunction_spec
       .inr (sourceBlockConstantFunction r s d matching row) :=
   Classical.choose_spec (sourceBlockConstant_exists r s d matching row)
 
-theorem sourceBlockConstantFunction_bijective
+lemma sourceBlockConstantFunction_bijective
     (r s d : ℕ)
     (matching : (Fin r ⊕ Fin (s - d)) ≃
       (Fin s ⊕ Fin (r - d)))
@@ -11775,7 +11775,7 @@ noncomputable def sourceBlockConstantMatchingOf
   Equiv.ofBijective (sourceBlockConstantFunction r s d matching)
     (sourceBlockConstantFunction_bijective r s d matching hvalid)
 
-theorem sourceBlockConstantMatchingOf_spec
+lemma sourceBlockConstantMatchingOf_spec
     (r s d : ℕ)
     (matching : (Fin r ⊕ Fin (s - d)) ≃
       (Fin s ⊕ Fin (r - d)))
@@ -11807,7 +11807,7 @@ noncomputable def sourceBlockOnesFunction
     matching.injective (hupper.trans (Classical.choose_spec (hvalid row)).symm)
   cases hconflict
 
-theorem sourceBlockOnesFunction_spec
+lemma sourceBlockOnesFunction_spec
     (r s d : ℕ)
     (matching : (Fin r ⊕ Fin (s - d)) ≃
       (Fin s ⊕ Fin (r - d)))
@@ -11819,7 +11819,7 @@ theorem sourceBlockOnesFunction_spec
   unfold sourceBlockOnesFunction
   exact Classical.choose_spec (hvalid row)
 
-theorem sourceBlockOnesFunction_bijective
+lemma sourceBlockOnesFunction_bijective
     (r s d : ℕ)
     (matching : (Fin r ⊕ Fin (s - d)) ≃
       (Fin s ⊕ Fin (r - d)))
@@ -11868,7 +11868,7 @@ noncomputable def sourceBlockOnesMatchingOf
   Equiv.ofBijective (sourceBlockOnesFunction r s d matching hvalid)
     (sourceBlockOnesFunction_bijective r s d matching hvalid)
 
-theorem sourceBlockOnesMatchingOf_spec
+lemma sourceBlockOnesMatchingOf_spec
     (r s d : ℕ)
     (matching : (Fin r ⊕ Fin (s - d)) ≃
       (Fin s ⊕ Fin (r - d)))
@@ -11879,7 +11879,7 @@ theorem sourceBlockOnesMatchingOf_spec
       .inl (sourceBlockOnesMatchingOf r s d matching hvalid row).val := by
   exact sourceBlockOnesFunction_spec r s d matching hvalid row
 
-theorem sourceBlockMatchingOf_recovered
+lemma sourceBlockMatchingOf_recovered
     (r s d : ℕ)
     (matching : (Fin r ⊕ Fin (s - d)) ≃
       (Fin s ⊕ Fin (r - d)))
@@ -11926,7 +11926,7 @@ theorem sourceBlockMatchingOf_recovered
           (sourceBlockOnesMatchingOf r s d matching hvalid) lower).trans
         (sourceBlockOnesMatchingOf_spec r s d matching hvalid lower).symm
 
-theorem sourceBlockSelectedRows_card_of_valid
+lemma sourceBlockSelectedRows_card_of_valid
     (r s d : ℕ) (hr : d ≤ r)
     (matching : (Fin r ⊕ Fin (s - d)) ≃
       (Fin s ⊕ Fin (r - d)))
@@ -11944,7 +11944,7 @@ theorem sourceBlockSelectedRows_card_of_valid
       (sourceBlockSelectedRows r s d matching)
   omega
 
-theorem sourceBlockSelectedColumns_card_of_valid
+lemma sourceBlockSelectedColumns_card_of_valid
     (r s d : ℕ) (hr : d ≤ r)
     (matching : (Fin r ⊕ Fin (s - d)) ≃
       (Fin s ⊕ Fin (r - d)))
@@ -11957,7 +11957,7 @@ theorem sourceBlockSelectedColumns_card_of_valid
   have hrows := sourceBlockSelectedRows_card_of_valid r s d hr matching hvalid
   omega
 
-@[simp] theorem sourceBlockSelectedRows_matchingOf
+@[simp] lemma sourceBlockSelectedRows_matchingOf
     (r s d : ℕ) (I : Finset (Fin r)) (J : Finset (Fin s))
     (variableMatching : I ≃ J)
     (constantMatching : {row : Fin r // row ∉ I} ≃ Fin (r - d))
@@ -11980,7 +11980,7 @@ theorem sourceBlockSelectedColumns_card_of_valid
     exact sourceBlockMatchingOf_apply_selected r s d I J
       variableMatching constantMatching onesMatching ⟨row, hrow⟩
 
-@[simp] theorem sourceBlockSelectedColumns_matchingOf
+@[simp] lemma sourceBlockSelectedColumns_matchingOf
     (r s d : ℕ) (I : Finset (Fin r)) (J : Finset (Fin s))
     (variableMatching : I ≃ J)
     (constantMatching : {row : Fin r // row ∉ I} ≃ Fin (r - d))
@@ -12012,7 +12012,7 @@ theorem sourceBlockSelectedColumns_card_of_valid
       sourceBlockMatchingOf_apply_selected r s d I J
         variableMatching constantMatching onesMatching row
 
-theorem sourceBlockMatchingOf_injective
+lemma sourceBlockMatchingOf_injective
     (r s d : ℕ) (I : Finset (Fin r)) (J : Finset (Fin s)) :
     Function.Injective
       (fun data :
@@ -12054,21 +12054,21 @@ noncomputable def sourceBlockDataMatching
   sourceBlockMatchingOf r s d data.1.val data.2.1.val
     data.2.2.1 data.2.2.2.1 data.2.2.2.2
 
-@[simp] theorem sourceBlockSelectedRows_dataMatching
+@[simp] lemma sourceBlockSelectedRows_dataMatching
     (r s d : ℕ) (data : SourceBlockMatchingData r s d) :
     sourceBlockSelectedRows r s d (sourceBlockDataMatching r s d data) =
       data.1.val := by
   exact sourceBlockSelectedRows_matchingOf r s d data.1.val data.2.1.val
     data.2.2.1 data.2.2.2.1 data.2.2.2.2
 
-@[simp] theorem sourceBlockSelectedColumns_dataMatching
+@[simp] lemma sourceBlockSelectedColumns_dataMatching
     (r s d : ℕ) (data : SourceBlockMatchingData r s d) :
     sourceBlockSelectedColumns r s d (sourceBlockDataMatching r s d data) =
       data.2.1.val := by
   exact sourceBlockSelectedColumns_matchingOf r s d data.1.val data.2.1.val
     data.2.2.1 data.2.2.2.1 data.2.2.2.2
 
-theorem sourceBlockDataMatching_injective
+lemma sourceBlockDataMatching_injective
     (r s d : ℕ) :
     Function.Injective (sourceBlockDataMatching r s d) := by
   intro data₁ data₂ hmatching
@@ -12117,7 +12117,7 @@ noncomputable def sourceBlockDataValidMatching
     sourceBlockMatchingOf_isValid r s d data.1.val data.2.1.val
       data.2.2.1 data.2.2.2.1 data.2.2.2.2⟩
 
-theorem sourceBlockDataValidMatching_bijective
+lemma sourceBlockDataValidMatching_bijective
     (r s d : ℕ) (hr : d ≤ r) :
     Function.Bijective (sourceBlockDataValidMatching r s d) := by
   constructor
@@ -12150,7 +12150,7 @@ noncomputable def sourceBlockMatchingDataEquiv
   Equiv.ofBijective (sourceBlockDataValidMatching r s d)
     (sourceBlockDataValidMatching_bijective r s d hr)
 
-theorem sourceBlockMatchingOf_weight
+lemma sourceBlockMatchingOf_weight
     {R : Type*} [CommSemiring R] (r s d : ℕ)
     (X : Matrix (Fin r) (Fin s) R)
     (U : Matrix (Fin r) (Fin (r - d)) R)
@@ -12173,7 +12173,7 @@ theorem sourceBlockMatchingOf_weight
   rw [Fintype.prod_sum_type]
   simp
 
-theorem sourceBlock_column_complement_card
+lemma sourceBlock_column_complement_card
     (s d : ℕ) (J : Finset (Fin s)) (hJ : J.card = d) :
     Fintype.card {column : Fin s // column ∉ J} = s - d := by
   rw [Fintype.card_subtype_compl (fun column : Fin s => column ∈ J)]
@@ -12185,14 +12185,14 @@ noncomputable def sourceBlockOnesEquiv
   Fintype.equivOfCardEq (by
     simp [sourceBlock_column_complement_card s d J hJ])
 
-theorem sourceBlock_ones_matching_card
+lemma sourceBlock_ones_matching_card
     (s d : ℕ) (J : Finset (Fin s)) (hJ : J.card = d) :
     Fintype.card
       (Fin (s - d) ≃ {column : Fin s // column ∉ J}) =
       (s - d).factorial := by
   simpa using Fintype.card_equiv (sourceBlockOnesEquiv s d J hJ)
 
-private theorem sourceBlock_weighted_double_sum
+private lemma sourceBlock_weighted_double_sum
     {α β R : Type*} [Fintype α] [Fintype β] [CommSemiring R]
     (c : R) (f : α → R) (g : β → R) :
     (∑ a : α, ∑ b : β, c * (f a * g b)) =
@@ -12200,7 +12200,7 @@ private theorem sourceBlock_weighted_double_sum
   rw [Fintype.sum_mul_sum]
   simp_rw [Finset.mul_sum]
 
-theorem sourceBlockMatchingOf_sum_weight
+lemma sourceBlockMatchingOf_sum_weight
     {R : Type*} [CommSemiring R] (r s d : ℕ)
     (X : Matrix (Fin r) (Fin s) R)
     (U : Matrix (Fin r) (Fin (r - d)) R)
@@ -12238,7 +12238,7 @@ noncomputable def sourceBlockGluedFibre
           (sourceBlockMatchingOf r s d I J
             variableMatching constantMatching onesMatching row)
 
-theorem sourceBlockGluedFibre_eq
+lemma sourceBlockGluedFibre_eq
     {R : Type*} [CommSemiring R] (r s d : ℕ)
     (X : Matrix (Fin r) (Fin s) R)
     (U : Matrix (Fin r) (Fin (r - d)) R)
@@ -12249,7 +12249,7 @@ theorem sourceBlockGluedFibre_eq
         (sourceBlockAlpha r d U I * sourceBlockMinor r s X I J) := by
   exact sourceBlockMatchingOf_sum_weight r s d X U I J hJ
 
-theorem sourceBlockMatchingExpansion_eq_sum_glued_fibres
+lemma sourceBlockMatchingExpansion_eq_sum_glued_fibres
     {R : Type*} [CommSemiring R] (r s d : ℕ)
     (X : Matrix (Fin r) (Fin s) R)
     (U : Matrix (Fin r) (Fin (r - d)) R) :
@@ -12267,7 +12267,7 @@ theorem sourceBlockMatchingExpansion_eq_sum_glued_fibres
   exact (sourceBlockGluedFibre_eq r s d X U I J
     (Finset.mem_powersetCard.mp hJ).2).symm
 
-theorem sourceBlockMatrix_matching_eq_zero_of_lower_right
+lemma sourceBlockMatrix_matching_eq_zero_of_lower_right
     {R : Type*} [CommSemiring R] (r s d : ℕ)
     (X : Matrix (Fin r) (Fin s) R)
     (U : Matrix (Fin r) (Fin (r - d)) R)
@@ -12280,7 +12280,7 @@ theorem sourceBlockMatrix_matching_eq_zero_of_lower_right
   apply Finset.prod_eq_zero (Finset.mem_univ (.inr row))
   simp [h]
 
-theorem sourceBlockMatrix_matching_eq_zero_of_invalid
+lemma sourceBlockMatrix_matching_eq_zero_of_invalid
     {R : Type*} [CommSemiring R] (r s d : ℕ)
     (X : Matrix (Fin r) (Fin s) R)
     (U : Matrix (Fin r) (Fin (r - d)) R)
@@ -12297,7 +12297,7 @@ theorem sourceBlockMatrix_matching_eq_zero_of_invalid
       exact sourceBlockMatrix_matching_eq_zero_of_lower_right
         r s d X U matching row column hcolumn
 
-private theorem sourceBlock_sum_subtype_of_zero
+private lemma sourceBlock_sum_subtype_of_zero
     {α R : Type*} [Fintype α] [CommSemiring R]
     (p : α → Prop) (f : α → R)
     (hzero : ∀ a, ¬ p a → f a = 0) :
@@ -12305,7 +12305,7 @@ private theorem sourceBlock_sum_subtype_of_zero
   exact Finset.sum_congr_set {a | p a} f (fun a => f a.val)
     (fun _ _ => rfl) hzero
 
-private theorem rectangularPermanent_sum_subtype_of_zero
+private lemma rectangularPermanent_sum_subtype_of_zero
     {α β R : Type*} [Fintype α] [Fintype β] [CommSemiring R]
     (A : Matrix α β R) (p : (α ≃ β) → Prop)
     (hzero : ∀ matching : α ≃ β,
@@ -12317,7 +12317,7 @@ private theorem rectangularPermanent_sum_subtype_of_zero
   exact sourceBlock_sum_subtype_of_zero p
     (fun matching : α ≃ β => ∏ row, A row (matching row)) hzero
 
-theorem sourceBlockMatrix_permanent_eq_valid_sum
+lemma sourceBlockMatrix_permanent_eq_valid_sum
     {R : Type*} [CommSemiring R] (r s d : ℕ)
     (X : Matrix (Fin r) (Fin s) R)
     (U : Matrix (Fin r) (Fin (r - d)) R) :
@@ -12339,7 +12339,7 @@ theorem sourceBlockMatrix_permanent_eq_valid_sum
   · intro matching _
     rfl
 
-theorem sourceBlockMatchingData_sum
+lemma sourceBlockMatchingData_sum
     {R : Type*} [CommSemiring R] (r s d : ℕ)
     (X : Matrix (Fin r) (Fin s) R)
     (U : Matrix (Fin r) (Fin (r - d)) R) :
@@ -12368,7 +12368,7 @@ theorem sourceBlockMatchingData_sum
   exact Finset.sum_coe_sort columnSet
     (fun J => sourceBlockGluedFibre r s d X U I J)
 
-theorem sourceBlockMatrix_permanent_eq_matchingExpansion
+lemma sourceBlockMatrix_permanent_eq_matchingExpansion
     {R : Type*} [CommSemiring R] (r s d : ℕ) (hr : d ≤ r)
     (X : Matrix (Fin r) (Fin s) R)
     (U : Matrix (Fin r) (Fin (r - d)) R) :
@@ -12417,7 +12417,7 @@ inductive CircuitInstructionReference {ι : Type} :
   | mul_right (left right : ℕ) :
       CircuitInstructionReference (.mul left right) right
 
-theorem CircuitInstructionReference.lt_of_referencesBounded
+lemma CircuitInstructionReference.lt_of_referencesBounded
     {ι : Type} {instruction : Instruction ι} {index position : ℕ}
     (hreference : CircuitInstructionReference instruction index)
     (hvalid : instruction.referencesBounded position) :
@@ -12431,7 +12431,7 @@ section Standalone_Combinatorics
 
 open scoped BigOperators
 
-theorem rootOfUnity_node_product_algebra
+lemma rootOfUnity_node_product_algebra
     {R : Type*} [CommRing R] [Algebra ℂ R]
     {d : ℕ} (hd : 0 < d) {ζ : ℂ}
     (hζ : IsPrimitiveRoot ζ d) (x y : R) :
@@ -12467,7 +12467,7 @@ theorem rootOfUnity_node_product_algebra
       rw [← hfactor]
       simp [coeffHom, alpha, Polynomial.eval₂_pow]
 
-theorem rootOfUnity_node_product_source_algebra
+lemma rootOfUnity_node_product_source_algebra
     {R : Type*} [CommRing R] [Algebra ℂ R]
     {d : ℕ} (hd : 0 < d) {ζ : ℂ}
     (hζ : IsPrimitiveRoot ζ d) (x y : R) :
@@ -12483,11 +12483,11 @@ theorem rootOfUnity_node_product_source_algebra
   norm_num
   ring
 
-theorem rootOfUnity_node_coefficient_ne_zero (d : ℕ) :
+lemma rootOfUnity_node_coefficient_ne_zero (d : ℕ) :
     ((-1 : ℂ) ^ (d + 1) * (2 : ℂ) ^ d) ≠ 0 := by
   exact mul_ne_zero (pow_ne_zero _ (by norm_num)) (pow_ne_zero _ (by norm_num))
 
-theorem rootOfUnity_node_coefficient_add_one_ne_zero {d : ℕ} (hd : 0 < d) :
+lemma rootOfUnity_node_coefficient_add_one_ne_zero {d : ℕ} (hd : 0 < d) :
     1 + (-1 : ℂ) ^ (d + 1) * (2 : ℂ) ^ d ≠ 0 := by
   intro h
   have heq : (-1 : ℂ) ^ (d + 1) * (2 : ℂ) ^ d = -1 := by
@@ -12512,7 +12512,7 @@ abbrev SquareZeroAlgebra (r : ℕ) :=
 noncomputable def squareZeroVariable (r : ℕ) (i : Fin r) : SquareZeroAlgebra r :=
   Ideal.Quotient.mk (squareZeroIdeal r) (MvPolynomial.X i)
 
-@[simp] theorem squareZeroVariable_sq (r : ℕ) (i : Fin r) :
+@[simp] lemma squareZeroVariable_sq (r : ℕ) (i : Fin r) :
     squareZeroVariable r i ^ 2 = 0 := by
   change (Ideal.Quotient.mk (squareZeroIdeal r) (MvPolynomial.X i)) ^ 2 = 0
   rw [← map_pow, Ideal.Quotient.eq_zero_iff_mem]
@@ -12522,7 +12522,7 @@ noncomputable def squareZeroBlockSum (r : ℕ) (block : Finset (Fin r)) :
     SquareZeroAlgebra r :=
   ∑ i ∈ block, squareZeroVariable r i
 
-theorem square_zero_add_pow_succ {R : Type*} [CommSemiring R]
+lemma square_zero_add_pow_succ {R : Type*} [CommSemiring R]
     {x y : R} {n : ℕ} (hx : x ^ 2 = 0) (hy : y ^ (n + 1) = 0) :
     (x + y) ^ (n + 1) = (n + 1 : ℕ) * x * y ^ n := by
   classical
@@ -12536,7 +12536,7 @@ theorem square_zero_add_pow_succ {R : Type*} [CommSemiring R]
       simp [pow_eq_zero_of_le htwo hx]
   · simp
 
-theorem square_zero_sum_pow_card_and_succ {R ι : Type*} [CommSemiring R]
+lemma square_zero_sum_pow_card_and_succ {R ι : Type*} [CommSemiring R]
     (s : Finset ι) (z : ι → R)
     (hz : ∀ i ∈ s, z i ^ 2 = 0) :
     ((∑ i ∈ s, z i) ^ s.card = (s.card.factorial : R) * ∏ i ∈ s, z i) ∧
@@ -12559,14 +12559,14 @@ theorem square_zero_sum_pow_card_and_succ {R ι : Type*} [CommSemiring R]
       simpa [hnext, Nat.add_assoc] using
         (square_zero_add_pow_succ (n := s.card + 1) hza hnext')
 
-theorem squareZeroBlockSum_pow_card (r : ℕ) (block : Finset (Fin r)) :
+lemma squareZeroBlockSum_pow_card (r : ℕ) (block : Finset (Fin r)) :
     squareZeroBlockSum r block ^ block.card =
       (block.card.factorial : SquareZeroAlgebra r) *
         ∏ i ∈ block, squareZeroVariable r i := by
   exact (square_zero_sum_pow_card_and_succ block (squareZeroVariable r)
     (fun i _ => squareZeroVariable_sq r i)).1
 
-theorem squareZeroBlockSum_pow_card_succ (r : ℕ) (block : Finset (Fin r)) :
+lemma squareZeroBlockSum_pow_card_succ (r : ℕ) (block : Finset (Fin r)) :
     squareZeroBlockSum r block ^ (block.card + 1) = 0 := by
   exact (square_zero_sum_pow_card_and_succ block (squareZeroVariable r)
     (fun i _ => squareZeroVariable_sq r i)).2
@@ -12591,7 +12591,7 @@ namespace BlockTree
   | .leaf i => [i]
   | .branch left right => leafList left ++ leafList right
 
-theorem mem_leaves_iff {ι : Type*} [DecidableEq ι]
+lemma mem_leaves_iff {ι : Type*} [DecidableEq ι]
     (tree : BlockTree ι) (i : ι) :
     i ∈ tree.leaves ↔ i ∈ tree.leafList := by
   induction tree with
@@ -12599,7 +12599,7 @@ theorem mem_leaves_iff {ι : Type*} [DecidableEq ι]
   | branch left right left_ih right_ih =>
     simp [left_ih, right_ih]
 
-theorem disjoint_leaves_of_nodup {ι : Type*} [DecidableEq ι]
+lemma disjoint_leaves_of_nodup {ι : Type*} [DecidableEq ι]
     {left right : BlockTree ι}
     (h : (BlockTree.branch left right).leafList.Nodup) :
     Disjoint left.leaves right.leaves := by
@@ -12624,12 +12624,12 @@ noncomputable def subtreeCoefficientTotal {ι : Type*} [DecidableEq ι]
     (lam : ℂ) (tree : BlockTree ι) : ℂ :=
   ∑ i ∈ tree.leaves, subtreeCoefficient lam tree i
 
-@[simp] theorem subtreeCoefficientTotal_leaf {ι : Type*} [DecidableEq ι]
+@[simp] lemma subtreeCoefficientTotal_leaf {ι : Type*} [DecidableEq ι]
     (lam : ℂ) (label : ι) :
     subtreeCoefficientTotal lam (.leaf label) = 1 := by
   simp [subtreeCoefficientTotal]
 
-theorem subtreeCoefficient_eq_zero_of_not_mem {ι : Type*} [DecidableEq ι]
+lemma subtreeCoefficient_eq_zero_of_not_mem {ι : Type*} [DecidableEq ι]
     (lam : ℂ) (tree : BlockTree ι) {i : ι} (hi : i ∉ tree.leaves) :
     subtreeCoefficient lam tree i = 0 := by
   induction tree with
@@ -12644,7 +12644,7 @@ theorem subtreeCoefficient_eq_zero_of_not_mem {ι : Type*} [DecidableEq ι]
       exact hi (Finset.mem_union_right _ h)
     simp [subtreeCoefficient, left_ih hi_left, right_ih hi_right]
 
-theorem subtreeCoefficient_branch_right {ι : Type*} [DecidableEq ι]
+lemma subtreeCoefficient_branch_right {ι : Type*} [DecidableEq ι]
     (lam : ℂ) {left right : BlockTree ι}
     (hdisj : Disjoint left.leaves right.leaves) {i : ι}
     (hi : i ∈ right.leaves) :
@@ -12655,7 +12655,7 @@ theorem subtreeCoefficient_branch_right {ι : Type*} [DecidableEq ι]
   simp [subtreeCoefficient, subtreeCoefficientTotal,
     subtreeCoefficient_eq_zero_of_not_mem lam left hnot]
 
-theorem subtreeCoefficient_branch_left {ι : Type*} [DecidableEq ι]
+lemma subtreeCoefficient_branch_left {ι : Type*} [DecidableEq ι]
     (lam : ℂ) {left right : BlockTree ι}
     (hdisj : Disjoint left.leaves right.leaves) {i : ι}
     (hi : i ∈ left.leaves) :
@@ -12666,7 +12666,7 @@ theorem subtreeCoefficient_branch_left {ι : Type*} [DecidableEq ι]
   simp [subtreeCoefficient, subtreeCoefficientTotal,
     subtreeCoefficient_eq_zero_of_not_mem lam right hnot]
 
-theorem subtreeCoefficientTotal_branch {ι : Type*} [DecidableEq ι]
+lemma subtreeCoefficientTotal_branch {ι : Type*} [DecidableEq ι]
     (lam : ℂ) {left right : BlockTree ι}
     (hdisj : Disjoint left.leaves right.leaves) :
     subtreeCoefficientTotal lam (.branch left right) =
@@ -12717,7 +12717,7 @@ theorem subtreeCoefficientTotal_branch {ι : Type*} [DecidableEq ι]
   rw [hleft, hright]
   ring
 
-theorem subtreeCoefficient_and_total_ne_zero {ι : Type*} [DecidableEq ι]
+lemma subtreeCoefficient_and_total_ne_zero {ι : Type*} [DecidableEq ι]
     (lam : ℂ) (hlam : lam ≠ 0) (hlamone : 1 + lam ≠ 0)
     (tree : BlockTree ι) (hnodup : tree.leafList.Nodup) :
     (∀ i ∈ tree.leaves, subtreeCoefficient lam tree i ≠ 0) ∧
@@ -12741,7 +12741,7 @@ theorem subtreeCoefficient_and_total_ne_zero {ι : Type*} [DecidableEq ι]
     · rw [subtreeCoefficientTotal_branch lam hdisj]
       exact mul_ne_zero (mul_ne_zero hlamone hleft_total) hright_total
 
-theorem rootOfUnity_subtreeCoefficient_and_total_ne_zero
+lemma rootOfUnity_subtreeCoefficient_and_total_ne_zero
     {ι : Type*} [DecidableEq ι] {d : ℕ} (hd : 0 < d)
     (tree : BlockTree ι) (hnodup : tree.leafList.Nodup) :
     let lam : ℂ := (-1 : ℂ) ^ (d + 1) * (2 : ℂ) ^ d
@@ -12752,7 +12752,7 @@ theorem rootOfUnity_subtreeCoefficient_and_total_ne_zero
     (rootOfUnity_node_coefficient_ne_zero d)
     (rootOfUnity_node_coefficient_add_one_ne_zero hd) tree hnodup
 
-theorem subtreeTopProduct_mul_mem_eq_zero
+lemma subtreeTopProduct_mul_mem_eq_zero
     {R ι : Type*} [CommSemiring R] [DecidableEq ι]
     (s : Finset ι) (y : ι → R) (t : ℕ) {i : ι}
     (hi : i ∈ s) (hnil : y i ^ (t + 1) = 0) :
@@ -12764,7 +12764,7 @@ theorem subtreeTopProduct_mul_mem_eq_zero
           ring
     _ = 0 := by rw [← pow_succ, hnil, mul_zero]
 
-theorem subtreeTopProduct_mul_other_sum_eq_zero
+lemma subtreeTopProduct_mul_other_sum_eq_zero
     {R ι : Type*} [CommSemiring R] [DecidableEq ι]
     (s : Finset ι) (y : ι → R) (t : ℕ) (i : ι)
     (hnil : ∀ j ∈ s, y j ^ (t + 1) = 0) :
@@ -12776,7 +12776,7 @@ theorem subtreeTopProduct_mul_other_sum_eq_zero
   exact subtreeTopProduct_mul_mem_eq_zero (s.erase i) y t hj
     (hnil j (Finset.mem_of_mem_erase hj))
 
-theorem subtree_mul_add_pow_eq_of_annihilates
+lemma subtree_mul_add_pow_eq_of_annihilates
     {R : Type*} [CommSemiring R] (p x z : R)
     (hp : p * z = 0) (d : ℕ) :
     p * (x + z) ^ d = p * x ^ d := by
@@ -12796,7 +12796,7 @@ theorem subtree_mul_add_pow_eq_of_annihilates
             _ = 0 := by rw [hp, zero_mul]
         rw [hzero, add_zero, pow_succ, mul_assoc]
 
-theorem subtree_single_surviving_block
+lemma subtree_single_surviving_block
     {R ι : Type*} [CommSemiring R] [DecidableEq ι]
     (s : Finset ι) (y : ι → R) (t d : ℕ) {i : ι}
     (hi : i ∈ s) (hd : d ≤ t)
@@ -12828,7 +12828,7 @@ theorem subtree_single_surviving_block
     _ = ∏ j ∈ s, y j ^ t :=
       Finset.prod_erase_mul s (fun j => y j ^ t) hi
 
-theorem subtree_weighted_sum_mul_block_sum_pow
+lemma subtree_weighted_sum_mul_block_sum_pow
     {R ι : Type*} [CommSemiring R] [DecidableEq ι]
     (s : Finset ι) (y a : ι → R) (t d : ℕ) (hd : d ≤ t)
     (hnil : ∀ j ∈ s, y j ^ (t + 1) = 0) :
@@ -12864,7 +12864,7 @@ noncomputable def subtreeFormProduct
           ((∑ i ∈ left.leaves, y i) ^ d +
             algebraMap ℂ R lam * (∑ i ∈ right.leaves, y i) ^ d)
 
-@[simp] theorem subtreeFormProduct_branch
+@[simp] lemma subtreeFormProduct_branch
     {R ι : Type*} [CommSemiring R] [Algebra ℂ R] [DecidableEq ι]
     (y : ι → R) (t d : ℕ) (lam : ℂ) (left right : BlockTree ι) :
     subtreeFormProduct y t d lam (.branch left right) =
@@ -12885,7 +12885,7 @@ noncomputable def subtreeLinearFormProduct
               algebraMap ℂ R (2 * ζ ^ j) *
                 (∑ i ∈ right.leaves, y i))
 
-theorem subtreeLinearFormProduct_eq_subtreeFormProduct
+lemma subtreeLinearFormProduct_eq_subtreeFormProduct
     {R ι : Type*} [CommRing R] [Algebra ℂ R] [DecidableEq ι]
     (y : ι → R) (t d : ℕ) (hd : 0 < d) {ζ : ℂ}
     (hζ : IsPrimitiveRoot ζ d) (tree : BlockTree ι) :
@@ -12899,7 +12899,7 @@ theorem subtreeLinearFormProduct_eq_subtreeFormProduct
       rw [ih_left, ih_right,
         rootOfUnity_node_product_source_algebra hd hζ]
 
-theorem subtree_topProduct_union_erase_left
+lemma subtree_topProduct_union_erase_left
     {R ι : Type*} [CommSemiring R] [DecidableEq ι]
     (left right : Finset ι) (hdisj : Disjoint left right)
     (y : ι → R) (t : ℕ) {i : ι} (hi : i ∈ left) :
@@ -12912,7 +12912,7 @@ theorem subtree_topProduct_union_erase_left
   rw [Finset.erase_union_distrib, Finset.erase_eq_self.mpr hnot]
   exact Finset.prod_union hdisj'
 
-theorem subtree_topProduct_union_erase_right
+lemma subtree_topProduct_union_erase_right
     {R ι : Type*} [CommSemiring R] [DecidableEq ι]
     (left right : Finset ι) (hdisj : Disjoint left right)
     (y : ι → R) (t : ℕ) {i : ι} (hi : i ∈ right) :
@@ -12925,7 +12925,7 @@ theorem subtree_topProduct_union_erase_right
   rw [Finset.erase_union_distrib, Finset.erase_eq_self.mpr hnot]
   exact Finset.prod_union hdisj'
 
-theorem subtreeFormProduct_eq_expansion
+lemma subtreeFormProduct_eq_expansion
     {R ι : Type*} [CommSemiring R] [Algebra ℂ R] [DecidableEq ι]
     (y : ι → R) (t d : ℕ) (hd : d ≤ t) (lam : ℂ)
     (tree : BlockTree ι) (hnodup : tree.leafList.Nodup)
@@ -13101,7 +13101,7 @@ theorem subtreeFormProduct_eq_expansion
                   ∏ j ∈ (left.leaves ∪ right.leaves).erase i, y j ^ t) :=
                     (Finset.sum_union hdisj).symm
 
-theorem subtreeLinearFormProduct_eq_expansion
+lemma subtreeLinearFormProduct_eq_expansion
     {R ι : Type*} [CommRing R] [Algebra ℂ R] [DecidableEq ι]
     (y : ι → R) (t d : ℕ) (hdpos : 0 < d) (hd : d ≤ t)
     {ζ : ℂ} (hζ : IsPrimitiveRoot ζ d)
@@ -13118,7 +13118,7 @@ theorem subtreeLinearFormProduct_eq_expansion
   exact subtreeFormProduct_eq_expansion y t d hd
     (((-1 : ℂ) ^ (d + 1)) * (2 : ℂ) ^ d) tree hnodup hnil
 
-theorem squareZero_subtreeLinearFormProduct_eq_expansion
+lemma squareZero_subtreeLinearFormProduct_eq_expansion
     {ι : Type*} [DecidableEq ι] (r : ℕ)
     (blocks : ι → Finset (Fin r)) (tree : BlockTree ι)
     (t d : ℕ) (hdpos : 0 < d) (hd : d ≤ t)
@@ -13148,19 +13148,19 @@ open scoped BigOperators
 noncomputable def squareFreeExponent {ι : Type*} (rows : Finset ι) : ι →₀ ℕ :=
   Finsupp.indicator rows (fun _ _ => 1)
 
-@[simp] theorem squareFreeExponent_apply {ι : Type*} [DecidableEq ι]
+@[simp] lemma squareFreeExponent_apply {ι : Type*} [DecidableEq ι]
     (rows : Finset ι) (i : ι) :
     squareFreeExponent rows i = if i ∈ rows then 1 else 0 := by
   classical
   simp [squareFreeExponent, Finsupp.indicator_apply]
 
-@[simp] theorem squareFreeExponent_support {ι : Type*} (rows : Finset ι) :
+@[simp] lemma squareFreeExponent_support {ι : Type*} (rows : Finset ι) :
     (squareFreeExponent rows).support = rows := by
   classical
   ext i
   simp [Finsupp.mem_support_iff, squareFreeExponent_apply]
 
-theorem eq_squareFreeExponent_support_of_le {ι : Type*}
+lemma eq_squareFreeExponent_support_of_le {ι : Type*}
     (rows : Finset ι) (exponent : ι →₀ ℕ)
     (hle : exponent ≤ squareFreeExponent rows) :
     exponent = squareFreeExponent exponent.support := by
@@ -13180,14 +13180,14 @@ noncomputable def squareFreeMonomial {ι : Type*}
     (rows : Finset ι) : MvPolynomial ι ℂ :=
   ∏ i ∈ rows, MvPolynomial.X i
 
-theorem squareFreeMonomial_eq_monomial {ι : Type*} (rows : Finset ι) :
+lemma squareFreeMonomial_eq_monomial {ι : Type*} (rows : Finset ι) :
     squareFreeMonomial rows =
       MvPolynomial.monomial (squareFreeExponent rows) (1 : ℂ) := by
   classical
   simpa [squareFreeMonomial, squareFreeExponent] using
     (MvPolynomial.prod_X_pow (R := ℂ) (fun _ : ι => 1) rows)
 
-theorem coeff_squareFree_variable_sq_mul {ι : Type*}
+lemma coeff_squareFree_variable_sq_mul {ι : Type*}
     (rows : Finset ι) (i : ι) (p : MvPolynomial ι ℂ) :
     MvPolynomial.coeff (squareFreeExponent rows)
       ((MvPolynomial.X i) ^ 2 * p) = 0 := by
@@ -13203,7 +13203,7 @@ theorem coeff_squareFree_variable_sq_mul {ι : Type*}
     omega
   · rfl
 
-theorem coeff_squareFree_mul_of_forall_eq_zero {ι : Type*}
+lemma coeff_squareFree_mul_of_forall_eq_zero {ι : Type*}
     (p q : MvPolynomial ι ℂ)
     (hp : ∀ rows : Finset ι,
       MvPolynomial.coeff (squareFreeExponent rows) p = 0)
@@ -13222,7 +13222,7 @@ theorem coeff_squareFree_mul_of_forall_eq_zero {ι : Type*}
     rows decomposition.2 hle
   rw [hsquare, hp decomposition.2.support, mul_zero]
 
-theorem coeff_squareFree_eq_zero_of_mem_squareZeroIdeal
+lemma coeff_squareFree_eq_zero_of_mem_squareZeroIdeal
     (r : ℕ) {p : MvPolynomial (Fin r) ℂ}
     (hp : p ∈ squareZeroIdeal r) (rows : Finset (Fin r)) :
     MvPolynomial.coeff (squareFreeExponent rows) p = 0 := by
@@ -13262,13 +13262,13 @@ noncomputable def squareZeroCoefficient (r : ℕ) (rows : Finset (Fin r)) :
     (Submodule.Quotient.restrictScalarsEquiv ℂ
       (squareZeroIdeal r)).symm.toLinearMap
 
-@[simp] theorem squareZeroCoefficient_mk (r : ℕ)
+@[simp] lemma squareZeroCoefficient_mk (r : ℕ)
     (rows : Finset (Fin r)) (p : MvPolynomial (Fin r) ℂ) :
     squareZeroCoefficient r rows (Ideal.Quotient.mk (squareZeroIdeal r) p) =
       MvPolynomial.coeff (squareFreeExponent rows) p := by
   rfl
 
-theorem squareFreeMonomial_quotient_eq_variable_product
+lemma squareFreeMonomial_quotient_eq_variable_product
     (r : ℕ) (rows : Finset (Fin r)) :
     Ideal.Quotient.mk (squareZeroIdeal r) (squareFreeMonomial rows) =
       ∏ i ∈ rows, squareZeroVariable r i := by
@@ -13287,7 +13287,7 @@ noncomputable def columnAssignmentExponent {r k : ℕ}
     (assignment : Fin k → Fin r) : Fin r →₀ ℕ :=
   ∑ column : Fin k, Finsupp.single (assignment column) 1
 
-theorem columnAssignmentExponent_apply {r k : ℕ}
+lemma columnAssignmentExponent_apply {r k : ℕ}
     (assignment : Fin k → Fin r) (row : Fin r) :
     columnAssignmentExponent assignment row =
       ((Finset.univ : Finset (Fin k)).filter
@@ -13296,7 +13296,7 @@ theorem columnAssignmentExponent_apply {r k : ℕ}
   simp [columnAssignmentExponent, Finsupp.single_apply,
     Finset.sum_boole]
 
-@[simp] theorem columnAssignmentExponent_support {r k : ℕ}
+@[simp] lemma columnAssignmentExponent_support {r k : ℕ}
     (assignment : Fin k → Fin r) :
     (columnAssignmentExponent assignment).support =
       (Finset.univ : Finset (Fin k)).image assignment := by
@@ -13304,7 +13304,7 @@ theorem columnAssignmentExponent_apply {r k : ℕ}
   ext row
   simp [Finsupp.mem_support_iff, columnAssignmentExponent_apply]
 
-theorem columnAssignment_injective_of_squareFree {r k : ℕ}
+lemma columnAssignment_injective_of_squareFree {r k : ℕ}
     (assignment : Fin k → Fin r) (rows : Finset (Fin r))
     (hassignment : columnAssignmentExponent assignment =
       squareFreeExponent rows) :
@@ -13323,7 +13323,7 @@ theorem columnAssignment_injective_of_squareFree {r k : ℕ}
   exact (Finset.card_le_one.mp hcard)
     left (by simp [fiber]) right (by simp [fiber, heq])
 
-theorem columnAssignment_image_eq_of_squareFree {r k : ℕ}
+lemma columnAssignment_image_eq_of_squareFree {r k : ℕ}
     (assignment : Fin k → Fin r) (rows : Finset (Fin r))
     (hassignment : columnAssignmentExponent assignment =
       squareFreeExponent rows) :
@@ -13332,7 +13332,7 @@ theorem columnAssignment_image_eq_of_squareFree {r k : ℕ}
   simpa only [columnAssignmentExponent_support,
     squareFreeExponent_support] using hs
 
-theorem columnAssignment_product_eq_monomial {r k : ℕ}
+lemma columnAssignment_product_eq_monomial {r k : ℕ}
     (U : Matrix (Fin r) (Fin k) ℂ) (assignment : Fin k → Fin r) :
     (∏ column : Fin k,
       MvPolynomial.C (U (assignment column) column) *
@@ -13347,7 +13347,7 @@ theorem columnAssignment_product_eq_monomial {r k : ℕ}
       (fun column => Finsupp.single (assignment column) 1)
       (fun column => U (assignment column) column)).symm
 
-theorem coeff_columnLinearFormProduct_eq_assignment_sum {r k : ℕ}
+lemma coeff_columnLinearFormProduct_eq_assignment_sum {r k : ℕ}
     (U : Matrix (Fin r) (Fin k) ℂ) (rows : Finset (Fin r)) :
     MvPolynomial.coeff (squareFreeExponent rows)
       (columnLinearFormProduct U) =
@@ -13372,7 +13372,7 @@ theorem coeff_columnLinearFormProduct_eq_assignment_sum {r k : ℕ}
       (∏ column : Fin k, U (assignment column) column)) = _
   rw [MvPolynomial.coeff_monomial]
 
-theorem columnAssignmentExponent_equiv_apply {r k : ℕ}
+lemma columnAssignmentExponent_equiv_apply {r k : ℕ}
     (rows : Finset (Fin r)) (rowEquiv : Fin k ≃ {row // row ∈ rows})
     (permutation : Equiv.Perm (Fin k)) :
     columnAssignmentExponent
@@ -13438,7 +13438,7 @@ noncomputable def squareFreeColumnMatchingPermutation {r k : ℕ}
         simpa using congrArg Subtype.val hrows
       · rfl)
 
-@[simp] theorem squareFreeColumnMatchingPermutation_apply {r k : ℕ}
+@[simp] lemma squareFreeColumnMatchingPermutation_apply {r k : ℕ}
     (rows : Finset (Fin r)) (rowEquiv : Fin k ≃ {row // row ∈ rows})
     (assignment : Fin k → Fin r)
     (hassignment : columnAssignmentExponent assignment =
@@ -13448,7 +13448,7 @@ noncomputable def squareFreeColumnMatchingPermutation {r k : ℕ}
         hassignment column)).val = assignment column := by
   simp [squareFreeColumnMatchingPermutation]
 
-theorem coeff_columnLinearFormProduct_eq_permanent {r k : ℕ}
+lemma coeff_columnLinearFormProduct_eq_permanent {r k : ℕ}
     (U : Matrix (Fin r) (Fin k) ℂ) (rows : Finset (Fin r))
     (rowEquiv : Fin k ≃ {row // row ∈ rows}) :
     MvPolynomial.coeff (squareFreeExponent rows)
@@ -13517,7 +13517,7 @@ noncomputable def partitionDerivative (t d : ℕ) (i : Fin t)
     ∑ partition : Finpartition rows,
       MvPolynomial.C (partitionMobius partition) * partitionBlockFactor p partition
 
-theorem partitionMobius_mul_neg_one_pow {t : ℕ} {rows : Finset (Fin t)}
+lemma partitionMobius_mul_neg_one_pow {t : ℕ} {rows : Finset (Fin t)}
     (partition : Finpartition rows) :
     partitionMobius partition * (-1 : ℂ) ^ partition.parts.card =
       (-1 : ℂ) ^ rows.card *
@@ -13551,7 +13551,7 @@ theorem partitionMobius_mul_neg_one_pow {t : ℕ} {rows : Finset (Fin t)}
           ∏ block ∈ partition.parts, ((block.card - 1).factorial : ℂ) := by
       rw [partition.sum_card_parts]
 
-theorem minorSum_isHomogeneous (t s d : ℕ) :
+lemma minorSum_isHomogeneous (t s d : ℕ) :
     (minorSum t s d).IsHomogeneous d := by
   classical
   unfold minorSum
@@ -13584,7 +13584,7 @@ noncomputable def sourceMatchingEmbedding
       rows ≃ columns.val) : rows ↪ Fin s :=
   data.2.toEmbedding.trans (Function.Embedding.subtype _)
 
-theorem sourceMatchingEmbedding_bijective
+lemma sourceMatchingEmbedding_bijective
     {t s : ℕ} (rows : Finset (Fin t)) :
     Function.Bijective (sourceMatchingEmbedding (s := s) rows) := by
   classical
@@ -13641,7 +13641,7 @@ theorem sourceMatchingEmbedding_bijective
     ext row
     rfl
 
-theorem sourceMatching_sum_eq_embeddings
+lemma sourceMatching_sum_eq_embeddings
     {t s : ℕ} {R : Type*} [CommSemiring R]
     (rows : Finset (Fin t)) (weight : Fin t → Fin s → R) :
     (∑ columns ∈ (Finset.univ : Finset (Fin s)).powersetCard rows.card,
@@ -13676,7 +13676,7 @@ theorem sourceMatching_sum_eq_embeddings
             (sourceMatchingEmbedding_bijective rows)
             _ _ (fun _ => rfl)
 
-theorem minorSum_eq_source_embeddings (t s d : ℕ) :
+lemma minorSum_eq_source_embeddings (t s d : ℕ) :
     minorSum t s d =
       ∑ rows ∈ (Finset.univ : Finset (Fin t)).powersetCard d,
         ∑ embedding : rows ↪ Fin s,
@@ -13716,7 +13716,7 @@ noncomputable def sourceFixedEdgeEmbedding
     have hrows := data.val.injective hvalues
     exact congrArg (fun r : rows => r.val) hrows
 
-theorem sourceFixedEdgeEmbedding_bijective
+lemma sourceFixedEdgeEmbedding_bijective
     {t s : ℕ} (rows : Finset (Fin t)) (i : Fin t) (column : Fin s)
     (hrow : i ∈ rows) :
     Function.Bijective (sourceFixedEdgeEmbedding rows i column hrow) := by
@@ -13776,7 +13776,7 @@ theorem sourceFixedEdgeEmbedding_bijective
     have hnot : row.val ≠ i := (Finset.mem_erase.mp row.property).1
     simp [sourceFixedEdgeEmbedding, whole, extend, hnot]
 
-theorem sourceFixedEdgeEmbedding_prod
+lemma sourceFixedEdgeEmbedding_prod
     {t s : ℕ} (rows : Finset (Fin t)) (i : Fin t) (column : Fin s)
     (hrow : i ∈ rows) (point : Fin t × Fin s → ℂ)
     (data : {embedding : rows ↪ Fin s //
@@ -13812,7 +13812,7 @@ theorem sourceFixedEdgeEmbedding_prod
   · intro other hother
     rfl
 
-theorem sourceFixedEdgeEmbedding_weighted_sum
+lemma sourceFixedEdgeEmbedding_weighted_sum
     {t s : ℕ} (rows : Finset (Fin t)) (i : Fin t) (column : Fin s)
     (hrow : i ∈ rows) (point : Fin t × Fin s → ℂ) :
     (∑ embedding : rows ↪ Fin s,
@@ -13857,7 +13857,7 @@ theorem sourceFixedEdgeEmbedding_weighted_sum
               (sourceFixedEdgeEmbedding_bijective rows i column hrow)
               _ _ (sourceFixedEdgeEmbedding_prod rows i column hrow point)
 
-private theorem sourceMatching_pderiv_finset_prod
+private lemma sourceMatching_pderiv_finset_prod
     {ι σ R : Type*} [DecidableEq ι] [CommSemiring R]
     (coordinate : σ) (indices : Finset ι)
     (f : ι → MvPolynomial σ R) :
@@ -13882,7 +13882,7 @@ private theorem sourceMatching_pderiv_finset_prod
       Finset.prod_insert (fun h => hnot (Finset.mem_of_mem_erase h))]
     ac_rfl
 
-theorem eval_minorSum_pderiv_source_embeddings
+lemma eval_minorSum_pderiv_source_embeddings
     (t s d : ℕ) (point : Fin t × Fin s → ℂ)
     (i : Fin t) (column : Fin s) :
     MvPolynomial.eval point
@@ -13913,7 +13913,7 @@ theorem eval_minorSum_pderiv_source_embeddings
   · simp [MvPolynomial.pderiv_X, h]
   · simp [MvPolynomial.pderiv_X, h]
 
-theorem sourceMatching_embedding_edge_sum
+lemma sourceMatching_embedding_edge_sum
     {t s : ℕ} (rows : Finset (Fin t))
     (i : Fin t) (column : Fin s)
     (point : Fin t × Fin s → ℂ) (embedding : rows ↪ Fin s) :
@@ -13951,7 +13951,7 @@ theorem sourceMatching_embedding_edge_sum
     have hne : other.val ≠ i := fun heq => hrow (heq ▸ other.property)
     simp [hne]
 
-theorem sourceMatching_row_derivative_eq_excluded_embeddings
+lemma sourceMatching_row_derivative_eq_excluded_embeddings
     {t s : ℕ} (rows : Finset (Fin t))
     (i : Fin t) (column : Fin s)
     (point : Fin t × Fin s → ℂ) (hrow : i ∈ rows) :
@@ -13985,7 +13985,7 @@ theorem sourceMatching_row_derivative_eq_excluded_embeddings
     _ = _ := sourceFixedEdgeEmbedding_weighted_sum
       rows i column hrow point
 
-theorem eval_minorSum_pderiv_eq_excluded_embeddings
+lemma eval_minorSum_pderiv_eq_excluded_embeddings
     (t s d : ℕ) (hd : 0 < d) (point : Fin t × Fin s → ℂ)
     (i : Fin t) (column : Fin s) :
     MvPolynomial.eval point
@@ -14086,14 +14086,14 @@ section Standalone_PartitionInversion
 
 open scoped BigOperators
 
-theorem partition_empty_eq {α : Type*} [DecidableEq α]
+lemma partition_empty_eq {α : Type*} [DecidableEq α]
     (partition : Finpartition (∅ : Finset α)) :
     partition = Finpartition.empty (Finset α) := by
   apply Finpartition.ext
   change partition.parts = ∅
   exact Finpartition.parts_eq_empty_iff.mpr rfl
 
-theorem partition_cycle_factorial_empty (t : ℕ) :
+lemma partition_cycle_factorial_empty (t : ℕ) :
     (∑ partition : Finpartition (∅ : Finset (Fin t)),
       ∏ block ∈ partition.parts, (block.card - 1).factorial) =
         (0 : ℕ).factorial := by
@@ -14131,7 +14131,7 @@ noncomputable def partitionRemovePart {α : Type*} [DecidableEq α]
       apply hnot
       simpa [heq] using hrowpart)
 
-@[simp] theorem partitionRemovePart_parts {α : Type*} [DecidableEq α]
+@[simp] lemma partitionRemovePart_parts {α : Type*} [DecidableEq α]
     {rows : Finset α} (partition : Finpartition rows)
     (block : Finset α) (hblock : block ∈ partition.parts) :
     (partitionRemovePart partition block hblock).parts =
@@ -14146,7 +14146,7 @@ noncomputable def partitionAddPart {α : Type*} [DecidableEq α]
     change rows \ block ∪ block = rows
     exact Finset.sdiff_union_of_subset hsubset)
 
-theorem partition_block_not_mem_complement
+lemma partition_block_not_mem_complement
     {α : Type*} [DecidableEq α] {rows : Finset α}
     (block : Finset α) (hnonempty : block.Nonempty)
     (partition : Finpartition (rows \ block)) :
@@ -14156,7 +14156,7 @@ theorem partition_block_not_mem_complement
   exact (Finset.mem_sdiff.mp
     ((partition.subset hblock) hrow)).2 hrow
 
-theorem partition_weight_fiber {α R : Type*}
+lemma partition_weight_fiber {α R : Type*}
     [DecidableEq α] [CommSemiring R]
     (weight : Finset α → R) (rows : Finset α)
     (distinguished : α) (hdistinguished : distinguished ∈ rows)
@@ -14252,7 +14252,7 @@ theorem partition_weight_fiber {α R : Type*}
     exact (Finset.mul_prod_erase partition.parts weight
       (hblock partition hpartition)).symm
 
-theorem partition_weight_sum {α R : Type*}
+lemma partition_weight_sum {α R : Type*}
     [DecidableEq α] [CommSemiring R]
     (weight : Finset α → R) (rows : Finset α)
     (distinguished : α) (hdistinguished : distinguished ∈ rows) :
@@ -14294,7 +14294,7 @@ theorem partition_weight_sum {α R : Type*}
       exact partition_weight_fiber weight rows distinguished hdistinguished
         selected (Finset.mem_powerset.mp hselected)
 
-theorem partition_cycle_factorial_fiber
+lemma partition_cycle_factorial_fiber
     {α : Type*} [DecidableEq α] (rows : Finset α)
     (distinguished : α) (hdistinguished : distinguished ∈ rows)
     (selected : Finset α) (hselected : selected ⊆ rows.erase distinguished) :
@@ -14315,7 +14315,7 @@ theorem partition_cycle_factorial_fiber
       (fun block : Finset α => (block.card - 1).factorial)
       rows distinguished hdistinguished selected hselected)
 
-theorem sum_powerset_factorial_mul_factorial {α : Type*}
+lemma sum_powerset_factorial_mul_factorial {α : Type*}
     [DecidableEq α] (rows : Finset α) :
     (∑ selected ∈ rows.powerset,
       selected.card.factorial * (rows \ selected).card.factorial) =
@@ -14352,7 +14352,7 @@ theorem sum_powerset_factorial_mul_factorial {α : Type*}
     _ = (rows.card + 1).factorial := by
       simp [Nat.factorial_succ, mul_comm]
 
-theorem signed_factorial_powerset {α : Type*}
+lemma signed_factorial_powerset {α : Type*}
     [DecidableEq α] (others : Finset α) :
     (∑ selected ∈ others.powerset,
       ((-1 : ℂ) ^ selected.card * (selected.card.factorial : ℂ)) *
@@ -14439,7 +14439,7 @@ theorem signed_factorial_powerset {α : Type*}
             · ring
             · omega
 
-theorem partitionMobius_sum {t : ℕ} (rows : Finset (Fin t)) :
+lemma partitionMobius_sum {t : ℕ} (rows : Finset (Fin t)) :
     (∑ partition : Finpartition rows, partitionMobius partition) =
       if rows.card ≤ 1 then (1 : ℂ) else 0 := by
   classical
@@ -14544,7 +14544,7 @@ theorem partitionMobius_sum {t : ℕ} (rows : Finset (Fin t)) :
                 have hsmall : rows.card ≤ 1 := by omega
                 simp [hremaining, hsmall]
 
-theorem partition_cycle_factorial {t : ℕ} (rows : Finset (Fin t)) :
+lemma partition_cycle_factorial {t : ℕ} (rows : Finset (Fin t)) :
     (∑ partition : Finpartition rows,
       ∏ block ∈ partition.parts, (block.card - 1).factorial) =
         rows.card.factorial := by
@@ -14619,7 +14619,7 @@ theorem partition_cycle_factorial {t : ℕ} (rows : Finset (Fin t)) :
             ⟨distinguished, hdistinguished⟩
           omega
 
-theorem partition_cycle_factorial_complex {t : ℕ}
+lemma partition_cycle_factorial_complex {t : ℕ}
     (rows : Finset (Fin t)) :
     (∑ partition : Finpartition rows,
       ∏ block ∈ partition.parts,
@@ -14627,7 +14627,7 @@ theorem partition_cycle_factorial_complex {t : ℕ}
       (rows.card.factorial : ℂ) := by
   exact_mod_cast partition_cycle_factorial rows
 
-theorem partition_selected_blocks_card_lt {t : ℕ}
+lemma partition_selected_blocks_card_lt {t : ℕ}
     {rows : Finset (Fin t)} (partition : Finpartition rows)
     (selected : Finset (Finset (Fin t)))
     (hselected : selected ⊆ partition.parts)
@@ -14643,7 +14643,7 @@ theorem partition_selected_blocks_card_lt {t : ℕ}
     (Finset.card_pos.mpr (partition.nonempty_of_mem_parts hblock))
     (fun _ _ _ => Nat.zero_le _)
 
-theorem eval_powerSum_sub_column_monomial (t s : ℕ)
+lemma eval_powerSum_sub_column_monomial (t s : ℕ)
     (point : Fin t × Fin s → ℂ) (column : Fin s)
     (block : Finset (Fin t)) :
     MvPolynomial.eval point (powerSum t s block) -
@@ -14657,7 +14657,7 @@ theorem eval_powerSum_sub_column_monomial (t s : ℕ)
     (Finset.mem_univ column)]
   ring
 
-theorem eval_partitionBlockFactor_excluded_columns (t s : ℕ)
+lemma eval_partitionBlockFactor_excluded_columns (t s : ℕ)
     (point : Fin t × Fin s → ℂ) (column : Fin s)
     {rows : Finset (Fin t)} (partition : Finpartition rows) :
     MvPolynomial.eval (fun row => point (row, column))
@@ -14674,7 +14674,7 @@ theorem eval_partitionBlockFactor_excluded_columns (t s : ℕ)
   intro block _
   exact eval_powerSum_sub_column_monomial t s point column block
 
-theorem eval_partitionDerivative_excluded_columns
+lemma eval_partitionDerivative_excluded_columns
     (t s d : ℕ) (point : Fin t × Fin s → ℂ)
     (i : Fin t) (column : Fin s) :
     MvPolynomial.eval (fun row => point (row, column))
@@ -14701,7 +14701,7 @@ noncomputable def columnAssignmentFiberPartition
   classical
   exact Finpartition.ofSetSetoid (Setoid.ker assignment) rows
 
-theorem mem_columnAssignmentFiberPartition_part_iff
+lemma mem_columnAssignmentFiberPartition_part_iff
     {t s : ℕ} (rows : Finset (Fin t)) (assignment : Fin t → Fin s)
     (left right : Fin t) :
     right ∈ (columnAssignmentFiberPartition rows assignment).part left ↔
@@ -14713,7 +14713,7 @@ theorem mem_columnAssignmentFiberPartition_part_iff
   exact Finpartition.mem_part_ofSetSetoid_iff_rel
     (s := Setoid.ker assignment) rows
 
-theorem columnAssignmentFiberPartition_mobius_product
+lemma columnAssignmentFiberPartition_mobius_product
     {t s : ℕ} (rows : Finset (Fin t)) (assignment : Fin t → Fin s) :
     (∏ block ∈ (columnAssignmentFiberPartition rows assignment).parts,
       ∑ partition : Finpartition block, partitionMobius partition) =
@@ -14760,7 +14760,7 @@ theorem columnAssignmentFiberPartition_mobius_product
     exact hne ((Finset.card_le_one.mp hsmall)
       left hleft_block right hright_block)
 
-theorem partition_mem_restrict_of_refinement
+lemma partition_mem_restrict_of_refinement
     {α : Type*} [DecidableEq α] {rows : Finset α}
     {fine coarse : Finpartition rows} (hrefine : fine ≤ coarse)
     {coarseBlock : Finset α} (hcoarseBlock : coarseBlock ∈ coarse.parts)
@@ -14796,7 +14796,7 @@ theorem partition_mem_restrict_of_refinement
     exact Finset.mem_image.mpr
       ⟨block, hblock, inf_eq_left.mpr hsubset⟩
 
-theorem partition_bind_refines
+lemma partition_bind_refines
     {α : Type*} [DecidableEq α] {rows : Finset α}
     (coarse : Finpartition rows)
     (refinements : ∀ block : coarse.parts, Finpartition block.val) :
@@ -14863,7 +14863,7 @@ noncomputable def partitionRefinementEquiv
       exact ⟨⟨block.val, block.property, hpart⟩,
         (refinements block).subset hpart⟩
 
-theorem partitionMobius_bind
+lemma partitionMobius_bind
     {t : ℕ} {rows : Finset (Fin t)} (coarse : Finpartition rows)
     (refinements : ∀ block : coarse.parts, Finpartition block.val) :
     partitionMobius
@@ -14890,7 +14890,7 @@ theorem partitionMobius_bind
         (hsubsetleft hrow) (hsubsetright hrow)
     exact hne (Subtype.ext heq)
 
-theorem partitionMobius_sum_refinements
+lemma partitionMobius_sum_refinements
     {t : ℕ} {rows : Finset (Fin t)} (coarse : Finpartition rows)
     [DecidablePred (fun fine : Finpartition rows => fine ≤ coarse)] :
     (∑ fine : {fine : Finpartition rows // fine ≤ coarse},
@@ -14924,7 +14924,7 @@ theorem partitionMobius_sum_refinements
           fun refinement : Finpartition block.val =>
             partitionMobius refinement)).symm
 
-theorem columnAssignmentFiberPartition_mobius_sum_refinements
+lemma columnAssignmentFiberPartition_mobius_sum_refinements
     {t s : ℕ} (rows : Finset (Fin t)) (assignment : Fin t → Fin s)
     [DecidablePred (fun fine : Finpartition rows =>
       fine ≤ columnAssignmentFiberPartition rows assignment)] :
@@ -14952,7 +14952,7 @@ theorem columnAssignmentFiberPartition_mobius_sum_refinements
           then (1 : ℂ) else 0 :=
       columnAssignmentFiberPartition_mobius_product rows assignment
 
-theorem partition_refines_columnAssignmentFiberPartition_iff
+lemma partition_refines_columnAssignmentFiberPartition_iff
     {t s : ℕ} (rows : Finset (Fin t)) (assignment : Fin t → Fin s)
     (partition : Finpartition rows) :
     partition ≤ columnAssignmentFiberPartition rows assignment ↔
@@ -14990,7 +14990,7 @@ noncomputable def partitionBlockRepresentative
       (Classical.choose_spec
         (partition.nonempty_of_mem_parts block.property))⟩
 
-theorem partitionBlockRepresentative_mem
+lemma partitionBlockRepresentative_mem
     {α : Type*} [DecidableEq α] {rows : Finset α}
     (partition : Finpartition rows) (block : partition.parts) :
     (partitionBlockRepresentative partition block).val ∈ block.val :=
@@ -15044,7 +15044,7 @@ noncomputable def partitionBlockAssignmentEquiv
           partition.part_mem.mpr row.property⟩)
       row.val (partition.mem_part row.property)
 
-theorem partitionBlockAssignmentEquiv_prod
+lemma partitionBlockAssignmentEquiv_prod
     {α column R : Type*} [DecidableEq α] [CommMonoid R]
     {rows : Finset α} (partition : Finpartition rows)
     (assignment : partition.parts → column)
@@ -15078,7 +15078,7 @@ theorem partitionBlockAssignmentEquiv_prod
       exact (partition.part_eq_of_mem entry.1.property
         entry.2.property).symm
 
-theorem partition_block_assignment_sum_comm
+lemma partition_block_assignment_sum_comm
     {t : ℕ} {column : Type*} [Fintype column] [DecidableEq column]
     {rows : Finset (Fin t)} (weight : Fin t → column → ℂ) :
     (∑ partition : Finpartition rows,
@@ -15171,7 +15171,7 @@ noncomputable def selectedRowAssignmentExtend
     (assignment : rows → Fin s) (defaultColumn : Fin s) : Fin t → Fin s :=
   fun row => if hrow : row ∈ rows then assignment ⟨row, hrow⟩ else defaultColumn
 
-@[simp] theorem selectedRowAssignmentExtend_apply
+@[simp] lemma selectedRowAssignmentExtend_apply
     {t s : ℕ} (rows : Finset (Fin t))
     (assignment : rows → Fin s) (defaultColumn : Fin s) (row : rows) :
     selectedRowAssignmentExtend rows assignment defaultColumn row.val =
@@ -15179,7 +15179,7 @@ noncomputable def selectedRowAssignmentExtend
   classical
   simp [selectedRowAssignmentExtend, row.property]
 
-theorem selectedRowAssignmentExtend_injOn_iff
+lemma selectedRowAssignmentExtend_injOn_iff
     {t s : ℕ} (rows : Finset (Fin t))
     (assignment : rows → Fin s) (defaultColumn : Fin s) :
     Set.InjOn (selectedRowAssignmentExtend rows assignment defaultColumn)
@@ -15206,7 +15206,7 @@ theorem selectedRowAssignmentExtend_injOn_iff
             defaultColumn ⟨right, hright⟩
     exact congrArg Subtype.val (hinj hvalues)
 
-theorem selectedRowAssignment_mobius_sum_refinements
+lemma selectedRowAssignment_mobius_sum_refinements
     {t s : ℕ} (rows : Finset (Fin t))
     (assignment : rows → Fin s) (defaultColumn : Fin s)
     [DecidablePred (fun fine : Finpartition rows =>
@@ -15228,7 +15228,7 @@ theorem selectedRowAssignment_mobius_sum_refinements
     exact hinj ((selectedRowAssignmentExtend_injOn_iff
       rows assignment defaultColumn).mp hextend)
 
-theorem selectedRowAssignment_partitionMobius_filter_sum
+lemma selectedRowAssignment_partitionMobius_filter_sum
     {t s : ℕ} (rows : Finset (Fin t))
     (assignment : rows → Fin s) (defaultColumn : Fin s) :
     (∑ partition ∈
@@ -15310,7 +15310,7 @@ theorem selectedRowAssignment_partitionMobius_filter_sum
       selectedRowAssignment_mobius_sum_refinements
         rows assignment defaultColumn
 
-theorem excludedColumnAssignment_partitionMobius_filter_sum
+lemma excludedColumnAssignment_partitionMobius_filter_sum
     {t s : ℕ} (rows : Finset (Fin t)) (excluded : Fin s)
     (assignment : rows → {column : Fin s // column ≠ excluded}) :
     (∑ partition ∈
@@ -15376,7 +15376,7 @@ theorem excludedColumnAssignment_partitionMobius_filter_sum
       · rw [if_neg hassignment, if_neg]
         exact fun hraw => hassignment (hinj.mp hraw)
 
-theorem partitionMobius_excluded_columns_eq_embeddings
+lemma partitionMobius_excluded_columns_eq_embeddings
     (t s : ℕ) (point : Fin t × Fin s → ℂ) (excluded : Fin s)
     (rows : Finset (Fin t)) :
     (∑ partition : Finpartition rows,
@@ -15495,7 +15495,7 @@ theorem partitionMobius_excluded_columns_eq_embeddings
         rfl
     _ = _ := rfl
 
-theorem eval_partitionDerivative_eq_excluded_embeddings
+lemma eval_partitionDerivative_eq_excluded_embeddings
     (t s d : ℕ) (point : Fin t × Fin s → ℂ)
     (i : Fin t) (excluded : Fin s) :
     MvPolynomial.eval (fun row => point (row, excluded))
@@ -15512,7 +15512,7 @@ theorem eval_partitionDerivative_eq_excluded_embeddings
   exact partitionMobius_excluded_columns_eq_embeddings
     t s point excluded rows
 
-theorem eval_minorSum_pderiv_eq_partitionDerivative
+lemma eval_minorSum_pderiv_eq_partitionDerivative
     (t s d : ℕ) (hd : 0 < d)
     (point : Fin t × Fin s → ℂ) (i : Fin t) (column : Fin s) :
     MvPolynomial.eval point
@@ -15551,13 +15551,13 @@ noncomputable def incidenceParameterExtend {t : ℕ}
     (p : IncidenceParameter t) (block : Finset (Fin t)) : ℂ :=
   if h : block.Nonempty then p ⟨block, h⟩ else 0
 
-@[simp] theorem incidenceParameterExtend_nonempty {t : ℕ}
+@[simp] lemma incidenceParameterExtend_nonempty {t : ℕ}
     (p : IncidenceParameter t) (block : Finset (Fin t))
     (hblock : block.Nonempty) :
     incidenceParameterExtend p block = p ⟨block, hblock⟩ := by
   simp [incidenceParameterExtend, hblock]
 
-theorem incidence_partitionBlockFactor_congr_of_nonempty {t : ℕ}
+lemma incidence_partitionBlockFactor_congr_of_nonempty {t : ℕ}
     (p q : Finset (Fin t) → ℂ)
     (h : ∀ block : Finset (Fin t), block.Nonempty → p block = q block)
     {rows : Finset (Fin t)} (partition : Finpartition rows) :
@@ -15568,7 +15568,7 @@ theorem incidence_partitionBlockFactor_congr_of_nonempty {t : ℕ}
   intro block hblock
   rw [h block (partition.nonempty_of_mem_parts hblock)]
 
-theorem incidence_partitionDerivative_congr_of_nonempty
+lemma incidence_partitionDerivative_congr_of_nonempty
     (t d : ℕ) (i : Fin t) (p q : Finset (Fin t) → ℂ)
     (h : ∀ block : Finset (Fin t), block.Nonempty → p block = q block) :
     partitionDerivative t d i p = partitionDerivative t d i q := by
@@ -15584,7 +15584,7 @@ noncomputable def partitionFiberCoordinateEsymmPolynomial
     (t q : ℕ) : MvPolynomial (Fin t) ℂ :=
   MvPolynomial.esymm (Fin t) ℂ q
 
-theorem partitionFiberCoordinateEsymmPolynomial_succ_eq_deleted
+lemma partitionFiberCoordinateEsymmPolynomial_succ_eq_deleted
     (t q : ℕ) (i : Fin t) :
     partitionFiberCoordinateEsymmPolynomial t (q + 1) =
       deletedCoordinateEsymmPolynomial t (q + 1) i +
@@ -15604,7 +15604,7 @@ theorem partitionFiberCoordinateEsymmPolynomial_succ_eq_deleted
     eval_deletedCoordinateEsymmPolynomial]
   exact coordinateEsymm_succ_eq_deleted u i q
 
-theorem sum_deletedCoordinateEsymmPolynomial (t q : ℕ) :
+lemma sum_deletedCoordinateEsymmPolynomial (t q : ℕ) :
     (∑ i : Fin t, deletedCoordinateEsymmPolynomial t q i) =
       MvPolynomial.C ((t - q : ℕ) : ℂ) *
         partitionFiberCoordinateEsymmPolynomial t q := by
@@ -15623,7 +15623,7 @@ theorem sum_deletedCoordinateEsymmPolynomial (t q : ℕ) :
   rw [heval]
   exact sum_deletedCoordinateEsymm u q
 
-theorem deletedCoordinateEsymmPolynomial_eq_alternating
+lemma deletedCoordinateEsymmPolynomial_eq_alternating
     (t : ℕ) (i : Fin t) (q : ℕ) :
     deletedCoordinateEsymmPolynomial t q i =
       ∑ j ∈ Finset.range (q + 1),
@@ -15690,7 +15690,7 @@ noncomputable def minorSumPowerParameters (t s : ℕ)
     (x : Fin t × Fin s → ℂ) : IncidenceParameter t :=
   fun block => MvPolynomial.eval x (powerSum t s block.1)
 
-theorem partitionDerivative_incidencePowerParameters
+lemma partitionDerivative_incidencePowerParameters
     (t s d : ℕ) (x : Fin t × Fin s → ℂ) (i : Fin t) :
     partitionDerivative t d i
         (incidenceParameterExtend (minorSumPowerParameters t s x)) =
@@ -15700,7 +15700,7 @@ theorem partitionDerivative_incidencePowerParameters
   intro block hblock
   simp [incidenceParameterExtend, minorSumPowerParameters, hblock]
 
-theorem eval_minorSum_pderiv_eq_incidencePartitionDerivative
+lemma eval_minorSum_pderiv_eq_incidencePartitionDerivative
     (t s d : ℕ) (hd : 0 < d)
     (x : Fin t × Fin s → ℂ) (i : Fin t) (a : Fin s) :
     MvPolynomial.eval x
@@ -15715,7 +15715,7 @@ def minorSumColumns (t s : ℕ)
     (x : Fin t × Fin s → ℂ) : IncidenceColumns t s :=
   fun a i => x (i, a)
 
-theorem incidenceRowBlock_card (t : ℕ) :
+lemma incidenceRowBlock_card (t : ℕ) :
     Fintype.card (IncidenceRowBlock t) = 2 ^ t - 1 := by
   classical
   rw [Fintype.card_subtype]
@@ -15743,7 +15743,7 @@ noncomputable def partitionIncidenceEquation (t s d : ℕ)
             ∏ row ∈ block.1,
               MvPolynomial.X (Sum.inr (a, row)))
 
-theorem eval_partitionIncidenceEquation (t s d : ℕ)
+lemma eval_partitionIncidenceEquation (t s d : ℕ)
     (p : IncidenceParameter t) (columns : IncidenceColumns t s)
     (a : Fin s) (i : Fin t) :
     MvPolynomial.eval (incidenceCoordinatePoint t s p columns)
@@ -15784,7 +15784,7 @@ noncomputable def partitionIncidenceIdeal (t s d : ℕ) :
     (Set.range fun coordinate : Fin s × Fin t =>
       partitionIncidenceEquation t s d coordinate.1 coordinate.2)
 
-theorem partitionIncidence_monicReduction_mem
+lemma partitionIncidence_monicReduction_mem
     (t s d : ℕ) (column : Fin s) (i : Fin t) :
     let q := d - 1
     let k : ℂ := ((t - q : ℕ) : ℂ)
@@ -15878,7 +15878,7 @@ theorem partitionIncidence_monicReduction_mem
     apply Ideal.subset_span
     exact ⟨(column, row), rfl⟩
 
-theorem incidence_mvPolynomial_totalDegree_map_le
+lemma incidence_mvPolynomial_totalDegree_map_le
     {σ R S : Type*} [CommSemiring R] [CommSemiring S]
     (f : R →+* S) (g : MvPolynomial σ R) :
     (MvPolynomial.map f g).totalDegree ≤ g.totalDegree := by
@@ -15929,7 +15929,7 @@ noncomputable def partitionIncidenceGlobalColumnLift
         MvPolynomial.C (MvPolynomial.X (Sum.inl block)))
       (fun coordinate : Fin s × Fin t => MvPolynomial.X coordinate))
 
-theorem partitionIncidenceGlobalColumnLift_aeval
+lemma partitionIncidenceGlobalColumnLift_aeval
     (t s d : ℕ) (f : MvPolynomial (IncidenceCoordinate t s) ℂ) :
     letI := partitionIncidenceGlobalBaseAlgebra t s d
     MvPolynomial.aeval
@@ -16023,7 +16023,7 @@ noncomputable def partitionIncidenceGlobalPowerRemainder
       ∑ row : Fin t,
         partitionIncidenceGlobalColumnLift t s d (R row))
 
-theorem partitionIncidenceGlobalPowerRemainder_aeval
+lemma partitionIncidenceGlobalPowerRemainder_aeval
     {t s d : ℕ} (hd : 3 ≤ d) (ht : d ≤ t)
     (coordinate : Fin s × Fin t) :
     letI := partitionIncidenceGlobalBaseAlgebra t s d
@@ -16247,7 +16247,7 @@ noncomputable def incidenceUniversalPartitionBlockFactor
     (MvPolynomial.C (parameter block) -
       ∏ row ∈ block, MvPolynomial.X (index row))
 
-theorem incidenceUniversalPartitionBlockFactor_totalDegree
+lemma incidenceUniversalPartitionBlockFactor_totalDegree
     {t : ℕ} {ι B : Type*} [CommRing B] [Nontrivial B]
     (parameter : Finset (Fin t) → B) (index : Fin t → ι)
     {rows : Finset (Fin t)} (partition : Finpartition rows) :
@@ -16287,7 +16287,7 @@ theorem incidenceUniversalPartitionBlockFactor_totalDegree
             _ ≤ block.card := by simp
     _ = rows.card := partition.sum_card_parts
 
-theorem incidenceUniversalPartitionBlockFactor_homogeneousComponent
+lemma incidenceUniversalPartitionBlockFactor_homogeneousComponent
     {t : ℕ} {ι B : Type*} [CommRing B]
     (parameter : Finset (Fin t) → B) (index : Fin t → ι)
     {rows : Finset (Fin t)} (partition : Finpartition rows) :
@@ -16383,7 +16383,7 @@ noncomputable def incidenceUniversalPartitionDerivative
       MvPolynomial.C (algebraMap ℂ B (partitionMobius partition)) *
         incidenceUniversalPartitionBlockFactor parameter index partition
 
-theorem incidenceUniversalPartitionDerivative_totalDegree
+lemma incidenceUniversalPartitionDerivative_totalDegree
     {t : ℕ} {ι B : Type*} [CommRing B] [Nontrivial B] [Algebra ℂ B]
     (d : ℕ) (i : Fin t)
     (parameter : Finset (Fin t) → B) (index : Fin t → ι) :
@@ -16410,7 +16410,7 @@ theorem incidenceUniversalPartitionDerivative_totalDegree
       incidenceUniversalPartitionBlockFactor_totalDegree parameter index partition
     _ = d - 1 := hrowscard
 
-theorem incidenceUniversalPartitionDerivative_homogeneousComponent
+lemma incidenceUniversalPartitionDerivative_homogeneousComponent
     {t : ℕ} {ι B : Type*} [CommRing B] [Algebra ℂ B]
     (d : ℕ) (i : Fin t)
     (parameter : Finset (Fin t) → B) (index : Fin t → ι) :
@@ -16477,7 +16477,7 @@ noncomputable def partitionIncidenceGlobalUniversalParameter
     MvPolynomial.X (Sum.inl ⟨block, h⟩)
   else 0
 
-theorem partitionIncidenceGlobalColumnLift_equation
+lemma partitionIncidenceGlobalColumnLift_equation
     (t s d : ℕ) (a : Fin s) (i : Fin t) :
     partitionIncidenceGlobalColumnLift t s d
       (partitionIncidenceEquation t s d a i) =
@@ -16534,7 +16534,7 @@ theorem partitionIncidenceGlobalColumnLift_equation
                 MvPolynomial (Fin s × Fin t)
                   ((MvPolynomial (IncidenceRowBlock t ⊕ (Fin s × Fin (d - 2))) ℂ)))))
 
-theorem incidence_totalDegree_sub_homogeneousComponent_universal
+lemma incidence_totalDegree_sub_homogeneousComponent_universal
     {σ B : Type*} [CommRing B]
     (f : MvPolynomial σ B) {q : ℕ}
     (hf : f.totalDegree ≤ q) :
@@ -16562,7 +16562,7 @@ theorem incidence_totalDegree_sub_homogeneousComponent_universal
   change m.degree ≤ q - 1
   omega
 
-theorem partitionIncidenceGlobalColumnLift_deleted
+lemma partitionIncidenceGlobalColumnLift_deleted
     (t s d : ℕ) (a : Fin s) (i : Fin t) (q : ℕ) :
     partitionIncidenceGlobalColumnLift t s d
       (MvPolynomial.rename
@@ -16590,7 +16590,7 @@ noncomputable def partitionIncidenceGlobalEquationRemainder
         (fun row : Fin t => (Sum.inr (a, row) : IncidenceCoordinate t s))
         (deletedCoordinateEsymmPolynomial t (d - 1) i)
 
-theorem partitionIncidenceGlobalEquationRemainder_lift_eq
+lemma partitionIncidenceGlobalEquationRemainder_lift_eq
     (t s d : ℕ) (a : Fin s) (i : Fin t) :
     partitionIncidenceGlobalColumnLift t s d
       (partitionIncidenceGlobalEquationRemainder t s d a i) =
@@ -16611,7 +16611,7 @@ theorem partitionIncidenceGlobalEquationRemainder_lift_eq
   congr 2
   simp [partitionIncidenceGlobalColumnLift]
 
-theorem partitionIncidenceGlobalEquationRemainder_outer_totalDegree_aux
+lemma partitionIncidenceGlobalEquationRemainder_outer_totalDegree_aux
     (t s d : ℕ) (a : Fin s) (i : Fin t) :
     (partitionIncidenceGlobalColumnLift t s d
       (partitionIncidenceGlobalEquationRemainder t s d a i)).totalDegree ≤
@@ -16627,14 +16627,14 @@ theorem partitionIncidenceGlobalEquationRemainder_outer_totalDegree_aux
         (partitionIncidenceGlobalUniversalParameter t s d)
         (fun row : Fin t => (a, row))))
 
-theorem partitionIncidenceGlobalEquationRemainder_outer_totalDegree
+lemma partitionIncidenceGlobalEquationRemainder_outer_totalDegree
     (t s d : ℕ) (a : Fin s) (i : Fin t) :
     (partitionIncidenceGlobalColumnLift t s d
       (partitionIncidenceGlobalEquationRemainder t s d a i)).totalDegree ≤
       d - 2 :=
   partitionIncidenceGlobalEquationRemainder_outer_totalDegree_aux t s d a i
 
-theorem partitionIncidenceGlobalPowerRemainder_totalDegree
+lemma partitionIncidenceGlobalPowerRemainder_totalDegree
     {t s d : ℕ} (hd : 3 ≤ d) (coordinate : Fin s × Fin t) :
     (partitionIncidenceGlobalPowerRemainder t s d coordinate).totalDegree <
       d - 1 := by
@@ -16732,7 +16732,7 @@ noncomputable def minorSumGraphPullback
     (fun coordinate : Fin s × Fin t =>
       MvPolynomial.X (coordinate.2, coordinate.1))
 
-theorem minorSumGraphPullback_eval
+lemma minorSumGraphPullback_eval
     (t s : ℕ) (point : Fin t × Fin s → ℂ)
     (f : MvPolynomial (IncidenceCoordinate t s) ℂ) :
     MvPolynomial.eval point
@@ -16771,7 +16771,7 @@ theorem minorSumGraphPullback_eval
         simp [incidenceCoordinatePoint, minorSumColumns]
   rw [MvPolynomial.comp_aeval_apply, hcoordinates]
 
-theorem minorSumGraphPullback_incidenceEquation
+lemma minorSumGraphPullback_incidenceEquation
     (t s d : ℕ) (hd : 0 < d) (column : Fin s) (row : Fin t) :
     minorSumGraphPullback t s
         (partitionIncidenceEquation t s d column row) =
@@ -16827,7 +16827,7 @@ noncomputable abbrev blockIncidenceBaseAlgebra (b t s d : ℕ) :
       (BlockIncidenceCoordinateRing b t s d) :=
   (blockIncidenceBaseProjection b t s d).toRingHom.toAlgebra
 
-theorem blockIncidence_adjoin_column_coordinates
+lemma blockIncidence_adjoin_column_coordinates
     (b t s d : ℕ) :
     letI := blockIncidenceBaseAlgebra b t s d
     Algebra.adjoin
@@ -16892,7 +16892,7 @@ theorem blockIncidence_adjoin_column_coordinates
       | inr coordinate =>
           exact Algebra.subset_adjoin ⟨(h, coordinate), rfl⟩
 
-theorem blockIncidenceBase_ringKrullDim (b t s d : ℕ) :
+lemma blockIncidenceBase_ringKrullDim (b t s d : ℕ) :
     ringKrullDim
       (MvPolynomial (BlockIncidenceBaseIndex b t s d) ℂ) =
       ((b * ((2 ^ t - 1) + s * (d - 2)) : ℕ) : WithBot ℕ∞) := by
@@ -16902,7 +16902,7 @@ theorem blockIncidenceBase_ringKrullDim (b t s d : ℕ) :
     incidenceRowBlock_card]
   simp
 
-theorem blockIncidence_ringKrullDim_le_of_power_reductions
+lemma blockIncidence_ringKrullDim_le_of_power_reductions
     {b t s d : ℕ} (hd : 3 ≤ d)
     (remainder : BlockIncidenceColumn b t s →
       MvPolynomial (BlockIncidenceColumn b t s)
@@ -16957,7 +16957,7 @@ noncomputable def blockIncidencePowerRemainder
       (blockIncidenceBaseRename b t s d coordinate.1)
       (partitionIncidenceGlobalPowerRemainder t s d coordinate.2))
 
-theorem blockIncidencePowerRemainder_totalDegree
+lemma blockIncidencePowerRemainder_totalDegree
     {b t s d : ℕ} (hd : 3 ≤ d)
     (coordinate : Fin b × (Fin s × Fin t)) :
     (blockIncidencePowerRemainder
@@ -17011,7 +17011,7 @@ noncomputable def blockIncidenceSingleBlockInclusion
               coordinate.1 coordinate.2)) = 0
       rw [hzero, mul_zero])
 
-theorem blockIncidenceSingleBlockInclusion_mk
+lemma blockIncidenceSingleBlockInclusion_mk
     (b t s d : ℕ) (block : Fin b)
     (p : MvPolynomial (IncidenceCoordinate t s) ℂ) :
     blockIncidenceSingleBlockInclusion b t s d block
@@ -17021,7 +17021,7 @@ theorem blockIncidenceSingleBlockInclusion_mk
           (fun z : IncidenceCoordinate t s => (block, z)) p) := by
   rfl
 
-theorem blockIncidenceBaseProjection_comm
+lemma blockIncidenceBaseProjection_comm
     (b t s d : ℕ) (block : Fin b) :
     (blockIncidenceBaseProjection b t s d).comp
         (MvPolynomial.rename
@@ -17059,7 +17059,7 @@ theorem blockIncidenceBaseProjection_comm
       MvPolynomial.rename_rename]
     rfl
 
-theorem blockIncidencePowerRemainder_aeval
+lemma blockIncidencePowerRemainder_aeval
     {b t s d : ℕ} (hd : 3 ≤ d) (ht : d ≤ t)
     (coordinate : Fin b × (Fin s × Fin t)) :
     letI := blockIncidenceBaseAlgebra b t s d
@@ -17123,7 +17123,7 @@ theorem blockIncidencePowerRemainder_aeval
   rw [← hpoly] at hsource
   exact hsource
 
-theorem blockIncidence_ringKrullDim_le_degree
+lemma blockIncidence_ringKrullDim_le_degree
     {b t s d : ℕ} (hd : 3 ≤ d) (ht : d ≤ t) :
     ringKrullDim (BlockIncidenceCoordinateRing b t s d) ≤
       ((b * ((2 ^ t - 1) + s * (d - 2)) : ℕ) : WithBot ℕ∞) := by
@@ -17148,7 +17148,7 @@ noncomputable def sourceSlicedGradientLinearInput {k m : ℕ}
     (Finsupp.linearEquivFunOnFinite ℂ ℂ (Fin k)).symm
       (fun i => W (Pi.single i 1) j)
 
-theorem sourceSlicedGradientLinearInput_polynomial {k m : ℕ}
+lemma sourceSlicedGradientLinearInput_polynomial {k m : ℕ}
     (W : (Fin k → ℂ) →ₗ[ℂ] (Fin m → ℂ))
     (j : Fin m) :
     (sourceSlicedGradientLinearInput W j).polynomial =
@@ -17169,7 +17169,7 @@ noncomputable def sourceFreeAffineFormFiniteLinearCombination
   inputCoefficients := ∑ j, coefficient j • (form j).inputCoefficients
   gateCoefficients := ∑ j, coefficient j • (form j).gateCoefficients
 
-theorem sourceFreeAffineFormFiniteLinearCombination_eval
+lemma sourceFreeAffineFormFiniteLinearCombination_eval
     {ι α : Type*} [Fintype α]
     (coefficient : α → ℂ) (form : α → FreeAffineForm ι)
     (values : Array (MvPolynomial ι ℂ)) :
@@ -17184,7 +17184,7 @@ theorem sourceFreeAffineFormFiniteLinearCombination_eval
   intro j _
   ring
 
-theorem sourceFreeAffineFormFiniteLinearCombination_gate_bound
+lemma sourceFreeAffineFormFiniteLinearCombination_gate_bound
     {ι α : Type*} [Fintype α]
     (coefficient : α → ℂ) (form : α → FreeAffineForm ι)
     (bound : ℕ)
@@ -17214,7 +17214,7 @@ noncomputable def sourceSlicedGradientReverseOutputForm
       (((ReverseAdjoint.CircuitAdjoint.run circuit output).inputAdjoints j).substituteInputs
         (sourceSlicedGradientLinearInput W)))
 
-theorem sourceSlicedGradientReverseOutputForm_gate_bound
+lemma sourceSlicedGradientReverseOutputForm_gate_bound
     {k m : ℕ}
     (circuit : FreeAffineCircuit (Fin m))
     (output : FreeAffineForm (Fin m))
@@ -17239,7 +17239,7 @@ theorem sourceSlicedGradientReverseOutputForm_gate_bound
     (by simpa [FreeAffineForm.substituteInputs] using hr)
   simpa [FreeAffineCircuit.substituteInputs] using h
 
-theorem exists_actual_slicedGradient_freeAffineCircuit
+lemma exists_actual_slicedGradient_freeAffineCircuit
     {k m : ℕ}
     (circuit : FreeAffineCircuit (Fin m))
     (output : FreeAffineForm (Fin m))
@@ -17291,7 +17291,7 @@ theorem exists_actual_slicedGradient_freeAffineCircuit
     intro row
     simpa using sourceSlicedGradientLinearInput_polynomial W row
 
-theorem exists_normalized_permanent_affine_specialization_circuit
+lemma exists_normalized_permanent_affine_specialization_circuit
     {n m : ℕ}
     (circuit : ArithmeticCircuit (Fin n × Fin n))
     (hpermanent : circuit.polynomial = permanent n)
@@ -17355,7 +17355,7 @@ theorem exists_normalized_permanent_affine_specialization_circuit
     rw [FreeAffineCircuit.multiplicationCount_substituteInputs]
     exact FreeAffineCircuit.multiplicationCount_ofArithmetic_le circuit
 
-theorem exists_normalized_permanent_slicedGradient_circuit
+lemma exists_normalized_permanent_slicedGradient_circuit
     {n m k : ℕ}
     (circuit : ArithmeticCircuit (Fin n × Fin n))
     (hpermanent : circuit.polynomial = permanent n)
@@ -17396,7 +17396,7 @@ noncomputable def freeAffineCircuitSquareFamily
           MvPolynomial.C (target j))
       (Fin.cast (by simp [Nat.add_comm]) i)
 
-theorem freeAffineCircuitSquareFamily_ofFn
+lemma freeAffineCircuitSquareFamily_ofFn
     {k : ℕ} (circuit : FreeAffineCircuit (Fin k))
     (output : Fin k → FreeAffineForm (Fin k)) (target : Fin k → ℂ) :
     List.ofFn (freeAffineCircuitSquareFamily circuit output target) =
@@ -17420,7 +17420,7 @@ theorem freeAffineCircuitSquareFamily_ofFn
       (List.ofFn_congr hcard (Fin.append gates outputs)).symm
   rw [hcast, List.ofFn_fin_append]
 
-theorem sourceCircuit_ofList_ofFn_eq_span_range
+lemma sourceCircuit_ofList_ofFn_eq_span_range
     {R : Type*} [CommSemiring R] {n : ℕ} (f : Fin n → R) :
     Ideal.ofList (List.ofFn f) = Ideal.span (Set.range f) := by
   change Ideal.span {p : R | p ∈ List.ofFn f} =
@@ -17429,7 +17429,7 @@ theorem sourceCircuit_ofList_ofFn_eq_span_range
   ext p
   simp
 
-theorem freeAffineCircuitSquareFamily_span_range
+lemma freeAffineCircuitSquareFamily_span_range
     {k : ℕ} (circuit : FreeAffineCircuit (Fin k))
     (output : Fin k → FreeAffineForm (Fin k)) (target : Fin k → ℂ) :
     Ideal.span (Set.range
@@ -17449,7 +17449,7 @@ theorem freeAffineCircuitSquareFamily_span_range
     sourceCircuit_ofList_ofFn_eq_span_range]
   rfl
 
-theorem freeAffineCircuitSquareFamily_degree_product_le
+lemma freeAffineCircuitSquareFamily_degree_product_le
     {k : ℕ} (circuit : FreeAffineCircuit (Fin k))
     (output : Fin k → FreeAffineForm (Fin k)) (target : Fin k → ℂ) :
     (∏ i,
@@ -17499,7 +17499,7 @@ theorem freeAffineCircuitSquareFamily_degree_product_le
               _ = 1 := by simp
     _ = 2 ^ circuit.multiplicationCount := Nat.mul_one _
 
-theorem freeAffineCircuitSquareFamily_isWeaklyRegular
+lemma freeAffineCircuitSquareFamily_isWeaklyRegular
     {k : ℕ} (circuit : FreeAffineCircuit (Fin k))
     (output : Fin k → FreeAffineForm (Fin k))
     (F : Fin k → MvPolynomial (Fin k) ℂ)
@@ -17537,7 +17537,7 @@ theorem freeAffineCircuitSquareFamily_isWeaklyRegular
   · exact homogeneousMap_allTarget_translated_isWeaklyRegular
       F target e he hF hzero
 
-theorem freeAffineCircuitSquareFamily_zeroLocus_finite
+lemma freeAffineCircuitSquareFamily_zeroLocus_finite
     {k : ℕ} (circuit : FreeAffineCircuit (Fin k))
     (output : Fin k → FreeAffineForm (Fin k))
     (F : Fin k → MvPolynomial (Fin k) ℂ)
@@ -17587,7 +17587,7 @@ theorem freeAffineCircuitSquareFamily_zeroLocus_finite
   rw [freeAffineCircuitSquareFamily_span_range]
   exact affine_zeroLocus_finite_of_moduleFinite_quotient _ hfinite
 
-theorem freeAffineCircuit_homogeneousFiberDegree_le_two_pow
+lemma freeAffineCircuit_homogeneousFiberDegree_le_two_pow
     {k : ℕ} (circuit : FreeAffineCircuit (Fin k))
     (output : Fin k → FreeAffineForm (Fin k))
     (F : Fin k → MvPolynomial (Fin k) ℂ)
@@ -17643,7 +17643,7 @@ theorem freeAffineCircuit_homogeneousFiberDegree_le_two_pow
     (freeAffineCircuitSquareFamily_degree_product_le
       circuit output target)
 
-theorem normalizedPermanent_slicedGradient_homogeneousFiberDegree_le_two_pow
+lemma normalizedPermanent_slicedGradient_homogeneousFiberDegree_le_two_pow
     {n m k : ℕ}
     (circuit : ArithmeticCircuit (Fin n × Fin n))
     (hpermanent : circuit.polynomial = permanent n)
@@ -17701,7 +17701,7 @@ noncomputable def treeQuotientLinearForm {r : ℕ}
     algebraMap ℂ (SquareZeroAlgebra r) (vector row) *
       squareZeroVariable r row
 
-theorem treeQuotientLinearForm_eq_column {r k : ℕ}
+lemma treeQuotientLinearForm_eq_column {r k : ℕ}
     (U : Matrix (Fin r) (Fin k) ℂ) (column : Fin k) :
     Ideal.Quotient.mk (squareZeroIdeal r) (columnLinearForm U column) =
       treeQuotientLinearForm (fun row => U row column) := by
@@ -17711,7 +17711,7 @@ theorem treeQuotientLinearForm_eq_column {r k : ℕ}
   intro row _
   congr 1
 
-theorem treeQuotientLinearForm_block {r : ℕ}
+lemma treeQuotientLinearForm_block {r : ℕ}
     (block : Finset (Fin r)) :
     treeQuotientLinearForm (treeBlockVector block) =
       squareZeroBlockSum r block := by
@@ -17719,20 +17719,20 @@ theorem treeQuotientLinearForm_block {r : ℕ}
   simp [treeQuotientLinearForm, treeBlockVector,
     squareZeroBlockSum]
 
-theorem treeQuotientLinearForm_add {r : ℕ}
+lemma treeQuotientLinearForm_add {r : ℕ}
     (left right : Fin r → ℂ) :
     treeQuotientLinearForm (fun row => left row + right row) =
       treeQuotientLinearForm left + treeQuotientLinearForm right := by
   simp [treeQuotientLinearForm, add_mul, Finset.sum_add_distrib]
 
-theorem treeQuotientLinearForm_smul {r : ℕ}
+lemma treeQuotientLinearForm_smul {r : ℕ}
     (a : ℂ) (vector : Fin r → ℂ) :
     treeQuotientLinearForm (fun row => a * vector row) =
       algebraMap ℂ (SquareZeroAlgebra r) a *
         treeQuotientLinearForm vector := by
   simp [treeQuotientLinearForm, Finset.mul_sum, mul_assoc]
 
-theorem treeQuotientLinearForm_sum {r : ℕ} {ι : Type*}
+lemma treeQuotientLinearForm_sum {r : ℕ} {ι : Type*}
     (indices : Finset ι) (vectors : ι → Fin r → ℂ) :
     treeQuotientLinearForm (fun row => ∑ i ∈ indices, vectors i row) =
       ∑ i ∈ indices, treeQuotientLinearForm (vectors i) := by
@@ -17751,7 +17751,7 @@ noncomputable def treeNodeVector {r : ℕ} {ι : Type*}
       (2 * ζ ^ j) *
         (∑ i ∈ right.leaves, treeBlockVector (blocks i) row)
 
-theorem treeQuotientLinearForm_node {r : ℕ} {ι : Type*}
+lemma treeQuotientLinearForm_node {r : ℕ} {ι : Type*}
     [DecidableEq ι] (blocks : ι → Finset (Fin r))
     (left right : BlockTree ι) (ζ : ℂ) (j : ℕ) :
     treeQuotientLinearForm (treeNodeVector blocks left right ζ j) =
@@ -17775,7 +17775,7 @@ noncomputable def treeLinearFormVectors {r : ℕ} {ι : Type*}
           List.ofFn (fun j : Fin d =>
             treeNodeVector blocks left right ζ j)
 
-theorem treeLinearFormVectors_quotient_prod {r : ℕ} {ι : Type*}
+lemma treeLinearFormVectors_quotient_prod {r : ℕ} {ι : Type*}
     [DecidableEq ι] (blocks : ι → Finset (Fin r))
     (t d : ℕ) (ζ : ℂ) (tree : BlockTree ι) :
     ((treeLinearFormVectors blocks t d ζ tree).map
@@ -17799,7 +17799,7 @@ theorem treeLinearFormVectors_quotient_prod {r : ℕ} {ι : Type*}
               algebraMap ℂ (SquareZeroAlgebra r) (2 * ζ ^ j) *
                 (∑ i ∈ right.leaves, squareZeroBlockSum r (blocks i))) d)
 
-theorem tree_leafList_length_pos {ι : Type*} (tree : BlockTree ι) :
+lemma tree_leafList_length_pos {ι : Type*} (tree : BlockTree ι) :
     0 < tree.leafList.length := by
   induction tree with
   | leaf i => simp [BlockTree.leafList]
@@ -17807,7 +17807,7 @@ theorem tree_leafList_length_pos {ι : Type*} (tree : BlockTree ι) :
       simp only [BlockTree.leafList, List.length_append]
       omega
 
-theorem treeLinearFormVectors_length {r : ℕ} {ι : Type*}
+lemma treeLinearFormVectors_length {r : ℕ} {ι : Type*}
     [DecidableEq ι] (blocks : ι → Finset (Fin r))
     (t d : ℕ) (hd : d ≤ t) (ζ : ℂ) (tree : BlockTree ι) :
     (treeLinearFormVectors blocks t d ζ tree).length =
@@ -17836,7 +17836,7 @@ noncomputable def treeLinearFormMatrix {r : ℕ} {ι : Type*}
   fun row column =>
     (treeLinearFormVectors blocks t d ζ tree).get column row
 
-theorem treeLinearFormMatrix_quotient_prod {r : ℕ} {ι : Type*}
+lemma treeLinearFormMatrix_quotient_prod {r : ℕ} {ι : Type*}
     [DecidableEq ι] (blocks : ι → Finset (Fin r))
     (t d : ℕ) (ζ : ℂ) (tree : BlockTree ι) :
     Ideal.Quotient.mk (squareZeroIdeal r)
@@ -17872,7 +17872,7 @@ noncomputable def sourceRowBlock (b t : ℕ) (h : Fin b) :
   (Finset.univ : Finset (Fin t)).image
     (fun j => (finProdFinEquiv : Fin b × Fin t ≃ Fin (b * t)) (h, j))
 
-theorem mem_sourceRowBlock {b t : ℕ} (h : Fin b)
+lemma mem_sourceRowBlock {b t : ℕ} (h : Fin b)
     (row : Fin (b * t)) :
     row ∈ sourceRowBlock b t h ↔
       ((finProdFinEquiv : Fin b × Fin t ≃ Fin (b * t)).symm row).1 = h := by
@@ -17893,7 +17893,7 @@ theorem mem_sourceRowBlock {b t : ℕ} (h : Fin b)
       _ = e (e.symm row) := by rw [Prod.eta]
       _ = row := e.apply_symm_apply row
 
-theorem sourceRowBlock_card (b t : ℕ) (h : Fin b) :
+lemma sourceRowBlock_card (b t : ℕ) (h : Fin b) :
     (sourceRowBlock b t h).card = t := by
   classical
   have hinj : Function.Injective
@@ -17906,7 +17906,7 @@ theorem sourceRowBlock_card (b t : ℕ) (h : Fin b) :
   rw [Finset.card_image_of_injective _ hinj]
   exact Fintype.card_fin t
 
-theorem sourceRowBlock_disjoint {b t : ℕ} {left right : Fin b}
+lemma sourceRowBlock_disjoint {b t : ℕ} {left right : Fin b}
     (hne : left ≠ right) :
     Disjoint (sourceRowBlock b t left) (sourceRowBlock b t right) := by
   rw [Finset.disjoint_left]
@@ -17914,7 +17914,7 @@ theorem sourceRowBlock_disjoint {b t : ℕ} {left right : Fin b}
   exact hne ((mem_sourceRowBlock left row).mp hleft |>.symm.trans
     ((mem_sourceRowBlock right row).mp hright))
 
-theorem squareFreeExponent_le_iff {ι : Type*}
+lemma squareFreeExponent_le_iff {ι : Type*}
     (left right : Finset ι) :
     squareFreeExponent left ≤ squareFreeExponent right ↔ left ⊆ right := by
   classical
@@ -17928,7 +17928,7 @@ theorem squareFreeExponent_le_iff {ι : Type*}
     · simp [squareFreeExponent_apply, hi, h hi]
     · simp [squareFreeExponent_apply, hi]
 
-theorem squareFreeExponent_sub {ι : Type*} [DecidableEq ι]
+lemma squareFreeExponent_sub {ι : Type*} [DecidableEq ι]
     (target removed : Finset ι) :
     squareFreeExponent target - squareFreeExponent removed =
       squareFreeExponent (target \ removed) := by
@@ -17939,7 +17939,7 @@ theorem squareFreeExponent_sub {ι : Type*} [DecidableEq ι]
       simp [Finsupp.tsub_apply, squareFreeExponent_apply,
         htarget, hremoved]
 
-theorem coeff_squareFreeMonomial_mul {ι : Type*} [DecidableEq ι]
+lemma coeff_squareFreeMonomial_mul {ι : Type*} [DecidableEq ι]
     (target removed : Finset ι) (p : MvPolynomial ι ℂ) :
     MvPolynomial.coeff (squareFreeExponent target)
       (squareFreeMonomial removed * p) =
@@ -17951,7 +17951,7 @@ theorem coeff_squareFreeMonomial_mul {ι : Type*} [DecidableEq ι]
     MvPolynomial.coeff_monomial_mul']
   simp [squareFreeExponent_le_iff, squareFreeExponent_sub]
 
-theorem squareZeroCoefficient_variable_product_mul (r : ℕ)
+lemma squareZeroCoefficient_variable_product_mul (r : ℕ)
     (target removed : Finset (Fin r)) (p : SquareZeroAlgebra r) :
     squareZeroCoefficient r target
       ((∏ i ∈ removed, squareZeroVariable r i) * p) =
@@ -17965,13 +17965,13 @@ theorem squareZeroCoefficient_variable_product_mul (r : ℕ)
     coeff_squareFreeMonomial_mul]
   split_ifs <;> simp [squareZeroCoefficient_mk]
 
-theorem squareFreeExponent_sum {ι : Type*} (rows : Finset ι) :
+lemma squareFreeExponent_sum {ι : Type*} (rows : Finset ι) :
     (squareFreeExponent rows).sum (fun _ n => n) = rows.card := by
   classical
   simp [Finsupp.sum, squareFreeExponent_support,
     squareFreeExponent_apply]
 
-theorem squareFreeExponent_multinomial {ι : Type*}
+lemma squareFreeExponent_multinomial {ι : Type*}
     (rows : Finset ι) :
     (squareFreeExponent rows).multinomial = rows.card.factorial := by
   classical
@@ -17989,7 +17989,7 @@ theorem squareFreeExponent_multinomial {ι : Type*}
     simp [squareFreeExponent_apply, hrow]
   rw [hfactor, Nat.div_one]
 
-theorem squareFreeExponent_prod_treeBlockVector {r : ℕ}
+lemma squareFreeExponent_prod_treeBlockVector {r : ℕ}
     (rows block : Finset (Fin r)) :
     (squareFreeExponent rows).prod
         (fun row n => treeBlockVector block row ^ n) =
@@ -18008,7 +18008,7 @@ theorem squareFreeExponent_prod_treeBlockVector {r : ℕ}
     apply Finset.prod_eq_zero hrow
     simp [squareFreeExponent_apply, treeBlockVector, hrow, hnot]
 
-theorem squareZeroCoefficient_squareZeroBlockSum_pow (r : ℕ)
+lemma squareZeroCoefficient_squareZeroBlockSum_pow (r : ℕ)
     (rows block : Finset (Fin r)) (degree : ℕ) :
     squareZeroCoefficient r rows (squareZeroBlockSum r block ^ degree) =
       if rows ⊆ block ∧ rows.card = degree then
@@ -18028,7 +18028,7 @@ theorem squareZeroCoefficient_squareZeroBlockSum_pow (r : ℕ)
     squareFreeExponent_prod_treeBlockVector]
   split_ifs with hcard hsubset hboth <;> simp_all
 
-theorem squareZero_fullBlockProduct {r : ℕ} {ι : Type*}
+lemma squareZero_fullBlockProduct {r : ℕ} {ι : Type*}
     (blocks : ι → Finset (Fin r))
     (indices : Finset ι) (t : ℕ)
     (hcard : ∀ i ∈ indices, (blocks i).card = t)
@@ -18053,7 +18053,7 @@ theorem squareZero_fullBlockProduct {r : ℕ} {ι : Type*}
           ∏ row ∈ indices.biUnion blocks, squareZeroVariable r row := by
               rw [Nat.cast_pow, Finset.prod_biUnion hdisjoint]
 
-theorem squareZeroCoefficient_exceptionalBlockProduct
+lemma squareZeroCoefficient_exceptionalBlockProduct
     {r : ℕ} {ι : Type*}
     (blocks : ι → Finset (Fin r)) (indices : Finset ι)
     (exceptional : ι) (t d : ℕ)
@@ -18085,7 +18085,7 @@ theorem squareZeroCoefficient_exceptionalBlockProduct
     squareZeroCoefficient_squareZeroBlockSum_pow]
   split_ifs <;> simp_all
 
-theorem sourceRowBlock_biUnion_erase (b t : ℕ) (h : Fin b) :
+lemma sourceRowBlock_biUnion_erase (b t : ℕ) (h : Fin b) :
     ((Finset.univ : Finset (Fin b)).erase h).biUnion
         (sourceRowBlock b t) =
       (Finset.univ : Finset (Fin (b * t))) \ sourceRowBlock b t h := by
@@ -18093,7 +18093,7 @@ theorem sourceRowBlock_biUnion_erase (b t : ℕ) (h : Fin b) :
   ext row
   simp [mem_sourceRowBlock]
 
-theorem squareZeroCoefficient_sourceExceptionalBlock
+lemma squareZeroCoefficient_sourceExceptionalBlock
     (b t d : ℕ) (omitted : Finset (Fin (b * t)))
     (homitted : omitted.card = d) (h : Fin b) :
     squareZeroCoefficient (b * t)
@@ -18145,7 +18145,7 @@ theorem squareZeroCoefficient_sourceExceptionalBlock
         fun hfirst => hsubset (hsubset_equiv.mp hfirst)
     simp [hsubset, hfirst]
 
-theorem squareZeroCoefficient_sourceTree_expansion
+lemma squareZeroCoefficient_sourceTree_expansion
     (b t d : ℕ) (hdpos : 0 < d) (hd : d ≤ t)
     {ζ : ℂ} (hζ : IsPrimitiveRoot ζ d)
     (tree : BlockTree (Fin b))
@@ -18176,7 +18176,7 @@ theorem squareZeroCoefficient_sourceTree_expansion
     b t d omitted homitted h]
   rfl
 
-theorem sourceRowBlock_exceptional_unique
+lemma sourceRowBlock_exceptional_unique
     {b t : ℕ} (omitted : Finset (Fin (b * t)))
     (hnonempty : omitted.Nonempty) {left right : Fin b}
     (hleft : omitted ⊆ sourceRowBlock b t left)
@@ -18187,7 +18187,7 @@ theorem sourceRowBlock_exceptional_unique
   exact (Finset.disjoint_left.mp (sourceRowBlock_disjoint hne))
     (hleft hrow) (hright hrow)
 
-theorem squareZeroCoefficient_sourceTree_eq_zero
+lemma squareZeroCoefficient_sourceTree_eq_zero
     (b t d : ℕ) (hdpos : 0 < d) (hd : d ≤ t)
     {ζ : ℂ} (hζ : IsPrimitiveRoot ζ d)
     (tree : BlockTree (Fin b))
@@ -18207,7 +18207,7 @@ theorem squareZeroCoefficient_sourceTree_eq_zero
   intro h _
   simp [hnot h]
 
-theorem squareZeroCoefficient_sourceTree_eq_factorial
+lemma squareZeroCoefficient_sourceTree_eq_factorial
     (b t d : ℕ) (hdpos : 0 < d) (hd : d ≤ t)
     {ζ : ℂ} (hζ : IsPrimitiveRoot ζ d)
     (tree : BlockTree (Fin b))
@@ -18242,7 +18242,7 @@ theorem squareZeroCoefficient_sourceTree_eq_factorial
     simp [hother]
   · simp
 
-theorem sourceTree_leafList_length (b : ℕ)
+lemma sourceTree_leafList_length (b : ℕ)
     (tree : BlockTree (Fin b))
     (hnodup : tree.leafList.Nodup)
     (hleaves : tree.leaves = Finset.univ) :
@@ -18257,7 +18257,7 @@ theorem sourceTree_leafList_length (b : ℕ)
     _ = tree.leaves.card := congrArg Finset.card hset
     _ = b := by simp [hleaves]
 
-theorem sourceTreeLinearFormVectors_length
+lemma sourceTreeLinearFormVectors_length
     (b t d : ℕ) (hd : d ≤ t) (ζ : ℂ)
     (tree : BlockTree (Fin b))
     (hnodup : tree.leafList.Nodup)
@@ -18278,7 +18278,7 @@ noncomputable def sourceTreeMatrix (b t d : ℕ) (hd : d ≤ t)
         (sourceTreeLinearFormVectors_length
           b t d hd ζ tree hnodup hleaves).symm) column)
 
-theorem sourceTreeMatrix_columnLinearFormProduct
+lemma sourceTreeMatrix_columnLinearFormProduct
     (b t d : ℕ) (hd : d ≤ t) (ζ : ℂ)
     (tree : BlockTree (Fin b))
     (hnodup : tree.leafList.Nodup)
@@ -18303,7 +18303,7 @@ theorem sourceTreeMatrix_columnLinearFormProduct
   intro column
   rfl
 
-theorem sourceTreeMatrix_quotient_prod
+lemma sourceTreeMatrix_quotient_prod
     (b t d : ℕ) (hd : d ≤ t) (ζ : ℂ)
     (tree : BlockTree (Fin b))
     (hnodup : tree.leafList.Nodup)
@@ -18318,7 +18318,7 @@ theorem sourceTreeMatrix_quotient_prod
     b t d hd ζ tree hnodup hleaves,
     treeLinearFormMatrix_quotient_prod]
 
-theorem sourceBlockAlpha_eq_permanent {r d : ℕ}
+lemma sourceBlockAlpha_eq_permanent {r d : ℕ}
     (U : Matrix (Fin r) (Fin (r - d)) ℂ)
     (omitted : Finset (Fin r))
     (rowEquiv : Fin (r - d) ≃ {row : Fin r // row ∉ omitted}) :
@@ -18365,7 +18365,7 @@ noncomputable def sourceComplementSquareFreeRowEquiv
   (sourceComplementRowEquiv r d omitted homitted).trans
     (Equiv.subtypeEquivRight (fun row => by simp))
 
-theorem sourceBlockAlpha_eq_squareZeroCoefficient
+lemma sourceBlockAlpha_eq_squareZeroCoefficient
     {r d : ℕ} (U : Matrix (Fin r) (Fin (r - d)) ℂ)
     (omitted : Finset (Fin r))
     (homitted : omitted.card = d) :
@@ -18383,7 +18383,7 @@ theorem sourceBlockAlpha_eq_squareZeroCoefficient
       (sourceComplementRowEquiv r d omitted homitted)]
   rfl
 
-theorem sourceTreeMatrix_alpha_eq_coefficient
+lemma sourceTreeMatrix_alpha_eq_coefficient
     (b t d : ℕ) (hd : d ≤ t) (ζ : ℂ)
     (tree : BlockTree (Fin b))
     (hnodup : tree.leafList.Nodup)
@@ -18403,7 +18403,7 @@ theorem sourceTreeMatrix_alpha_eq_coefficient
     omitted homitted,
     sourceTreeMatrix_quotient_prod]
 
-theorem sourceTreeMatrix_alpha_eq_zero
+lemma sourceTreeMatrix_alpha_eq_zero
     (b t d : ℕ) (hdpos : 0 < d) (hd : d ≤ t)
     {ζ : ℂ} (hζ : IsPrimitiveRoot ζ d)
     (tree : BlockTree (Fin b))
@@ -18420,7 +18420,7 @@ theorem sourceTreeMatrix_alpha_eq_zero
     squareZeroCoefficient_sourceTree_eq_zero
       b t d hdpos hd hζ tree hnodup hleaves omitted homitted hnot]
 
-theorem sourceTreeMatrix_alpha_eq_factorial
+lemma sourceTreeMatrix_alpha_eq_factorial
     (b t d : ℕ) (hdpos : 0 < d) (hd : d ≤ t)
     {ζ : ℂ} (hζ : IsPrimitiveRoot ζ d)
     (tree : BlockTree (Fin b))
@@ -18442,7 +18442,7 @@ theorem sourceTreeMatrix_alpha_eq_factorial
       b t d hdpos hd hζ tree hnodup hleaves
       omitted homitted h hsubset]
 
-theorem sourceBlockAlpha_algebraMap
+lemma sourceBlockAlpha_algebraMap
     {R : Type*} [CommSemiring R] [Algebra ℂ R]
     {r d : ℕ} (U : Matrix (Fin r) (Fin (r - d)) ℂ)
     (omitted : Finset (Fin r)) :
@@ -18459,7 +18459,7 @@ noncomputable def sourceRowBlockMinorSum
     ∑ columns ∈ (Finset.univ : Finset (Fin s)).powersetCard d,
       sourceBlockMinor (b * t) s X omitted columns
 
-theorem sourceRowBlock_powersetCard_eq_filter
+lemma sourceRowBlock_powersetCard_eq_filter
     (b t d : ℕ) (h : Fin b) :
     (sourceRowBlock b t h).powersetCard d =
       ((Finset.univ : Finset (Fin (b * t))).powersetCard d).filter
@@ -18468,7 +18468,7 @@ theorem sourceRowBlock_powersetCard_eq_filter
   ext omitted
   simp [Finset.mem_powersetCard, and_comm]
 
-theorem sourceTreeMatrix_alpha_eq_block_sum
+lemma sourceTreeMatrix_alpha_eq_block_sum
     (b t d : ℕ) (hdpos : 0 < d) (hd : d ≤ t)
     {ζ : ℂ} (hζ : IsPrimitiveRoot ζ d)
     (tree : BlockTree (Fin b))
@@ -18508,7 +18508,7 @@ theorem sourceTreeMatrix_alpha_eq_block_sum
       b t d hdpos hd hζ tree hnodup hleaves omitted homitted hnone]
     simp [hnone]
 
-theorem sourceRowBlock_weighted_minor_sum
+lemma sourceRowBlock_weighted_minor_sum
     {R : Type*} [CommSemiring R]
     (b t s d : ℕ) (X : Matrix (Fin (b * t)) (Fin s) R)
     (weight : Fin b → R) :
@@ -18527,7 +18527,7 @@ theorem sourceRowBlock_weighted_minor_sum
   rw [sourceRowBlock_powersetCard_eq_filter b t d h]
   simp [Finset.sum_filter, Finset.mul_sum, ite_mul]
 
-theorem sourceTreeBlockMatrix_permanent_eq_separated
+lemma sourceTreeBlockMatrix_permanent_eq_separated
     {R : Type*} [CommSemiring R] [Algebra ℂ R]
     (b t s d : ℕ) (hdpos : 0 < d) (hd : d ≤ t)
     {ζ : ℂ} (hζ : IsPrimitiveRoot ζ d)
@@ -18637,7 +18637,7 @@ noncomputable def sourceRowBlockEmbedding
     exact congrArg Prod.snd
       ((finProdFinEquiv : Fin b × Fin t ≃ Fin (b * t)).injective heq)
 
-theorem sourceRowBlock_eq_map
+lemma sourceRowBlock_eq_map
     (b t : ℕ) (h : Fin b) :
     sourceRowBlock b t h =
       (Finset.univ : Finset (Fin t)).map
@@ -18661,7 +18661,7 @@ theorem sourceRowBlock_eq_map
     exact Finset.mem_image.mpr
       ⟨localRow, Finset.mem_univ _, rfl⟩
 
-theorem sourceBlockMinor_sourceRowBlockEmbedding
+lemma sourceBlockMinor_sourceRowBlockEmbedding
     {R : Type*} [CommSemiring R]
     (b t s : ℕ) (h : Fin b)
     (X : Matrix (Fin (b * t)) (Fin s) R)
@@ -18695,7 +18695,7 @@ theorem sourceBlockMinor_sourceRowBlockEmbedding
   intro row
   simp [matchingEquiv, rowEquiv, Finset.equivMap_apply_coe]
 
-theorem sourceRowBlockMinorSum_eq_local_minors
+lemma sourceRowBlockMinorSum_eq_local_minors
     {R : Type*} [CommSemiring R]
     (b t s d : ℕ) (h : Fin b)
     (X : Matrix (Fin (b * t)) (Fin s) R) :
@@ -18732,7 +18732,7 @@ noncomputable def sourceRowBlockVariableEmbedding
     exact Prod.ext
       ((sourceRowBlockEmbedding b t h).injective hfirst) hsecond
 
-theorem sourceRowBlockMinorSum_eq_rename_minorSum
+lemma sourceRowBlockMinorSum_eq_rename_minorSum
     (b t s d : ℕ) (h : Fin b) :
     sourceRowBlockMinorSum b t s d
         (fun row column =>
@@ -18750,7 +18750,7 @@ theorem sourceRowBlockMinorSum_eq_rename_minorSum
   simp only [map_sum, map_prod, MvPolynomial.rename_X]
   rfl
 
-theorem sourceRowBlockVariableEmbedding_disjoint
+lemma sourceRowBlockVariableEmbedding_disjoint
     (b t s : ℕ) {left right : Fin b} (hne : left ≠ right) :
     Disjoint
       (Set.range (sourceRowBlockVariableEmbedding b t s left))
@@ -18777,7 +18777,7 @@ theorem sourceRowBlockVariableEmbedding_disjoint
   exact (Finset.disjoint_left.mp (sourceRowBlock_disjoint hne))
     hleftmem hrightmem
 
-theorem sourceTreeBlockMatrix_permanent_eq_separated_minorSum
+lemma sourceTreeBlockMatrix_permanent_eq_separated_minorSum
     (b t s d : ℕ) (hdpos : 0 < d) (hd : d ≤ t)
     {ζ : ℂ} (hζ : IsPrimitiveRoot ζ d)
     (tree : BlockTree (Fin b))
@@ -18820,7 +18820,7 @@ open scoped BigOperators
 
 noncomputable section
 
-theorem permanent_aeval_eq_matrix_permanent
+lemma permanent_aeval_eq_matrix_permanent
     {n : ℕ} {ι : Type*}
     (A : Matrix (Fin n) (Fin n) (MvPolynomial ι ℂ)) :
     MvPolynomial.aeval (fun ij : Fin n × Fin n => A ij.1 ij.2)
@@ -18829,7 +18829,7 @@ theorem permanent_aeval_eq_matrix_permanent
   simp only [permanent, Matrix.permanent, map_sum, map_prod,
     MvPolynomial.aeval_X]
 
-theorem matrixPermanent_eq_rectangularPermanent_reindex
+lemma matrixPermanent_eq_rectangularPermanent_reindex
     {n : ℕ} {α β R : Type*}
     [Fintype α] [Fintype β] [CommSemiring R]
     (row : Fin n ≃ α) (column : Fin n ≃ β)
@@ -18869,7 +18869,7 @@ def sourceBlockAffineInput
   | .inr _, .inl _ => ⟨1, 0⟩
   | .inr _, .inr _ => ⟨0, 0⟩
 
-theorem sourceBlockAffineInput_polynomial
+lemma sourceBlockAffineInput_polynomial
     {r s d : ℕ}
     (U : Matrix (Fin r) (Fin (r - d)) ℂ)
     (row : Fin r ⊕ Fin (s - d))
@@ -18887,7 +18887,7 @@ theorem sourceBlockAffineInput_polynomial
     simp [sourceBlockAffineInput, FreeAffineInput.polynomial,
       sourceBlockMatrix, Matrix.fromBlocks]
 
-theorem sourceBlock_affine_permanent_specialization
+lemma sourceBlock_affine_permanent_specialization
     {n r s d : ℕ}
     (rowEquiv : Fin n ≃ Fin r ⊕ Fin (s - d))
     (columnEquiv : Fin n ≃ Fin s ⊕ Fin (r - d))
@@ -18942,7 +18942,7 @@ theorem sourceBlock_affine_permanent_specialization
       matrixPermanent_eq_rectangularPermanent_reindex
         rowEquiv columnEquiv B
 
-theorem sourceBlock_floor_reindex_sizes
+lemma sourceBlock_floor_reindex_sizes
     {n d : ℕ} (hd : 3 ≤ d)
     (hn : 6 * blockWidth d ≤ n) :
     blockRows n d + (blockColumns n d - d) = n ∧
@@ -18975,7 +18975,7 @@ def sourceTreeBlockCommonFactor (b t s d : ℕ) : ℂ :=
     (((t - d).factorial : ℕ) : ℂ) *
     ((((t.factorial : ℕ) : ℂ) ^ (b - 1)))
 
-theorem sourceTreeBlockCommonFactor_ne_zero (b t s d : ℕ) :
+lemma sourceTreeBlockCommonFactor_ne_zero (b t s d : ℕ) :
     sourceTreeBlockCommonFactor b t s d ≠ 0 := by
   unfold sourceTreeBlockCommonFactor
   exact mul_ne_zero
@@ -18984,7 +18984,7 @@ theorem sourceTreeBlockCommonFactor_ne_zero (b t s d : ℕ) :
       (by exact_mod_cast (t - d).factorial_ne_zero))
     (pow_ne_zero _ (by exact_mod_cast t.factorial_ne_zero))
 
-theorem sourceBlockMatrix_rectangularPermanent_flatten
+lemma sourceBlockMatrix_rectangularPermanent_flatten
     (r s d : ℕ) (U : Matrix (Fin r) (Fin (r - d)) ℂ) :
     rectangularPermanent
         (sourceBlockMatrix r s d
@@ -19029,7 +19029,7 @@ def sourceTreeSeparatedMinorSum
         (sourceRowBlockVariableEmbedding b t s h)
         (minorSum t s d)
 
-theorem sourceTreeBlock_affine_permanent_specialization
+lemma sourceTreeBlock_affine_permanent_specialization
     {n d : ℕ} (hd : 3 ≤ d)
     (hn : 6 * blockWidth d ≤ n)
     {ζ : ℂ} (hζ : IsPrimitiveRoot ζ d)
@@ -19099,7 +19099,7 @@ def separatedBlockMinorSum (b t s d : ℕ) (weight : Fin b → ℂ) :
       MvPolynomial.rename (sourceRowBlockVariableEmbedding b t s h)
         (minorSum t s d)
 
-theorem separatedBlockMinorSum_isHomogeneous
+lemma separatedBlockMinorSum_isHomogeneous
     (b t s d : ℕ) (weight : Fin b → ℂ) :
     (separatedBlockMinorSum b t s d weight).IsHomogeneous d := by
   classical
@@ -19108,7 +19108,7 @@ theorem separatedBlockMinorSum_isHomogeneous
   intro h _
   exact (minorSum_isHomogeneous t s d).rename_isHomogeneous.C_mul (weight h)
 
-theorem separatedBlockMinorSum_offBlock_pderiv
+lemma separatedBlockMinorSum_offBlock_pderiv
     (b t s d : ℕ) {h j : Fin b} (hne : h ≠ j)
     (i : Fin t) (a : Fin s) :
     MvPolynomial.pderiv
@@ -19126,7 +19126,7 @@ theorem separatedBlockMinorSum_offBlock_pderiv
     (sourceRowBlockVariableEmbedding_disjoint b t s hne)
     ⟨(i, a), rfl⟩ ⟨entry, hentry⟩
 
-theorem separatedBlockMinorSum_pderiv
+lemma separatedBlockMinorSum_pderiv
     (b t s d : ℕ) (weight : Fin b → ℂ)
     (h : Fin b) (i : Fin t) (a : Fin s) :
     MvPolynomial.pderiv
@@ -19162,7 +19162,7 @@ def blockMinorGraphPullback (b t s : ℕ) :
           (sourceRowBlockVariableEmbedding b t s coordinate.1
             (column.2, column.1))
 
-theorem blockMinorGraphPullback_rename
+lemma blockMinorGraphPullback_rename
     (b t s : ℕ) (h : Fin b)
     (f : MvPolynomial (IncidenceCoordinate t s) ℂ) :
     blockMinorGraphPullback b t s
@@ -19183,7 +19183,7 @@ theorem blockMinorGraphPullback_rename
       | inr column =>
           simp [blockMinorGraphPullback, minorSumGraphPullback]
 
-theorem blockMinorGraphPullback_equation
+lemma blockMinorGraphPullback_equation
     (b t s d : ℕ) (hd : 0 < d)
     (coordinate : BlockIncidenceColumn b t s) :
     blockMinorGraphPullback b t s
@@ -19209,7 +19209,7 @@ abbrev SeparatedBlockCriticalCoordinateRing
   MvPolynomial (Fin (b * t) × Fin s) ℂ ⧸
     separatedBlockGradientIdeal b t s d weight
 
-theorem blockMinorGraphPullback_equation_mem_gradient
+lemma blockMinorGraphPullback_equation_mem_gradient
     (b t s d : ℕ) (weight : Fin b → ℂ)
     (hw : ∀ h, weight h ≠ 0) (hd : 0 < d)
     (coordinate : BlockIncidenceColumn b t s) :
@@ -19277,7 +19277,7 @@ def blockMinorMatrixCoordinateLift (b t s : ℕ) :
         ((finProdFinEquiv : Fin b × Fin t ≃ Fin (b * t)).symm
           coordinate.1).2))
 
-theorem blockMinorGraphPullback_rename_matrix
+lemma blockMinorGraphPullback_rename_matrix
     (b t s : ℕ) (f : MvPolynomial (Fin (b * t) × Fin s) ℂ) :
     blockMinorGraphPullback b t s
         (MvPolynomial.rename
@@ -19313,7 +19313,7 @@ theorem blockMinorGraphPullback_rename_matrix
           f * MvPolynomial.X coordinate
       rw [hcoordinate]
 
-theorem blockIncidenceWeightedCriticalGraph_surjective
+lemma blockIncidenceWeightedCriticalGraph_surjective
     (b t s d : ℕ) (weight : Fin b → ℂ)
     (hw : ∀ h, weight h ≠ 0) (hd : 0 < d) :
     Function.Surjective
@@ -19333,7 +19333,7 @@ theorem blockIncidenceWeightedCriticalGraph_surjective
         (blockMinorMatrixCoordinateLift b t s) f)) = _
   rw [blockMinorGraphPullback_rename_matrix]
 
-theorem separatedBlockCriticalCoordinateRing_ringKrullDim_le_incidence
+lemma separatedBlockCriticalCoordinateRing_ringKrullDim_le_incidence
     (b t s d : ℕ) (weight : Fin b → ℂ)
     (hw : ∀ h, weight h ≠ 0) (hd : 0 < d) :
     ringKrullDim (SeparatedBlockCriticalCoordinateRing
@@ -19352,13 +19352,13 @@ def flattenedSeparatedBlockMinorSum
     (finProdFinEquiv : Fin (b * t) × Fin s ≃ Fin ((b * t) * s))
     (separatedBlockMinorSum b t s d weight)
 
-theorem flattenedSeparatedBlockMinorSum_isHomogeneous
+lemma flattenedSeparatedBlockMinorSum_isHomogeneous
     (b t s d : ℕ) (weight : Fin b → ℂ) :
     (flattenedSeparatedBlockMinorSum b t s d weight).IsHomogeneous d := by
   exact MvPolynomial.IsHomogeneous.rename_isHomogeneous
     (separatedBlockMinorSum_isHomogeneous b t s d weight)
 
-theorem separatedBlockGradientIdeal_map_flatten
+lemma separatedBlockGradientIdeal_map_flatten
     (b t s d : ℕ) (weight : Fin b → ℂ) :
     (separatedBlockGradientIdeal b t s d weight).map
       (MvPolynomial.renameEquiv ℂ
@@ -19426,7 +19426,7 @@ def separatedBlockCriticalFlattenEquiv
     (separatedBlockGradientIdeal_map_flatten
       b t s d weight).symm
 
-theorem flattenedSeparatedBlockMinorSum_criticalLocusDimension_le_of_incidence
+lemma flattenedSeparatedBlockMinorSum_criticalLocusDimension_le_of_incidence
     {b t s d : ℕ} (hd : 3 ≤ d)
     (weight : Fin b → ℂ) (hw : ∀ h, weight h ≠ 0)
     (hincidence :
@@ -19450,7 +19450,7 @@ theorem flattenedSeparatedBlockMinorSum_criticalLocusDimension_le_of_incidence
     _ ≤ ((b * ((2 ^ t - 1) + s * (d - 2)) : ℕ) : WithBot ℕ∞) :=
       hincidence
 
-theorem flattenedSeparatedBlockMinorSum_criticalLocusDimension_le
+lemma flattenedSeparatedBlockMinorSum_criticalLocusDimension_le
     {b t s d : ℕ} (hd : 3 ≤ d) (ht : d ≤ t)
     (weight : Fin b → ℂ) (hw : ∀ h, weight h ≠ 0) :
     criticalLocusDimension
@@ -19464,7 +19464,7 @@ def sourceTreeBlockWeight (b d : ℕ) (tree : BlockTree (Fin b)) :
   fun h => subtreeCoefficient
     (((-1 : ℂ) ^ (d + 1)) * (2 : ℂ) ^ d) tree h
 
-theorem sourceTreeBlockWeight_ne_zero
+lemma sourceTreeBlockWeight_ne_zero
     {b d : ℕ} (hd : 0 < d)
     (tree : BlockTree (Fin b))
     (hnodup : tree.leafList.Nodup)
@@ -19480,13 +19480,13 @@ def sourceSeparatedBlockMinorSum
   flattenedSeparatedBlockMinorSum
     (blockCount n d) (blockWidth d) (blockColumns n d) d weight
 
-theorem sourceSeparatedBlockMinorSum_isHomogeneous
+lemma sourceSeparatedBlockMinorSum_isHomogeneous
     (n d : ℕ) (weight : Fin (blockCount n d) → ℂ) :
     (sourceSeparatedBlockMinorSum n d weight).IsHomogeneous d := by
   exact flattenedSeparatedBlockMinorSum_isHomogeneous
     (blockCount n d) (blockWidth d) (blockColumns n d) d weight
 
-theorem sourceSeparatedBlockMinorSum_criticalLocusDimension_le
+lemma sourceSeparatedBlockMinorSum_criticalLocusDimension_le
     {n d : ℕ} (hd : 3 ≤ d)
     (weight : Fin (blockCount n d) → ℂ)
     (hw : ∀ h, weight h ≠ 0) :
@@ -19523,7 +19523,7 @@ def empty (ι : Type) : CircuitPrefix ι where
   program := []
   valid position := Fin.elim0 position
 
-theorem forwardFold_size {ι : Type} (program : List (Instruction ι))
+lemma forwardFold_size {ι : Type} (program : List (Instruction ι))
     (previous : Array (MvPolynomial ι ℂ)) :
     (program.foldl
       (fun values instruction => values.push (instruction.eval values))
@@ -19535,7 +19535,7 @@ theorem forwardFold_size {ι : Type} (program : List (Instruction ι))
       Nat.add_left_comm] using
       ih (previous.push (instruction.eval previous))
 
-theorem values_size {ι : Type} (state : CircuitPrefix ι) :
+lemma values_size {ι : Type} (state : CircuitPrefix ι) :
     state.values.size = state.program.length := by
   simpa [values] using
     forwardFold_size state.program (#[] : Array (MvPolynomial ι ℂ))
@@ -19563,14 +19563,14 @@ def append {ι : Type} (state : CircuitPrefix ι)
       rw [List.getElem_append_right (by omega)]
       simpa [hlast] using hvalid
 
-theorem append_values {ι : Type} (state : CircuitPrefix ι)
+lemma append_values {ι : Type} (state : CircuitPrefix ι)
     (instruction : Instruction ι)
     (hvalid : instruction.referencesBounded state.program.length) :
     (state.append instruction hvalid).values =
       state.values.push (instruction.eval state.values) := by
   simp [values, append, List.foldl_append]
 
-theorem append_values_getD_of_lt {ι : Type} (state : CircuitPrefix ι)
+lemma append_values_getD_of_lt {ι : Type} (state : CircuitPrefix ι)
     (instruction : Instruction ι)
     (hvalid : instruction.referencesBounded state.program.length)
     (index : ℕ) (hindex : index < state.program.length) :
@@ -19582,7 +19582,7 @@ theorem append_values_getD_of_lt {ι : Type} (state : CircuitPrefix ι)
   simp [Array.getD_eq_getD_getElem?, Array.getElem?_push,
     Nat.ne_of_lt hsize]
 
-theorem append_values_getD_new {ι : Type} (state : CircuitPrefix ι)
+lemma append_values_getD_new {ι : Type} (state : CircuitPrefix ι)
     (instruction : Instruction ι)
     (hvalid : instruction.referencesBounded state.program.length) :
     (state.append instruction hvalid).values.getD
@@ -19590,7 +19590,7 @@ theorem append_values_getD_new {ι : Type} (state : CircuitPrefix ι)
   rw [append_values, ← values_size state]
   simp [Array.getD_eq_getD_getElem?]
 
-theorem exists_extension_computing {ι : Type}
+lemma exists_extension_computing {ι : Type}
     (polynomial : MvPolynomial ι ℂ) (state : CircuitPrefix ι) :
     ∃ (extension : CircuitPrefix ι) (output : ℕ),
       state.program.length ≤ extension.program.length ∧
@@ -19692,18 +19692,18 @@ end CircuitPrefix
 
 namespace ArithmeticCircuit
 
-theorem values_size {ι : Type} (circuit : ArithmeticCircuit ι) :
+lemma values_size {ι : Type} (circuit : ArithmeticCircuit ι) :
     circuit.values.size = circuit.program.length := by
   simpa [ArithmeticCircuit.values] using
     CircuitPrefix.forwardFold_size circuit.program
       (#[] : Array (MvPolynomial ι ℂ))
 
-theorem output_lt_values_size {ι : Type}
+lemma output_lt_values_size {ι : Type}
     (circuit : ArithmeticCircuit ι) :
     circuit.output < circuit.values.size := by
   simpa [values_size circuit] using circuit.output_lt
 
-theorem polynomial_eq_getElem {ι : Type}
+lemma polynomial_eq_getElem {ι : Type}
     (circuit : ArithmeticCircuit ι)
     (houtput : circuit.output < circuit.values.size) :
     circuit.polynomial =
@@ -19711,7 +19711,7 @@ theorem polynomial_eq_getElem {ι : Type}
   simp [ArithmeticCircuit.polynomial, Array.getD_eq_getD_getElem?,
     houtput]
 
-theorem reference_lt_prefix_values_size {ι : Type}
+lemma reference_lt_prefix_values_size {ι : Type}
     (circuit : ArithmeticCircuit ι) (position : Fin circuit.program.length)
     (index : ℕ)
     (hreference : CircuitInstructionReference
@@ -19731,7 +19731,7 @@ theorem reference_lt_prefix_values_size {ι : Type}
 
 end ArithmeticCircuit
 
-theorem exists_arithmeticCircuit_polynomial {ι : Type}
+lemma exists_arithmeticCircuit_polynomial {ι : Type}
     (polynomial : MvPolynomial ι ℂ) :
     ∃ circuit : ArithmeticCircuit ι,
       circuit.polynomial = polynomial := by
@@ -19743,18 +19743,18 @@ theorem exists_arithmeticCircuit_polynomial {ι : Type}
   refine ⟨circuit, ?_⟩
   exact hpolynomial
 
-theorem permanent_representable (n : ℕ) :
+lemma permanent_representable (n : ℕ) :
     ∃ circuit : ArithmeticCircuit (Fin n × Fin n),
       circuit.polynomial = permanent n := by
   exact exists_arithmeticCircuit_polynomial (permanent n)
 
-theorem circuitComplexity_le_of_circuit {ι : Type}
+lemma circuitComplexity_le_of_circuit {ι : Type}
     {polynomial : MvPolynomial ι ℂ} (circuit : ArithmeticCircuit ι)
     (hpolynomial : circuit.polynomial = polynomial) :
     circuitComplexity polynomial ≤ circuit.size := by
   exact Nat.sInf_le ⟨circuit, hpolynomial, rfl⟩
 
-theorem circuitComplexity_attained_of_exists {ι : Type}
+lemma circuitComplexity_attained_of_exists {ι : Type}
     (polynomial : MvPolynomial ι ℂ)
     (hrepresentable : ∃ circuit : ArithmeticCircuit ι,
       circuit.polynomial = polynomial) :
@@ -19768,7 +19768,7 @@ theorem circuitComplexity_attained_of_exists {ι : Type}
     exact ⟨circuit.size, circuit, hcircuit, rfl⟩
   exact Nat.sInf_mem hnonempty
 
-theorem circuitComplexity_attained {ι : Type}
+lemma circuitComplexity_attained {ι : Type}
     (polynomial : MvPolynomial ι ℂ) :
     ∃ circuit : ArithmeticCircuit ι,
       circuit.polynomial = polynomial ∧
@@ -19776,7 +19776,7 @@ theorem circuitComplexity_attained {ι : Type}
   exact circuitComplexity_attained_of_exists polynomial
     (exists_arithmeticCircuit_polynomial polynomial)
 
-theorem le_circuitComplexity_iff {ι : Type}
+lemma le_circuitComplexity_iff {ι : Type}
     (polynomial : MvPolynomial ι ℂ)
     (bound : ℕ) :
     bound ≤ circuitComplexity polynomial ↔
@@ -19790,7 +19790,7 @@ theorem le_circuitComplexity_iff {ι : Type}
       circuitComplexity_attained polynomial
     simpa [hsize] using hbound circuit hpolynomial
 
-theorem real_le_circuitComplexity_iff {ι : Type}
+lemma real_le_circuitComplexity_iff {ι : Type}
     (polynomial : MvPolynomial ι ℂ)
     (bound : ℝ) :
     bound ≤ (circuitComplexity polynomial : ℝ) ↔
@@ -19805,7 +19805,7 @@ theorem real_le_circuitComplexity_iff {ι : Type}
       circuitComplexity_attained polynomial
     simpa [hsize] using hbound circuit hpolynomial
 
-theorem homogeneous_logarithmic_product_bound_of_fiber_cardinalities
+lemma homogeneous_logarithmic_product_bound_of_fiber_cardinalities
     {k e q cardinality : ℕ} (he : 0 < e)
     (hdegree : e ^ k ≤ cardinality)
     (hbezout : cardinality ≤ 2 ^ q) :
@@ -19819,7 +19819,7 @@ theorem homogeneous_logarithmic_product_bound_of_fiber_cardinalities
     (by norm_num : (1 : ℝ) < 2) (pow_pos he_real k) hreal
   simpa [Real.logb_pow] using hlog
 
-theorem sliced_gradient_logarithmic_bound_of_fiber_cardinalities
+lemma sliced_gradient_logarithmic_bound_of_fiber_cardinalities
     {k d q cardinality : ℕ} (hd : 2 ≤ d)
     (hdegree : (d - 1) ^ k ≤ cardinality)
     (hbezout : cardinality ≤ 2 ^ q) :
@@ -19832,7 +19832,7 @@ theorem sliced_gradient_logarithmic_bound_of_fiber_cardinalities
     (homogeneous_logarithmic_product_bound_of_fiber_cardinalities
       (k := k) (e := d - 1) (q := q) he hdegree hbezout)
 
-theorem exists_source_parameter_slicedGradient
+lemma exists_source_parameter_slicedGradient
     {n d dimension : ℕ} (hd : 3 ≤ d)
     (hn : 6 * blockWidth d ≤ n)
     (hscale : 4 * powerSumParameter d ≤
@@ -19870,7 +19870,7 @@ theorem exists_source_parameter_slicedGradient
   exact exists_slicedGradient_of_criticalLocus_codimension
     P (by omega) hP hk hm hcodimension
 
-theorem exists_source_block_slicedGradient
+lemma exists_source_block_slicedGradient
     {n d : ℕ} (hd : 3 ≤ d)
     (hn : 6 * blockWidth d ≤ n)
     (hscale : 4 * powerSumParameter d ≤
@@ -19895,7 +19895,7 @@ theorem exists_source_block_slicedGradient
   exact exists_source_parameter_slicedGradient
     hd hn hscale (by rfl) P hP hcritical
 
-theorem exists_sourceSeparatedBlockMinorSum_slicedGradient
+lemma exists_sourceSeparatedBlockMinorSum_slicedGradient
     {n d : ℕ} (hd : 3 ≤ d)
     (hn : 6 * blockWidth d ≤ n)
     (hscale : 4 * powerSumParameter d ≤
@@ -19922,7 +19922,7 @@ theorem exists_sourceSeparatedBlockMinorSum_slicedGradient
     (sourceSeparatedBlockMinorSum_isHomogeneous n d weight)
     (sourceSeparatedBlockMinorSum_criticalLocusDimension_le hd weight hw)
 
-theorem exists_sourceTreeBlock_slicedGradient
+lemma exists_sourceTreeBlock_slicedGradient
     {n d : ℕ} (hd : 3 ≤ d)
     (hn : 6 * blockWidth d ≤ n)
     (hscale : 4 * powerSumParameter d ≤
@@ -19951,7 +19951,7 @@ theorem exists_sourceTreeBlock_slicedGradient
     hd hn hscale (sourceTreeBlockWeight (blockCount n d) d tree)
     (sourceTreeBlockWeight_ne_zero (by omega) tree hnodup hleaves)
 
-theorem permanent_circuit_logarithmic_bound_of_gradient
+lemma permanent_circuit_logarithmic_bound_of_gradient
     {n d : ℕ} (hd : 3 ≤ d) (hn : 6 * blockWidth d ≤ n)
     (circuit : ArithmeticCircuit (Fin n × Fin n))
     (_hpermanent : circuit.polynomial = permanent n)
@@ -19962,7 +19962,7 @@ theorem permanent_circuit_logarithmic_bound_of_gradient
       (circuit.size : ℝ) := by
   exact logarithmic_lower_bound_of_gradient hd hn hgradient
 
-theorem permanent_logarithmic_bounds_of_circuit_gradient
+lemma permanent_logarithmic_bounds_of_circuit_gradient
     (hgradient : ∀ d : ℕ, 3 ≤ d → ∃ N : ℕ, ∀ n : ℕ, N ≤ n →
       ∀ circuit : ArithmeticCircuit (Fin n × Fin n),
         circuit.polynomial = permanent n →
@@ -19982,7 +19982,7 @@ theorem permanent_logarithmic_bounds_of_circuit_gradient
   exact permanent_circuit_logarithmic_bound_of_gradient hd hn_source
     circuit hcircuit (hN n hn_gradient circuit hcircuit)
 
-theorem permanent_superquadratic_of_logarithmic_bounds
+lemma permanent_superquadratic_of_logarithmic_bounds
     (hbound : ∀ d : ℕ, 3 ≤ d → ∃ N : ℕ, ∀ n : ℕ, N ≤ n →
       (n : ℝ) ^ 2 * Real.logb 2 ((d : ℝ) - 1) / 144 ≤
         (circuitComplexity (permanent n) : ℝ)) :
@@ -19991,7 +19991,7 @@ theorem permanent_superquadratic_of_logarithmic_bounds
   exact superquadratic_of_logarithmic_degree_bounds
     (fun n => circuitComplexity (permanent n)) hbound
 
-theorem permanent_superquadratic_of_circuit_gradient
+lemma permanent_superquadratic_of_circuit_gradient
     (hgradient : ∀ d : ℕ, 3 ≤ d → ∃ N : ℕ, ∀ n : ℕ, N ≤ n →
       ∀ circuit : ArithmeticCircuit (Fin n × Fin n),
         circuit.polynomial = permanent n →
@@ -20002,7 +20002,7 @@ theorem permanent_superquadratic_of_circuit_gradient
   exact permanent_superquadratic_of_logarithmic_bounds
     (permanent_logarithmic_bounds_of_circuit_gradient hgradient)
 
-theorem exists_blockTree_leafList {ι : Type*}
+lemma exists_blockTree_leafList {ι : Type*}
     (labels : List ι) (hne : labels ≠ []) :
     ∃ tree : BlockTree ι, tree.leafList = labels := by
   induction labels with
@@ -20015,7 +20015,7 @@ theorem exists_blockTree_leafList {ι : Type*}
         exact ⟨BlockTree.branch (BlockTree.leaf head) tree, by
           simp [htree]⟩
 
-theorem exists_source_floor_blockTree
+lemma exists_source_floor_blockTree
     {n d : ℕ} (hd : 3 ≤ d) (hn : 6 * blockWidth d ≤ n) :
     ∃ tree : BlockTree (Fin (blockCount n d)),
       tree.leafList.Nodup ∧ tree.leaves = Finset.univ := by
@@ -20037,14 +20037,14 @@ theorem exists_source_floor_blockTree
     rw [BlockTree.mem_leaves_iff, htree]
     simp [labels]
 
-theorem sourceTreeSeparatedMinorSum_eq_separatedBlockMinorSum
+lemma sourceTreeSeparatedMinorSum_eq_separatedBlockMinorSum
     (b t s d : ℕ) (tree : BlockTree (Fin b)) :
     sourceTreeSeparatedMinorSum b t s d tree =
       separatedBlockMinorSum b t s d
         (sourceTreeBlockWeight b d tree) := by
   rfl
 
-theorem flattened_sourceTreeSeparatedMinorSum_eq_flattenedSeparatedBlockMinorSum
+lemma flattened_sourceTreeSeparatedMinorSum_eq_flattenedSeparatedBlockMinorSum
     (b t s d : ℕ) (tree : BlockTree (Fin b)) :
     MvPolynomial.rename
         (finProdFinEquiv :
@@ -20055,7 +20055,7 @@ theorem flattened_sourceTreeSeparatedMinorSum_eq_flattenedSeparatedBlockMinorSum
   unfold flattenedSeparatedBlockMinorSum
   rw [sourceTreeSeparatedMinorSum_eq_separatedBlockMinorSum]
 
-theorem floor_sourceTreeSeparatedMinorSum_eq_sourceSeparatedBlockMinorSum
+lemma floor_sourceTreeSeparatedMinorSum_eq_sourceSeparatedBlockMinorSum
     (n d : ℕ) (tree : BlockTree (Fin (blockCount n d))) :
     MvPolynomial.rename
         (finProdFinEquiv :
@@ -20068,7 +20068,7 @@ theorem floor_sourceTreeSeparatedMinorSum_eq_sourceSeparatedBlockMinorSum
   exact flattened_sourceTreeSeparatedMinorSum_eq_flattenedSeparatedBlockMinorSum
     (blockCount n d) (blockWidth d) (blockColumns n d) d tree
 
-theorem sourceTreeBlock_slicedGradient_homogeneousFiberDegree_le_two_pow
+lemma sourceTreeBlock_slicedGradient_homogeneousFiberDegree_le_two_pow
     {n d : ℕ} (hd : 3 ≤ d)
     (hn : 6 * blockWidth d ≤ n)
     (circuit : ArithmeticCircuit (Fin n × Fin n))
@@ -20114,7 +20114,7 @@ theorem sourceTreeBlock_slicedGradient_homogeneousFiberDegree_le_two_pow
     coefficient hcoefficient hsource W A (d - 1) (by omega)
     hhomogeneous hzero
 
-theorem permanent_circuit_gradient_bound
+lemma permanent_circuit_gradient_bound
     {n d : ℕ} (hd : 3 ≤ d)
     (hn : 6 * blockWidth d ≤ n)
     (hscale : 4 * powerSumParameter d ≤
@@ -20138,7 +20138,7 @@ theorem permanent_circuit_gradient_bound
       (cardinality := (d - 1) ^ sliceRank n d)
       (by omega) (le_refl _) hpower)
 
-theorem permanent_superquadratic :
+lemma permanent_superquadratic :
     ∀ C : ℝ, 0 < C → ∃ N : ℕ, ∀ n : ℕ, N ≤ n →
       C * (n : ℝ) ^ 2 ≤ (circuitComplexity (permanent n) : ℝ) := by
   apply permanent_superquadratic_of_circuit_gradient
@@ -20150,7 +20150,7 @@ theorem permanent_superquadratic :
   exact permanent_circuit_gradient_bound
     hd hlarge hscale circuit hpermanent
 
-theorem permanent_complexity_ratio_tendsto_atTop :
+lemma permanent_complexity_ratio_tendsto_atTop :
     Filter.Tendsto
       (fun n : ℕ =>
         (circuitComplexity (permanent n) : ℝ) / (n : ℝ) ^ 2)
@@ -20160,7 +20160,7 @@ theorem permanent_complexity_ratio_tendsto_atTop :
 
 open scoped LinearAlgebra.Projectivization
 
-theorem source_fixedDegree_permanent_circuit_logarithmic_bound
+lemma source_fixedDegree_permanent_circuit_logarithmic_bound
     {n d : ℕ}
     (circuit : ArithmeticCircuit (Fin n × Fin n)) :
     3 ≤ d →
@@ -20174,7 +20174,7 @@ theorem source_fixedDegree_permanent_circuit_logarithmic_bound
     hd hn circuit hpermanent
     (permanent_circuit_gradient_bound hd hn hscale circuit hpermanent)
 
-private theorem six_mul_le_two_pow_of_sixteen_le {k : ℕ} (hk : 16 ≤ k) :
+private lemma six_mul_le_two_pow_of_sixteen_le {k : ℕ} (hk : 16 ≤ k) :
     6 * k ≤ 2 ^ k := by
   induction k, hk using Nat.le_induction with
   | base => norm_num
@@ -20182,7 +20182,7 @@ private theorem six_mul_le_two_pow_of_sixteen_le {k : ℕ} (hk : 16 ≤ k) :
       rw [pow_succ]
       omega
 
-theorem permanent_circuit_loglog_lower_bound {n : ℕ} (hn : 2 ^ 16 ≤ n) :
+lemma permanent_circuit_loglog_lower_bound {n : ℕ} (hn : 2 ^ 16 ≤ n) :
     (n : ℝ) ^ 2 * (Real.logb 2 (Real.logb 2 (n : ℝ)) - 3) / 144 ≤
       (circuitComplexity (permanent n) : ℝ) := by
   let L : ℕ := Nat.log 2 n
@@ -20267,7 +20267,7 @@ theorem permanent_circuit_loglog_lower_bound {n : ℕ} (hn : 2 ^ 16 ≤ n) :
           gcongr
     _ ≤ (circuitComplexity (permanent n) : ℝ) := hcomplexity
 
-theorem permanent_circuit_loglog_lower_bound_288 {n : ℕ} (hn : 2 ^ 64 ≤ n) :
+lemma permanent_circuit_loglog_lower_bound_288 {n : ℕ} (hn : 2 ^ 64 ≤ n) :
     (1 / 288 : ℝ) * (n : ℝ) ^ 2 * Real.logb 2 (Real.logb 2 (n : ℝ)) ≤
       (circuitComplexity (permanent n) : ℝ) := by
   have hnmain : 2 ^ 16 ≤ n := by
@@ -20303,7 +20303,7 @@ theorem permanent_circuit_loglog_lower_bound_288 {n : ℕ} (hn : 2 ^ 64 ≤ n) :
     _ ≤ (circuitComplexity (permanent n) : ℝ) :=
       permanent_circuit_loglog_lower_bound hnmain
 
-theorem permanent_circuit_loglog_bigOmega :
+lemma permanent_circuit_loglog_bigOmega :
     ∃ c : ℝ, 0 < c ∧ ∃ N : ℕ, ∀ n : ℕ, N ≤ n →
       c * (n : ℝ) ^ 2 * Real.logb 2 (Real.logb 2 (n : ℝ)) ≤
         (circuitComplexity (permanent n) : ℝ) := by
@@ -20324,7 +20324,7 @@ open scoped BigOperators Kronecker Matrix IntermediateField.algebraAdjoinAdjoin
 
 namespace TranscendenceBounds
 
-theorem trdeg_intermediateField_adjoin_le_card
+lemma trdeg_intermediateField_adjoin_le_card
     {F E : Type*} [Field F] [Field E] [Algebra F E]
     (s : Finset E) :
     Algebra.trdeg F (IntermediateField.adjoin F (s : Set E)) ≤
@@ -20363,7 +20363,7 @@ theorem trdeg_intermediateField_adjoin_le_card
     _ ≤ Cardinal.mk s := Cardinal.mk_range_le
     _ = (s.card : Cardinal) := Cardinal.mk_coe_finset
 
-theorem trdeg_intermediateField_le_adjoin_card
+lemma trdeg_intermediateField_le_adjoin_card
     {F E : Type*} [Field F] [Field E] [Algebra F E]
     (K : IntermediateField F E) (s : Finset E)
     (hK : K ≤ IntermediateField.adjoin F (s : Set E)) :
@@ -20376,7 +20376,7 @@ theorem trdeg_intermediateField_le_adjoin_card
     _ ≤ (s.card : Cardinal) :=
       trdeg_intermediateField_adjoin_le_card s
 
-theorem trdeg_intermediateField_le_of_adjoin_card_le
+lemma trdeg_intermediateField_le_of_adjoin_card_le
     {F E : Type*} [Field F] [Field E] [Algebra F E]
     (K : IntermediateField F E) (s : Finset E) {budget : ℕ}
     (hK : K ≤ IntermediateField.adjoin F (s : Set E))
@@ -20440,24 +20440,24 @@ def vertexCount : Formula ι R → ℕ
   | .sub f g => vertexCount f + vertexCount g + 1
   | .mul f g => vertexCount f + vertexCount g + 1
 
-theorem leafCount_eq_internalGateCount_add_one (f : Formula ι R) :
+lemma leafCount_eq_internalGateCount_add_one (f : Formula ι R) :
     leafCount f = internalGateCount f + 1 := by
   induction f <;>
     simp [leafCount, internalGateCount, *, Nat.add_assoc, Nat.add_left_comm,
       Nat.add_comm]
 
-theorem vertexCount_eq_leafCount_add_internalGateCount (f : Formula ι R) :
+lemma vertexCount_eq_leafCount_add_internalGateCount (f : Formula ι R) :
     vertexCount f = leafCount f + internalGateCount f := by
   induction f <;>
     simp [vertexCount, leafCount, internalGateCount, *, Nat.add_assoc,
       Nat.add_left_comm, Nat.add_comm]
 
-theorem leafCount_le_vertexCount (f : Formula ι R) :
+lemma leafCount_le_vertexCount (f : Formula ι R) :
     leafCount f ≤ vertexCount f := by
   rw [vertexCount_eq_leafCount_add_internalGateCount]
   exact Nat.le_add_right _ _
 
-theorem variableLeaves_le_leafCount (f : Formula ι R) :
+lemma variableLeaves_le_leafCount (f : Formula ι R) :
     variableLeaves f ≤ leafCount f := by
   induction f with
   | var i => simp [variableLeaves, leafCount]
@@ -20545,20 +20545,20 @@ def vertexCount : RationalFormula ι R → ℕ
   | .mul f g => vertexCount f + vertexCount g + 1
   | .div f g => vertexCount f + vertexCount g + 1
 
-theorem leafCount_eq_internalGateCount_add_one (f : RationalFormula ι R) :
+lemma leafCount_eq_internalGateCount_add_one (f : RationalFormula ι R) :
     leafCount f = internalGateCount f + 1 := by
   induction f <;>
     simp_all [leafCount, internalGateCount, Nat.add_assoc, Nat.add_left_comm,
       Nat.add_comm]
 
-theorem vertexCount_eq_leafCount_add_internalGateCount
+lemma vertexCount_eq_leafCount_add_internalGateCount
     (f : RationalFormula ι R) :
     vertexCount f = leafCount f + internalGateCount f := by
   induction f <;>
     simp_all [vertexCount, leafCount, internalGateCount, Nat.add_assoc,
       Nat.add_left_comm, Nat.add_comm]
 
-theorem variableLeaves_le_leafCount (f : RationalFormula ι R) :
+lemma variableLeaves_le_leafCount (f : RationalFormula ι R) :
     variableLeaves f ≤ leafCount f := by
   induction f with
   | var i => simp [variableLeaves, leafCount]
@@ -20572,7 +20572,7 @@ theorem variableLeaves_le_leafCount (f : RationalFormula ι R) :
   | div f g hf hg =>
       simpa [variableLeaves, leafCount] using Nat.add_le_add hf hg
 
-theorem leafCount_le_vertexCount (f : RationalFormula ι R) :
+lemma leafCount_le_vertexCount (f : RationalFormula ι R) :
     leafCount f ≤ vertexCount f := by
   rw [vertexCount_eq_leafCount_add_internalGateCount]
   exact Nat.le_add_right _ _
@@ -20608,7 +20608,7 @@ def splitPolynomialHom [Field F] :
         (algebraMap (MvPolynomial Z F) (rationalCoefficientField Z F))).comp
           (MvPolynomial.sumAlgEquiv F Y Z).toRingEquiv.toRingHom)
 
-theorem splitPolynomialHom_injective [Field F] :
+lemma splitPolynomialHom_injective [Field F] :
     Function.Injective (splitPolynomialHom (Y := Y) (Z := Z) (F := F)) := by
   unfold splitPolynomialHom
   exact
@@ -20630,7 +20630,7 @@ def splitEval [Field F] (f : RationalFormula (Y ⊕ Z) F) :
     rationalSplitField Y Z F :=
   splitFractionHom (Y := Y) (Z := Z) (F := F) (eval f)
 
-theorem splitFractionHom_injective [Field F] :
+lemma splitFractionHom_injective [Field F] :
     Function.Injective (splitFractionHom (Y := Y) (Z := Z) (F := F)) :=
   RingHom.injective (splitFractionHom (Y := Y) (Z := Z) (F := F))
 
@@ -20639,7 +20639,7 @@ def splitCoefficientHom [Field F] :
   (algebraMap (MvPolynomial Y (rationalCoefficientField Z F))
     (rationalSplitField Y Z F)).comp MvPolynomial.C
 
-theorem splitCoefficientHom_eq_algebraMap [Field F] :
+lemma splitCoefficientHom_eq_algebraMap [Field F] :
     splitCoefficientHom (Y := Y) (Z := Z) (F := F) =
       algebraMap (rationalCoefficientField Z F)
         (rationalSplitField Y Z F) := by
@@ -20649,7 +20649,7 @@ theorem splitCoefficientHom_eq_algebraMap [Field F] :
     (MvPolynomial Y (rationalCoefficientField Z F))
     (rationalSplitField Y Z F) c).symm
 
-@[simp] theorem splitFractionHom_algebraMap [Field F]
+@[simp] lemma splitFractionHom_algebraMap [Field F]
     (p : MvPolynomial (Y ⊕ Z) F) :
     splitFractionHom (Y := Y) (Z := Z) (F := F)
         (algebraMap (MvPolynomial (Y ⊕ Z) F)
@@ -20658,47 +20658,47 @@ theorem splitCoefficientHom_eq_algebraMap [Field F] :
   exact IsFractionRing.lift_algebraMap
     (splitPolynomialHom_injective (Y := Y) (Z := Z) (F := F)) p
 
-@[simp] theorem splitEval_var_inl [Field F] (i : Y) :
+@[simp] lemma splitEval_var_inl [Field F] (i : Y) :
     splitEval (Z := Z) (F := F) (.var (.inl i)) =
       algebraMap (MvPolynomial Y (rationalCoefficientField Z F))
         (rationalSplitField Y Z F) (MvPolynomial.X i) := by
   simp [splitEval, eval, splitPolynomialHom]
 
-@[simp] theorem splitEval_var_inr [Field F] (j : Z) :
+@[simp] lemma splitEval_var_inr [Field F] (j : Z) :
     splitEval (Y := Y) (F := F) (.var (.inr j)) =
       splitCoefficientHom (Y := Y) (Z := Z) (F := F)
         (algebraMap (MvPolynomial Z F) (rationalCoefficientField Z F)
           (MvPolynomial.X j)) := by
   simp [splitEval, eval, splitPolynomialHom, splitCoefficientHom]
 
-@[simp] theorem splitEval_const [Field F] (c : F) :
+@[simp] lemma splitEval_const [Field F] (c : F) :
     splitEval (Y := Y) (Z := Z) (.const c) =
       splitCoefficientHom (Y := Y) (Z := Z) (F := F)
         (algebraMap (MvPolynomial Z F) (rationalCoefficientField Z F)
           (MvPolynomial.C c)) := by
   simp [splitEval, eval, splitPolynomialHom, splitCoefficientHom]
 
-@[simp] theorem splitEval_add [Field F]
+@[simp] lemma splitEval_add [Field F]
     (f g : RationalFormula (Y ⊕ Z) F) :
     splitEval (.add f g) = splitEval f + splitEval g := by
   simp [splitEval, eval]
 
-@[simp] theorem splitEval_sub [Field F]
+@[simp] lemma splitEval_sub [Field F]
     (f g : RationalFormula (Y ⊕ Z) F) :
     splitEval (.sub f g) = splitEval f - splitEval g := by
   simp [splitEval, eval]
 
-@[simp] theorem splitEval_mul [Field F]
+@[simp] lemma splitEval_mul [Field F]
     (f g : RationalFormula (Y ⊕ Z) F) :
     splitEval (.mul f g) = splitEval f * splitEval g := by
   simp [splitEval, eval]
 
-@[simp] theorem splitEval_div [Field F]
+@[simp] lemma splitEval_div [Field F]
     (f g : RationalFormula (Y ⊕ Z) F) :
     splitEval (.div f g) = splitEval f / splitEval g := by
   simp [splitEval, eval, map_div₀]
 
-theorem exists_splitEval_eq_coefficient_of_yLeafCount_eq_zero [Field F]
+lemma exists_splitEval_eq_coefficient_of_yLeafCount_eq_zero [Field F]
     (f : RationalFormula (Y ⊕ Z) F) (h : yLeafCount f = 0) :
     ∃ c : rationalCoefficientField Z F,
       splitEval f = splitCoefficientHom (Y := Y) (Z := Z) (F := F) c := by
@@ -20769,7 +20769,7 @@ def rationalSkeletonField [Field F]
       (splitCoefficientHom (Y := Y) (Z := Z) (F := F)) ''
         (s : Set (rationalCoefficientField Z F)))
 
-theorem marked_variable_mem_rationalSkeletonField [Field F]
+lemma marked_variable_mem_rationalSkeletonField [Field F]
     (s : Finset (rationalCoefficientField Z F)) (i : Y) :
     algebraMap (MvPolynomial Y (rationalCoefficientField Z F))
         (rationalSplitField Y Z F) (MvPolynomial.X i) ∈
@@ -20777,7 +20777,7 @@ theorem marked_variable_mem_rationalSkeletonField [Field F]
   apply IntermediateField.subset_adjoin F _
   exact Or.inl ⟨i, rfl⟩
 
-theorem coefficient_parameter_mem_rationalSkeletonField [Field F]
+lemma coefficient_parameter_mem_rationalSkeletonField [Field F]
     (s : Finset (rationalCoefficientField Z F))
     (c : rationalCoefficientField Z F) (hc : c ∈ s) :
     splitCoefficientHom (Y := Y) (Z := Z) (F := F) c ∈
@@ -20785,7 +20785,7 @@ theorem coefficient_parameter_mem_rationalSkeletonField [Field F]
   apply IntermediateField.subset_adjoin F _
   exact Or.inr ⟨c, hc, rfl⟩
 
-theorem coefficient_adjoin_mem_rationalSkeletonField [Field F]
+lemma coefficient_adjoin_mem_rationalSkeletonField [Field F]
     (s : Finset (rationalCoefficientField Z F))
     (c : rationalCoefficientField Z F)
     (hc : c ∈ IntermediateField.adjoin F
@@ -20814,7 +20814,7 @@ theorem coefficient_adjoin_mem_rationalSkeletonField [Field F]
     rw [map_mul]
     exact mul_mem hx hy
 
-theorem rationalSkeletonField_mono [Field F]
+lemma rationalSkeletonField_mono [Field F]
     {s t : Finset (rationalCoefficientField Z F)} (h : s ⊆ t) :
     rationalSkeletonField (Y := Y) s ≤ rationalSkeletonField (Y := Y) t := by
   apply IntermediateField.adjoin.mono
@@ -20831,7 +20831,7 @@ noncomputable def permanentPolynomial (n : ℕ) :
     MvPolynomial (Fin n × Fin n) ℂ :=
   (Matrix.mvPolynomialX (Fin n) (Fin n) ℂ).permanent
 
-theorem permanentPolynomial_eq_sum (n : ℕ) :
+lemma permanentPolynomial_eq_sum (n : ℕ) :
     permanentPolynomial n =
       ∑ σ : Equiv.Perm (Fin n),
         ∏ i : Fin n, MvPolynomial.X (i, σ i) := by
@@ -20840,7 +20840,7 @@ theorem permanentPolynomial_eq_sum (n : ℕ) :
   rw [← Matrix.permanent_transpose]
   rfl
 
-theorem permanentPermutationMonomial_pderiv
+lemma permanentPermutationMonomial_pderiv
     {n : ℕ} (σ : Equiv.Perm (Fin n)) (a b : Fin n) :
     MvPolynomial.pderiv (a, b)
         (∏ i : Fin n, (MvPolynomial.X (i, σ i) :
@@ -20879,7 +20879,7 @@ theorem permanentPermutationMonomial_pderiv
       exact hab (congrArg Prod.snd h)
     simp [hab, hrest, MvPolynomial.pderiv_X_of_ne hpair]
 
-theorem permanentPolynomial_pderiv_eq_sum
+lemma permanentPolynomial_pderiv_eq_sum
     {n : ℕ} (a b : Fin n) :
     MvPolynomial.pderiv (a, b) (permanentPolynomial n) =
       ∑ σ : Equiv.Perm (Fin n),
@@ -20894,7 +20894,7 @@ theorem permanentPolynomial_pderiv_eq_sum
   intro σ _
   exact permanentPermutationMonomial_pderiv σ a b
 
-theorem eval_one_permanentPolynomial_pderiv
+lemma eval_one_permanentPolynomial_pderiv
     {n : ℕ} (a b : Fin n) :
     MvPolynomial.eval
         (fun _ : Fin n × Fin n => (1 : ℂ))
@@ -20918,7 +20918,7 @@ theorem eval_one_permanentPolynomial_pderiv
     _ = (Fintype.card {σ : Equiv.Perm (Fin n) // σ a = b} : ℂ) := by
       rw [Fintype.card_subtype]
 
-theorem permanentPolynomial_pderiv_ne_zero
+lemma permanentPolynomial_pderiv_ne_zero
     {n : ℕ} (a b : Fin n) :
     MvPolynomial.pderiv (a, b) (permanentPolynomial n) ≠ 0 := by
   classical
@@ -20937,7 +20937,7 @@ theorem permanentPolynomial_pderiv_ne_zero
 
 namespace Formula
 
-theorem pderiv_eval_eq_zero_of_blockLeaves_eq_zero
+lemma pderiv_eval_eq_zero_of_blockLeaves_eq_zero
     {ι F : Type*} [CommRing F] [DecidableEq ι]
     (f : Formula ι F) (s : Finset ι) (i : ι) (hi : i ∈ s) :
     blockLeaves s f = 0 → MvPolynomial.pderiv i (eval f) = 0 := by
@@ -20983,7 +20983,7 @@ theorem pderiv_eval_eq_zero_of_blockLeaves_eq_zero
         omega
       simp [eval, hf hleft, hg hright]
 
-theorem blockLeaves_pos_of_eval_eq_permanent
+lemma blockLeaves_pos_of_eval_eq_permanent
     {n : ℕ} (f : Formula (Fin n × Fin n) ℂ)
     (hf : eval f = permanentPolynomial n)
     (s : Finset (Fin n × Fin n)) (a b : Fin n)
@@ -21007,7 +21007,7 @@ def matchingBlockRow {n k : ℕ} (hk : 0 < k)
       simpa [Nat.add_mul] using hupper
     exact (Nat.add_lt_add_left r.isLt ((j : ℕ) * k)).trans_le hupper'⟩
 
-theorem matchingBlockRow_injective {n k : ℕ} (hk : 0 < k) :
+lemma matchingBlockRow_injective {n k : ℕ} (hk : 0 < k) :
     Function.Injective
       (fun jr : Fin (n / k) × Fin k =>
         matchingBlockRow hk jr.1 jr.2) := by
@@ -21040,7 +21040,7 @@ def cyclicMatchingBlock {n k : ℕ}
     let i := matchingBlockRow hk j r
     (i, i + t)
 
-theorem card_cyclicMatchingBlock {n k : ℕ}
+lemma card_cyclicMatchingBlock {n k : ℕ}
     (hk : 0 < k) (t : Fin n) (j : Fin (n / k)) :
     (cyclicMatchingBlock hk t j).card = k := by
   classical
@@ -21054,7 +21054,7 @@ theorem card_cyclicMatchingBlock {n k : ℕ}
       (matchingBlockRow_injective hk
         (a₁ := (j, r)) (a₂ := (j, r')) hrows)
 
-theorem cyclicMatchingBlock_disjoint {n k : ℕ}
+lemma cyclicMatchingBlock_disjoint {n k : ℕ}
     (hk : 0 < k) (x y : Fin n × Fin (n / k)) (hxy : x ≠ y) :
     Disjoint (cyclicMatchingBlock hk x.1 x.2)
       (cyclicMatchingBlock hk y.1 y.2) := by
@@ -21086,7 +21086,7 @@ theorem cyclicMatchingBlock_disjoint {n k : ℕ}
         (a₁ := (x.2, r)) (a₂ := (y.2, r')) hrow)
   exact hxy (Prod.ext hoffset hblock)
 
-theorem cyclicMatchingBlock_fst_injective {n k : ℕ}
+lemma cyclicMatchingBlock_fst_injective {n k : ℕ}
     (hk : 0 < k) (t : Fin n) (j : Fin (n / k)) :
     Function.Injective
       (fun x : ↥(cyclicMatchingBlock hk t j) => x.1.1) := by
@@ -21106,7 +21106,7 @@ theorem cyclicMatchingBlock_fst_injective {n k : ℕ}
   · exact hrow
   · rw [hxgraph, hygraph, hrow]
 
-theorem cyclicMatchingBlock_snd_injective {n k : ℕ}
+lemma cyclicMatchingBlock_snd_injective {n k : ℕ}
     (hk : 0 < k) (t : Fin n) (j : Fin (n / k)) :
     Function.Injective
       (fun x : ↥(cyclicMatchingBlock hk t j) => x.1.2) := by
@@ -21128,7 +21128,7 @@ theorem cyclicMatchingBlock_snd_injective {n k : ℕ}
   apply Subtype.ext
   exact Prod.ext hrow hcol
 
-theorem matchingBlock_floor_bound (n k : ℕ)
+lemma matchingBlock_floor_bound (n k : ℕ)
     (hk : 0 < k) (hkn : k ≤ n) :
     n ≤ 2 * (k * (n / k)) := by
   have hq : 0 < n / k := Nat.div_pos hkn hk
@@ -21138,7 +21138,7 @@ theorem matchingBlock_floor_bound (n k : ℕ)
   have hdecomp : n % k + k * (n / k) = n := Nat.mod_add_div n k
   omega
 
-theorem cyclicMatchingBlock_count_bound (n k : ℕ)
+lemma cyclicMatchingBlock_count_bound (n k : ℕ)
     (hk : 0 < k) (hkn : k ≤ n) :
     n * n ≤ 2 * k * (n * (n / k)) := by
   calc
@@ -21148,7 +21148,7 @@ theorem cyclicMatchingBlock_count_bound (n k : ℕ)
 
 namespace Formula
 
-theorem sum_blockLeaves_le_variableLeaves_of_disjoint
+lemma sum_blockLeaves_le_variableLeaves_of_disjoint
     {ι κ R : Type*} [DecidableEq ι] [Fintype κ]
     (blocks : κ → Finset ι)
     (hdisjoint : ∀ a b : κ, a ≠ b → Disjoint (blocks a) (blocks b))
@@ -21181,7 +21181,7 @@ end Formula
 
 namespace RationalFormula
 
-theorem sum_blockLeaves_le_variableLeaves_of_disjoint
+lemma sum_blockLeaves_le_variableLeaves_of_disjoint
     {ι κ R : Type*} [DecidableEq ι] [Fintype κ]
     (blocks : κ → Finset ι)
     (hdisjoint : ∀ a b : κ, a ≠ b → Disjoint (blocks a) (blocks b))
@@ -21217,7 +21217,7 @@ end RationalFormula
 
 namespace Formula
 
-theorem cyclicMatchingBlock_square_sum_le_variableLeaves
+lemma cyclicMatchingBlock_square_sum_le_variableLeaves
     {n k : ℕ} (hk : 0 < k) (m : ℕ)
     (f : Formula (Fin n × Fin n) ℂ)
     (hblock : ∀ x : Fin n × Fin (n / k),
@@ -21239,7 +21239,7 @@ theorem cyclicMatchingBlock_square_sum_le_variableLeaves
             rw [Finset.mul_sum]
     _ ≤ 4 * variableLeaves f := Nat.mul_le_mul_left 4 hpack
 
-theorem cyclicMatchingBlock_intermediate_bound
+lemma cyclicMatchingBlock_intermediate_bound
     {n k : ℕ} (hk : 0 < k) (hkn : k ≤ n)
     (m : ℕ) (f : Formula (Fin n × Fin n) ℂ)
     (hblock : ∀ x : Fin n × Fin (n / k),
@@ -21257,7 +21257,7 @@ theorem cyclicMatchingBlock_intermediate_bound
       Nat.mul_le_mul_left (2 * k) hsum
     _ = 8 * k * variableLeaves f := by ring
 
-theorem cyclicMatchingBlock_fourth_power_bound
+lemma cyclicMatchingBlock_fourth_power_bound
     {n k : ℕ} (hk : 0 < k) (hkn : k ≤ n)
     (m : ℕ) (hhalf : n ≤ 2 * m)
     (f : Formula (Fin n × Fin n) ℂ)
@@ -21283,7 +21283,7 @@ end Formula
 
 namespace RationalFormula
 
-theorem cyclicMatchingBlock_square_sum_le_variableLeaves
+lemma cyclicMatchingBlock_square_sum_le_variableLeaves
     {n k : ℕ} (hk : 0 < k) (m : ℕ)
     (f : RationalFormula (Fin n × Fin n) ℂ)
     (hblock : ∀ x : Fin n × Fin (n / k),
@@ -21305,7 +21305,7 @@ theorem cyclicMatchingBlock_square_sum_le_variableLeaves
             rw [Finset.mul_sum]
     _ ≤ 6 * variableLeaves f := Nat.mul_le_mul_left 6 hpack
 
-theorem cyclicMatchingBlock_intermediate_bound
+lemma cyclicMatchingBlock_intermediate_bound
     {n k : ℕ} (hk : 0 < k) (hkn : k ≤ n)
     (m : ℕ) (f : RationalFormula (Fin n × Fin n) ℂ)
     (hblock : ∀ x : Fin n × Fin (n / k),
@@ -21323,7 +21323,7 @@ theorem cyclicMatchingBlock_intermediate_bound
       Nat.mul_le_mul_left (2 * k) hsum
     _ = 12 * k * variableLeaves f := by ring
 
-theorem cyclicMatchingBlock_fourth_power_bound
+lemma cyclicMatchingBlock_fourth_power_bound
     {n k : ℕ} (hk : 0 < k) (hkn : k ≤ n)
     (m : ℕ) (hhalf : n ≤ 2 * m)
     (f : RationalFormula (Fin n × Fin n) ℂ)
@@ -21366,7 +21366,7 @@ noncomputable def coefficientTranscendenceDegree
     (f : MvPolynomial (Y ⊕ Z) F) : Cardinal :=
   Algebra.trdeg F ↥(coefficientField f)
 
-theorem coefficient_mem_coefficientField
+lemma coefficient_mem_coefficientField
     (f : MvPolynomial (Y ⊕ Z) F) (α : Y →₀ ℕ) :
     algebraMap (MvPolynomial Z F) (FractionRing (MvPolynomial Z F))
         (coefficientPolynomial f α) ∈ coefficientField f := by
@@ -21375,7 +21375,7 @@ theorem coefficient_mem_coefficientField
 
 end Coefficients
 
-theorem coefficientTranscendenceDegree_ge_of_algebraicIndependent
+lemma coefficientTranscendenceDegree_ge_of_algebraicIndependent
     {Y Z F ι : Type*} [Field F] [Fintype ι]
     (p : MvPolynomial (Y ⊕ Z) F) (α : ι → Y →₀ ℕ)
     (hind : AlgebraicIndependent F
@@ -21405,7 +21405,7 @@ theorem coefficientTranscendenceDegree_ge_of_algebraicIndependent
     Algebra.trdeg F (coefficientField p)
   simpa using hg.lift_cardinalMk_le_trdeg
 
-theorem coefficientTranscendenceDegree_ge_square_of_algebraicIndependent
+lemma coefficientTranscendenceDegree_ge_square_of_algebraicIndependent
     {Y Z F : Type*} [Field F] {m : ℕ}
     (p : MvPolynomial (Y ⊕ Z) F)
     (α : Fin m × Fin m → Y →₀ ℕ)
@@ -21429,7 +21429,7 @@ noncomputable def evaluatedJacobianMinor [CommSemiring F]
     Matrix ι ι F :=
   fun i j => MvPolynomial.eval x (MvPolynomial.pderiv (cols j) (g i))
 
-theorem pderiv_bind₁_chain_rule [CommSemiring F] [Fintype ι]
+lemma pderiv_bind₁_chain_rule [CommSemiring F] [Fintype ι]
     (g : ι → MvPolynomial κ F) (H : MvPolynomial ι F) (j : κ) :
     MvPolynomial.pderiv j (MvPolynomial.bind₁ g H) =
       ∑ i : ι,
@@ -21448,7 +21448,7 @@ theorem pderiv_bind₁_chain_rule [CommSemiring F] [Fintype ι]
       rw [Finset.sum_add_distrib]
       simp [Finset.mul_sum, mul_assoc, mul_comm]
 
-theorem pderiv_aeval_chain_rule [CommSemiring F] [Fintype ι]
+lemma pderiv_aeval_chain_rule [CommSemiring F] [Fintype ι]
     (g : ι → MvPolynomial κ F) (H : MvPolynomial ι F) (j : κ) :
     MvPolynomial.pderiv j (MvPolynomial.aeval g H) =
       ∑ i : ι,
@@ -21457,7 +21457,7 @@ theorem pderiv_aeval_chain_rule [CommSemiring F] [Fintype ι]
   simpa only [MvPolynomial.aeval_eq_bind₁] using
     pderiv_bind₁_chain_rule g H j
 
-theorem relation_vecMul_jacobianMinor [CommRing F] [Fintype ι]
+lemma relation_vecMul_jacobianMinor [CommRing F] [Fintype ι]
     (g : ι → MvPolynomial κ F) (cols : ι → κ)
     (H : MvPolynomial ι F) (hH : MvPolynomial.aeval g H = 0) :
     (fun i : ι => MvPolynomial.aeval g (MvPolynomial.pderiv i H)) ᵥ*
@@ -21468,7 +21468,7 @@ theorem relation_vecMul_jacobianMinor [CommRing F] [Fintype ι]
   rw [pderiv_aeval_chain_rule] at hj
   simpa [Matrix.vecMul, dotProduct, jacobianMinor] using hj
 
-theorem jacobianMinor_det_ne_zero_of_evaluated [CommRing F]
+lemma jacobianMinor_det_ne_zero_of_evaluated [CommRing F]
     [Fintype ι] [DecidableEq ι]
     (g : ι → MvPolynomial κ F) (cols : ι → κ) (x : κ → F)
     (h : (evaluatedJacobianMinor g cols x).det ≠ 0) :
@@ -21478,7 +21478,7 @@ theorem jacobianMinor_det_ne_zero_of_evaluated [CommRing F]
   change Matrix.det ((MvPolynomial.eval x).mapMatrix (jacobianMinor g cols)) = 0
   rw [← RingHom.map_det, hzero, map_zero]
 
-theorem aeval_pderiv_eq_zero_of_jacobianMinor_det_ne_zero [Field F]
+lemma aeval_pderiv_eq_zero_of_jacobianMinor_det_ne_zero [Field F]
     [Fintype ι] [DecidableEq ι]
     (g : ι → MvPolynomial κ F) (cols : ι → κ)
     (H : MvPolynomial ι F)
@@ -21489,7 +21489,7 @@ theorem aeval_pderiv_eq_zero_of_jacobianMinor_det_ne_zero [Field F]
     (relation_vecMul_jacobianMinor g cols H hH)
   exact congrFun hzero i
 
-theorem totalDegree_succ_le_of_mem_pderiv_support [CommSemiring F]
+lemma totalDegree_succ_le_of_mem_pderiv_support [CommSemiring F]
     (p : MvPolynomial ι F) (i : ι) {m : ι →₀ ℕ}
     (hm : m ∈ (MvPolynomial.pderiv i p).support) :
     Multiset.card (Finsupp.toMultiset m) + 1 ≤ p.totalDegree := by
@@ -21506,7 +21506,7 @@ theorem totalDegree_succ_le_of_mem_pderiv_support [CommSemiring F]
   change m.sum (fun _ e => e) + 1 ≤ p.totalDegree
   simpa [Finsupp.sum_add_index'] using hdegree
 
-theorem totalDegree_pderiv_lt_of_ne_zero [CommSemiring F]
+lemma totalDegree_pderiv_lt_of_ne_zero [CommSemiring F]
     (p : MvPolynomial ι F) (i : ι)
     (hp : MvPolynomial.pderiv i p ≠ 0) :
     (MvPolynomial.pderiv i p).totalDegree < p.totalDegree := by
@@ -21520,7 +21520,7 @@ theorem totalDegree_pderiv_lt_of_ne_zero [CommSemiring F]
   intro m hm
   exact Nat.lt_of_succ_le (totalDegree_succ_le_of_mem_pderiv_support p i hm)
 
-theorem eq_C_of_forall_pderiv_eq_zero [Field F] [CharZero F]
+lemma eq_C_of_forall_pderiv_eq_zero [Field F] [CharZero F]
     (p : MvPolynomial ι F)
     (hp : ∀ i : ι, MvPolynomial.pderiv i p = 0) :
     p = MvPolynomial.C (MvPolynomial.coeff 0 p) := by
@@ -21547,7 +21547,7 @@ theorem eq_C_of_forall_pderiv_eq_zero [Field F] [CharZero F]
       (mul_eq_zero.mp hder).resolve_right hcast
     simpa [Ne.symm hm] using hcoeff
 
-theorem algebraicIndependent_of_jacobianMinor_det_ne_zero
+lemma algebraicIndependent_of_jacobianMinor_det_ne_zero
     [Field F] [CharZero F] [Fintype ι] [DecidableEq ι]
     (g : ι → MvPolynomial κ F) (cols : ι → κ)
     (hdet : (jacobianMinor g cols).det ≠ 0) :
@@ -21575,7 +21575,7 @@ theorem algebraicIndependent_of_jacobianMinor_det_ne_zero
       simpa using hrelation
   exact hmain H.totalDegree H rfl hH
 
-theorem algebraicIndependent_of_evaluatedJacobianMinor_det_ne_zero
+lemma algebraicIndependent_of_evaluatedJacobianMinor_det_ne_zero
     [Field F] [CharZero F] [Fintype ι] [DecidableEq ι]
     (g : ι → MvPolynomial κ F) (cols : ι → κ) (x : κ → F)
     (hdet : (evaluatedJacobianMinor g cols x).det ≠ 0) :
@@ -21595,7 +21595,7 @@ def polynomialCoefficientProjection (φ : E →ₗ[K] K) :
     ((Finsupp.mapRange.linearMap φ).comp
       (AddMonoidAlgebra.coeffLinearEquiv K).toLinearMap)
 
-theorem polynomialCoefficientProjection_map_mul
+lemma polynomialCoefficientProjection_map_mul
     (φ : E →ₗ[K] K) (q : MvPolynomial ι K) (f : MvPolynomial ι E) :
     polynomialCoefficientProjection φ
         (MvPolynomial.map (algebraMap K E) q * f) =
@@ -21613,7 +21613,7 @@ theorem polynomialCoefficientProjection_map_mul
   simpa [Algebra.smul_def] using
     φ.map_smul (MvPolynomial.coeff a.1 q) (MvPolynomial.coeff a.2 f)
 
-theorem polynomialCoefficientProjection_map
+lemma polynomialCoefficientProjection_map
     (φ : E →ₗ[K] K)
     (hφ : ∀ a : K, φ (algebraMap K E a) = a)
     (p : MvPolynomial ι K) :
@@ -21626,7 +21626,7 @@ theorem polynomialCoefficientProjection_map
       MvPolynomial.coeff s p
   simpa [MvPolynomial.coeff_map] using hφ (MvPolynomial.coeff s p)
 
-theorem polynomial_intersection_of_mul
+lemma polynomial_intersection_of_mul
     (f : MvPolynomial ι E) (p q : MvPolynomial ι K)
     (hq : q ≠ 0)
     (h : MvPolynomial.map (algebraMap K E) q * f =
@@ -21672,7 +21672,7 @@ def coefficientPolynomialEmbedding (K : IntermediateField F E) :
     (FractionRing (MvPolynomial Y E))).comp
       (MvPolynomial.mapAlgHom K.val)
 
-theorem coefficientPolynomialEmbedding_injective
+lemma coefficientPolynomialEmbedding_injective
     (K : IntermediateField F E) :
     Function.Injective (coefficientPolynomialEmbedding (Y := Y) K) := by
   unfold coefficientPolynomialEmbedding
@@ -21688,7 +21688,7 @@ def coefficientFractionEmbedding (K : IntermediateField F E) :
   IsFractionRing.liftAlgHom (coefficientPolynomialEmbedding_injective
     (Y := Y) K)
 
-@[simp] theorem coefficientFractionEmbedding_algebraMap
+@[simp] lemma coefficientFractionEmbedding_algebraMap
     (K : IntermediateField F E) (p : MvPolynomial Y K) :
     coefficientFractionEmbedding (Y := Y) K
       (algebraMap (MvPolynomial Y K)
@@ -21705,7 +21705,7 @@ def coefficientRationalField (s : Finset E) :
         (MvPolynomial.X i)) ∪
       (algebraMap E (FractionRing (MvPolynomial Y E))) '' (s : Set E))
 
-theorem coefficientRationalField_le_fractionRange (s : Finset E) :
+lemma coefficientRationalField_le_fractionRange (s : Finset E) :
     coefficientRationalField (F := F) (Y := Y) s ≤
       (coefficientFractionEmbedding (Y := Y)
         (IntermediateField.adjoin F (s : Set E))).fieldRange := by
@@ -21733,7 +21733,7 @@ theorem coefficientRationalField_le_fractionRange (s : Finset E) :
       (IsScalarTower.algebraMap_apply E (MvPolynomial Y E)
         (FractionRing (MvPolynomial Y E)) c).symm
 
-theorem exists_polynomial_of_mem_coefficientRationalField
+lemma exists_polynomial_of_mem_coefficientRationalField
     (s : Finset E) (p : MvPolynomial Y E)
     (hp : algebraMap (MvPolynomial Y E) (FractionRing (MvPolynomial Y E)) p ∈
       coefficientRationalField (F := F) (Y := Y) s) :
@@ -21792,7 +21792,7 @@ def fractionalDenominator (M : Matrix (Fin 2) (Fin 2) E) (q : L) : L :=
 def fractionalApply (M : Matrix (Fin 2) (Fin 2) E) (q : L) : L :=
   fractionalNumerator M q / fractionalDenominator M q
 
-theorem fractionalNumerator_mul
+lemma fractionalNumerator_mul
     (M N : Matrix (Fin 2) (Fin 2) E) (q : L) :
     fractionalNumerator (M * N) q =
       algebraMap E L (M 0 0) * fractionalNumerator N q +
@@ -21803,7 +21803,7 @@ theorem fractionalNumerator_mul
   simp only [map_add, map_mul]
   ring
 
-theorem fractionalDenominator_mul
+lemma fractionalDenominator_mul
     (M N : Matrix (Fin 2) (Fin 2) E) (q : L) :
     fractionalDenominator (M * N) q =
       algebraMap E L (M 1 0) * fractionalNumerator N q +
@@ -21814,7 +21814,7 @@ theorem fractionalDenominator_mul
   simp only [map_add, map_mul]
   ring
 
-theorem fractionalNumerator_mul_factor
+lemma fractionalNumerator_mul_factor
     (M N : Matrix (Fin 2) (Fin 2) E) (q : L)
     (hN : fractionalDenominator N q ≠ 0) :
     fractionalNumerator (M * N) q =
@@ -21830,7 +21830,7 @@ theorem fractionalNumerator_mul_factor
             algebraMap E L (M 0 1))
   field_simp [hN]
 
-theorem fractionalDenominator_mul_factor
+lemma fractionalDenominator_mul_factor
     (M N : Matrix (Fin 2) (Fin 2) E) (q : L)
     (hN : fractionalDenominator N q ≠ 0) :
     fractionalDenominator (M * N) q =
@@ -21846,7 +21846,7 @@ theorem fractionalDenominator_mul_factor
             algebraMap E L (M 1 1))
   field_simp [hN]
 
-theorem fractionalDenominator_mul_ne_zero
+lemma fractionalDenominator_mul_ne_zero
     (M N : Matrix (Fin 2) (Fin 2) E) (q : L)
     (hN : fractionalDenominator N q ≠ 0)
     (hM : fractionalDenominator M (fractionalApply N q) ≠ 0) :
@@ -21854,7 +21854,7 @@ theorem fractionalDenominator_mul_ne_zero
   rw [fractionalDenominator_mul_factor M N q hN]
   exact mul_ne_zero hN hM
 
-theorem fractionalApply_mul
+lemma fractionalApply_mul
     (M N : Matrix (Fin 2) (Fin 2) E) (q : L)
     (hN : fractionalDenominator N q ≠ 0) :
     fractionalApply (M * N) q =
@@ -21864,7 +21864,7 @@ theorem fractionalApply_mul
     fractionalDenominator_mul_factor M N q hN]
   exact mul_div_mul_left _ _ hN
 
-theorem matrix_ne_zero_of_fractionalDenominator_ne_zero
+lemma matrix_ne_zero_of_fractionalDenominator_ne_zero
     (M : Matrix (Fin 2) (Fin 2) E) (q : L)
     (h : fractionalDenominator M q ≠ 0) : M ≠ 0 := by
   intro hM
@@ -21876,27 +21876,27 @@ def normalizedFractionalMatrix
     Matrix (Fin 2) (Fin 2) E :=
   (M ij.1 ij.2)⁻¹ • M
 
-theorem normalizedFractionalMatrix_pivot
+lemma normalizedFractionalMatrix_pivot
     (M : Matrix (Fin 2) (Fin 2) E) (ij : Fin 2 × Fin 2)
     (h : M ij.1 ij.2 ≠ 0) :
     normalizedFractionalMatrix M ij ij.1 ij.2 = 1 := by
   simp [normalizedFractionalMatrix, Matrix.smul_apply, smul_eq_mul, h]
 
-theorem fractionalNumerator_smul
+lemma fractionalNumerator_smul
     (c : E) (M : Matrix (Fin 2) (Fin 2) E) (q : L) :
     fractionalNumerator (c • M) q =
       algebraMap E L c * fractionalNumerator M q := by
   simp [fractionalNumerator, Matrix.smul_apply, smul_eq_mul, map_mul]
   ring
 
-theorem fractionalDenominator_smul
+lemma fractionalDenominator_smul
     (c : E) (M : Matrix (Fin 2) (Fin 2) E) (q : L) :
     fractionalDenominator (c • M) q =
       algebraMap E L c * fractionalDenominator M q := by
   simp [fractionalDenominator, Matrix.smul_apply, smul_eq_mul, map_mul]
   ring
 
-theorem fractionalApply_smul
+lemma fractionalApply_smul
     (c : E) (hc : c ≠ 0)
     (M : Matrix (Fin 2) (Fin 2) E) (q : L) :
     fractionalApply (c • M) q = fractionalApply M q := by
@@ -21907,7 +21907,7 @@ theorem fractionalApply_smul
     fractionalDenominator_smul]
   exact mul_div_mul_left _ _ hc'
 
-theorem fractionalApply_normalizedFractionalMatrix
+lemma fractionalApply_normalizedFractionalMatrix
     (M : Matrix (Fin 2) (Fin 2) E) (ij : Fin 2 × Fin 2)
     (h : M ij.1 ij.2 ≠ 0) (q : L) :
     fractionalApply (normalizedFractionalMatrix M ij) q =
@@ -21921,7 +21921,7 @@ def projectiveMatrixGenerators
   exact (Finset.univ.erase ij).image
     (fun ab => normalizedFractionalMatrix M ij ab.1 ab.2)
 
-theorem card_projectiveMatrixGenerators_le_three
+lemma card_projectiveMatrixGenerators_le_three
     (M : Matrix (Fin 2) (Fin 2) E) (ij : Fin 2 × Fin 2) :
     (projectiveMatrixGenerators M ij).card ≤ 3 := by
   classical
@@ -21932,7 +21932,7 @@ theorem card_projectiveMatrixGenerators_le_three
         (Finset.univ.erase ij).card := Finset.card_image_le
     _ = 3 := by simp
 
-theorem normalizedFractionalMatrix_entry_mem_adjoin
+lemma normalizedFractionalMatrix_entry_mem_adjoin
     {F : Type*} [Field F] [Algebra F E]
     (M : Matrix (Fin 2) (Fin 2) E) (ij : Fin 2 × Fin 2)
     (h : M ij.1 ij.2 ≠ 0) (a b : Fin 2) :
@@ -21985,73 +21985,73 @@ def rationalDivPathMatrix (c : E) : Matrix (Fin 2) (Fin 2) E :=
 def rationalReverseDivPathMatrix (c : E) : Matrix (Fin 2) (Fin 2) E :=
   !![0, c; 1, 0]
 
-@[simp] theorem fractionalDenominator_rationalAddPathMatrix
+@[simp] lemma fractionalDenominator_rationalAddPathMatrix
     (c : E) (q : L) :
     fractionalDenominator (rationalAddPathMatrix c) q = 1 := by
   simp [rationalAddPathMatrix, fractionalDenominator]
 
-@[simp] theorem fractionalApply_rationalAddPathMatrix
+@[simp] lemma fractionalApply_rationalAddPathMatrix
     (c : E) (q : L) :
     fractionalApply (rationalAddPathMatrix c) q =
       q + algebraMap E L c := by
   simp [rationalAddPathMatrix, fractionalApply, fractionalNumerator,
     fractionalDenominator]
 
-@[simp] theorem fractionalDenominator_rationalSubPathMatrix
+@[simp] lemma fractionalDenominator_rationalSubPathMatrix
     (c : E) (q : L) :
     fractionalDenominator (rationalSubPathMatrix c) q = 1 := by
   simp [rationalSubPathMatrix, fractionalDenominator]
 
-@[simp] theorem fractionalApply_rationalSubPathMatrix
+@[simp] lemma fractionalApply_rationalSubPathMatrix
     (c : E) (q : L) :
     fractionalApply (rationalSubPathMatrix c) q =
       q - algebraMap E L c := by
   simp [rationalSubPathMatrix, fractionalApply, fractionalNumerator,
     fractionalDenominator, sub_eq_add_neg]
 
-@[simp] theorem fractionalDenominator_rationalReverseSubPathMatrix
+@[simp] lemma fractionalDenominator_rationalReverseSubPathMatrix
     (c : E) (q : L) :
     fractionalDenominator (rationalReverseSubPathMatrix c) q = 1 := by
   simp [rationalReverseSubPathMatrix, fractionalDenominator]
 
-@[simp] theorem fractionalApply_rationalReverseSubPathMatrix
+@[simp] lemma fractionalApply_rationalReverseSubPathMatrix
     (c : E) (q : L) :
     fractionalApply (rationalReverseSubPathMatrix c) q =
       algebraMap E L c - q := by
   simp [rationalReverseSubPathMatrix, fractionalApply, fractionalNumerator,
     fractionalDenominator, sub_eq_add_neg, add_comm]
 
-@[simp] theorem fractionalDenominator_rationalMulPathMatrix
+@[simp] lemma fractionalDenominator_rationalMulPathMatrix
     (c : E) (q : L) :
     fractionalDenominator (rationalMulPathMatrix c) q = 1 := by
   simp [rationalMulPathMatrix, fractionalDenominator]
 
-@[simp] theorem fractionalApply_rationalMulPathMatrix
+@[simp] lemma fractionalApply_rationalMulPathMatrix
     (c : E) (q : L) :
     fractionalApply (rationalMulPathMatrix c) q =
       algebraMap E L c * q := by
   simp [rationalMulPathMatrix, fractionalApply, fractionalNumerator,
     fractionalDenominator]
 
-@[simp] theorem fractionalDenominator_rationalDivPathMatrix
+@[simp] lemma fractionalDenominator_rationalDivPathMatrix
     (c : E) (q : L) :
     fractionalDenominator (rationalDivPathMatrix c) q =
       algebraMap E L c := by
   simp [rationalDivPathMatrix, fractionalDenominator]
 
-@[simp] theorem fractionalApply_rationalDivPathMatrix
+@[simp] lemma fractionalApply_rationalDivPathMatrix
     (c : E) (q : L) :
     fractionalApply (rationalDivPathMatrix c) q =
       q / algebraMap E L c := by
   simp [rationalDivPathMatrix, fractionalApply, fractionalNumerator,
     fractionalDenominator]
 
-@[simp] theorem fractionalDenominator_rationalReverseDivPathMatrix
+@[simp] lemma fractionalDenominator_rationalReverseDivPathMatrix
     (c : E) (q : L) :
     fractionalDenominator (rationalReverseDivPathMatrix c) q = q := by
   simp [rationalReverseDivPathMatrix, fractionalDenominator]
 
-@[simp] theorem fractionalApply_rationalReverseDivPathMatrix
+@[simp] lemma fractionalApply_rationalReverseDivPathMatrix
     (c : E) (q : L) :
     fractionalApply (rationalReverseDivPathMatrix c) q =
       algebraMap E L c / q := by
@@ -22110,7 +22110,7 @@ noncomputable def contractedRationalSkeletonCompose [Field F]
 
 namespace ContractedRationalSkeleton
 
-theorem exists_pivot [Field F]
+lemma exists_pivot [Field F]
     {f : RationalFormula (Y ⊕ Z) F}
     (w : ContractedRationalSkeleton f) :
     ∃ ij : Fin 2 × Fin 2, w.matrix ij.1 ij.2 ≠ 0 := by
@@ -22131,7 +22131,7 @@ noncomputable def pivot [Field F]
     (w : ContractedRationalSkeleton f) : Fin 2 × Fin 2 :=
   (exists_pivot w).choose
 
-theorem pivot_ne [Field F]
+lemma pivot_ne [Field F]
     {f : RationalFormula (Y ⊕ Z) F}
     (w : ContractedRationalSkeleton f) :
     w.matrix (pivot w).1 (pivot w).2 ≠ 0 :=
@@ -22144,7 +22144,7 @@ noncomputable def extendedGenerators [Field F]
   classical
   exact w.generators ∪ projectiveMatrixGenerators w.matrix (pivot w)
 
-theorem splitEval_mem_extended [Field F]
+lemma splitEval_mem_extended [Field F]
     {f : RationalFormula (Y ⊕ Z) F}
     (w : ContractedRationalSkeleton f) :
     splitEval f ∈ rationalSkeletonField (Y := Y) (extendedGenerators w) := by
@@ -22192,7 +22192,7 @@ theorem splitEval_mem_extended [Field F]
   · exact add_mem (mul_mem (hentry 0 0) hcore) (hentry 0 1)
   · exact add_mem (mul_mem (hentry 1 0) hcore) (hentry 1 1)
 
-theorem extendedGenerators_card_le [Field F]
+lemma extendedGenerators_card_le [Field F]
     {f : RationalFormula (Y ⊕ Z) F}
     (w : ContractedRationalSkeleton f) (hmarked : 0 < yLeafCount f) :
     (extendedGenerators w).card ≤ 6 * yLeafCount f - 3 := by
@@ -22260,7 +22260,7 @@ noncomputable def contractedRationalSkeletonMerge [Field F]
         6 * yLeafCount h - 6
     omega
 
-theorem exists_splitEval_eq_algebraMap_of_yLeafCount_eq_zero [Field F]
+lemma exists_splitEval_eq_algebraMap_of_yLeafCount_eq_zero [Field F]
     (f : RationalFormula (Y ⊕ Z) F) (h : yLeafCount f = 0) :
     ∃ c : rationalCoefficientField Z F,
       splitEval f =
@@ -22425,7 +22425,7 @@ noncomputable def contractedRationalSkeletonDivBinary [Field F]
     (fun K _ _ hx hy => K.div_mem hx hy)
     (splitEval_div f g) rfl
 
-theorem splitEval_ne_zero_of_eval_ne_zero [Field F]
+lemma splitEval_ne_zero_of_eval_ne_zero [Field F]
     {f : RationalFormula (Y ⊕ Z) F} (h : eval f ≠ 0) :
     splitEval f ≠ 0 := by
   intro hzero
@@ -22433,7 +22433,7 @@ theorem splitEval_ne_zero_of_eval_ne_zero [Field F]
   apply splitFractionHom_injective (Y := Y) (Z := Z) (F := F)
   simpa [splitEval] using hzero
 
-theorem exists_contractedRationalSkeleton [Field F]
+lemma exists_contractedRationalSkeleton [Field F]
     (f : RationalFormula (Y ⊕ Z) F) :
     Valid f → 0 < yLeafCount f → Nonempty (ContractedRationalSkeleton f) := by
   induction f with
@@ -22516,7 +22516,7 @@ theorem exists_contractedRationalSkeleton [Field F]
               obtain ⟨wg⟩ := ihg hgvalid hgpos
               exact ⟨contractedRationalSkeletonDivBinary wf wg hfpos hgpos⟩
 
-theorem rational_skeleton [Field F]
+lemma rational_skeleton [Field F]
     (f : RationalFormula (Y ⊕ Z) F) (hvalid : Valid f)
     (hmarked : 0 < yLeafCount f) :
     ∃ s : Finset (rationalCoefficientField Z F),
@@ -22527,7 +22527,7 @@ theorem rational_skeleton [Field F]
     ContractedRationalSkeleton.extendedGenerators_card_le w hmarked,
     ContractedRationalSkeleton.splitEval_mem_extended w⟩
 
-theorem rational_skeleton_trdeg [Field F]
+lemma rational_skeleton_trdeg [Field F]
     (f : RationalFormula (Y ⊕ Z) F) (hvalid : Valid f)
     (hmarked : 0 < yLeafCount f) (p : MvPolynomial (Y ⊕ Z) F)
     (houtput : eval f =
@@ -22597,7 +22597,7 @@ noncomputable def matchingVariableEquiv {n : ℕ} {Y : Type u}
       (Equiv.refl (matchingOutside d))).trans
         (Equiv.Set.sumCompl (Set.range d))
 
-@[simp] theorem matchingVariableEquiv_inl {n : ℕ} {Y : Type u}
+@[simp] lemma matchingVariableEquiv_inl {n : ℕ} {Y : Type u}
     (d : Y ↪ Fin n × Fin n) (y : Y) :
     matchingVariableEquiv d (.inl y) = d y := by
   classical
@@ -22607,7 +22607,7 @@ noncomputable def matchingVariableEquiv {n : ℕ} {Y : Type u}
   exact Equiv.Set.sumCompl_apply_inl (Set.range d)
     ((Equiv.ofInjective d d.injective) y)
 
-@[simp] theorem matchingVariableEquiv_inr {n : ℕ} {Y : Type u}
+@[simp] lemma matchingVariableEquiv_inr {n : ℕ} {Y : Type u}
     (d : Y ↪ Fin n × Fin n) (z : matchingOutside d) :
     matchingVariableEquiv d (.inr z) = z.1 := by
   classical
@@ -22624,7 +22624,7 @@ noncomputable def matchingSquarefreeMonomial {Y : Type u}
     (S : Finset Y) : Y →₀ ℕ :=
   ∑ y ∈ S, Finsupp.single y 1
 
-@[simp] theorem matchingSquarefreeMonomial_apply {Y : Type u}
+@[simp] lemma matchingSquarefreeMonomial_apply {Y : Type u}
     [DecidableEq Y]
     (S : Finset Y) (y : Y) :
     matchingSquarefreeMonomial S y = if y ∈ S then 1 else 0 := by
@@ -22647,7 +22647,7 @@ noncomputable def matchingPermutationOutsideProduct
     | .inl _ => 1
     | .inr z => MvPolynomial.X z
 
-theorem matchingPermutation_split_monomial
+lemma matchingPermutation_split_monomial
     {n : ℕ} {Y : Type u} (d : Y ↪ Fin n × Fin n)
     (σ : Equiv.Perm (Fin n)) :
     MvPolynomial.sumAlgEquiv ℂ Y (matchingOutside d)
@@ -22671,7 +22671,7 @@ theorem matchingPermutation_split_monomial
   | inr z =>
       simp [MvPolynomial.sumAlgEquiv_X_inr]
 
-theorem matchingMarkedPermanent_split_eq_sum
+lemma matchingMarkedPermanent_split_eq_sum
     {n : ℕ} {Y : Type u} (d : Y ↪ Fin n × Fin n) :
     MvPolynomial.sumAlgEquiv ℂ Y (matchingOutside d)
         (matchingMarkedPermanent d) =
@@ -22685,7 +22685,7 @@ theorem matchingMarkedPermanent_split_eq_sum
   intro σ _
   exact matchingPermutation_split_monomial d σ
 
-theorem matchingMarkedPermanent_coefficient_eq_sum
+lemma matchingMarkedPermanent_coefficient_eq_sum
     {n : ℕ} {Y : Type u} [DecidableEq Y]
     (d : Y ↪ Fin n × Fin n)
     (α : Y →₀ ℕ) :
@@ -22702,7 +22702,7 @@ theorem matchingMarkedPermanent_coefficient_eq_sum
   intro σ _
   simp [MvPolynomial.coeff_monomial]
 
-theorem matchingMarkedPermanent_coefficient_pderiv_eq_sum
+lemma matchingMarkedPermanent_coefficient_pderiv_eq_sum
     {n : ℕ} {Y : Type u} [DecidableEq Y]
     (d : Y ↪ Fin n × Fin n)
     (α : Y →₀ ℕ) (z : matchingOutside d) :
@@ -22719,7 +22719,7 @@ theorem matchingMarkedPermanent_coefficient_pderiv_eq_sum
   intro σ _
   split_ifs <;> simp
 
-theorem matchingMarkedPermanent_evaluated_coefficient_pderiv_eq_sum
+lemma matchingMarkedPermanent_evaluated_coefficient_pderiv_eq_sum
     {n : ℕ} {Y : Type u} [DecidableEq Y]
     (d : Y ↪ Fin n × Fin n)
     (α : Y →₀ ℕ) (z : matchingOutside d)
@@ -22747,7 +22747,7 @@ noncomputable def matchingPermutationOutsideFactor
   | .inl _ => 1
   | .inr z => MvPolynomial.X z
 
-theorem matchingPermutationOutsideProduct_pderiv
+lemma matchingPermutationOutsideProduct_pderiv
     {n : ℕ} {Y : Type u} (d : Y ↪ Fin n × Fin n)
     (σ : Equiv.Perm (Fin n)) (z : matchingOutside d) :
     MvPolynomial.pderiv z (matchingPermutationOutsideProduct d σ) =
@@ -22810,7 +22810,7 @@ theorem matchingPermutationOutsideProduct_pderiv
     rw [hrest, hfirst]
     simp [hz]
 
-theorem matchingMarkedPermanent_evaluated_coefficient_pderiv_eq_row_sum
+lemma matchingMarkedPermanent_evaluated_coefficient_pderiv_eq_row_sum
     {n : ℕ} {Y : Type u} [DecidableEq Y]
     (d : Y ↪ Fin n × Fin n) (α : Y →₀ ℕ)
     (z : matchingOutside d) (ξ : matchingOutside d → ℂ) :
@@ -22874,7 +22874,7 @@ noncomputable def matchingPermanentSpecialization
     | .inr a, .inl (.inr v) => q a ^ (2 ^ (v : ℕ))
     | .inr _, .inr _ => 1
 
-theorem matchingPermutationOutsideFactor_internal_offDiagonal_eval
+lemma matchingPermutationOutsideFactor_internal_offDiagonal_eval
     {ell m : ℕ} (p q : Fin m → ℂ)
     (σ : Equiv.Perm (Fin ((ell + ell) + m)))
     (y y' : Fin ell ⊕ Fin ell) (hne : y' ≠ y)
@@ -22912,7 +22912,7 @@ theorem matchingPermutationOutsideFactor_internal_offDiagonal_eval
   rw [hσ, hsplit]
   simp [matchingPermanentSpecialization, z]
 
-theorem matchingPermutationOutsideFactor_internal_product_zero
+lemma matchingPermutationOutsideFactor_internal_product_zero
     {ell m : ℕ} (p q : Fin m → ℂ)
     (σ : Equiv.Perm (Fin ((ell + ell) + m)))
     (a b : Fin m) (y y' : Fin ell ⊕ Fin ell) (hne : y' ≠ y)
@@ -22943,7 +22943,7 @@ theorem matchingPermutationOutsideFactor_internal_product_zero
   exact matchingPermutationOutsideFactor_internal_offDiagonal_eval
     p q σ y y' hne hσ
 
-theorem matchingPermutationOutsideFactor_eval_of_not_mem_range
+lemma matchingPermutationOutsideFactor_eval_of_not_mem_range
     {n : ℕ} {Y : Type u} (d : Y ↪ Fin n × Fin n)
     (σ : Equiv.Perm (Fin n)) (i j : Fin n)
     (hij : σ i = j) (houtside : (i, j) ∉ Set.range d)
@@ -22959,7 +22959,7 @@ theorem matchingPermutationOutsideFactor_eval_of_not_mem_range
   rw [hij, hsplit]
   simp [z]
 
-theorem matching_internal_external_not_mem_diagonal
+lemma matching_internal_external_not_mem_diagonal
     {ell m : ℕ} (y : Fin ell ⊕ Fin ell) (b : Fin m) :
     (matchingBlockIndexEquiv ell m (.inl y),
       matchingBlockIndexEquiv ell m (.inr b)) ∉
@@ -22971,7 +22971,7 @@ theorem matching_internal_external_not_mem_diagonal
       matchingBlockIndexEquiv ell m (.inr b) at hcol
   cases (matchingBlockIndexEquiv ell m).injective hcol
 
-theorem matching_external_internal_not_mem_diagonal
+lemma matching_external_internal_not_mem_diagonal
     {ell m : ℕ} (a : Fin m) (y : Fin ell ⊕ Fin ell) :
     (matchingBlockIndexEquiv ell m (.inr a),
       matchingBlockIndexEquiv ell m (.inl y)) ∉
@@ -22983,7 +22983,7 @@ theorem matching_external_internal_not_mem_diagonal
       matchingBlockIndexEquiv ell m (.inr a) at hrow
   cases (matchingBlockIndexEquiv ell m).injective hrow
 
-theorem matching_external_external_not_mem_diagonal
+lemma matching_external_external_not_mem_diagonal
     {ell m : ℕ} (a b : Fin m) :
     (matchingBlockIndexEquiv ell m (.inr a),
       matchingBlockIndexEquiv ell m (.inr b)) ∉
@@ -22995,7 +22995,7 @@ theorem matching_external_external_not_mem_diagonal
       matchingBlockIndexEquiv ell m (.inr a) at hrow
   cases (matchingBlockIndexEquiv ell m).injective hrow
 
-theorem matchingPermutationOutsideFactor_fixed_diagonal_eval
+lemma matchingPermutationOutsideFactor_fixed_diagonal_eval
     {ell m : ℕ} (p q : Fin m → ℂ)
     (σ : Equiv.Perm (Fin ((ell + ell) + m)))
     (y : Fin ell ⊕ Fin ell)
@@ -23017,7 +23017,7 @@ theorem matchingPermutationOutsideFactor_fixed_diagonal_eval
   rw [hσ, hsplit]
   simp
 
-theorem matchingPermutationOutsideFactor_left_external_eval
+lemma matchingPermutationOutsideFactor_left_external_eval
     {ell m : ℕ} (p q : Fin m → ℂ)
     (σ : Equiv.Perm (Fin ((ell + ell) + m)))
     (u : Fin ell) (b : Fin m)
@@ -23034,7 +23034,7 @@ theorem matchingPermutationOutsideFactor_left_external_eval
     (matching_internal_external_not_mem_diagonal (.inl u) b)]
   simp [matchingPermanentSpecialization]
 
-theorem matchingPermutationOutsideFactor_right_external_eval
+lemma matchingPermutationOutsideFactor_right_external_eval
     {ell m : ℕ} (p q : Fin m → ℂ)
     (σ : Equiv.Perm (Fin ((ell + ell) + m)))
     (v : Fin ell) (b : Fin m)
@@ -23050,7 +23050,7 @@ theorem matchingPermutationOutsideFactor_right_external_eval
     (matching_internal_external_not_mem_diagonal (.inr v) b)]
   simp [matchingPermanentSpecialization]
 
-theorem matchingPermutationOutsideFactor_external_left_eval
+lemma matchingPermutationOutsideFactor_external_left_eval
     {ell m : ℕ} (p q : Fin m → ℂ)
     (σ : Equiv.Perm (Fin ((ell + ell) + m)))
     (a : Fin m) (u : Fin ell)
@@ -23066,7 +23066,7 @@ theorem matchingPermutationOutsideFactor_external_left_eval
     (matching_external_internal_not_mem_diagonal a (.inl u))]
   simp [matchingPermanentSpecialization]
 
-theorem matchingPermutationOutsideFactor_external_right_eval
+lemma matchingPermutationOutsideFactor_external_right_eval
     {ell m : ℕ} (p q : Fin m → ℂ)
     (σ : Equiv.Perm (Fin ((ell + ell) + m)))
     (a : Fin m) (v : Fin ell)
@@ -23083,7 +23083,7 @@ theorem matchingPermutationOutsideFactor_external_right_eval
     (matching_external_internal_not_mem_diagonal a (.inr v))]
   simp [matchingPermanentSpecialization]
 
-theorem matchingPermutationOutsideFactor_external_external_eval
+lemma matchingPermutationOutsideFactor_external_external_eval
     {ell m : ℕ} (p q : Fin m → ℂ)
     (σ : Equiv.Perm (Fin ((ell + ell) + m)))
     (a b : Fin m)
@@ -23129,7 +23129,7 @@ noncomputable def MatchingCrossData.assemble
               ((Equiv.sumCongr (Equiv.refl T) c.remainder).trans
                 mergeB)))))
 
-@[simp] theorem MatchingCrossData.assemble_inl
+@[simp] lemma MatchingCrossData.assemble_inl
     {T A B : Type*} (c : MatchingCrossData T A B) (t : T) :
     c.assemble (.inl t) = .inr (c.rows t) := by
   classical
@@ -23139,14 +23139,14 @@ noncomputable def MatchingCrossData.assemble
         Sum.inr (c.rows t)
   rfl
 
-@[simp] theorem MatchingCrossData.assemble_cols
+@[simp] lemma MatchingCrossData.assemble_cols
     {T A B : Type*} (c : MatchingCrossData T A B) (t : T) :
     c.assemble (.inr (c.cols t)) = .inl t := by
   classical
   simp [MatchingCrossData.assemble,
     Equiv.Set.sumCompl_symm_apply_of_mem]
 
-@[simp] theorem MatchingCrossData.assemble_remainder
+@[simp] lemma MatchingCrossData.assemble_remainder
     {T A B : Type*} (c : MatchingCrossData T A B)
     (a : {a : A // a ∉ Set.range c.cols}) :
     c.assemble (.inr a.1) = .inr (c.remainder a).1 := by
@@ -23160,7 +23160,7 @@ noncomputable def MatchingCrossData.assemble
   exact Equiv.Set.sumCompl_apply_inr (Set.range c.rows)
     (c.remainder a)
 
-theorem matching_card_compl_range
+lemma matching_card_compl_range
     {T A : Type*} [Fintype T] [Fintype A] [DecidableEq A]
     (f : T ↪ A) :
     Fintype.card {a : A // a ∉ Set.range f} =
@@ -23168,7 +23168,7 @@ theorem matching_card_compl_range
   classical
   rw [Fintype.card_subtype_compl, Fintype.card_range]
 
-theorem matching_card_residual_equiv
+lemma matching_card_residual_equiv
     {T A B : Type*} [Fintype T] [Fintype A] [Fintype B]
     [DecidableEq A] [DecidableEq B]
     (rows : T ↪ B) (cols : T ↪ A)
@@ -23204,12 +23204,12 @@ noncomputable def matchingCrossRows {T A B : Type*}
       _ = σ.1 (.inl y) :=
         (Classical.choose_spec (σ.property y)).symm
 
-theorem matchingCrossRows_spec {T A B : Type*}
+lemma matchingCrossRows_spec {T A B : Type*}
     (σ : MatchingCrossPermutation T A B) (t : T) :
     σ.1 (.inl t) = .inr (matchingCrossRows σ t) :=
   Classical.choose_spec (σ.property t)
 
-theorem matchingCrossCols_exists {T A B : Type*}
+lemma matchingCrossCols_exists {T A B : Type*}
     (σ : MatchingCrossPermutation T A B) (t : T) :
     ∃ a : A, σ.1.symm (.inl t) = .inr a := by
   classical
@@ -23240,12 +23240,12 @@ noncomputable def matchingCrossCols {T A B : Type*}
       _ = σ.1.symm (.inl y) :=
         (Classical.choose_spec (matchingCrossCols_exists σ y)).symm
 
-theorem matchingCrossCols_spec {T A B : Type*}
+lemma matchingCrossCols_spec {T A B : Type*}
     (σ : MatchingCrossPermutation T A B) (t : T) :
     σ.1.symm (.inl t) = .inr (matchingCrossCols σ t) :=
   Classical.choose_spec (matchingCrossCols_exists σ t)
 
-theorem matchingCrossResidual_exists {T A B : Type*}
+lemma matchingCrossResidual_exists {T A B : Type*}
     (σ : MatchingCrossPermutation T A B)
     (a : {a : A // a ∉ Set.range (matchingCrossCols σ)}) :
     ∃ b : {b : B // b ∉ Set.range (matchingCrossRows σ)},
@@ -23275,7 +23275,7 @@ noncomputable def matchingCrossResidualValue {T A B : Type*}
     {b : B // b ∉ Set.range (matchingCrossRows σ)} :=
   Classical.choose (matchingCrossResidual_exists σ a)
 
-theorem matchingCrossResidualValue_spec {T A B : Type*}
+lemma matchingCrossResidualValue_spec {T A B : Type*}
     (σ : MatchingCrossPermutation T A B)
     (a : {a : A // a ∉ Set.range (matchingCrossCols σ)}) :
     σ.1 (.inr a.1) = .inr (matchingCrossResidualValue σ a).1 :=
@@ -23294,7 +23294,7 @@ noncomputable def matchingCrossResidualEmbedding {T A B : Type*}
     rw [matchingCrossResidualValue_spec,
       matchingCrossResidualValue_spec, h]
 
-theorem matchingCrossPermutation_external_card
+lemma matchingCrossPermutation_external_card
     {T A B : Type*} [Finite T] [Fintype A] [Fintype B]
     (σ : MatchingCrossPermutation T A B) :
     Fintype.card A = Fintype.card B := by
@@ -23324,7 +23324,7 @@ noncomputable def MatchingCrossData.ofPermutation
   cols := matchingCrossCols σ
   remainder := matchingCrossResidualEquiv σ
 
-theorem MatchingCrossData.ofPermutation_remainder_spec
+lemma MatchingCrossData.ofPermutation_remainder_spec
     {T A B : Type*} [Fintype T] [Fintype A] [Fintype B]
     [DecidableEq A] [DecidableEq B]
     (σ : MatchingCrossPermutation T A B)
@@ -23333,13 +23333,13 @@ theorem MatchingCrossData.ofPermutation_remainder_spec
       .inr ((MatchingCrossData.ofPermutation σ).remainder a).1 :=
   matchingCrossResidualValue_spec σ a
 
-@[simp] theorem MatchingCrossData.assemble_symm_inl
+@[simp] lemma MatchingCrossData.assemble_symm_inl
     {T A B : Type*} (c : MatchingCrossData T A B) (t : T) :
     c.assemble.symm (.inl t) = .inr (c.cols t) := by
   apply c.assemble.injective
   rw [Equiv.apply_symm_apply, MatchingCrossData.assemble_cols]
 
-theorem MatchingCrossData.assemble_ofPermutation
+lemma MatchingCrossData.assemble_ofPermutation
     {T A B : Type*} [Fintype T] [Fintype A] [Fintype B]
     [DecidableEq A] [DecidableEq B]
     (σ : MatchingCrossPermutation T A B) :
@@ -23369,7 +23369,7 @@ theorem MatchingCrossData.assemble_ofPermutation
             (⟨a, ha⟩ : {a : A // a ∉ Set.range (matchingCrossCols σ)})]
         exact hx.symm
 
-theorem MatchingCrossData.assemble_injective
+lemma MatchingCrossData.assemble_injective
     {T A B : Type*} :
     Function.Injective
       (MatchingCrossData.assemble (T := T) (A := A) (B := B)) := by
@@ -23467,7 +23467,7 @@ noncomputable instance matchingCrossPermutationFintype
     (matchingCrossPermutationSigmaEquiv
       (T := T) (A := A) (B := B)).symm
 
-@[simp] theorem matchingCrossRows_toPermutation
+@[simp] lemma matchingCrossRows_toPermutation
     {T A B : Type*} (c : MatchingCrossData T A B) :
     matchingCrossRows c.toPermutation = c.rows := by
   apply Function.Embedding.ext
@@ -23479,7 +23479,7 @@ noncomputable instance matchingCrossPermutationFintype
       (matchingCrossRows_spec c.toPermutation t).symm
     _ = Sum.inr (c.rows t) := c.assemble_inl t
 
-@[simp] theorem matchingCrossCols_toPermutation
+@[simp] lemma matchingCrossCols_toPermutation
     {T A B : Type*} (c : MatchingCrossData T A B) :
     matchingCrossCols c.toPermutation = c.cols := by
   apply Function.Embedding.ext
@@ -23492,7 +23492,7 @@ noncomputable instance matchingCrossPermutationFintype
     _ = c.assemble.symm (.inl t) := rfl
     _ = Sum.inr (c.cols t) := c.assemble_symm_inl t
 
-theorem sum_matchingCrossPermutation
+lemma sum_matchingCrossPermutation
     {F T A B : Type*} [AddCommMonoid F]
     [Fintype T] [Fintype A] [Fintype B]
     [DecidableEq A] [DecidableEq B]
@@ -23530,7 +23530,7 @@ theorem sum_matchingCrossPermutation
           intro remainder _
           rfl
 
-theorem sum_matchingCrossPermutation_rows_cols
+lemma sum_matchingCrossPermutation_rows_cols
     {F T A B : Type*} [Semiring F]
     [Fintype T] [Fintype A] [Fintype B]
     [DecidableEq A] [DecidableEq B]
@@ -23590,12 +23590,12 @@ termination_by P.card
 decreasing_by
   exact Finset.card_erase_lt_of_mem u.property
 
-@[simp] theorem matchingPolynomial_empty {F : Type*} [CommRing F]
+@[simp] lemma matchingPolynomial_empty {F : Type*} [CommRing F]
     {ell m : ℕ} (p : Fin m → F) :
     matchingPolynomial (ell := ell) p ∅ = 1 := by
   simp [matchingPolynomial]
 
-theorem matchingPolynomial_of_nonempty {F : Type*} [CommRing F]
+lemma matchingPolynomial_of_nonempty {F : Type*} [CommRing F]
     {ell m : ℕ} (p : Fin m → F) (P : Finset (Fin ell))
     (hP : P.Nonempty) :
     matchingPolynomial p P =
@@ -23606,18 +23606,18 @@ theorem matchingPolynomial_of_nonempty {F : Type*} [CommRing F]
   rw [matchingPolynomial]
   simp [hP]
 
-@[simp] theorem matchingBinaryDegree_empty (ell : ℕ) :
+@[simp] lemma matchingBinaryDegree_empty (ell : ℕ) :
     matchingBinaryDegree (ell := ell) ∅ = 0 := by
   simp [matchingBinaryDegree]
 
-theorem matchingBinaryDegree_erase_add {ell : ℕ}
+lemma matchingBinaryDegree_erase_add {ell : ℕ}
     (P : Finset (Fin ell)) (u : Fin ell) (hu : u ∈ P) :
     matchingBinaryDegree (P.erase u) + 2 ^ (u : ℕ) = matchingBinaryDegree P := by
   classical
   unfold matchingBinaryDegree
   rw [← Finset.sum_erase_add _ _ hu]
 
-theorem matchingPolynomial_natDegree_le {F : Type*} [CommRing F] [Nontrivial F]
+lemma matchingPolynomial_natDegree_le {F : Type*} [CommRing F] [Nontrivial F]
     {ell m : ℕ} (p : Fin m → F) (P : Finset (Fin ell)) :
     (matchingPolynomial p P).natDegree ≤ matchingBinaryDegree P := by
   classical
@@ -23643,7 +23643,7 @@ theorem matchingPolynomial_natDegree_le {F : Type*} [CommRing F] [Nontrivial F]
     subst P
     simp
 
-theorem matchingBinaryDegree_pos {ell : ℕ}
+lemma matchingBinaryDegree_pos {ell : ℕ}
     (P : Finset (Fin ell)) (hP : P.Nonempty) :
     0 < matchingBinaryDegree P := by
   classical
@@ -23651,7 +23651,7 @@ theorem matchingBinaryDegree_pos {ell : ℕ}
   rw [← matchingBinaryDegree_erase_add P u hu]
   exact Nat.add_pos_right _ (Nat.pow_pos Nat.two_pos)
 
-theorem matchingPolynomial_coeff_binaryDegree {F : Type*} [CommRing F]
+lemma matchingPolynomial_coeff_binaryDegree {F : Type*} [CommRing F]
     {ell m : ℕ} (p : Fin m → F) (P : Finset (Fin ell)) :
     (matchingPolynomial p P).coeff (matchingBinaryDegree P) =
       (-1 : F) ^ P.card * (P.card.factorial : F) := by
@@ -23681,7 +23681,7 @@ theorem matchingPolynomial_coeff_binaryDegree {F : Type*} [CommRing F]
     subst P
     simp
 
-theorem matchingPolynomial_coeff_binaryDegree_ne_zero
+lemma matchingPolynomial_coeff_binaryDegree_ne_zero
     {F : Type*} [Field F] [CharZero F]
     {ell m : ℕ} (p : Fin m → F) (P : Finset (Fin ell)) :
     (matchingPolynomial p P).coeff (matchingBinaryDegree P) ≠ 0 := by
@@ -23689,7 +23689,7 @@ theorem matchingPolynomial_coeff_binaryDegree_ne_zero
   exact mul_ne_zero (pow_ne_zero _ (neg_ne_zero.mpr one_ne_zero))
     (Nat.cast_ne_zero.mpr (Nat.factorial_ne_zero P.card))
 
-theorem matchingPolynomial_natDegree {F : Type*} [Field F] [CharZero F]
+lemma matchingPolynomial_natDegree {F : Type*} [Field F] [CharZero F]
     {ell m : ℕ} (p : Fin m → F) (P : Finset (Fin ell)) :
     (matchingPolynomial p P).natDegree = matchingBinaryDegree P := by
   exact Polynomial.natDegree_eq_of_le_of_coeff_ne_zero
@@ -23801,7 +23801,7 @@ def matchingEraseIndexEquiv {ell : ℕ}
     apply Subtype.ext
     rfl
 
-theorem matchingEmbedding_prod_split {F : Type*} [CommSemiring F]
+lemma matchingEmbedding_prod_split {F : Type*} [CommSemiring F]
     {ell m : ℕ} (p : Fin m → F) {P : Finset (Fin ell)}
     (u : ↥P) (b : Fin m) (rho : ↥P ↪ Fin m) (hrho : rho u = b) :
     (∏ v : ↥P, p (rho v) ^ (2 ^ (v.1 : ℕ))) =
@@ -23817,7 +23817,7 @@ theorem matchingEmbedding_prod_split {F : Type*} [CommSemiring F]
   intro v
   rfl
 
-theorem matchingHitFiber_sum {F : Type*} [CommSemiring F]
+lemma matchingHitFiber_sum {F : Type*} [CommSemiring F]
     {ell m : ℕ} (p : Fin m → F) {P : Finset (Fin ell)}
     (u : ↥P) (b : Fin m) :
     (∑ rho : {rho : ↥P ↪ Fin m // rho u = b},
@@ -23863,7 +23863,7 @@ def matchingAvoidingEmbeddingEquiv {ell m : ℕ}
     intro _
     rfl
 
-theorem matching_exists_hit {ell m : ℕ}
+lemma matching_exists_hit {ell m : ℕ}
     {P : Finset (Fin ell)} (b : Fin m)
     (rho : {rho : ↥P ↪ Fin m // ¬ ∀ u, rho u ≠ b}) :
     ∃ u : ↥P, rho.1 u = b := by
@@ -23878,7 +23878,7 @@ noncomputable def matchingHitIndex {ell m : ℕ}
     (rho : {rho : ↥P ↪ Fin m // ¬ ∀ u, rho u ≠ b}) : ↥P :=
   Classical.choose (matching_exists_hit b rho)
 
-theorem matchingHitIndex_spec {ell m : ℕ}
+lemma matchingHitIndex_spec {ell m : ℕ}
     {P : Finset (Fin ell)} (b : Fin m)
     (rho : {rho : ↥P ↪ Fin m // ¬ ∀ u, rho u ≠ b}) :
     rho.1 (matchingHitIndex b rho) = b :=
@@ -23914,7 +23914,7 @@ noncomputable def matchingHitSigmaEquiv {ell m : ℕ}
             {g : ↥P ↪ Fin m // ¬ ∀ v, g v ≠ b})) = b ↔ f u = b
       rw [hindex])).2 rfl
 
-theorem matchingInjectionSum_partition {F : Type*} [CommSemiring F]
+lemma matchingInjectionSum_partition {F : Type*} [CommSemiring F]
     {ell m : ℕ} (p : Fin m → F) (P : Finset (Fin ell)) (b : Fin m) :
     matchingInjectionSum p P =
       matchingAvoidingInjectionSum p P b +
@@ -23969,14 +23969,14 @@ theorem matchingInjectionSum_partition {F : Type*} [CommSemiring F]
               intro u _
               exact matchingHitFiber_sum p u b
 
-@[simp] theorem matchingAvoidingInjectionSum_empty
+@[simp] lemma matchingAvoidingInjectionSum_empty
     {F : Type*} [CommSemiring F] {ell m : ℕ}
     (p : Fin m → F) (b : Fin m) :
     matchingAvoidingInjectionSum (ell := ell) p ∅ b = 1 := by
   classical
   simp [matchingAvoidingInjectionSum]
 
-theorem matchingPolynomial_eval {F : Type*} [CommRing F]
+lemma matchingPolynomial_eval {F : Type*} [CommRing F]
     {ell m : ℕ} (p : Fin m → F) (P : Finset (Fin ell)) (b : Fin m) :
     (matchingPolynomial p P).eval (p b) =
       matchingAvoidingInjectionSum p P b := by
@@ -24009,7 +24009,7 @@ noncomputable def matchingPolynomialEvaluationMatrix
     Matrix (Fin m) (Fin m) F :=
   fun b d => (matchingPolynomial p (P d)).eval (p b)
 
-theorem matchingPolynomialEvaluationMatrix_det_ne_zero
+lemma matchingPolynomialEvaluationMatrix_det_ne_zero
     {F : Type*} [Field F] [CharZero F] {ell m : ℕ}
     (p : Fin m → F) (hp : Function.Injective p)
     (P : Fin m → Finset (Fin ell))
@@ -24037,7 +24037,7 @@ def matchingBitSubset (ell d : ℕ) : Finset (Fin ell) := by
   classical
   exact Finset.univ.filter (fun u : Fin ell => (u : ℕ) ∈ d.bitIndices)
 
-theorem matchingBitSubset_map_val (ell d : ℕ) (hd : d < 2 ^ ell) :
+lemma matchingBitSubset_map_val (ell d : ℕ) (hd : d < 2 ^ ell) :
     (matchingBitSubset ell d).map Fin.valEmbedding =
       d.bitIndices.toFinset := by
   classical
@@ -24056,7 +24056,7 @@ theorem matchingBitSubset_map_val (ell d : ℕ) (hd : d < 2 ^ ell) :
     refine Finset.mem_map.mpr ⟨⟨a, hlt⟩, ?_, rfl⟩
     exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, hbit⟩
 
-theorem matchingBinaryDegree_bitSubset (ell d : ℕ) (hd : d < 2 ^ ell) :
+lemma matchingBinaryDegree_bitSubset (ell d : ℕ) (hd : d < 2 ^ ell) :
     matchingBinaryDegree (matchingBitSubset ell d) = d := by
   classical
   unfold matchingBinaryDegree
@@ -24080,7 +24080,7 @@ noncomputable def matchingBivariateEvaluationMatrix
     (matchingPolynomial p (P de.1)).eval (p ab.2) *
       (matchingPolynomial q (Q de.2)).eval (q ab.1)
 
-theorem matchingBivariateEvaluationMatrix_eq_kronecker
+lemma matchingBivariateEvaluationMatrix_eq_kronecker
     {F : Type*} [CommRing F] {ell m : ℕ}
     (p q : Fin m → F)
     (P Q : Fin m → Finset (Fin ell)) :
@@ -24091,7 +24091,7 @@ theorem matchingBivariateEvaluationMatrix_eq_kronecker
   ext ⟨d, e⟩ ⟨a, b⟩
   rfl
 
-theorem matchingBivariateEvaluationMatrix_det_ne_zero
+lemma matchingBivariateEvaluationMatrix_det_ne_zero
     {F : Type*} [Field F] [CharZero F] {ell m : ℕ}
     (p q : Fin m → F)
     (hp : Function.Injective p) (hq : Function.Injective q)
@@ -24113,7 +24113,7 @@ def matchingJacobianWeight (m r s : ℕ) : ℕ :=
     (m - 1 - r).descFactorial s *
       (m - 1 - s).descFactorial r
 
-theorem matchingJacobianWeight_pos (m r s : ℕ) (h : r + s < m) :
+lemma matchingJacobianWeight_pos (m r s : ℕ) (h : r + s < m) :
     0 < matchingJacobianWeight m r s := by
   have hs : s ≤ m - 1 - r := by omega
   have hr : r ≤ m - 1 - s := by omega
@@ -24132,7 +24132,7 @@ noncomputable def matchingWeightedBivariateEvaluationMatrix
     (matchingJacobianWeight m (P de.1).card (Q de.2).card : F) *
       matchingBivariateEvaluationMatrix p q P Q de ab
 
-theorem matchingWeightedBivariateEvaluationMatrix_eq_diagonal_mul
+lemma matchingWeightedBivariateEvaluationMatrix_eq_diagonal_mul
     {F : Type*} [CommRing F] {ell m : ℕ}
     (p q : Fin m → F)
     (P Q : Fin m → Finset (Fin ell)) :
@@ -24145,7 +24145,7 @@ theorem matchingWeightedBivariateEvaluationMatrix_eq_diagonal_mul
   rw [Matrix.diagonal_mul]
   rfl
 
-theorem matchingWeightedBivariateEvaluationMatrix_det_ne_zero
+lemma matchingWeightedBivariateEvaluationMatrix_det_ne_zero
     {F : Type*} [Field F] [CharZero F] {ell m : ℕ}
     (p q : Fin m → F)
     (hp : Function.Injective p) (hq : Function.Injective q)
@@ -24170,7 +24170,7 @@ theorem matchingWeightedBivariateEvaluationMatrix_det_ne_zero
   · exact matchingBivariateEvaluationMatrix_det_ne_zero
       p q hp hq P Q hP hQ
 
-theorem matchingWeightedBivariateBitEvaluationMatrix_det_ne_zero
+lemma matchingWeightedBivariateBitEvaluationMatrix_det_ne_zero
     {F : Type*} [Field F] [CharZero F] {ell m : ℕ}
     (p q : Fin m → F)
     (hp : Function.Injective p) (hq : Function.Injective q)
@@ -24193,14 +24193,14 @@ noncomputable def matchingBitCoefficientSet (ell m : ℕ)
     | .inl u => u ∉ matchingBitSubset ell (de.1 : ℕ)
     | .inr v => v ∉ matchingBitSubset ell (de.2 : ℕ)
 
-@[simp] theorem matchingBitCoefficientSet_mem_inl (ell m : ℕ)
+@[simp] lemma matchingBitCoefficientSet_mem_inl (ell m : ℕ)
     (de : Fin m × Fin m) (u : Fin ell) :
     Sum.inl u ∈ matchingBitCoefficientSet ell m de ↔
       u ∉ matchingBitSubset ell (de.1 : ℕ) := by
   classical
   simp [matchingBitCoefficientSet]
 
-@[simp] theorem matchingBitCoefficientSet_mem_inr (ell m : ℕ)
+@[simp] lemma matchingBitCoefficientSet_mem_inr (ell m : ℕ)
     (de : Fin m × Fin m) (v : Fin ell) :
     Sum.inr v ∈ matchingBitCoefficientSet ell m de ↔
       v ∉ matchingBitSubset ell (de.2 : ℕ) := by
@@ -24220,7 +24220,7 @@ noncomputable def matchingPermanentJacobian
       matchingExternalEntry ell m ab.1 ab.2)
     (matchingPermanentSpecialization p q)
 
-theorem matchingPermanentJacobian_apply
+lemma matchingPermanentJacobian_apply
     {ell m : ℕ} (p q : Fin m → ℂ)
     (de ab : Fin m × Fin m) :
     matchingPermanentJacobian (ell := ell) p q de ab =
@@ -24246,7 +24246,7 @@ theorem matchingPermanentJacobian_apply
     (matchingExternalEntry ell m ab.1 ab.2)
     (matchingPermanentSpecialization p q)
 
-theorem sum_sumEmbedding_left_weight
+lemma sum_sumEmbedding_left_weight
     {F α β γ : Type*} [CommSemiring F]
     [Fintype α] [Fintype β] [Fintype γ]
     (w : (α ↪ γ) → F) :
@@ -24283,7 +24283,7 @@ theorem sum_sumEmbedding_left_weight
           ∑ rho : (α ↪ γ), w rho := by
         rw [Finset.mul_sum]
 
-theorem sum_sumEmbedding_right_weight
+lemma sum_sumEmbedding_right_weight
     {F α β γ : Type*} [CommSemiring F]
     [Fintype α] [Fintype β] [Fintype γ]
     (w : (β ↪ γ) → F) :
@@ -24311,12 +24311,12 @@ theorem sum_sumEmbedding_right_weight
           ∑ rho : (β ↪ γ), w rho :=
         sum_sumEmbedding_left_weight w
 
-theorem matching_card_omitted_external {m : ℕ} (b : Fin m) :
+lemma matching_card_omitted_external {m : ℕ} (b : Fin m) :
     Fintype.card {j : Fin m // j ≠ b} = m - 1 := by
   classical
   simp
 
-theorem matching_leftWeightedAvoidingInjectionSum
+lemma matching_leftWeightedAvoidingInjectionSum
     {F : Type*} [CommSemiring F] {ell m : ℕ}
     (p : Fin m → F) (P Q : Finset (Fin ell)) (b : Fin m) :
     (∑ rho : (↥P ⊕ ↥Q ↪ {j : Fin m // j ≠ b}),
@@ -24332,7 +24332,7 @@ theorem matching_leftWeightedAvoidingInjectionSum
   simpa [w, matchingAvoidingInjectionSum,
     matching_card_omitted_external] using h
 
-theorem matching_rightWeightedAvoidingInjectionSum
+lemma matching_rightWeightedAvoidingInjectionSum
     {F : Type*} [CommSemiring F] {ell m : ℕ}
     (q : Fin m → F) (P Q : Finset (Fin ell)) (a : Fin m) :
     (∑ rho : (↥P ⊕ ↥Q ↪ {j : Fin m // j ≠ a}),
@@ -24358,7 +24358,7 @@ noncomputable def matchingCrossWeight
   (∏ v : ↥Q,
     q ((matchingCrossCols σ) (.inr v)).1 ^ (2 ^ (v.1 : ℕ)))
 
-theorem matchingCrossWeight_sum
+lemma matchingCrossWeight_sum
     {F : Type*} [CommRing F] {ell m : ℕ}
     (p q : Fin m → F) (P Q : Finset (Fin ell)) (a b : Fin m) :
     (∑ σ : MatchingCrossPermutation (↥P ⊕ ↥Q)
@@ -24463,7 +24463,7 @@ theorem matchingCrossWeight_sum
             simp only [matchingJacobianWeight, Nat.cast_mul]
             ring
 
-theorem matchingWeightedCrossBitPermutation_sum
+lemma matchingWeightedCrossBitPermutation_sum
     {F : Type*} [CommRing F] {ell m : ℕ}
     (p q : Fin m → F) (de ab : Fin m × Fin m) :
     (∑ σ : MatchingCrossPermutation
@@ -24481,13 +24481,13 @@ theorem matchingWeightedCrossBitPermutation_sum
     (matchingBitSubset ell (de.1 : ℕ))
     (matchingBitSubset ell (de.2 : ℕ)) ab.1 ab.2
 
-@[simp] theorem matchingVariableEquiv_symm_marked
+@[simp] lemma matchingVariableEquiv_symm_marked
     {n : ℕ} {Y : Type u} (d : Y ↪ Fin n × Fin n) (y : Y) :
     (matchingVariableEquiv d).symm (d y) = .inl y := by
   apply (matchingVariableEquiv d).injective
   simp
 
-theorem matchingPermutationExponent_apply
+lemma matchingPermutationExponent_apply
     {n : ℕ} {Y : Type u}
     (d : Y ↪ Fin n × Fin n)
     (σ : Equiv.Perm (Fin n)) (y : Y) :
@@ -24538,7 +24538,7 @@ theorem matchingPermutationExponent_apply
           exact hfix (hrow ▸ hcol)
         simp [hi, hfix]
 
-theorem matchingPermutationExponent_eq_squarefree_iff
+lemma matchingPermutationExponent_eq_squarefree_iff
     {n : ℕ} {Y : Type u}
     (d : Y ↪ Fin n × Fin n)
     (σ : Equiv.Perm (Fin n)) (S : Finset Y) :
@@ -24615,7 +24615,7 @@ noncomputable def matchingRemainingIndexEmbedding
       apply Subtype.ext
       exact Sum.inr_injective (e.injective h)
 
-theorem matchingRemainingIndexEmbedding_range
+lemma matchingRemainingIndexEmbedding_range
     {Y E I : Type*} (e : Y ⊕ E ≃ I)
     (S : Finset Y) (a : E) :
     Set.range (matchingRemainingIndexEmbedding e S a) =
@@ -24690,7 +24690,7 @@ noncomputable def matchingReducedEquiv
       ((matchingRestrictComplement σ r c hdel).trans
         (matchingRemainingIndexEquiv e S b).symm)
 
-theorem matchingReducedEquiv_eq_iff
+lemma matchingReducedEquiv_eq_iff
     {ell m : ℕ} (S : Finset (Fin ell ⊕ Fin ell))
     (a b : Fin m)
     (σ : Equiv.Perm (Fin ((ell + ell) + m)))
@@ -24759,7 +24759,7 @@ abbrev MatchingBitSelectedPermutation
       σ (matchingExternalEntry ell m ab.1 ab.2).1.1 =
         (matchingExternalEntry ell m ab.1 ab.2).1.2}
 
-theorem matchingBitSelectedPermutation_fixed
+lemma matchingBitSelectedPermutation_fixed
     {ell m : ℕ} {de ab : Fin m × Fin m}
     (σ : MatchingBitSelectedPermutation ell m de ab)
     (y : Fin ell ⊕ Fin ell)
@@ -24772,7 +24772,7 @@ theorem matchingBitSelectedPermutation_fixed
       (matchingBitCoefficientSet ell m de)).mp σ.property.1 y
   exact h.mpr hy
 
-theorem matchingBitSelectedPermutation_external
+lemma matchingBitSelectedPermutation_external
     {ell m : ℕ} {de ab : Fin m × Fin m}
     (σ : MatchingBitSelectedPermutation ell m de ab) :
     σ.1 (matchingBlockIndexEquiv ell m (.inr ab.1)) =
@@ -24811,14 +24811,14 @@ noncomputable def matchingDeletedRemainingEquiv
         (Equiv.Set.sumCompl
           (Set.range (matchingDeletedIndexEmbedding e S a)))
 
-@[simp] theorem matchingDeletedRemainingEquiv_inl
+@[simp] lemma matchingDeletedRemainingEquiv_inl
     {Y E I : Type*} (e : Y ⊕ E ≃ I)
     (S : Finset Y) (a : E) (x : ↥S ⊕ Unit) :
     matchingDeletedRemainingEquiv e S a (.inl x) =
       matchingDeletedIndexEmbedding e S a x := by
   rfl
 
-@[simp] theorem matchingDeletedRemainingEquiv_inr
+@[simp] lemma matchingDeletedRemainingEquiv_inr
     {Y E I : Type*} (e : Y ⊕ E ≃ I)
     (S : Finset Y) (a : E)
     (x : {y : Y // y ∉ S} ⊕ {j : E // j ≠ a}) :
@@ -24842,7 +24842,7 @@ noncomputable def matchingExtendReducedEquiv
           (matchingDeletedRemainingEquiv
             (matchingBlockIndexEquiv ell m) S b))
 
-theorem matchingExtendReducedEquiv_deleted
+lemma matchingExtendReducedEquiv_deleted
     {ell m : ℕ} (S : Finset (Fin ell ⊕ Fin ell))
     (a b : Fin m)
     (τ :
@@ -24873,7 +24873,7 @@ theorem matchingExtendReducedEquiv_deleted
           (matchingBlockIndexEquiv ell m) S b x :=
             matchingDeletedRemainingEquiv_inl _ _ _ _
 
-theorem matchingExtendReducedEquiv_remaining
+lemma matchingExtendReducedEquiv_remaining
     {ell m : ℕ} (S : Finset (Fin ell ⊕ Fin ell))
     (a b : Fin m)
     (τ :
@@ -24905,7 +24905,7 @@ theorem matchingExtendReducedEquiv_remaining
           (matchingBlockIndexEquiv ell m) S b (τ x) :=
             matchingDeletedRemainingEquiv_inr _ _ _ _
 
-theorem matchingExtendReducedEquiv_fixed
+lemma matchingExtendReducedEquiv_fixed
     {ell m : ℕ} (S : Finset (Fin ell ⊕ Fin ell))
     (a b : Fin m)
     (τ :
@@ -24920,7 +24920,7 @@ theorem matchingExtendReducedEquiv_fixed
   matchingExtendReducedEquiv_deleted S a b τ
     (.inl ⟨y, hy⟩)
 
-theorem matchingExtendReducedEquiv_external
+lemma matchingExtendReducedEquiv_external
     {ell m : ℕ} (S : Finset (Fin ell ⊕ Fin ell))
     (a b : Fin m)
     (τ :
@@ -24933,7 +24933,7 @@ theorem matchingExtendReducedEquiv_external
       matchingBlockIndexEquiv ell m (.inr b) :=
   matchingExtendReducedEquiv_deleted S a b τ (.inr ())
 
-theorem matchingReducedEquiv_extend
+lemma matchingReducedEquiv_extend
     {ell m : ℕ} (S : Finset (Fin ell ⊕ Fin ell))
     (a b : Fin m)
     (τ :
@@ -24954,7 +24954,7 @@ theorem matchingReducedEquiv_extend
     x (τ x)).2
   exact matchingExtendReducedEquiv_remaining S a b τ x
 
-theorem matchingExtendReducedEquiv_reduced
+lemma matchingExtendReducedEquiv_reduced
     {ell m : ℕ} (S : Finset (Fin ell ⊕ Fin ell))
     (a b : Fin m)
     (σ : Equiv.Perm (Fin ((ell + ell) + m)))
@@ -25004,7 +25004,7 @@ abbrev MatchingBitCrossSelectedPermutation
         σ.1.1 (matchingBlockIndexEquiv ell m (.inl y.1)) =
           matchingBlockIndexEquiv ell m (.inr j)}
 
-theorem matchingBitCrossSelectedPermutation_external_ne
+lemma matchingBitCrossSelectedPermutation_external_ne
     {ell m : ℕ} {de ab : Fin m × Fin m}
     (σ : MatchingBitCrossSelectedPermutation ell m de ab)
     (y : {y : Fin ell ⊕ Fin ell //
@@ -25070,7 +25070,7 @@ noncomputable def matchingBitUnreduceCrossEquiv
         (Equiv.sumCongr (matchingBitSurvivorEquiv ell m de)
           (Equiv.refl _)))
 
-theorem matchingBitUnreduceCrossEquiv_internal
+lemma matchingBitUnreduceCrossEquiv_internal
     {ell m : ℕ} {de ab : Fin m × Fin m}
     (τ : MatchingCrossPermutation
       (↥(matchingBitSubset ell (de.1 : ℕ)) ⊕
@@ -25138,7 +25138,7 @@ noncomputable def matchingBitCrossToSelected
   rw [hj] at hmove
   exact hmove
 
-theorem matchingBitUnreduceCrossEquiv_toCross
+lemma matchingBitUnreduceCrossEquiv_toCross
     {ell m : ℕ} {de ab : Fin m × Fin m}
     (σ : MatchingBitCrossSelectedPermutation ell m de ab) :
     matchingBitUnreduceCrossEquiv
@@ -25159,7 +25159,7 @@ theorem matchingBitUnreduceCrossEquiv_toCross
   unfold matchingBitReducedEquiv
   simp [Equiv.trans_apply, Equiv.sumCongr_apply]
 
-theorem matchingBitCrossSelectedToCross_toSelected
+lemma matchingBitCrossSelectedToCross_toSelected
     {ell m : ℕ} {de ab : Fin m × Fin m}
     (τ : MatchingCrossPermutation
       (↥(matchingBitSubset ell (de.1 : ℕ)) ⊕
@@ -25185,7 +25185,7 @@ theorem matchingBitCrossSelectedToCross_toSelected
   unfold matchingBitUnreduceCrossEquiv
   simp [Equiv.trans_apply, Equiv.sumCongr_apply]
 
-theorem matchingBitCrossToSelected_toCross
+lemma matchingBitCrossToSelected_toCross
     {ell m : ℕ} {de ab : Fin m × Fin m}
     (σ : MatchingBitCrossSelectedPermutation ell m de ab) :
     matchingBitCrossToSelected
@@ -25216,7 +25216,7 @@ noncomputable def matchingBitCrossSelectedEquiv
   left_inv := matchingBitCrossToSelected_toCross
   right_inv := matchingBitCrossSelectedToCross_toSelected
 
-theorem matchingBitCrossSelected_factor_one_off_support
+lemma matchingBitCrossSelected_factor_one_off_support
     {ell m : ℕ} (p q : Fin m → ℂ)
     (de ab : Fin m × Fin m)
     (σ : MatchingBitCrossSelectedPermutation ell m de ab)
@@ -25308,7 +25308,7 @@ theorem matchingBitCrossSelected_factor_one_off_support
           exact matchingPermutationOutsideFactor_external_external_eval
             p q σ.1.1 a b hσ
 
-theorem matchingBitCrossSelected_reduced_eq_iff
+lemma matchingBitCrossSelected_reduced_eq_iff
     {ell m : ℕ} {de ab : Fin m × Fin m}
     (σ : MatchingBitCrossSelectedPermutation ell m de ab)
     (x : (↥(matchingBitSubset ell (de.1 : ℕ)) ⊕
@@ -25338,7 +25338,7 @@ theorem matchingBitCrossSelected_reduced_eq_iff
     (matchingBitSelectedPermutation_fixed σ.1)
     (matchingBitSelectedPermutation_external σ.1) _ _
 
-theorem matchingBitCrossSelected_full_rows_spec
+lemma matchingBitCrossSelected_full_rows_spec
     {ell m : ℕ} {de ab : Fin m × Fin m}
     (σ : MatchingBitCrossSelectedPermutation ell m de ab)
     (t : ↥(matchingBitSubset ell (de.1 : ℕ)) ⊕
@@ -25358,7 +25358,7 @@ theorem matchingBitCrossSelected_full_rows_spec
         (matchingBitCrossSelectedToCross σ) t)
   exact h
 
-theorem matchingBitCrossSelected_full_cols_spec
+lemma matchingBitCrossSelected_full_cols_spec
     {ell m : ℕ} {de ab : Fin m × Fin m}
     (σ : MatchingBitCrossSelectedPermutation ell m de ab)
     (t : ↥(matchingBitSubset ell (de.1 : ℕ)) ⊕
@@ -25429,7 +25429,7 @@ noncomputable def matchingBitCrossSelectedSupportEmbedding
           ((matchingBlockIndexEquiv ell m).injective
             (σ.1.1.symm.injective h)))
 
-theorem matchingBitCrossSelectedSupportEmbedding_factor
+lemma matchingBitCrossSelectedSupportEmbedding_factor
     {ell m : ℕ} (p q : Fin m → ℂ)
     {de ab : Fin m × Fin m}
     (σ : MatchingBitCrossSelectedPermutation ell m de ab)
@@ -25488,7 +25488,7 @@ theorem matchingBitCrossSelectedSupportEmbedding_factor
         (matchingCrossCols
           (matchingBitCrossSelectedToCross σ) (.inr v)).1 v.1 hcol
 
-theorem matchingBitCrossSelectedPermutation_weight
+lemma matchingBitCrossSelectedPermutation_weight
     {ell m : ℕ} (p q : Fin m → ℂ)
     (de ab : Fin m × Fin m)
     (σ : MatchingBitCrossSelectedPermutation ell m de ab) :
@@ -25563,7 +25563,7 @@ theorem matchingBitCrossSelectedPermutation_weight
   rw [hderiv, one_mul] at hdeleted
   exact hdeleted.symm.trans hfull
 
-theorem matchingPermanentJacobian_eq_cross_selected_sum
+lemma matchingPermanentJacobian_eq_cross_selected_sum
     {ell m : ℕ} (p q : Fin m → ℂ)
     (de ab : Fin m × Fin m) :
     matchingPermanentJacobian (ell := ell) p q de ab =
@@ -25697,36 +25697,36 @@ noncomputable def splitEval [Field F]
     (f : Formula (Y ⊕ Z) F) : MvPolynomial Y (MvPolynomial Z F) :=
   MvPolynomial.sumAlgEquiv F Y Z (eval f)
 
-@[simp] theorem splitEval_var_inl [Field F] (i : Y) :
+@[simp] lemma splitEval_var_inl [Field F] (i : Y) :
     splitEval (Z := Z) (F := F) (.var (.inl i)) = MvPolynomial.X i := by
   simp [splitEval, eval]
 
-@[simp] theorem splitEval_var_inr [Field F] (j : Z) :
+@[simp] lemma splitEval_var_inr [Field F] (j : Z) :
     splitEval (Y := Y) (F := F) (.var (.inr j)) =
       MvPolynomial.C (MvPolynomial.X j) := by
   simp [splitEval, eval]
 
-@[simp] theorem splitEval_const [Field F] (c : F) :
+@[simp] lemma splitEval_const [Field F] (c : F) :
     splitEval (Y := Y) (Z := Z) (.const c) =
       MvPolynomial.C (MvPolynomial.C c) := by
   simp [splitEval, eval]
 
-@[simp] theorem splitEval_add [Field F]
+@[simp] lemma splitEval_add [Field F]
     (f g : Formula (Y ⊕ Z) F) :
     splitEval (.add f g) = splitEval f + splitEval g := by
   simp [splitEval, eval]
 
-@[simp] theorem splitEval_sub [Field F]
+@[simp] lemma splitEval_sub [Field F]
     (f g : Formula (Y ⊕ Z) F) :
     splitEval (.sub f g) = splitEval f - splitEval g := by
   simp [splitEval, eval]
 
-@[simp] theorem splitEval_mul [Field F]
+@[simp] lemma splitEval_mul [Field F]
     (f g : Formula (Y ⊕ Z) F) :
     splitEval (.mul f g) = splitEval f * splitEval g := by
   simp [splitEval, eval]
 
-theorem exists_splitEval_eq_C_of_yLeafCount_eq_zero [Field F]
+lemma exists_splitEval_eq_C_of_yLeafCount_eq_zero [Field F]
     (f : Formula (Y ⊕ Z) F) (h : yLeafCount f = 0) :
     ∃ q : MvPolynomial Z F, splitEval f = MvPolynomial.C q := by
   induction f with
@@ -25773,7 +25773,7 @@ section CoefficientFields
 
 variable [Field F]
 
-theorem coeff_mem_intermediateField_add
+lemma coeff_mem_intermediateField_add
     (S : IntermediateField F (FractionRing (MvPolynomial Z F)))
     (p q : MvPolynomial Y (MvPolynomial Z F))
     (hp : ∀ α : Y →₀ ℕ,
@@ -25787,7 +25787,7 @@ theorem coeff_mem_intermediateField_add
   simpa only [map_add, MvPolynomial.coeff_add] using
     S.add_mem (hp α) (hq α)
 
-theorem coeff_mem_intermediateField_sub
+lemma coeff_mem_intermediateField_sub
     (S : IntermediateField F (FractionRing (MvPolynomial Z F)))
     (p q : MvPolynomial Y (MvPolynomial Z F))
     (hp : ∀ α : Y →₀ ℕ,
@@ -25801,7 +25801,7 @@ theorem coeff_mem_intermediateField_sub
   simpa only [map_sub, MvPolynomial.coeff_sub] using
     S.sub_mem (hp α) (hq α)
 
-theorem coeff_mem_intermediateField_mul
+lemma coeff_mem_intermediateField_mul
     (S : IntermediateField F (FractionRing (MvPolynomial Z F)))
     (p q : MvPolynomial Y (MvPolynomial Z F))
     (hp : ∀ α : Y →₀ ℕ,
@@ -25819,7 +25819,7 @@ theorem coeff_mem_intermediateField_mul
   rw [map_mul]
   exact S.mul_mem (hp a.1) (hq a.2)
 
-theorem coeff_mem_intermediateField_C
+lemma coeff_mem_intermediateField_C
     (S : IntermediateField F (FractionRing (MvPolynomial Z F)))
     (a : MvPolynomial Z F)
     (ha : algebraMap (MvPolynomial Z F) (FractionRing (MvPolynomial Z F)) a ∈ S)
@@ -25833,7 +25833,7 @@ theorem coeff_mem_intermediateField_C
   · rw [MvPolynomial.coeff_C_of_ne_zero hα, map_zero]
     exact S.zero_mem
 
-theorem coeff_mem_intermediateField_X
+lemma coeff_mem_intermediateField_X
     (S : IntermediateField F (FractionRing (MvPolynomial Z F)))
     (i : Y) (α : Y →₀ ℕ) :
     algebraMap (MvPolynomial Z F) (FractionRing (MvPolynomial Z F))
@@ -25893,7 +25893,7 @@ noncomputable def contractedSkeletonBinaryGenerators
   exact contractedSkeletonBinaryExtras wf wg ∪
     (wf.generators ∪ wg.generators)
 
-theorem contractedSkeletonBinaryGenerators_left_le
+lemma contractedSkeletonBinaryGenerators_left_le
     {f g : Formula (Y ⊕ Z) F}
     (wf : ContractedSkeleton f) (wg : ContractedSkeleton g) :
     IntermediateField.adjoin F (wf.generators : Set _) ≤
@@ -25908,7 +25908,7 @@ theorem contractedSkeletonBinaryGenerators_left_le
   unfold contractedSkeletonBinaryGenerators
   exact Finset.mem_union_right _ (Finset.mem_union_left _ hx)
 
-theorem contractedSkeletonBinaryGenerators_right_le
+lemma contractedSkeletonBinaryGenerators_right_le
     {f g : Formula (Y ⊕ Z) F}
     (wf : ContractedSkeleton f) (wg : ContractedSkeleton g) :
     IntermediateField.adjoin F (wg.generators : Set _) ≤
@@ -25923,7 +25923,7 @@ theorem contractedSkeletonBinaryGenerators_right_le
   unfold contractedSkeletonBinaryGenerators
   exact Finset.mem_union_right _ (Finset.mem_union_right _ hx)
 
-theorem contractedSkeletonBinaryGenerators_parameter_mem
+lemma contractedSkeletonBinaryGenerators_parameter_mem
     {f g : Formula (Y ⊕ Z) F}
     (wf : ContractedSkeleton f) (wg : ContractedSkeleton g)
     {a : FractionRing (MvPolynomial Z F)}
@@ -25939,7 +25939,7 @@ theorem contractedSkeletonBinaryGenerators_parameter_mem
   unfold contractedSkeletonBinaryGenerators
   exact Finset.mem_union_left _ ha
 
-theorem contractedSkeletonBinaryGenerators_card_le
+lemma contractedSkeletonBinaryGenerators_card_le
     {f g : Formula (Y ⊕ Z) F}
     (wf : ContractedSkeleton f) (wg : ContractedSkeleton g) :
     (contractedSkeletonBinaryGenerators wf wg).card ≤
@@ -25956,7 +25956,7 @@ theorem contractedSkeletonBinaryGenerators_card_le
     wf.generators.card + wg.generators.card + 4
   omega
 
-theorem contractedSkeletonBinaryGenerators_coeff_mem_left
+lemma contractedSkeletonBinaryGenerators_coeff_mem_left
     {f g : Formula (Y ⊕ Z) F}
     (wf : ContractedSkeleton f) (wg : ContractedSkeleton g)
     (α : Y →₀ ℕ) :
@@ -25986,7 +25986,7 @@ theorem contractedSkeletonBinaryGenerators_coeff_mem_left
     exact contractedSkeletonBinaryGenerators_parameter_mem wf wg
       (Finset.mem_insert_of_mem (Finset.mem_insert_self _ _))
 
-theorem contractedSkeletonBinaryGenerators_coeff_mem_right
+lemma contractedSkeletonBinaryGenerators_coeff_mem_right
     {f g : Formula (Y ⊕ Z) F}
     (wf : ContractedSkeleton f) (wg : ContractedSkeleton g)
     (α : Y →₀ ℕ) :
@@ -26210,7 +26210,7 @@ noncomputable def contractedSkeletonRootGenerators
   classical
   exact contractedSkeletonRootExtras w ∪ w.generators
 
-theorem contractedSkeletonRootGenerators_le
+lemma contractedSkeletonRootGenerators_le
     {f : Formula (Y ⊕ Z) F}
     (w : ContractedSkeleton f) :
     IntermediateField.adjoin F (w.generators : Set _) ≤
@@ -26225,7 +26225,7 @@ theorem contractedSkeletonRootGenerators_le
   unfold contractedSkeletonRootGenerators
   exact Finset.mem_union_right _ hx
 
-theorem contractedSkeletonRootGenerators_parameter_mem
+lemma contractedSkeletonRootGenerators_parameter_mem
     {f : Formula (Y ⊕ Z) F}
     (w : ContractedSkeleton f)
     {a : FractionRing (MvPolynomial Z F)}
@@ -26241,7 +26241,7 @@ theorem contractedSkeletonRootGenerators_parameter_mem
   unfold contractedSkeletonRootGenerators
   exact Finset.mem_union_left _ ha
 
-theorem contractedSkeletonRootGenerators_card_le
+lemma contractedSkeletonRootGenerators_card_le
     {f : Formula (Y ⊕ Z) F}
     (w : ContractedSkeleton f) (hmarked : 0 < yLeafCount f) :
     (contractedSkeletonRootGenerators w).card ≤
@@ -26257,7 +26257,7 @@ theorem contractedSkeletonRootGenerators_card_le
     4 * yLeafCount f - 2
   omega
 
-theorem contractedSkeletonRootGenerators_coeff_mem
+lemma contractedSkeletonRootGenerators_coeff_mem
     {f : Formula (Y ⊕ Z) F}
     (w : ContractedSkeleton f) (α : Y →₀ ℕ) :
     algebraMap (MvPolynomial Z F) (FractionRing (MvPolynomial Z F))
@@ -26287,7 +26287,7 @@ theorem contractedSkeletonRootGenerators_coeff_mem
     unfold contractedSkeletonRootExtras
     exact Finset.mem_insert_of_mem (Finset.mem_singleton_self _)
 
-theorem formula_skeleton_generators
+lemma formula_skeleton_generators
     (f : Formula (Y ⊕ Z) F) (hmarked : 0 < yLeafCount f) :
     ∃ s : Finset (FractionRing (MvPolynomial Z F)),
       s.card ≤ 4 * yLeafCount f - 2 ∧
@@ -26300,7 +26300,7 @@ theorem formula_skeleton_generators
     contractedSkeletonRootGenerators_card_le w hmarked, ?_⟩
   exact contractedSkeletonRootGenerators_coeff_mem w
 
-theorem formula_skeleton
+lemma formula_skeleton
     (f : Formula (Y ⊕ Z) F) (hmarked : 0 < yLeafCount f) :
     coefficientTranscendenceDegree (eval f) ≤
       ((4 * yLeafCount f - 2 : ℕ) : Cardinal) := by
@@ -26325,13 +26325,13 @@ noncomputable def matchingMarkedFinset {n : ℕ} {Y : Type u} [Fintype Y]
   classical
   exact Finset.univ.image d
 
-@[simp] theorem mem_matchingMarkedFinset {n : ℕ} {Y : Type u} [Fintype Y]
+@[simp] lemma mem_matchingMarkedFinset {n : ℕ} {Y : Type u} [Fintype Y]
     (d : Y ↪ Fin n × Fin n) (i : Fin n × Fin n) :
     i ∈ matchingMarkedFinset d ↔ ∃ y : Y, d y = i := by
   classical
   simp [matchingMarkedFinset]
 
-theorem matchingMarkedPermanent_pderiv_ne_zero
+lemma matchingMarkedPermanent_pderiv_ne_zero
     {n : ℕ} {Y : Type u} (d : Y ↪ Fin n × Fin n) (y : Y) :
     MvPolynomial.pderiv (.inl y) (matchingMarkedPermanent d) ≠ 0 := by
   have hrename := MvPolynomial.pderiv_rename
@@ -26368,7 +26368,7 @@ def rename (e : ι ≃ κ) : Formula ι R → Formula κ R
   | .sub f g => .sub (rename e f) (rename e g)
   | .mul f g => .mul (rename e f) (rename e g)
 
-theorem eval_rename [CommRing R] (e : ι ≃ κ) (f : Formula ι R) :
+lemma eval_rename [CommRing R] (e : ι ≃ κ) (f : Formula ι R) :
     eval (rename e f) = MvPolynomial.renameEquiv R e (eval f) := by
   induction f with
   | var i => simp [rename, eval, MvPolynomial.renameEquiv_apply]
@@ -26377,7 +26377,7 @@ theorem eval_rename [CommRing R] (e : ι ≃ κ) (f : Formula ι R) :
   | sub f g hf hg => simp [rename, eval, hf, hg]
   | mul f g hf hg => simp [rename, eval, hf, hg]
 
-theorem yLeafCount_rename_matchingVariableEquiv
+lemma yLeafCount_rename_matchingVariableEquiv
     {n : ℕ} {Y : Type u} [Fintype Y]
     (d : Y ↪ Fin n × Fin n) (f : Formula (Fin n × Fin n) R) :
     yLeafCount (rename (matchingVariableEquiv d).symm f) =
@@ -26409,7 +26409,7 @@ theorem yLeafCount_rename_matchingVariableEquiv
   | sub f g hf hg => simp [rename, yLeafCount, blockLeaves, hf, hg]
   | mul f g hf hg => simp [rename, yLeafCount, blockLeaves, hf, hg]
 
-theorem eval_rename_eq_matchingMarkedPermanent
+lemma eval_rename_eq_matchingMarkedPermanent
     {n : ℕ} {Y : Type u}
     (d : Y ↪ Fin n × Fin n) (f : Formula (Fin n × Fin n) ℂ)
     (hf : eval f = permanentPolynomial n) :
@@ -26438,7 +26438,7 @@ noncomputable def renameFractionEquiv [Field R] (e : ι ≃ κ) :
   IsFractionRing.ringEquivOfRingEquiv
     (MvPolynomial.renameEquiv R e).toRingEquiv
 
-@[simp] theorem renameFractionEquiv_algebraMap [Field R]
+@[simp] lemma renameFractionEquiv_algebraMap [Field R]
     (e : ι ≃ κ) (p : MvPolynomial ι R) :
     renameFractionEquiv e
         (algebraMap (MvPolynomial ι R)
@@ -26449,7 +26449,7 @@ noncomputable def renameFractionEquiv [Field R] (e : ι ≃ κ) :
   exact IsFractionRing.ringEquivOfRingEquiv_algebraMap
     (MvPolynomial.renameEquiv R e).toRingEquiv p
 
-theorem eval_rename [Field R] (e : ι ≃ κ)
+lemma eval_rename [Field R] (e : ι ≃ κ)
     (f : RationalFormula ι R) :
     eval (rename e f) = renameFractionEquiv e (eval f) := by
   induction f with
@@ -26464,7 +26464,7 @@ theorem eval_rename [Field R] (e : ι ≃ κ)
   | mul f g hf hg => simp [rename, eval, hf, hg]
   | div f g hf hg => simp [rename, eval, hf, hg, map_div₀]
 
-theorem valid_rename [Field R] (e : ι ≃ κ)
+lemma valid_rename [Field R] (e : ι ≃ κ)
     {f : RationalFormula ι R} (h : Valid f) :
     Valid (rename e f) := by
   induction h with
@@ -26480,7 +26480,7 @@ theorem valid_rename [Field R] (e : ι ≃ κ)
       apply (renameFractionEquiv e).injective
       simpa [eval_rename] using hzero
 
-theorem yLeafCount_rename_matchingVariableEquiv
+lemma yLeafCount_rename_matchingVariableEquiv
     {n : ℕ} {Y : Type u} [Fintype Y]
     (d : Y ↪ Fin n × Fin n) (f : RationalFormula (Fin n × Fin n) R) :
     yLeafCount (rename (matchingVariableEquiv d).symm f) =
@@ -26513,7 +26513,7 @@ theorem yLeafCount_rename_matchingVariableEquiv
   | mul f g hf hg => simp [rename, yLeafCount, blockLeaves, hf, hg]
   | div f g hf hg => simp [rename, yLeafCount, blockLeaves, hf, hg]
 
-theorem eval_rename_eq_matchingMarkedPermanent
+lemma eval_rename_eq_matchingMarkedPermanent
     {n : ℕ} {Y : Type u}
     (d : Y ↪ Fin n × Fin n)
     (f : RationalFormula (Fin n × Fin n) ℂ)
@@ -26529,7 +26529,7 @@ theorem eval_rename_eq_matchingMarkedPermanent
   rw [eval_rename, hf, renameFractionEquiv_algebraMap]
   rfl
 
-theorem yLeafCount_pos_of_eval_eq_matchingMarkedPermanent
+lemma yLeafCount_pos_of_eval_eq_matchingMarkedPermanent
     {n : ℕ} {Y : Type u} [Nonempty Y]
     (d : Y ↪ Fin n × Fin n)
     (f : RationalFormula (Y ⊕ matchingOutside d) ℂ)
@@ -26571,7 +26571,7 @@ theorem yLeafCount_pos_of_eval_eq_matchingMarkedPermanent
       using hderiv
   exact matchingMarkedPermanent_pderiv_ne_zero d y hmarked
 
-theorem blockLeaves_pos_of_eval_eq_permanent
+lemma blockLeaves_pos_of_eval_eq_permanent
     {n : ℕ} (f : RationalFormula (Fin n × Fin n) ℂ)
     (hf : eval f =
       algebraMap (MvPolynomial (Fin n × Fin n) ℂ)
@@ -26595,7 +26595,7 @@ theorem blockLeaves_pos_of_eval_eq_permanent
 
 end RationalFormula
 
-theorem four_mul_le_two_pow_pred (ell : ℕ) (hell : 6 ≤ ell) :
+lemma four_mul_le_two_pow_pred (ell : ℕ) (hell : 6 ≤ ell) :
     4 * ell ≤ 2 ^ (ell - 1) := by
   induction ell, hell using Nat.le_induction with
   | base => norm_num
@@ -26612,14 +26612,14 @@ theorem four_mul_le_two_pow_pred (ell : ℕ) (hell : 6 ≤ ell) :
               congr 1
               omega
 
-theorem five_le_clog_two {n : ℕ} (hn : 32 ≤ n) :
+lemma five_le_clog_two {n : ℕ} (hn : 32 ≤ n) :
     5 ≤ Nat.clog 2 n := by
   calc
     5 = Nat.clog 2 (2 ^ 5) :=
       (Nat.clog_pow 2 5 (by norm_num)).symm
     _ ≤ Nat.clog 2 n := Nat.clog_mono_right 2 (by simpa using hn)
 
-theorem four_mul_clog_two_lt_self {n : ℕ} (hn : 32 ≤ n) :
+lemma four_mul_clog_two_lt_self {n : ℕ} (hn : 32 ≤ n) :
     4 * Nat.clog 2 n < n := by
   have hfive := five_le_clog_two hn
   by_cases hfive_eq : Nat.clog 2 n = 5
@@ -26631,22 +26631,22 @@ theorem four_mul_clog_two_lt_self {n : ℕ} (hn : 32 ≤ n) :
           (x := n) (by omega))
     exact (four_mul_le_two_pow_pred (Nat.clog 2 n) hsix).trans_lt hpow
 
-theorem matching_block_size_le_half {n : ℕ} (hn : 32 ≤ n) :
+lemma matching_block_size_le_half {n : ℕ} (hn : 32 ≤ n) :
     2 * Nat.clog 2 n ≤ n / 2 := by
   apply (Nat.le_div_iff_mul_le (by norm_num : 0 < 2)).2
   have h := four_mul_clog_two_lt_self hn
   omega
 
-theorem matching_external_size_ge_block_add_one {n : ℕ} (hn : 32 ≤ n) :
+lemma matching_external_size_ge_block_add_one {n : ℕ} (hn : 32 ≤ n) :
     2 * Nat.clog 2 n + 1 ≤ n - 2 * Nat.clog 2 n := by
   have h := four_mul_clog_two_lt_self hn
   omega
 
-theorem matching_external_size_le_two_pow {n : ℕ} :
+lemma matching_external_size_le_two_pow {n : ℕ} :
     n - 2 * Nat.clog 2 n ≤ 2 ^ Nat.clog 2 n :=
   (Nat.sub_le n _).trans (Nat.le_pow_clog (by norm_num) n)
 
-theorem clog_two_cast_le_two_mul_logb {n : ℕ} (hn : 2 ≤ n) :
+lemma clog_two_cast_le_two_mul_logb {n : ℕ} (hn : 2 ≤ n) :
     (Nat.clog 2 n : ℝ) ≤ 2 * Real.logb 2 (n : ℝ) := by
   have hclog : 0 < Nat.clog 2 n :=
     Nat.clog_pos (by norm_num) (by omega)
@@ -26679,7 +26679,7 @@ theorem clog_two_cast_le_two_mul_logb {n : ℕ} (hn : 2 ≤ n) :
     exact_mod_cast hpred_nat
   linarith
 
-theorem fourth_power_logarithmic_lower_bound
+lemma fourth_power_logarithmic_lower_bound
     {n leaves c : ℕ} (hn : 32 ≤ n) (hc : 0 < c)
     (hbound : n ^ 4 ≤ c * (2 * Nat.clog 2 n) * leaves) :
     (n : ℝ) ^ 4 /
@@ -26707,7 +26707,7 @@ theorem fourth_power_logarithmic_lower_bound
     _ = (leaves : ℝ) *
         (4 * (c : ℝ) * Real.logb 2 (n : ℝ)) := by ring
 
-theorem divisionFree_logarithmic_lower_bound
+lemma divisionFree_logarithmic_lower_bound
     {n leaves : ℕ} (hn : 32 ≤ n)
     (hbound : n ^ 4 ≤ 32 * (2 * Nat.clog 2 n) * leaves) :
     (n : ℝ) ^ 4 / (128 * Real.logb 2 (n : ℝ)) ≤ (leaves : ℝ) := by
@@ -26715,7 +26715,7 @@ theorem divisionFree_logarithmic_lower_bound
     (by norm_num : 0 < 32) hbound using 1
   norm_num
 
-theorem rational_logarithmic_lower_bound
+lemma rational_logarithmic_lower_bound
     {n leaves : ℕ} (hn : 32 ≤ n)
     (hbound : n ^ 4 ≤ 48 * (2 * Nat.clog 2 n) * leaves) :
     (n : ℝ) ^ 4 / (192 * Real.logb 2 (n : ℝ)) ≤ (leaves : ℝ) := by
@@ -26723,7 +26723,7 @@ theorem rational_logarithmic_lower_bound
     (by norm_num : 0 < 48) hbound using 1
   norm_num
 
-theorem two_le_leaves_of_fourth_power_bound
+lemma two_le_leaves_of_fourth_power_bound
     {n leaves c : ℕ} (hn : 32 ≤ n) (hc : c ≤ 48)
     (hbound : n ^ 4 ≤ c * (2 * Nat.clog 2 n) * leaves) :
     2 ≤ leaves := by
@@ -26750,7 +26750,7 @@ theorem two_le_leaves_of_fourth_power_bound
       _ = n ^ 4 := by ring
   omega
 
-theorem divisionFree_internal_logarithmic_lower_bound
+lemma divisionFree_internal_logarithmic_lower_bound
     {n leaves gates : ℕ} (hn : 32 ≤ n)
     (htree : leaves = gates + 1)
     (hbound : n ^ 4 ≤ 32 * (2 * Nat.clog 2 n) * leaves) :
@@ -26769,7 +26769,7 @@ theorem divisionFree_internal_logarithmic_lower_bound
     (by norm_num : 0 < 64) hgate using 1
   norm_num
 
-theorem rational_internal_logarithmic_lower_bound
+lemma rational_internal_logarithmic_lower_bound
     {n leaves gates : ℕ} (hn : 32 ≤ n)
     (htree : leaves = gates + 1)
     (hbound : n ^ 4 ≤ 48 * (2 * Nat.clog 2 n) * leaves) :
@@ -26788,7 +26788,7 @@ theorem rational_internal_logarithmic_lower_bound
     (by norm_num : 0 < 96) hgate using 1
   norm_num
 
-theorem matchingPermanentJacobian_eq_weighted
+lemma matchingPermanentJacobian_eq_weighted
     {ell m : ℕ} (p q : Fin m → ℂ) :
     matchingPermanentJacobian (ell := ell) p q =
       matchingWeightedBivariateEvaluationMatrix p q
@@ -26833,7 +26833,7 @@ theorem matchingPermanentJacobian_eq_weighted
         (fun e : Fin m => matchingBitSubset ell (e : ℕ)) de ab :=
       matchingWeightedCrossBitPermutation_sum p q de ab
 
-theorem matchingPermanentJacobian_det_ne_zero
+lemma matchingPermanentJacobian_det_ne_zero
     {ell m : ℕ} (p q : Fin m → ℂ)
     (hp : Function.Injective p) (hq : Function.Injective q)
     (hm : m ≤ 2 ^ ell) (hroom : 2 * ell < m) :
@@ -26842,7 +26842,7 @@ theorem matchingPermanentJacobian_det_ne_zero
   exact matchingWeightedBivariateBitEvaluationMatrix_det_ne_zero
     p q hp hq hm hroom
 
-theorem matchingMarkedPermanent_bit_coefficients_algebraicIndependent
+lemma matchingMarkedPermanent_bit_coefficients_algebraicIndependent
     {ell m : ℕ} (p q : Fin m → ℂ)
     (hp : Function.Injective p) (hq : Function.Injective q)
     (hm : m ≤ 2 ^ ell) (hroom : 2 * ell < m) :
@@ -26866,14 +26866,14 @@ theorem matchingMarkedPermanent_bit_coefficients_algebraicIndependent
 noncomputable def matchingCanonicalComplexPoints (m : ℕ) : Fin m → ℂ :=
   fun i => (i.1 : ℂ)
 
-theorem matchingCanonicalComplexPoints_injective (m : ℕ) :
+lemma matchingCanonicalComplexPoints_injective (m : ℕ) :
     Function.Injective (matchingCanonicalComplexPoints m) := by
   intro a b h
   change (a.1 : ℂ) = (b.1 : ℂ) at h
   apply Fin.ext
   exact_mod_cast h
 
-theorem matchingMarkedPermanent_bitCoefficient_algebraicIndependent
+lemma matchingMarkedPermanent_bitCoefficient_algebraicIndependent
     {ell m : ℕ} (hm : m ≤ 2 ^ ell) (hroom : 2 * ell < m) :
     AlgebraicIndependent ℂ
       (fun de : Fin m × Fin m =>
@@ -26895,7 +26895,7 @@ noncomputable def matchingEmbeddingPermutation
     (Equiv.Perm.exists_extending_pair
       (f : α → β) (g : α → β) f.injective g.injective)
 
-@[simp] theorem matchingEmbeddingPermutation_apply
+@[simp] lemma matchingEmbeddingPermutation_apply
     {α : Type u} {β : Type v} [Fintype α] [Fintype β]
     [DecidableEq β] (f g : α ↪ β) (a : α) :
     matchingEmbeddingPermutation f g (f a) = g a :=
@@ -26903,7 +26903,7 @@ noncomputable def matchingEmbeddingPermutation
     (Equiv.Perm.exists_extending_pair
       (f : α → β) (g : α → β) f.injective g.injective) a
 
-theorem permanentPolynomial_rename_prodCongr
+lemma permanentPolynomial_rename_prodCongr
     {n : ℕ} (r c : Equiv.Perm (Fin n)) :
     MvPolynomial.renameEquiv ℂ (Equiv.prodCongr r c)
         (permanentPolynomial n) = permanentPolynomial n := by
@@ -26942,7 +26942,7 @@ noncomputable def matchingOutsideRelabelEquiv
     refine ⟨y, e.injective ?_⟩
     exact (he y).trans hy
 
-@[simp] theorem matchingOutsideRelabelEquiv_apply_val
+@[simp] lemma matchingOutsideRelabelEquiv_apply_val
     {n : ℕ} {Y : Type u}
     (d₀ d : Y ↪ Fin n × Fin n)
     (e : Equiv.Perm (Fin n × Fin n))
@@ -26951,7 +26951,7 @@ noncomputable def matchingOutsideRelabelEquiv
     (matchingOutsideRelabelEquiv d₀ d e he z).1 = e z.1 := by
   rfl
 
-theorem coefficientPolynomial_rename_outside
+lemma coefficientPolynomial_rename_outside
     {Y : Type u} {Z : Type v} {W : Type w}
     {F : Type*} [Field F]
     (e : Z ≃ W) (f : MvPolynomial (Y ⊕ Z) F)
@@ -26991,7 +26991,7 @@ theorem coefficientPolynomial_rename_outside
   rw [MvPolynomial.coeff_map]
   rfl
 
-theorem matchingVariableEquiv_relabel_commutes
+lemma matchingVariableEquiv_relabel_commutes
     {n : ℕ} {Y : Type u}
     (d₀ d : Y ↪ Fin n × Fin n)
     (e : Equiv.Perm (Fin n × Fin n))
@@ -27017,7 +27017,7 @@ theorem matchingVariableEquiv_relabel_commutes
   | inr w =>
       simp [← hx, matchingOutsideRelabelEquiv_apply_val]
 
-theorem matchingMarkedPermanent_rename_prodCongr
+lemma matchingMarkedPermanent_rename_prodCongr
     {n : ℕ} {Y : Type u}
     (d₀ d : Y ↪ Fin n × Fin n)
     (r c : Equiv.Perm (Fin n))
@@ -27036,7 +27036,7 @@ theorem matchingMarkedPermanent_rename_prodCongr
     ← MvPolynomial.renameEquiv_trans, AlgEquiv.trans_apply,
     permanentPolynomial_rename_prodCongr]
 
-theorem matchingMarkedPermanent_algebraicIndependent_of_prodCongr
+lemma matchingMarkedPermanent_algebraicIndependent_of_prodCongr
     {n : ℕ} {Y : Type u} {ι : Type v}
     (d₀ d : Y ↪ Fin n × Fin n)
     (r c : Equiv.Perm (Fin n))
@@ -27071,7 +27071,7 @@ theorem matchingMarkedPermanent_algebraicIndependent_of_prodCongr
     from funext hcoeff]
   exact hmap
 
-theorem exists_matchingDiagonal_prodCongr
+lemma exists_matchingDiagonal_prodCongr
     {ell m : ℕ}
     (d : (Fin ell ⊕ Fin ell) ↪
       Fin ((ell + ell) + m) × Fin ((ell + ell) + m))
@@ -27110,7 +27110,7 @@ theorem exists_matchingDiagonal_prodCongr
   · change matchingEmbeddingPermutation c₀ cd (c₀ y) = cd y
     exact matchingEmbeddingPermutation_apply c₀ cd y
 
-theorem matchingMarkedPermanent_square_of_matching_of_algebraicIndependent
+lemma matchingMarkedPermanent_square_of_matching_of_algebraicIndependent
     {n ell m : ℕ} (hn : n = (ell + ell) + m)
     (d : (Fin ell ⊕ Fin ell) ↪ Fin n × Fin n)
     (hrows : Function.Injective (fun y => (d y).1))
@@ -27148,7 +27148,7 @@ noncomputable def matchingCyclicDiagonalEmbedding
   inj' := fun _ _ h =>
     (matchingCyclicBlockIndexEquiv hk t j).injective (Subtype.ext h)
 
-theorem matchingMarkedFinset_matchingCyclicDiagonalEmbedding
+lemma matchingMarkedFinset_matchingCyclicDiagonalEmbedding
     {n ell : ℕ} (hk : 0 < 2 * ell)
     (t : Fin n) (j : Fin (n / (2 * ell))) :
     matchingMarkedFinset (matchingCyclicDiagonalEmbedding hk t j) =
@@ -27168,7 +27168,7 @@ theorem matchingMarkedFinset_matchingCyclicDiagonalEmbedding
     change (matchingCyclicBlockIndexEquiv hk t j y).1 = i
     exact congrArg Subtype.val hy
 
-theorem matchingCyclicDiagonalEmbedding_fst_injective
+lemma matchingCyclicDiagonalEmbedding_fst_injective
     {n ell : ℕ} (hk : 0 < 2 * ell)
     (t : Fin n) (j : Fin (n / (2 * ell))) :
     Function.Injective
@@ -27179,7 +27179,7 @@ theorem matchingCyclicDiagonalEmbedding_fst_injective
     (cyclicMatchingBlock_fst_injective hk t j).comp
       (matchingCyclicBlockIndexEquiv hk t j).injective
 
-theorem matchingCyclicDiagonalEmbedding_snd_injective
+lemma matchingCyclicDiagonalEmbedding_snd_injective
     {n ell : ℕ} (hk : 0 < 2 * ell)
     (t : Fin n) (j : Fin (n / (2 * ell))) :
     Function.Injective
@@ -27192,7 +27192,7 @@ theorem matchingCyclicDiagonalEmbedding_snd_injective
 
 namespace Formula
 
-theorem matching_block_four_leaves_of_coefficientTranscendenceDegree
+lemma matching_block_four_leaves_of_coefficientTranscendenceDegree
     {n m : ℕ} {Y : Type*} [Fintype Y] [Nonempty Y]
     (d : Y ↪ Fin n × Fin n)
     (f : Formula (Fin n × Fin n) ℂ)
@@ -27224,7 +27224,7 @@ theorem matching_block_four_leaves_of_coefficientTranscendenceDegree
     exact_mod_cast hcard
   omega
 
-theorem cyclicMatchingBlock_fourth_power_bound_of_coefficientTranscendenceDegree
+lemma cyclicMatchingBlock_fourth_power_bound_of_coefficientTranscendenceDegree
     {n ell m : ℕ}
     (hk : 0 < 2 * ell) (hkn : 2 * ell ≤ n) (hhalf : n ≤ 2 * m)
     (f : Formula (Fin n × Fin n) ℂ)
@@ -27246,7 +27246,7 @@ theorem cyclicMatchingBlock_fourth_power_bound_of_coefficientTranscendenceDegree
   simpa only [matchingMarkedFinset_matchingCyclicDiagonalEmbedding]
     using h
 
-theorem permanent_size_bounds_of_fourth_power
+lemma permanent_size_bounds_of_fourth_power
     {n : ℕ} (hn : 32 ≤ n)
     (f : Formula (Fin n × Fin n) ℂ)
     (hfour : n ^ 4 ≤
@@ -27279,7 +27279,7 @@ end Formula
 
 namespace RationalFormula
 
-theorem matching_block_six_leaves_of_coefficientTranscendenceDegree
+lemma matching_block_six_leaves_of_coefficientTranscendenceDegree
     {n m : ℕ} {Y : Type*} [Fintype Y] [Nonempty Y]
     (d : Y ↪ Fin n × Fin n)
     (f : RationalFormula (Fin n × Fin n) ℂ)
@@ -27322,7 +27322,7 @@ theorem matching_block_six_leaves_of_coefficientTranscendenceDegree
     exact_mod_cast hcard
   omega
 
-theorem cyclicMatchingBlock_fourth_power_bound_of_coefficientTranscendenceDegree
+lemma cyclicMatchingBlock_fourth_power_bound_of_coefficientTranscendenceDegree
     {n ell m : ℕ}
     (hk : 0 < 2 * ell) (hkn : 2 * ell ≤ n) (hhalf : n ≤ 2 * m)
     (f : RationalFormula (Fin n × Fin n) ℂ)
@@ -27348,7 +27348,7 @@ theorem cyclicMatchingBlock_fourth_power_bound_of_coefficientTranscendenceDegree
   simpa only [matchingMarkedFinset_matchingCyclicDiagonalEmbedding]
     using h
 
-theorem permanent_size_bounds_of_fourth_power
+lemma permanent_size_bounds_of_fourth_power
     {n : ℕ} (hn : 32 ≤ n)
     (f : RationalFormula (Fin n × Fin n) ℂ)
     (hfour : n ^ 4 ≤
@@ -27379,7 +27379,7 @@ theorem permanent_size_bounds_of_fourth_power
 
 end RationalFormula
 
-theorem matchingMarkedPermanent_coefficientTranscendenceDegree_ge_square_of_matching
+lemma matchingMarkedPermanent_coefficientTranscendenceDegree_ge_square_of_matching
     {n ell m : ℕ} (hn : n = (ell + ell) + m)
     (d : (Fin ell ⊕ Fin ell) ↪ Fin n × Fin n)
     (hrows : Function.Injective (fun y => (d y).1))
@@ -27391,7 +27391,7 @@ theorem matchingMarkedPermanent_coefficientTranscendenceDegree_ge_square_of_matc
     hn d hrows hcols
     (matchingMarkedPermanent_bitCoefficient_algebraicIndependent hm hroom)
 
-theorem matchingCyclicBlock_coefficientTranscendenceDegree_ge_square
+lemma matchingCyclicBlock_coefficientTranscendenceDegree_ge_square
     {n ell m : ℕ}
     (hk : 0 < 2 * ell) (hn : n = (ell + ell) + m)
     (hm : m ≤ 2 ^ ell) (hroom : 2 * ell < m)
@@ -27404,7 +27404,7 @@ theorem matchingCyclicBlock_coefficientTranscendenceDegree_ge_square
     (matchingCyclicDiagonalEmbedding_snd_injective hk t j)
     hm hroom
 
-theorem permanent_divisionFree_formula_fourth_power_lower_bound
+lemma permanent_divisionFree_formula_fourth_power_lower_bound
     {n : ℕ} (hn : 32 ≤ n)
     (f : Formula (Fin n × Fin n) ℂ)
     (hf : Formula.eval f = permanentPolynomial n) :
@@ -27445,7 +27445,7 @@ theorem permanent_divisionFree_formula_fourth_power_lower_bound
       hk hkn hhalf f hf hcertificate
   simpa [ell] using hfour
 
-theorem permanent_rational_formula_fourth_power_lower_bound
+lemma permanent_rational_formula_fourth_power_lower_bound
     {n : ℕ} (hn : 32 ≤ n)
     (f : RationalFormula (Fin n × Fin n) ℂ)
     (hvalid : RationalFormula.Valid f)
@@ -27491,7 +27491,7 @@ theorem permanent_rational_formula_fourth_power_lower_bound
       hk hkn hhalf f hvalid hf hcertificate
   simpa [ell] using hfour
 
-theorem permanent_divisionFree_formula_lower_bound
+lemma permanent_divisionFree_formula_lower_bound
     {n : ℕ} (hn : 32 ≤ n)
     (f : Formula (Fin n × Fin n) ℂ)
     (hf : Formula.eval f = permanentPolynomial n) :
@@ -27506,7 +27506,7 @@ theorem permanent_divisionFree_formula_lower_bound
   Formula.permanent_size_bounds_of_fourth_power hn f
     (permanent_divisionFree_formula_fourth_power_lower_bound hn f hf)
 
-theorem permanent_rational_formula_lower_bound
+lemma permanent_rational_formula_lower_bound
     {n : ℕ} (hn : 32 ≤ n)
     (f : RationalFormula (Fin n × Fin n) ℂ)
     (hvalid : RationalFormula.Valid f)

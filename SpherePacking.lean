@@ -58,7 +58,7 @@ structure Admissible (d : ℕ) where
 def unitBallVolume (d : ℕ) : ℝ :=
   Real.pi ^ ((d : ℝ) / 2) / Real.Gamma ((d : ℝ) / 2 + 1)
 
-theorem unitBallVolume_pos (d : ℕ) : 0 < unitBallVolume d := by
+lemma unitBallVolume_pos (d : ℕ) : 0 < unitBallVolume d := by
   unfold unitBallVolume
   exact div_pos (Real.rpow_pos_of_pos Real.pi_pos _)
     (Real.Gamma_pos_of_pos (by positivity))
@@ -73,7 +73,7 @@ def quotientSet (d : ℕ) : Set ℝ :=
 def linearProgram (d : ℕ) : ℝ :=
   unitBallVolume d / (2 : ℝ) ^ d * sInf (quotientSet d)
 
-theorem geometricFactor_pos (d : ℕ) :
+lemma geometricFactor_pos (d : ℕ) :
     0 < unitBallVolume d / (2 : ℝ) ^ d := by
   exact div_pos (unitBallVolume_pos d) (by positivity)
 
@@ -91,10 +91,10 @@ def criticalPackingBase : ℝ :=
 def criticalBinaryExponent : ℝ :=
   (1 / 2 : ℝ) * Real.logb 2 (2 * Real.pi / Real.exp 1)
 
-theorem criticalRadius_pos : 0 < criticalRadius := by
+lemma criticalRadius_pos : 0 < criticalRadius := by
   exact inv_pos.mpr Real.pi_pos
 
-theorem criticalPackingBase_pos : 0 < criticalPackingBase := by
+lemma criticalPackingBase_pos : 0 < criticalPackingBase := by
   unfold criticalPackingBase
   positivity
 
@@ -132,13 +132,13 @@ def plusPolynomial (ε : ℝ) (z : ℂ) : ℂ :=
 def minusPolynomial (ε : ℝ) (z : ℂ) : ℂ :=
   1 + z ^ 2 + (beta ε : ℂ) - Complex.I * z * (1 + z ^ 2)
 
-theorem shellWeight_pos (ε : ℝ) : 0 < shellWeight ε := by
+lemma shellWeight_pos (ε : ℝ) : 0 < shellWeight ε := by
   exact Real.exp_pos _
 
-theorem beta_pos {ε : ℝ} (hε : 0 < ε) : 0 < beta ε := by
+lemma beta_pos {ε : ℝ} (hε : 0 < ε) : 0 < beta ε := by
   exact div_pos hε (by norm_num)
 
-theorem plusPolynomial_imaginary (ε u : ℝ) :
+lemma plusPolynomial_imaginary (ε u : ℝ) :
     plusPolynomial ε (Complex.I * (u : ℂ)) =
       ((beta ε + (1 - u) ^ 2 * (1 + u) : ℝ) : ℂ) := by
   push_cast
@@ -146,7 +146,7 @@ theorem plusPolynomial_imaginary (ε u : ℝ) :
   ring_nf
   simp [Complex.I_sq]; ring
 
-theorem minusPolynomial_imaginary (ε u : ℝ) :
+lemma minusPolynomial_imaginary (ε u : ℝ) :
     minusPolynomial ε (Complex.I * (u : ℂ)) =
       ((beta ε + (1 - u) * (1 + u) ^ 2 : ℝ) : ℂ) := by
   push_cast
@@ -154,7 +154,7 @@ theorem minusPolynomial_imaginary (ε u : ℝ) :
   ring_nf
   simp [Complex.I_sq]; ring
 
-theorem plusPolynomial_imaginary_re_pos {ε u : ℝ}
+lemma plusPolynomial_imaginary_re_pos {ε u : ℝ}
     (hε : 0 < ε) (hu : -1 < u) :
     0 < (plusPolynomial ε (Complex.I * (u : ℂ))).re := by
   have hs : 0 ≤ (1 - u) ^ 2 * (1 + u) :=
@@ -162,7 +162,7 @@ theorem plusPolynomial_imaginary_re_pos {ε u : ℝ}
   rw [plusPolynomial_imaginary, Complex.ofReal_re]
   exact add_pos_of_pos_of_nonneg (beta_pos hε) hs
 
-theorem minusPolynomial_imaginary_re_neg {ε u : ℝ}
+lemma minusPolynomial_imaginary_re_neg {ε u : ℝ}
     (hε : 0 < ε) (hu : 1 + ε / 4 ≤ u) :
     (minusPolynomial ε (Complex.I * (u : ℂ))).re < 0 := by
   rw [minusPolynomial_imaginary, Complex.ofReal_re]
@@ -188,7 +188,7 @@ open scoped FourierTransform
 def mellinFrequency (ℓ : ℝ) (profile : ℝ → ℂ) (t : ℝ) : ℂ :=
   mellin profile ((ℓ : ℂ) - Complex.I * (t : ℂ))
 
-theorem mellinFrequency_eq_fourier
+lemma mellinFrequency_eq_fourier
     (ℓ : ℝ) (profile : ℝ → ℂ) (t : ℝ) :
     mellinFrequency ℓ profile t =
       (𝓕 (fun u : ℝ =>
@@ -205,16 +205,16 @@ def mellinMultiplier (ℓ t : ℝ) : ℂ :=
     Complex.Gamma (((ℓ : ℂ) - Complex.I * (t : ℂ)) / 2) /
     Complex.Gamma (((ℓ : ℂ) + Complex.I * (t : ℂ)) / 2)
 
-theorem mellinDenominator_re_pos {ℓ : ℝ} (hℓ : 0 < ℓ) (t : ℝ) :
+lemma mellinDenominator_re_pos {ℓ : ℝ} (hℓ : 0 < ℓ) (t : ℝ) :
     0 < (((ℓ : ℂ) + Complex.I * (t : ℂ)) / 2).re := by
   simpa using! (half_pos hℓ)
 
-theorem mellinMultiplier_denominator_ne_zero
+lemma mellinMultiplier_denominator_ne_zero
     {ℓ : ℝ} (hℓ : 0 < ℓ) (t : ℝ) :
     Complex.Gamma (((ℓ : ℂ) + Complex.I * (t : ℂ)) / 2) ≠ 0 :=
   Complex.Gamma_ne_zero_of_re_pos (mellinDenominator_re_pos hℓ t)
 
-theorem gamma_add_nat_eq_product (z : ℂ)
+lemma gamma_add_nat_eq_product (z : ℂ)
     (hz : ∀ j : ℕ, z + (j : ℂ) ≠ 0) (k : ℕ) :
     Complex.Gamma (z + (k : ℂ)) =
       Complex.Gamma z * ∏ j ∈ Finset.range k, (z + (j : ℂ)) := by
@@ -226,7 +226,7 @@ theorem gamma_add_nat_eq_product (z : ℂ)
       Finset.prod_range_succ]
     ring
 
-theorem integer_gamma_product (k : ℕ) {y : ℝ} (hy : y ≠ 0) :
+lemma integer_gamma_product (k : ℕ) {y : ℝ} (hy : y ≠ 0) :
     Complex.Gamma ((k : ℂ) + Complex.I * (y : ℂ) / 2) =
       Complex.Gamma (Complex.I * (y : ℂ) / 2) *
         ∏ j ∈ Finset.range k,
@@ -240,7 +240,7 @@ theorem integer_gamma_product (k : ℕ) {y : ℝ} (hy : y ≠ 0) :
     exact hy (by linarith)
   simpa [z, add_comm] using! gamma_add_nat_eq_product z hz k
 
-theorem half_integer_gamma_product (k : ℕ) (y : ℝ) :
+lemma half_integer_gamma_product (k : ℕ) (y : ℝ) :
     Complex.Gamma
         ((k : ℂ) + (1 / 2 : ℂ) + Complex.I * (y : ℂ) / 2) =
       Complex.Gamma ((1 / 2 : ℂ) + Complex.I * (y : ℂ) / 2) *
@@ -267,12 +267,12 @@ open scoped FourierTransform SchwartzMap
 def IsEven {d : ℕ} (f : TestFunction d) : Prop :=
   ∀ x : Euclidean d, f (-x) = f x
 
-theorem IsRadial.even {d : ℕ} {f : TestFunction d}
+lemma IsRadial.even {d : ℕ} {f : TestFunction d}
     (hf : IsRadial f) : IsEven f := by
   intro x
   exact hf (-x) x (by simp)
 
-theorem fourierInv_apply_zero {d : ℕ} (f : TestFunction d) :
+lemma fourierInv_apply_zero {d : ℕ} (f : TestFunction d) :
     (𝓕⁻ f : TestFunction d) (0 : Euclidean d) =
       ∫ x : Euclidean d, f x := by
   calc
@@ -283,7 +283,7 @@ theorem fourierInv_apply_zero {d : ℕ} (f : TestFunction d) :
       rw [Real.fourierInv_eq]
       simp
 
-theorem admissible_zero_pos {d : ℕ} (f : Admissible d) :
+lemma admissible_zero_pos {d : ℕ} (f : Admissible d) :
     0 < (f.function (0 : Euclidean d)).re := by
   have hpositive : 0 < ∫ x : Euclidean d, ((𝓕 f.function) x).re := by
     exact integral_pos_of_integrable_nonneg_nonzero
@@ -304,26 +304,26 @@ theorem admissible_zero_pos {d : ℕ} (f : Admissible d) :
     _ = (f.function (0 : Euclidean d)).re :=
       congrArg Complex.re hinversion
 
-theorem quotient_pos {d : ℕ} (f : Admissible d) : 0 < quotient f := by
+lemma quotient_pos {d : ℕ} (f : Admissible d) : 0 < quotient f := by
   exact div_pos (admissible_zero_pos f) f.fourier_zero_pos
 
-theorem quotientSet_bddBelow (d : ℕ) : BddBelow (quotientSet d) := by
+lemma quotientSet_bddBelow (d : ℕ) : BddBelow (quotientSet d) := by
   refine ⟨0, ?_⟩
   rintro y ⟨f, rfl⟩
   exact (quotient_pos f).le
 
-theorem normalizedCost_nonneg {d : ℕ} (f : Admissible d) :
+lemma normalizedCost_nonneg {d : ℕ} (f : Admissible d) :
     0 ≤ normalizedCost f := by
   exact div_nonneg (Real.rpow_nonneg (quotient_pos f).le _)
     (Real.sqrt_nonneg _)
 
-theorem normalizedCostSet_bddBelow (d : ℕ) :
+lemma normalizedCostSet_bddBelow (d : ℕ) :
     BddBelow (Set.range (normalizedCost (d := d))) := by
   refine ⟨0, ?_⟩
   rintro y ⟨f, rfl⟩
   exact normalizedCost_nonneg f
 
-theorem fourier_sq_apply {d : ℕ} (f : TestFunction d) (x : Euclidean d) :
+lemma fourier_sq_apply {d : ℕ} (f : TestFunction d) (x : Euclidean d) :
     ((𝓕 (𝓕 f) : TestFunction d) x) = f (-x) := by
   have hinv := congrArg (fun g : TestFunction d => g (-x))
     (show (𝓕⁻ (𝓕 f) : TestFunction d) = f from
@@ -342,7 +342,7 @@ theorem fourier_sq_apply {d : ℕ} (f : TestFunction d) (x : Euclidean d) :
         (congrFun (SchwartzMap.fourier_coe (𝓕 f)) x).symm
   exact hchange ▸ hinv
 
-theorem fourier_sq_of_radial {d : ℕ} (f : TestFunction d)
+lemma fourier_sq_of_radial {d : ℕ} (f : TestFunction d)
     (hf : IsRadial f) : (𝓕 (𝓕 f) : TestFunction d) = f := by
   ext x
   rw [fourier_sq_apply]
@@ -351,20 +351,20 @@ theorem fourier_sq_of_radial {d : ℕ} (f : TestFunction d)
 def antiFourierPart {d : ℕ} (f : TestFunction d) : TestFunction d :=
   𝓕 f - f
 
-theorem fourier_antiFourierPart {d : ℕ} (f : TestFunction d)
+lemma fourier_antiFourierPart {d : ℕ} (f : TestFunction d)
     (hf : IsRadial f) :
     (𝓕 (antiFourierPart f) : TestFunction d) = -antiFourierPart f := by
   rw [antiFourierPart, sub_eq_add_neg, FourierTransform.fourier_add,
     FourierTransform.fourier_neg, fourier_sq_of_radial f hf]
   simp
 
-theorem antiFourierPart_zero {d : ℕ} (f : TestFunction d)
+lemma antiFourierPart_zero {d : ℕ} (f : TestFunction d)
     (hbalance : (𝓕 f : TestFunction d) (0 : Euclidean d) = f 0) :
     antiFourierPart f (0 : Euclidean d) = 0 := by
   change (𝓕 f : TestFunction d) 0 - f 0 = 0
   exact sub_eq_zero.mpr hbalance
 
-theorem antiFourierPart_nonneg_of_signs {d : ℕ}
+lemma antiFourierPart_nonneg_of_signs {d : ℕ}
     (f : TestFunction d) (R : ℝ)
     (hfourier : ∀ x : Euclidean d, 0 ≤ ((𝓕 f) x).re)
     (houtside : ∀ x : Euclidean d, R ≤ ‖x‖ → (f x).re ≤ 0)
@@ -399,7 +399,7 @@ def dilationEquiv (d : ℕ) (a : ℝ) (ha : a ≠ 0) :
     Euclidean d ≃L[ℝ] Euclidean d :=
   (LinearEquiv.smulOfNeZero ℝ (Euclidean d) a ha).toContinuousLinearEquiv
 
-@[simp] theorem dilationEquiv_apply (d : ℕ) (a : ℝ) (ha : a ≠ 0)
+@[simp] lemma dilationEquiv_apply (d : ℕ) (a : ℝ) (ha : a ≠ 0)
     (x : Euclidean d) : dilationEquiv d a ha x = a • x := by
   rfl
 
@@ -408,30 +408,30 @@ def dilate {d : ℕ} (f : TestFunction d) (a : ℝ) (ha : 0 < a) :
   SchwartzMap.compCLMOfContinuousLinearEquiv ℂ
     (dilationEquiv d a ha.ne') f
 
-@[simp] theorem dilate_apply {d : ℕ} (f : TestFunction d)
+@[simp] lemma dilate_apply {d : ℕ} (f : TestFunction d)
     (a : ℝ) (ha : 0 < a) (x : Euclidean d) :
     dilate f a ha x = f (a • x) := by
   rfl
 
-@[simp] theorem dilate_zero {d : ℕ} (f : TestFunction d)
+@[simp] lemma dilate_zero {d : ℕ} (f : TestFunction d)
     (a : ℝ) (ha : 0 < a) :
     dilate f a ha (0 : Euclidean d) = f 0 := by
   simp
 
-theorem IsRealValued.dilate {d : ℕ} {f : TestFunction d}
+lemma IsRealValued.dilate {d : ℕ} {f : TestFunction d}
     (hf : IsRealValued f) (a : ℝ) (ha : 0 < a) :
     IsRealValued (dilate f a ha) := by
   intro x
   exact hf (a • x)
 
-theorem IsRadial.dilate {d : ℕ} {f : TestFunction d}
+lemma IsRadial.dilate {d : ℕ} {f : TestFunction d}
     (hf : IsRadial f) (a : ℝ) (ha : 0 < a) :
     IsRadial (dilate f a ha) := by
   intro x y hxy
   apply hf
   simp [norm_smul, hxy]
 
-theorem fourier_dilate_apply {d : ℕ} (f : TestFunction d)
+lemma fourier_dilate_apply {d : ℕ} (f : TestFunction d)
     (a : ℝ) (ha : 0 < a) (ξ : Euclidean d) :
     ((𝓕 (dilate f a ha) : TestFunction d) ξ) =
       (a ^ d)⁻¹ • ((𝓕 f : TestFunction d) (a⁻¹ • ξ)) := by
@@ -476,7 +476,7 @@ theorem fourier_dilate_apply {d : ℕ} (f : TestFunction d)
       rw [← Real.fourier_eq']
       rw [SchwartzMap.fourier_coe]
 
-theorem fourier_dilate_zero {d : ℕ} (f : TestFunction d)
+lemma fourier_dilate_zero {d : ℕ} (f : TestFunction d)
     (a : ℝ) (ha : 0 < a) :
     ((𝓕 (dilate f a ha) : TestFunction d) (0 : Euclidean d)) =
       (a ^ d)⁻¹ • ((𝓕 f : TestFunction d) (0 : Euclidean d)) := by
@@ -486,13 +486,13 @@ def balancingScale {d : ℕ} (f : Admissible d) : ℝ :=
   (((𝓕 f.function : TestFunction d) (0 : Euclidean d)).re /
       (f.function (0 : Euclidean d)).re) ^ ((d : ℝ)⁻¹)
 
-theorem balancingScale_pos {d : ℕ} (f : Admissible d) :
+lemma balancingScale_pos {d : ℕ} (f : Admissible d) :
     0 < balancingScale f := by
   unfold balancingScale
   exact Real.rpow_pos_of_pos
     (div_pos f.fourier_zero_pos (admissible_zero_pos f)) _
 
-theorem balancingScale_pow {d : ℕ} (f : Admissible d) (hd : 0 < d) :
+lemma balancingScale_pow {d : ℕ} (f : Admissible d) (hd : 0 < d) :
     balancingScale f ^ d =
       ((𝓕 f.function : TestFunction d) (0 : Euclidean d)).re /
         (f.function (0 : Euclidean d)).re := by
@@ -501,14 +501,14 @@ theorem balancingScale_pow {d : ℕ} (f : Admissible d) (hd : 0 < d) :
     (div_pos f.fourier_zero_pos (admissible_zero_pos f)).le
     (Nat.ne_of_gt hd)
 
-theorem balancingScale_inv_eq_quotient_rpow {d : ℕ} (f : Admissible d) :
+lemma balancingScale_inv_eq_quotient_rpow {d : ℕ} (f : Admissible d) :
     (balancingScale f)⁻¹ = quotient f ^ ((d : ℝ)⁻¹) := by
   unfold balancingScale quotient
   rw [← Real.inv_rpow
     (div_pos f.fourier_zero_pos (admissible_zero_pos f)).le]
   rw [inv_div]
 
-theorem balancingScale_inv_eq_normalizedCost_mul_sqrt {d : ℕ}
+lemma balancingScale_inv_eq_normalizedCost_mul_sqrt {d : ℕ}
     (f : Admissible d) (hd : 0 < d) :
     (balancingScale f)⁻¹ = normalizedCost f * Real.sqrt (d : ℝ) := by
   rw [balancingScale_inv_eq_quotient_rpow]
@@ -520,20 +520,20 @@ theorem balancingScale_inv_eq_normalizedCost_mul_sqrt {d : ℕ}
 def balancedFunction {d : ℕ} (f : Admissible d) : TestFunction d :=
   dilate f.function (balancingScale f) (balancingScale_pos f)
 
-@[simp] theorem balancedFunction_apply {d : ℕ} (f : Admissible d)
+@[simp] lemma balancedFunction_apply {d : ℕ} (f : Admissible d)
     (x : Euclidean d) :
     balancedFunction f x = f.function (balancingScale f • x) := by
   rfl
 
-theorem balancedFunction_real {d : ℕ} (f : Admissible d) :
+lemma balancedFunction_real {d : ℕ} (f : Admissible d) :
     IsRealValued (balancedFunction f) :=
   f.real.dilate (balancingScale f) (balancingScale_pos f)
 
-theorem balancedFunction_radial {d : ℕ} (f : Admissible d) :
+lemma balancedFunction_radial {d : ℕ} (f : Admissible d) :
     IsRadial (balancedFunction f) :=
   f.radial.dilate (balancingScale f) (balancingScale_pos f)
 
-theorem balancedFunction_fourier_real {d : ℕ} (f : Admissible d) :
+lemma balancedFunction_fourier_real {d : ℕ} (f : Admissible d) :
     IsRealValued (𝓕 (balancedFunction f) : TestFunction d) := by
   intro ξ
   unfold balancedFunction
@@ -541,7 +541,7 @@ theorem balancedFunction_fourier_real {d : ℕ} (f : Admissible d) :
     f.fourier_real ((balancingScale f)⁻¹ • ξ)]
   simp
 
-theorem balancedFunction_fourier_nonneg {d : ℕ} (f : Admissible d)
+lemma balancedFunction_fourier_nonneg {d : ℕ} (f : Admissible d)
     (ξ : Euclidean d) :
     0 ≤ ((𝓕 (balancedFunction f) : TestFunction d) ξ).re := by
   unfold balancedFunction
@@ -551,7 +551,7 @@ theorem balancedFunction_fourier_nonneg {d : ℕ} (f : Admissible d)
       (inv_nonneg.mpr (pow_nonneg (balancingScale_pos f).le d))
       (f.fourier_nonneg ((balancingScale f)⁻¹ • ξ))
 
-theorem balancedFunction_fourier_radial {d : ℕ} (f : Admissible d) :
+lemma balancedFunction_fourier_radial {d : ℕ} (f : Admissible d) :
     IsRadial (𝓕 (balancedFunction f) : TestFunction d) := by
   intro x y hxy
   let A : Euclidean d ≃ₗᵢ[ℝ] Euclidean d :=
@@ -572,7 +572,7 @@ theorem balancedFunction_fourier_radial {d : ℕ} (f : Admissible d) :
         (balancedFunction f : Euclidean d → ℂ) x
     _ = (𝓕 (balancedFunction f : Euclidean d → ℂ)) y := by rw [hA]
 
-theorem balancedFunction_fourier_zero {d : ℕ} (f : Admissible d)
+lemma balancedFunction_fourier_zero {d : ℕ} (f : Admissible d)
     (hd : 0 < d) :
     ((𝓕 (balancedFunction f) : TestFunction d)
       (0 : Euclidean d)) = balancedFunction f 0 := by
@@ -595,7 +595,7 @@ theorem balancedFunction_fourier_zero {d : ℕ} (f : Admissible d)
     rw [f.fourier_real, f.real]
     simp
 
-theorem balancedFunction_outside_nonpos {d : ℕ} (f : Admissible d)
+lemma balancedFunction_outside_nonpos {d : ℕ} (f : Admissible d)
     (x : Euclidean d) (hx : (balancingScale f)⁻¹ ≤ ‖x‖) :
     (balancedFunction f x).re ≤ 0 := by
   apply f.outside_nonpos (balancingScale f • x)
@@ -607,19 +607,19 @@ theorem balancedFunction_outside_nonpos {d : ℕ} (f : Admissible d)
 def balancedAntiFourierPart {d : ℕ} (f : Admissible d) : TestFunction d :=
   antiFourierPart (balancedFunction f)
 
-theorem fourier_balancedAntiFourierPart {d : ℕ} (f : Admissible d) :
+lemma fourier_balancedAntiFourierPart {d : ℕ} (f : Admissible d) :
     (𝓕 (balancedAntiFourierPart f) : TestFunction d) =
       -balancedAntiFourierPart f := by
   exact fourier_antiFourierPart (balancedFunction f)
     (balancedFunction_radial f)
 
-theorem balancedAntiFourierPart_zero {d : ℕ} (f : Admissible d)
+lemma balancedAntiFourierPart_zero {d : ℕ} (f : Admissible d)
     (hd : 0 < d) :
     balancedAntiFourierPart f (0 : Euclidean d) = 0 := by
   exact antiFourierPart_zero (balancedFunction f)
     (balancedFunction_fourier_zero f hd)
 
-theorem balancedAntiFourierPart_real {d : ℕ} (f : Admissible d) :
+lemma balancedAntiFourierPart_real {d : ℕ} (f : Admissible d) :
     IsRealValued (balancedAntiFourierPart f) := by
   intro x
   change (((𝓕 (balancedFunction f) : TestFunction d) x) -
@@ -628,7 +628,7 @@ theorem balancedAntiFourierPart_real {d : ℕ} (f : Admissible d) :
     balancedFunction_real f x]
   norm_num
 
-theorem balancedAntiFourierPart_radial {d : ℕ} (f : Admissible d) :
+lemma balancedAntiFourierPart_radial {d : ℕ} (f : Admissible d) :
     IsRadial (balancedAntiFourierPart f) := by
   intro x y hxy
   change
@@ -639,7 +639,7 @@ theorem balancedAntiFourierPart_radial {d : ℕ} (f : Admissible d) :
   rw [balancedFunction_fourier_radial f x y hxy,
     balancedFunction_radial f x y hxy]
 
-theorem balancedAntiFourierPart_nonneg {d : ℕ} (f : Admissible d)
+lemma balancedAntiFourierPart_nonneg {d : ℕ} (f : Admissible d)
     (x : Euclidean d) (hx : (balancingScale f)⁻¹ ≤ ‖x‖) :
     0 ≤ (balancedAntiFourierPart f x).re := by
   exact antiFourierPart_nonneg_of_signs
@@ -647,14 +647,14 @@ theorem balancedAntiFourierPart_nonneg {d : ℕ} (f : Admissible d)
     (balancedFunction_fourier_nonneg f)
     (balancedFunction_outside_nonpos f) x hx
 
-theorem balancedAntiFourierPart_eq_zero_iff {d : ℕ} (f : Admissible d) :
+lemma balancedAntiFourierPart_eq_zero_iff {d : ℕ} (f : Admissible d) :
     balancedAntiFourierPart f = 0 ↔
       (𝓕 (balancedFunction f) : TestFunction d) = balancedFunction f := by
   change (𝓕 (balancedFunction f) : TestFunction d) -
     balancedFunction f = 0 ↔ _
   exact sub_eq_zero
 
-theorem balancedFunction_support_subset_of_anti_zero {d : ℕ}
+lemma balancedFunction_support_subset_of_anti_zero {d : ℕ}
     (f : Admissible d) (hzero : balancedAntiFourierPart f = 0) :
     Function.support (balancedFunction f : Euclidean d → ℂ) ⊆
       Metric.closedBall (0 : Euclidean d) (balancingScale f)⁻¹ := by
@@ -681,7 +681,7 @@ theorem balancedFunction_support_subset_of_anti_zero {d : ℕ}
   · simpa using! hre
   · simpa using! balancedFunction_real f x
 
-theorem balancedFunction_hasCompactSupport_of_anti_zero {d : ℕ}
+lemma balancedFunction_hasCompactSupport_of_anti_zero {d : ℕ}
     (f : Admissible d) (hzero : balancedAntiFourierPart f = 0) :
     HasCompactSupport (balancedFunction f : Euclidean d → ℂ) := by
   exact HasCompactSupport.of_support_subset_isCompact
@@ -693,7 +693,7 @@ def nonnegativeSchwartzDensity {d : ℕ} (g : TestFunction d)
     Euclidean d → ℝ≥0 :=
   fun x => ⟨(g x).re, hg x⟩
 
-theorem nonnegativeSchwartzDensity_continuous {d : ℕ}
+lemma nonnegativeSchwartzDensity_continuous {d : ℕ}
     (g : TestFunction d) (hg : ∀ x : Euclidean d, 0 ≤ (g x).re) :
     Continuous (nonnegativeSchwartzDensity g hg) := by
   exact (Complex.continuous_re.comp g.continuous).subtype_mk hg
@@ -704,7 +704,7 @@ def nonnegativeSchwartzMeasure {d : ℕ} (g : TestFunction d)
   (volume : Measure (Euclidean d)).withDensity
     (fun x => (nonnegativeSchwartzDensity g hg x : ℝ≥0∞))
 
-theorem integrableExpSet_nonnegativeSchwartzMeasure_eq_univ {d : ℕ}
+lemma integrableExpSet_nonnegativeSchwartzMeasure_eq_univ {d : ℕ}
     (g : TestFunction d) (hg : ∀ x : Euclidean d, 0 ≤ (g x).re)
     (hcompact : HasCompactSupport (g : Euclidean d → ℂ))
     (X : Euclidean d → ℝ) (hX : Continuous X) :
@@ -730,7 +730,7 @@ theorem integrableExpSet_nonnegativeSchwartzMeasure_eq_univ {d : ℕ}
   exact hcontinuous.integrable_of_hasCompactSupport
     hrealcompact.mul_right
 
-theorem nonnegativeSchwartz_complexMGF_analytic {d : ℕ}
+lemma nonnegativeSchwartz_complexMGF_analytic {d : ℕ}
     (g : TestFunction d) (hg : ∀ x : Euclidean d, 0 ≤ (g x).re)
     (hcompact : HasCompactSupport (g : Euclidean d → ℂ))
     (X : Euclidean d → ℝ) (hX : Continuous X) :
@@ -743,7 +743,7 @@ theorem nonnegativeSchwartz_complexMGF_analytic {d : ℕ}
     (ProbabilityTheory.analyticOnNhd_complexMGF
       (X := X) (μ := nonnegativeSchwartzMeasure g hg))
 
-theorem nonnegativeSchwartz_complexMGF_mul_I {d : ℕ}
+lemma nonnegativeSchwartz_complexMGF_mul_I {d : ℕ}
     (g : TestFunction d) (hreal : IsRealValued g)
     (hg : ∀ x : Euclidean d, 0 ≤ (g x).re)
     (e : Euclidean d) (t : ℝ) :
@@ -792,7 +792,7 @@ theorem nonnegativeSchwartz_complexMGF_mul_I {d : ℕ}
     _ = ((𝓕 g : TestFunction d) (t • e)) :=
       (congrFun (SchwartzMap.fourier_coe g) (t • e)).symm
 
-theorem analytic_eq_zero_of_imaginary_ray
+lemma analytic_eq_zero_of_imaginary_ray
     (F : ℂ → ℂ) (hF : AnalyticOnNhd ℂ F Set.univ)
     (T : ℝ)
     (hvanish : ∀ t : ℝ, T < t → F ((t : ℂ) * Complex.I) = 0) :
@@ -827,7 +827,7 @@ theorem analytic_eq_zero_of_imaginary_ray
   funext z
   exact heq (Set.mem_univ z)
 
-theorem nonnegative_compact_fourier_fixed_eq_zero {d : ℕ}
+lemma nonnegative_compact_fourier_fixed_eq_zero {d : ℕ}
     (hd : 0 < d) (g : TestFunction d)
     (hreal : IsRealValued g)
     (hg : ∀ x : Euclidean d, 0 ≤ (g x).re)
@@ -936,7 +936,7 @@ theorem nonnegative_compact_fourier_fixed_eq_zero {d : ℕ}
       g.integrable.re hg hx
   exact (ne_of_gt hpositive) hintegral
 
-theorem balancedAntiFourierPart_ne_zero {d : ℕ}
+lemma balancedAntiFourierPart_ne_zero {d : ℕ}
     (f : Admissible d) (hd : 0 < d) :
     balancedAntiFourierPart f ≠ 0 := by
   intro hzero
@@ -980,7 +980,7 @@ def balancedAntiFourierWitness {d : ℕ} (f : Admissible d)
   zero_value := balancedAntiFourierPart_zero f hd
   eventually_nonneg := balancedAntiFourierPart_nonneg f
 
-theorem normalizedCost_ge_of_no_antiFourierWitness {d : ℕ}
+lemma normalizedCost_ge_of_no_antiFourierWitness {d : ℕ}
     (f : Admissible d) (hd : 0 < d) (c : ℝ)
     (hno : IsEmpty (AntiFourierWitness d (c * Real.sqrt (d : ℝ)))) :
     c ≤ normalizedCost f := by
@@ -1000,21 +1000,21 @@ noncomputable section
 open MeasureTheory Metric
 open scoped ENNReal
 
-theorem sqrt_pi_pow_eq_rpow (d : ℕ) :
+lemma sqrt_pi_pow_eq_rpow (d : ℕ) :
     Real.sqrt Real.pi ^ d = Real.pi ^ ((d : ℝ) / 2) := by
   rw [Real.sqrt_eq_rpow, ← Real.rpow_natCast,
     ← Real.rpow_mul Real.pi_nonneg]
   congr 1
   ring
 
-theorem volume_unitBall {d : ℕ} (hd : 0 < d) :
+lemma volume_unitBall {d : ℕ} (hd : 0 < d) :
     volume (ball (0 : Euclidean d) (1 : ℝ)) =
       ENNReal.ofReal (unitBallVolume d) := by
   letI : Nonempty (Fin d) := Fin.pos_iff_nonempty.mp hd
   simpa [Fintype.card_fin, unitBallVolume, sqrt_pi_pow_eq_rpow] using!
     (EuclideanSpace.volume_ball (Fin d) (0 : Euclidean d) (1 : ℝ))
 
-theorem unitBallVolume_even (k : ℕ) :
+lemma unitBallVolume_even (k : ℕ) :
     unitBallVolume (2 * k) = Real.pi ^ k / (k.factorial : ℝ) := by
   unfold unitBallVolume
   have hhalf : ((↑(2 * k) : ℝ) / 2) = (k : ℝ) := by
@@ -1032,7 +1032,7 @@ open scoped FourierTransform SchwartzMap Topology ENNReal
 def radialUnitDirection {d : ℕ} (hd : 0 < d) : Euclidean d :=
   (EuclideanSpace.basisFun (Fin d) ℝ) ⟨0, hd⟩
 
-theorem norm_radialUnitDirection {d : ℕ} (hd : 0 < d) :
+lemma norm_radialUnitDirection {d : ℕ} (hd : 0 < d) :
     ‖radialUnitDirection hd‖ = 1 := by
   unfold radialUnitDirection
   exact (EuclideanSpace.basisFun (Fin d) ℝ).norm_eq_one _
@@ -1041,37 +1041,37 @@ def radialProfile {d : ℕ} (hd : 0 < d)
     (f : TestFunction d) (r : ℝ) : ℂ :=
   f (r • radialUnitDirection hd)
 
-theorem radialProfile_norm {d : ℕ} (hd : 0 < d)
+lemma radialProfile_norm {d : ℕ} (hd : 0 < d)
     (f : TestFunction d) (hf : IsRadial f) (x : Euclidean d) :
     radialProfile hd f ‖x‖ = f x := by
   unfold radialProfile
   apply hf
   simp [norm_smul, norm_radialUnitDirection hd]
 
-theorem radialProfile_neg {d : ℕ} (hd : 0 < d)
+lemma radialProfile_neg {d : ℕ} (hd : 0 < d)
     (f : TestFunction d) (hf : IsRadial f) (r : ℝ) :
     radialProfile hd f (-r) = radialProfile hd f r := by
   unfold radialProfile
   apply hf
   simp [norm_smul, norm_radialUnitDirection hd]
 
-theorem radialProfile_continuous {d : ℕ} (hd : 0 < d)
+lemma radialProfile_continuous {d : ℕ} (hd : 0 < d)
     (f : TestFunction d) :
     Continuous (radialProfile hd f) := by
   unfold radialProfile
   exact f.continuous.comp (continuous_id.smul continuous_const)
 
-@[simp] theorem radialProfile_zero {d : ℕ} (hd : 0 < d)
+@[simp] lemma radialProfile_zero {d : ℕ} (hd : 0 < d)
     (f : TestFunction d) :
     radialProfile hd f 0 = f (0 : Euclidean d) := by
   simp [radialProfile]
 
-theorem radialProfile_real {d : ℕ} (hd : 0 < d)
+lemma radialProfile_real {d : ℕ} (hd : 0 < d)
     (f : TestFunction d) (hf : IsRealValued f) (r : ℝ) :
     (radialProfile hd f r).im = 0 :=
   hf (r • radialUnitDirection hd)
 
-theorem volume_real_unitBall {d : ℕ} (hd : 0 < d) :
+lemma volume_real_unitBall {d : ℕ} (hd : 0 < d) :
     volume.real (ball (0 : Euclidean d) (1 : ℝ)) =
       unitBallVolume d := by
   change (volume (ball (0 : Euclidean d) (1 : ℝ))).toReal =
@@ -1082,12 +1082,12 @@ theorem volume_real_unitBall {d : ℕ} (hd : 0 < d) :
 def radialSurfaceArea (d : ℕ) : ℝ :=
   (d : ℝ) * unitBallVolume d
 
-theorem radialSurfaceArea_pos {d : ℕ} (hd : 0 < d) :
+lemma radialSurfaceArea_pos {d : ℕ} (hd : 0 < d) :
     0 < radialSurfaceArea d := by
   unfold radialSurfaceArea
   exact mul_pos (by exact_mod_cast hd) (unitBallVolume_pos d)
 
-theorem integral_radialProfile_mul {d : ℕ} (hd : 0 < d)
+lemma integral_radialProfile_mul {d : ℕ} (hd : 0 < d)
     (f : TestFunction d) (hf : IsRadial f) (w : ℝ → ℂ) :
     (∫ x : Euclidean d, f x * w ‖x‖) =
       radialSurfaceArea d •
@@ -1110,7 +1110,7 @@ theorem integral_radialProfile_mul {d : ℕ} (hd : 0 < d)
           (volume : Measure (Euclidean d))
           (fun r : ℝ => radialProfile hd f r * w r))
 
-theorem integral_radialProfile_cpow {d : ℕ} (hd : 0 < d)
+lemma integral_radialProfile_cpow {d : ℕ} (hd : 0 < d)
     (f : TestFunction d) (hf : IsRadial f) (s : ℂ) :
     (∫ x : Euclidean d,
       f x * (‖x‖ : ℂ) ^ (s - (d : ℂ))) =
@@ -1156,7 +1156,7 @@ def radialMellinFrequency {d : ℕ} (hd : 0 < d)
     (f : TestFunction d) (t : ℝ) : ℂ :=
   mellinFrequency ((d : ℝ) / 2) (radialProfile hd f) t
 
-theorem radialMellinFrequency_eq_fourier {d : ℕ} (hd : 0 < d)
+lemma radialMellinFrequency_eq_fourier {d : ℕ} (hd : 0 < d)
     (f : TestFunction d) (t : ℝ) :
     radialMellinFrequency hd f t =
       (𝓕 (fun u : ℝ =>
@@ -1176,7 +1176,7 @@ open scoped FourierTransform SchwartzMap Topology RealInnerProductSpace
 def gaussianMellinWeight (d : ℕ) (a : ℝ) (x : Euclidean d) : ℂ :=
   Complex.exp (-((a : ℂ) * (‖x‖ : ℂ) ^ 2))
 
-theorem gaussianMellin_fourier_radial {d : ℕ} {f : TestFunction d}
+lemma gaussianMellin_fourier_radial {d : ℕ} {f : TestFunction d}
     (hf : IsRadial f) : IsRadial (𝓕 f : TestFunction d) := by
   intro x y hxy
   let A : Euclidean d ≃ₗᵢ[ℝ] Euclidean d :=
@@ -1194,7 +1194,7 @@ theorem gaussianMellin_fourier_radial {d : ℕ} {f : TestFunction d}
       Real.fourier_comp_linearIsometry A (f : Euclidean d → ℂ) x
     _ = (𝓕 (f : Euclidean d → ℂ)) y := by rw [hA]
 
-theorem gaussianMellinWeight_integrable {d : ℕ}
+lemma gaussianMellinWeight_integrable {d : ℕ}
     (a : ℝ) (ha : 0 < a) :
     Integrable (gaussianMellinWeight d a)
       (volume : Measure (Euclidean d)) := by
@@ -1204,7 +1204,7 @@ theorem gaussianMellinWeight_integrable {d : ℕ}
     (GaussianFourier.integrable_cexp_neg_mul_sq_norm_add
       (V := Euclidean d) hcomplex (0 : ℂ) (0 : Euclidean d))
 
-theorem fourier_gaussianMellinWeight {d : ℕ}
+lemma fourier_gaussianMellinWeight {d : ℕ}
     (a : ℝ) (ha : 0 < a) (ξ : Euclidean d) :
     (𝓕 (gaussianMellinWeight d a) : Euclidean d → ℂ) ξ =
       ((Real.pi : ℂ) / (a : ℂ)) ^ ((d : ℂ) / 2) *
@@ -1216,7 +1216,7 @@ theorem fourier_gaussianMellinWeight {d : ℕ}
     (fourier_gaussian_innerProductSpace (V := Euclidean d)
       hcomplex ξ)
 
-theorem fourier_gaussianMellin_pairing {d : ℕ}
+lemma fourier_gaussianMellin_pairing {d : ℕ}
     (f : TestFunction d) (a : ℝ) (ha : 0 < a) :
     (∫ ξ : Euclidean d,
       ((𝓕 f : TestFunction d) ξ) * gaussianMellinWeight d a ξ) =
@@ -1267,7 +1267,7 @@ theorem fourier_gaussianMellin_pairing {d : ℕ}
       filter_upwards [] with x
       rw [fourier_gaussianMellinWeight a ha x]
 
-theorem schwartz_mul_norm_cpow_integrable {d : ℕ}
+lemma schwartz_mul_norm_cpow_integrable {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (z : ℂ)
     (hlower : -(d : ℝ) < z.re) (hupper : z.re ≤ 0) :
     Integrable
@@ -1341,7 +1341,7 @@ theorem schwartz_mul_norm_cpow_integrable {d : ℕ}
   have hglobal := hinner.union houter
   rwa [union_compl_self, integrableOn_univ] at hglobal
 
-theorem gaussianMellinParameter_integrable
+lemma gaussianMellinParameter_integrable
     (b : ℂ) (hb : 0 < b.re) (r : ℝ) (hr : 0 < r) :
     IntegrableOn
       (fun a : ℝ =>
@@ -1379,7 +1379,7 @@ theorem gaussianMellinParameter_integrable
     Complex.norm_exp]
   simp
 
-theorem gaussianMellinParameter_norm_integral
+lemma gaussianMellinParameter_norm_integral
     (b : ℂ) (hb : 0 < b.re) (r : ℝ) (hr : 0 < r) :
     (∫ a : ℝ in Ioi 0,
       ‖(a : ℂ) ^ (b - 1) *
@@ -1401,7 +1401,7 @@ theorem gaussianMellinParameter_norm_integral
     _ = (1 / r) ^ b.re * Real.Gamma b.re :=
       Real.integral_rpow_mul_exp_neg_mul_Ioi hb hr
 
-theorem gaussianMellin_inv_sq_rpow
+lemma gaussianMellin_inv_sq_rpow
     (r b : ℝ) (hr : 0 ≤ r) :
     (1 / r ^ 2) ^ b = r ^ (-(2 * b)) := by
   calc
@@ -1413,7 +1413,7 @@ theorem gaussianMellin_inv_sq_rpow
       congr 1
       ring
 
-theorem gaussianMellin_inv_sq_cpow
+lemma gaussianMellin_inv_sq_cpow
     (r : ℝ) (hr : 0 ≤ r) (b : ℂ) :
     (1 / (((r ^ 2 : ℝ) : ℂ))) ^ b =
       (r : ℂ) ^ (-(2 * b)) := by
@@ -1429,7 +1429,7 @@ theorem gaussianMellin_inv_sq_cpow
       push_cast
       ring
 
-theorem gaussianMellin_div_cpow
+lemma gaussianMellin_div_cpow
     (p a : ℝ) (hp : 0 < p) (ha : 0 < a) (b : ℂ) :
     ((p : ℂ) / (a : ℂ)) ^ b =
       (p : ℂ) ^ b * (a : ℂ) ^ (-b) := by
@@ -1448,7 +1448,7 @@ theorem gaussianMellin_div_cpow
     _ = (p : ℂ) ^ b * (a : ℂ) ^ (-b) := by
       rw [hinv]
 
-theorem gaussianMellin_pi_coefficient (b q : ℂ) :
+lemma gaussianMellin_pi_coefficient (b q : ℂ) :
     (Real.pi : ℂ) ^ q *
         (((Real.pi ^ 2 : ℝ) : ℂ) ^ (b - q)) =
       (Real.pi : ℂ) ^ (2 * b - q) := by
@@ -1471,7 +1471,7 @@ def gaussianMellinMixture {d : ℕ}
     ((a : ℂ) ^ (b - 1) *
       Complex.exp (-((‖x‖ : ℂ) ^ 2 * (a : ℂ))))
 
-theorem gaussianMellinMixture_integrable {d : ℕ}
+lemma gaussianMellinMixture_integrable {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (b : ℂ)
     (hb : 0 < b.re) (hbd : 2 * b.re < (d : ℝ)) :
     Integrable
@@ -1579,7 +1579,7 @@ theorem gaussianMellinMixture_integrable {d : ℕ}
         simp only [gaussianMellinMixture, norm_mul,
           Complex.ofReal_pow]
 
-theorem gaussianMellinMixture_fubini {d : ℕ}
+lemma gaussianMellinMixture_fubini {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (b : ℂ)
     (hb : 0 < b.re) (hbd : 2 * b.re < (d : ℝ)) :
     (∫ x : Euclidean d,
@@ -1589,7 +1589,7 @@ theorem gaussianMellinMixture_fubini {d : ℕ}
   exact integral_integral_swap
     (gaussianMellinMixture_integrable hd f b hb hbd)
 
-theorem gaussianMellinMixture_parameter_integral {d : ℕ}
+lemma gaussianMellinMixture_parameter_integral {d : ℕ}
     (f : TestFunction d) (b : ℂ) (hb : 0 < b.re)
     (x : Euclidean d) (hx : x ≠ 0) :
     (∫ a : ℝ in Ioi 0, gaussianMellinMixture f b x a) =
@@ -1619,7 +1619,7 @@ def gaussianMellinPairingProfile {d : ℕ}
     (f : TestFunction d) (a : ℝ) : ℂ :=
   ∫ x : Euclidean d, f x * gaussianMellinWeight d a x
 
-theorem mellin_gaussianMellinPairingProfile {d : ℕ}
+lemma mellin_gaussianMellinPairingProfile {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (b : ℂ)
     (hb : 0 < b.re) (hbd : 2 * b.re < (d : ℝ)) :
     mellin (gaussianMellinPairingProfile f) b =
@@ -1670,7 +1670,7 @@ theorem mellin_gaussianMellinPairingProfile {d : ℕ}
       filter_upwards [] with x
       ring
 
-theorem gaussianMellinPairingProfile_fourier {d : ℕ}
+lemma gaussianMellinPairingProfile_fourier {d : ℕ}
     (f : TestFunction d) (a : ℝ) (ha : 0 < a) :
     gaussianMellinPairingProfile (𝓕 f : TestFunction d) a =
       ((Real.pi : ℂ) / (a : ℂ)) ^ ((d : ℂ) / 2) *
@@ -1692,7 +1692,7 @@ theorem gaussianMellinPairingProfile_fourier {d : ℕ}
   rw [hexp]
   ring
 
-theorem mellin_gaussianMellinPairingProfile_fourier {d : ℕ}
+lemma mellin_gaussianMellinPairingProfile_fourier {d : ℕ}
     (f : TestFunction d) (b : ℂ) :
     mellin
         (gaussianMellinPairingProfile (𝓕 f : TestFunction d)) b =
@@ -1779,7 +1779,7 @@ theorem mellin_gaussianMellinPairingProfile_fourier {d : ℕ}
                 ((d : ℂ) / 2 - b)) := by
       rfl
 
-theorem fourier_riesz_pairing {d : ℕ}
+lemma fourier_riesz_pairing {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (b : ℂ)
     (hb : 0 < b.re) (hbd : 2 * b.re < (d : ℝ)) :
     Complex.Gamma b *
@@ -1828,7 +1828,7 @@ theorem fourier_riesz_pairing {d : ℕ}
       rw [mellin_gaussianMellinPairingProfile hd f
         ((d : ℂ) / 2 - b) hdual hdual_dimension]
 
-theorem fourier_riesz_pairing_strip {d : ℕ}
+lemma fourier_riesz_pairing_strip {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (s : ℂ)
     (hs : 0 < s.re) (hsd : s.re < (d : ℝ)) :
     Complex.Gamma (((d : ℂ) - s) / 2) *
@@ -1866,7 +1866,7 @@ theorem fourier_riesz_pairing_strip {d : ℕ}
     hleft, hdual, hpi, hright] at h
   simpa only [b] using! h
 
-theorem radial_fourier_mellin_strip {d : ℕ}
+lemma radial_fourier_mellin_strip {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hf : IsRadial f)
     (s : ℂ) (hs : 0 < s.re) (hsd : s.re < (d : ℝ)) :
     mellin (radialProfile hd (𝓕 f : TestFunction d)) s =
@@ -1937,7 +1937,7 @@ theorem radial_fourier_mellin_strip {d : ℕ}
               mellin (radialProfile hd f) ((d : ℂ) - s) := by
       ring
 
-theorem radialMellinMultiplier {d : ℕ}
+lemma radialMellinMultiplier {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hf : IsRadial f)
     (t : ℝ) :
     radialMellinFrequency hd (𝓕 f : TestFunction d) t =
@@ -1987,7 +1987,7 @@ open scoped ContDiff FourierTransform Interval RealInnerProductSpace Topology
 def shellOscillation (B T : ℝ) : ℝ :=
   ∫ a in B..B + 1, (1 - Real.cos (a * T))
 
-theorem shellOscillation_eq_sinc (B T : ℝ) :
+lemma shellOscillation_eq_sinc (B T : ℝ) :
     shellOscillation B T =
       1 - Real.sinc (T / 2) * Real.cos ((B + 1 / 2) * T) := by
   unfold shellOscillation
@@ -2017,13 +2017,13 @@ theorem shellOscillation_eq_sinc (B T : ℝ) :
     ring_nf at hsin ⊢
     linarith
 
-theorem cos_le_quartic {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
+lemma cos_le_quartic {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
     Real.cos x ≤ 1 - x ^ 2 / 2 + x ^ 4 * (5 / 96 : ℝ) := by
   have hbound := Real.cos_bound (show |x| ≤ 1 by simpa [abs_of_nonneg hx0] using! hx1)
   rw [abs_of_nonneg hx0] at hbound
   linarith [(le_abs_self (Real.cos x - (1 - x ^ 2 / 2)))]
 
-theorem sin_le_quintic {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
+lemma sin_le_quintic {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
     Real.sin x ≤ x - x ^ 3 / 6 + x ^ 5 / 96 := by
   have hpoly : Continuous
       (fun t : ℝ => 1 - t ^ 2 / 2 + t ^ 4 * (5 / 96 : ℝ)) := by
@@ -2044,7 +2044,7 @@ theorem sin_le_quintic {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
   norm_num at hmono
   exact hmono
 
-theorem sin_le_linear_sub_cubic {x : ℝ}
+lemma sin_le_linear_sub_cubic {x : ℝ}
     (hx0 : 0 ≤ x) (hxhalf : x ≤ (1 / 2 : ℝ)) :
     Real.sin x ≤ x - (4 / 25 : ℝ) * x ^ 3 := by
   have hx1 : x ≤ (1 : ℝ) := by linarith
@@ -2057,12 +2057,12 @@ theorem sin_le_linear_sub_cubic {x : ℝ}
     nlinarith [show x ^ 5 = x ^ 3 * x ^ 2 by ring]
   nlinarith
 
-theorem sinc_abs (x : ℝ) : Real.sinc |x| = Real.sinc x := by
+lemma sinc_abs (x : ℝ) : Real.sinc |x| = Real.sinc x := by
   rcases le_total 0 x with hx | hx
   · rw [abs_of_nonneg hx]
   · rw [abs_of_nonpos hx, Real.sinc_neg]
 
-theorem sinc_quadratic_gap_nonneg {x : ℝ}
+lemma sinc_quadratic_gap_nonneg {x : ℝ}
     (hx0 : 0 ≤ x) (hxhalf : x ≤ (1 / 2 : ℝ)) :
     (4 / 25 : ℝ) * x ^ 2 ≤ 1 - |Real.sinc x| := by
   rcases hx0.eq_or_lt with rfl | hxpos
@@ -2079,7 +2079,7 @@ theorem sinc_quadratic_gap_nonneg {x : ℝ}
     nlinarith
   linarith
 
-theorem abs_sinc_le_twentyfour_twentyfive {x : ℝ}
+lemma abs_sinc_le_twentyfour_twentyfive {x : ℝ}
     (hx : (1 / 2 : ℝ) ≤ x) :
     |Real.sinc x| ≤ (24 / 25 : ℝ) := by
   have hxpos : 0 < x := by linarith
@@ -2113,7 +2113,7 @@ theorem abs_sinc_le_twentyfour_twentyfive {x : ℝ}
     have hsin := Real.abs_sin_le_one x
     nlinarith [Real.pi_gt_three]
 
-theorem sinc_explicit (T : ℝ) :
+lemma sinc_explicit (T : ℝ) :
     (1 / 25 : ℝ) * min (T ^ 2) 1 ≤
       1 - |Real.sinc (T / 2)| := by
   have hsinc : Real.sinc (T / 2) = Real.sinc (|T| / 2) := by
@@ -2144,7 +2144,7 @@ theorem sinc_explicit (T : ℝ) :
     rw [min_eq_right hsq, hsinc]
     linarith
 
-theorem shellOscillation_lower_bound (B T : ℝ) :
+lemma shellOscillation_lower_bound (B T : ℝ) :
     (1 / 25 : ℝ) * min (T ^ 2) 1 ≤ shellOscillation B T := by
   rw [shellOscillation_eq_sinc]
   have hcos := Real.abs_cos_le_one ((B + 1 / 2) * T)
@@ -2160,7 +2160,7 @@ theorem shellOscillation_lower_bound (B T : ℝ) :
         nlinarith [abs_nonneg (Real.sinc (T / 2))]
   linarith [sinc_explicit T]
 
-theorem cosh_ratio_lower {a δ : ℝ} (ha : 0 ≤ a) (hδ : 0 ≤ δ) :
+lemma cosh_ratio_lower {a δ : ℝ} (ha : 0 ≤ a) (hδ : 0 ≤ δ) :
     Real.exp (δ * a) / 2 ≤
       Real.cosh ((1 + δ) * a) / Real.cosh a := by
   apply (le_div_iff₀ (Real.cosh_pos a)).2
@@ -2179,7 +2179,7 @@ theorem cosh_ratio_lower {a δ : ℝ} (ha : 0 ≤ a) (hδ : 0 ≤ δ) :
       exact mul_nonneg (Real.sinh_nonneg_iff.mpr ha)
         (Real.sinh_nonneg_iff.mpr (mul_nonneg hδ ha))
 
-theorem cosh_ratio_upper {a δ : ℝ} (ha : 0 ≤ a) (hδ : 0 ≤ δ) :
+lemma cosh_ratio_upper {a δ : ℝ} (ha : 0 ≤ a) (hδ : 0 ≤ δ) :
     Real.cosh ((1 + δ) * a) / Real.cosh a ≤ Real.exp (δ * a) := by
   apply (div_le_iff₀ (Real.cosh_pos a)).2
   rw [show (1 + δ) * a = a + δ * a by ring, Real.cosh_add]
@@ -2206,7 +2206,7 @@ def positiveShellDamping (ε ℓ δ T : ℝ) : ℝ :=
     positiveShellDensity ε a * Real.cosh ((1 + δ) * a) *
       (1 - Real.cos (a * T))
 
-theorem positiveShellDamping_lower_bound {ε ℓ δ T : ℝ}
+lemma positiveShellDamping_lower_bound {ε ℓ δ T : ℝ}
     (hε : 0 < ε) (hℓ : 0 ≤ ℓ) (hδ : 0 ≤ δ) :
     ℓ / 50 * shellWeight ε *
         Real.exp (δ * shellLocation ε) * min (T ^ 2) 1 ≤
@@ -2295,7 +2295,7 @@ def positiveShellRadiusContribution (ε : ℝ) : ℝ :=
     positiveShellDensity ε a * a *
       Real.sinh ((1 + ε / 4) * a)
 
-theorem positiveShellRadiusContribution_bounds {ε : ℝ} (hε : 0 < ε) :
+lemma positiveShellRadiusContribution_bounds {ε : ℝ} (hε : 0 < ε) :
     0 ≤ positiveShellRadiusContribution ε ∧
       positiveShellRadiusContribution ε ≤
         (shellLocation ε + 1) * shellWeight ε *
@@ -2384,7 +2384,7 @@ def mellinShellPhase (ε : ℝ) (z : ℂ) : ℂ :=
     (positiveShellDensity ε a : ℂ) *
       (Complex.cos ((a : ℂ) * z) - 1))
 
-theorem mellinShellPhase_neg (ε : ℝ) (z : ℂ) :
+lemma mellinShellPhase_neg (ε : ℝ) (z : ℂ) :
     mellinShellPhase ε (-z) = mellinShellPhase ε z := by
   unfold mellinShellPhase
   congr 1
@@ -2407,7 +2407,7 @@ def realHyperbolicShellPhase (ε u : ℝ) : ℝ :=
   (∫ a in shellLocation ε..shellLocation ε + 1,
     positiveShellDensity ε a * (Real.cosh (a * u) - 1))
 
-theorem mellinShellPhase_ofReal (ε t : ℝ) :
+lemma mellinShellPhase_ofReal (ε t : ℝ) :
     mellinShellPhase ε (t : ℂ) =
       (realOscillatoryShellPhase ε t : ℂ) := by
   unfold mellinShellPhase realOscillatoryShellPhase
@@ -2454,7 +2454,7 @@ theorem mellinShellPhase_ofReal (ε t : ℝ) :
             positiveShellDensity ε a * (Real.cos (a * t) - 1)) : ℂ) :=
           intervalIntegral.integral_ofReal
 
-theorem mellinShellPhase_imaginary (ε u : ℝ) :
+lemma mellinShellPhase_imaginary (ε u : ℝ) :
     mellinShellPhase ε (Complex.I * (u : ℂ)) =
       (realHyperbolicShellPhase ε u : ℂ) := by
   unfold mellinShellPhase realHyperbolicShellPhase
@@ -2501,7 +2501,7 @@ theorem mellinShellPhase_imaginary (ε u : ℝ) :
             positiveShellDensity ε a * (Real.cosh (a * u) - 1)) : ℂ) :=
           intervalIntegral.integral_ofReal
 
-theorem realHyperbolicShellPhase_neg (ε u : ℝ) :
+lemma realHyperbolicShellPhase_neg (ε u : ℝ) :
     realHyperbolicShellPhase ε (-u) =
       realHyperbolicShellPhase ε u := by
   unfold realHyperbolicShellPhase
@@ -2519,13 +2519,13 @@ theorem realHyperbolicShellPhase_neg (ε u : ℝ) :
         positiveShellDensity ε a * (Real.cosh (a * u) - 1)
     rw [mul_neg, Real.cosh_neg]
 
-theorem positiveShellDensity_continuous (ε : ℝ) :
+lemma positiveShellDensity_continuous (ε : ℝ) :
     Continuous (positiveShellDensity ε) := by
   unfold positiveShellDensity
   exact continuous_const.div Real.continuous_cosh
     (fun a => (Real.cosh_pos a).ne')
 
-theorem shortShellDensity_intervalIntegrable {ε : ℝ}
+lemma shortShellDensity_intervalIntegrable {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     IntervalIntegrable (shortShellDensity ε) volume
@@ -2547,7 +2547,7 @@ theorem shortShellDensity_intervalIntegrable {ε : ℝ}
   have ha0 : 0 < a := hcutoff.trans_le ha.1
   positivity
 
-theorem shortShellOscillatoryIntegral_continuous {ε : ℝ}
+lemma shortShellOscillatoryIntegral_continuous {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     Continuous (fun t : ℝ =>
@@ -2594,7 +2594,7 @@ theorem shortShellOscillatoryIntegral_continuous {ε : ℝ}
     rw [max_eq_left ha.1]
   exact hparam.congr (fun t => (hident t).symm)
 
-theorem positiveShellOscillatoryIntegral_continuous (ε : ℝ) :
+lemma positiveShellOscillatoryIntegral_continuous (ε : ℝ) :
     Continuous (fun t : ℝ =>
       ∫ a in shellLocation ε..shellLocation ε + 1,
         positiveShellDensity ε a * (Real.cos (a * t) - 1)) := by
@@ -2619,7 +2619,7 @@ theorem positiveShellOscillatoryIntegral_continuous (ε : ℝ) :
       ← integral_Icc_eq_integral_Ioc]
   exact hparam.congr (fun t => (hident t).symm)
 
-theorem realOscillatoryShellPhase_continuous {ε : ℝ}
+lemma realOscillatoryShellPhase_continuous {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     Continuous (realOscillatoryShellPhase ε) := by
@@ -2627,7 +2627,7 @@ theorem realOscillatoryShellPhase_continuous {ε : ℝ}
   exact (shortShellOscillatoryIntegral_continuous hε horder).add
     (positiveShellOscillatoryIntegral_continuous ε)
 
-theorem complexShellInterval_continuous
+lemma complexShellInterval_continuous
     (w : ℝ → ℝ) (hw : Continuous w)
     {a b : ℝ} (hab : a ≤ b) :
     Continuous (fun z : ℂ =>
@@ -2651,7 +2651,7 @@ theorem complexShellInterval_continuous
       ← integral_Icc_eq_integral_Ioc]
   exact hparam.congr (fun z => (hident z).symm)
 
-theorem complexShellInterval_differentiable
+lemma complexShellInterval_differentiable
     (w : ℝ → ℝ) (hw : Continuous w)
     {a b : ℝ} (hab : a ≤ b) :
     Differentiable ℂ (fun z : ℂ =>
@@ -2729,7 +2729,7 @@ theorem complexShellInterval_differentiable
     hmeas hint hderivmeas hbound hconstant
     hdifferentiable).2.differentiableAt
 
-theorem mellinShellPhase_continuous {ε : ℝ}
+lemma mellinShellPhase_continuous {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     Continuous (mellinShellPhase ε) := by
@@ -2774,7 +2774,7 @@ theorem mellinShellPhase_continuous {ε : ℝ}
       (positiveShellDensity_continuous ε) hremote
   exact hshort.add hpositive
 
-theorem mellinShellPhase_differentiable {ε : ℝ}
+lemma mellinShellPhase_differentiable {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     Differentiable ℂ (mellinShellPhase ε) := by
@@ -2830,7 +2830,7 @@ theorem mellinShellPhase_differentiable {ε : ℝ}
       (positiveShellDensity_continuous ε) hremote
   exact hshort.add hpositive
 
-theorem mellinShellPhase_analyticOnNhd {ε : ℝ}
+lemma mellinShellPhase_analyticOnNhd {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     AnalyticOnNhd ℂ (mellinShellPhase ε) Set.univ :=
@@ -2843,7 +2843,7 @@ def saddleShellTotalVariation (ε : ℝ) : ℝ :=
   (∫ a in shellLocation ε..shellLocation ε + 1,
     |positiveShellDensity ε a|)
 
-theorem abs_realOscillatoryShellPhase_le {ε : ℝ}
+lemma abs_realOscillatoryShellPhase_le {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (t : ℝ) :
     |realOscillatoryShellPhase ε t| ≤
@@ -2939,7 +2939,7 @@ theorem abs_realOscillatoryShellPhase_le {ε : ℝ}
         (∫ a in shellLocation ε..shellLocation ε + 1,
           |positiveShellDensity ε a|)) := by ring
 
-theorem mellinShellPhase_real_conj (ε t : ℝ) :
+lemma mellinShellPhase_real_conj (ε t : ℝ) :
     starRingEnd ℂ (mellinShellPhase ε (t : ℂ)) =
       mellinShellPhase ε (t : ℂ) := by
   rw [mellinShellPhase_ofReal]
@@ -2960,7 +2960,7 @@ def minusSaddleSpectrum (ε ℓ t : ℝ) : ℂ :=
   saddleEnvelope ε ℓ t *
     minusPolynomial ε ((t : ℂ) / (ℓ : ℂ))
 
-theorem saddleVerticalGamma_continuous {ℓ : ℝ} (hℓ : 0 < ℓ) :
+lemma saddleVerticalGamma_continuous {ℓ : ℝ} (hℓ : 0 < ℓ) :
     Continuous (fun t : ℝ =>
       Complex.Gamma (((ℓ : ℂ) - Complex.I * (t : ℂ)) / 2)) := by
   apply continuous_iff_continuousAt.mpr
@@ -2981,7 +2981,7 @@ theorem saddleVerticalGamma_continuous {ℓ : ℝ} (hℓ : 0 < ℓ) :
   simpa [Function.comp_def] using!
     (Complex.continuousAt_Gamma z hpoles).comp_of_eq harg (by rfl)
 
-theorem saddleShellPhase_continuous {ε : ℝ}
+lemma saddleShellPhase_continuous {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (ℓ : ℝ) :
     Continuous (fun t : ℝ =>
@@ -2999,7 +2999,7 @@ theorem saddleShellPhase_continuous {ε : ℝ}
     push_cast
     rfl, mellinShellPhase_ofReal]
 
-theorem saddleEnvelope_continuous {ε ℓ : ℝ}
+lemma saddleEnvelope_continuous {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     Continuous (saddleEnvelope ε ℓ) := by
@@ -3016,7 +3016,7 @@ theorem saddleEnvelope_continuous {ε ℓ : ℝ}
         hε horder ℓ))
   exact (hunit.mul hgamma).mul hphase
 
-theorem plusSaddleSpectrum_continuous {ε ℓ : ℝ}
+lemma plusSaddleSpectrum_continuous {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     Continuous (plusSaddleSpectrum ε ℓ) := by
@@ -3026,7 +3026,7 @@ theorem plusSaddleSpectrum_continuous {ε ℓ : ℝ}
     fun_prop
   exact (saddleEnvelope_continuous hε hℓ horder).mul hp
 
-theorem minusSaddleSpectrum_continuous {ε ℓ : ℝ}
+lemma minusSaddleSpectrum_continuous {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     Continuous (minusSaddleSpectrum ε ℓ) := by
@@ -3040,7 +3040,7 @@ def saddleOriginValue (ε ℓ : ℝ) : ℝ :=
   2 * Real.pi ^ (ℓ / 2) *
     Real.exp (ℓ * realHyperbolicShellPhase ε 1) * beta ε
 
-theorem saddleOriginValue_pos {ε : ℝ} (hε : 0 < ε) (ℓ : ℝ) :
+lemma saddleOriginValue_pos {ε : ℝ} (hε : 0 < ε) (ℓ : ℝ) :
     0 < saddleOriginValue ε ℓ := by
   unfold saddleOriginValue
   positivity [beta_pos hε, Real.pi_pos]
@@ -3080,7 +3080,7 @@ def minusSaddleRegularMellinFactor (ε ℓ : ℝ) (z : ℂ) : ℂ :=
     minusPolynomial ε
       (Complex.I * (z - (ℓ : ℂ)) / (ℓ : ℂ))
 
-theorem plusSaddleMellinData_eq_gamma_mul_regular
+lemma plusSaddleMellinData_eq_gamma_mul_regular
     (ε ℓ : ℝ) (z : ℂ) :
     plusSaddleMellinData ε ℓ z =
       Complex.Gamma (z / 2) *
@@ -3089,7 +3089,7 @@ theorem plusSaddleMellinData_eq_gamma_mul_regular
     plusSaddleRegularMellinFactor saddleRegularMellinFactor
   ring
 
-theorem minusSaddleMellinData_eq_gamma_mul_regular
+lemma minusSaddleMellinData_eq_gamma_mul_regular
     (ε ℓ : ℝ) (z : ℂ) :
     minusSaddleMellinData ε ℓ z =
       Complex.Gamma (z / 2) *
@@ -3098,7 +3098,7 @@ theorem minusSaddleMellinData_eq_gamma_mul_regular
     minusSaddleRegularMellinFactor saddleRegularMellinFactor
   ring
 
-theorem saddleRegularMellinFactor_continuous {ε : ℝ}
+lemma saddleRegularMellinFactor_continuous {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (ℓ : ℝ) :
     Continuous (saddleRegularMellinFactor ε ℓ) := by
@@ -3118,7 +3118,7 @@ theorem saddleRegularMellinFactor_continuous {ε : ℝ}
         ((mellinShellPhase_continuous hε horder).comp harg))
   exact hpi.mul hphase
 
-theorem saddleRegularMellinFactor_differentiable {ε : ℝ}
+lemma saddleRegularMellinFactor_differentiable {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (ℓ : ℝ) :
     Differentiable ℂ (saddleRegularMellinFactor ε ℓ) := by
@@ -3138,7 +3138,7 @@ theorem saddleRegularMellinFactor_differentiable {ε : ℝ}
         harg).const_mul (ℓ : ℂ))
   exact hpi.mul hphase
 
-theorem plusSaddleRegularMellinFactor_differentiable {ε : ℝ}
+lemma plusSaddleRegularMellinFactor_differentiable {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (ℓ : ℝ) :
     Differentiable ℂ (plusSaddleRegularMellinFactor ε ℓ) := by
@@ -3150,7 +3150,7 @@ theorem plusSaddleRegularMellinFactor_differentiable {ε : ℝ}
   exact (saddleRegularMellinFactor_differentiable
     hε horder ℓ).mul hp
 
-theorem minusSaddleRegularMellinFactor_differentiable {ε : ℝ}
+lemma minusSaddleRegularMellinFactor_differentiable {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (ℓ : ℝ) :
     Differentiable ℂ (minusSaddleRegularMellinFactor ε ℓ) := by
@@ -3162,21 +3162,21 @@ theorem minusSaddleRegularMellinFactor_differentiable {ε : ℝ}
   exact (saddleRegularMellinFactor_differentiable
     hε horder ℓ).mul hp
 
-theorem plusSaddleRegularMellinFactor_analyticOnNhd {ε : ℝ}
+lemma plusSaddleRegularMellinFactor_analyticOnNhd {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (ℓ : ℝ) :
     AnalyticOnNhd ℂ (plusSaddleRegularMellinFactor ε ℓ) Set.univ :=
   Complex.analyticOnNhd_univ_iff_differentiable.mpr
     (plusSaddleRegularMellinFactor_differentiable hε horder ℓ)
 
-theorem minusSaddleRegularMellinFactor_analyticOnNhd {ε : ℝ}
+lemma minusSaddleRegularMellinFactor_analyticOnNhd {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (ℓ : ℝ) :
     AnalyticOnNhd ℂ (minusSaddleRegularMellinFactor ε ℓ) Set.univ :=
   Complex.analyticOnNhd_univ_iff_differentiable.mpr
     (minusSaddleRegularMellinFactor_differentiable hε horder ℓ)
 
-theorem saddleMellinGamma_meromorphic :
+lemma saddleMellinGamma_meromorphic :
     Meromorphic (fun z : ℂ => Complex.Gamma (z / 2)) := by
   intro z
   have hg : MeromorphicAt Complex.Gamma (z / 2) :=
@@ -3187,7 +3187,7 @@ theorem saddleMellinGamma_meromorphic :
     (MeromorphicAt.comp_analyticAt
       (g := fun u : ℂ => u / 2) (x := z) hg ha)
 
-theorem plusSaddleMellinData_meromorphic {ε : ℝ}
+lemma plusSaddleMellinData_meromorphic {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (ℓ : ℝ) :
     Meromorphic (plusSaddleMellinData ε ℓ) := by
@@ -3204,7 +3204,7 @@ theorem plusSaddleMellinData_meromorphic {ε : ℝ}
     exact plusSaddleMellinData_eq_gamma_mul_regular ε ℓ w]
   exact hproduct z
 
-theorem minusSaddleMellinData_meromorphic {ε : ℝ}
+lemma minusSaddleMellinData_meromorphic {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (ℓ : ℝ) :
     Meromorphic (minusSaddleMellinData ε ℓ) := by
@@ -3221,7 +3221,7 @@ theorem minusSaddleMellinData_meromorphic {ε : ℝ}
     exact minusSaddleMellinData_eq_gamma_mul_regular ε ℓ w]
   exact hproduct z
 
-theorem saddleMellinGamma_differentiableAt_of_re_pos
+lemma saddleMellinGamma_differentiableAt_of_re_pos
     {z : ℂ} (hz : 0 < z.re) :
     DifferentiableAt ℂ (fun w : ℂ => Complex.Gamma (w / 2)) z := by
   have hhalf : 0 < (z / 2).re := by
@@ -3233,7 +3233,7 @@ theorem saddleMellinGamma_differentiableAt_of_re_pos
       exact (not_lt_of_ge hnonpositive) (hn ▸ hhalf))
   exact hg.comp z (by fun_prop)
 
-theorem saddleMellinGamma_differentiableOn_rightHalfPlane :
+lemma saddleMellinGamma_differentiableOn_rightHalfPlane :
     DifferentiableOn ℂ
       (fun z : ℂ => Complex.Gamma (z / 2))
       {z : ℂ | 0 < z.re} := by
@@ -3241,7 +3241,7 @@ theorem saddleMellinGamma_differentiableOn_rightHalfPlane :
   exact (saddleMellinGamma_differentiableAt_of_re_pos
     hz).differentiableWithinAt
 
-theorem plusSaddleMellinData_differentiableOn_rightHalfPlane
+lemma plusSaddleMellinData_differentiableOn_rightHalfPlane
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (ℓ : ℝ) :
     DifferentiableOn ℂ (plusSaddleMellinData ε ℓ)
@@ -3255,7 +3255,7 @@ theorem plusSaddleMellinData_differentiableOn_rightHalfPlane
     (plusSaddleRegularMellinFactor_differentiable
       hε horder ℓ).differentiableOn
 
-theorem minusSaddleMellinData_differentiableOn_rightHalfPlane
+lemma minusSaddleMellinData_differentiableOn_rightHalfPlane
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (ℓ : ℝ) :
     DifferentiableOn ℂ (minusSaddleMellinData ε ℓ)
@@ -3269,7 +3269,7 @@ theorem minusSaddleMellinData_differentiableOn_rightHalfPlane
     (minusSaddleRegularMellinFactor_differentiable
       hε horder ℓ).differentiableOn
 
-theorem saddleMellinShellArgument_zero {ℓ : ℝ}
+lemma saddleMellinShellArgument_zero {ℓ : ℝ}
     (hℓ : 0 < ℓ) :
     Complex.I * ((0 : ℂ) - (ℓ : ℂ)) / (ℓ : ℂ) =
       -Complex.I := by
@@ -3277,7 +3277,7 @@ theorem saddleMellinShellArgument_zero {ℓ : ℝ}
     exact_mod_cast hℓ.ne'
   field_simp [hc]; ring
 
-theorem saddleMellinShellArgument_neg_even {ℓ : ℝ}
+lemma saddleMellinShellArgument_neg_even {ℓ : ℝ}
     (hℓ : 0 < ℓ) (n : ℕ) :
     Complex.I *
         ((-((2 * n : ℕ) : ℂ)) - (ℓ : ℂ)) / (ℓ : ℂ) =
@@ -3288,7 +3288,7 @@ theorem saddleMellinShellArgument_neg_even {ℓ : ℝ}
   push_cast
   field_simp [hc]; ring
 
-theorem mellinShellPhase_neg_I (ε : ℝ) :
+lemma mellinShellPhase_neg_I (ε : ℝ) :
     mellinShellPhase ε (-Complex.I) =
       (realHyperbolicShellPhase ε 1 : ℂ) := by
   calc
@@ -3298,15 +3298,15 @@ theorem mellinShellPhase_neg_I (ε : ℝ) :
     _ = (realHyperbolicShellPhase ε 1 : ℂ) := by
           simpa using! mellinShellPhase_imaginary ε 1
 
-theorem plusPolynomial_neg_I (ε : ℝ) :
+lemma plusPolynomial_neg_I (ε : ℝ) :
     plusPolynomial ε (-Complex.I) = (beta ε : ℂ) := by
   simpa using! plusPolynomial_imaginary ε (-1)
 
-theorem minusPolynomial_neg_I (ε : ℝ) :
+lemma minusPolynomial_neg_I (ε : ℝ) :
     minusPolynomial ε (-Complex.I) = (beta ε : ℂ) := by
   simpa using! minusPolynomial_imaginary ε (-1)
 
-theorem saddleRegularMellinFactor_zero
+lemma saddleRegularMellinFactor_zero
     {ε ℓ : ℝ} (hℓ : 0 < ℓ) :
     saddleRegularMellinFactor ε ℓ 0 =
       ((Real.pi ^ (ℓ / 2) *
@@ -3331,7 +3331,7 @@ theorem saddleRegularMellinFactor_zero
   rw [saddleMellinShellArgument_zero hℓ, hpi, hphase,
     ← Complex.ofReal_mul]
 
-theorem saddleRegularMellinFactor_neg_even
+lemma saddleRegularMellinFactor_neg_even
     {ε ℓ : ℝ} (hℓ : 0 < ℓ) (n : ℕ) :
     saddleRegularMellinFactor ε ℓ (-((2 * n : ℕ) : ℂ)) =
       ((Real.pi ^ (ℓ / 2 + (n : ℝ)) *
@@ -3362,7 +3362,7 @@ theorem saddleRegularMellinFactor_neg_even
   unfold saddleRegularMellinFactor
   rw [hpi, hphase, ← Complex.ofReal_mul]
 
-theorem plusSaddleRegularMellinFactor_neg_even
+lemma plusSaddleRegularMellinFactor_neg_even
     {ε ℓ : ℝ} (hℓ : 0 < ℓ) (n : ℕ) :
     plusSaddleRegularMellinFactor ε ℓ
         (-((2 * n : ℕ) : ℂ)) =
@@ -3377,7 +3377,7 @@ theorem plusSaddleRegularMellinFactor_neg_even
   rw [saddleRegularMellinFactor_neg_even hℓ n,
     saddleMellinShellArgument_neg_even hℓ n]
 
-theorem two_mul_plusSaddleRegularMellinFactor_zero
+lemma two_mul_plusSaddleRegularMellinFactor_zero
     {ε ℓ : ℝ} (hℓ : 0 < ℓ) :
     (2 : ℂ) * plusSaddleRegularMellinFactor ε ℓ 0 =
       (saddleOriginValue ε ℓ : ℂ) := by
@@ -3388,7 +3388,7 @@ theorem two_mul_plusSaddleRegularMellinFactor_zero
   push_cast
   ring
 
-theorem two_mul_minusSaddleRegularMellinFactor_zero
+lemma two_mul_minusSaddleRegularMellinFactor_zero
     {ε ℓ : ℝ} (hℓ : 0 < ℓ) :
     (2 : ℂ) * minusSaddleRegularMellinFactor ε ℓ 0 =
       (saddleOriginValue ε ℓ : ℂ) := by
@@ -3399,7 +3399,7 @@ theorem two_mul_minusSaddleRegularMellinFactor_zero
   push_cast
   ring
 
-theorem complexGamma_residue_neg_nat (n : ℕ) :
+lemma complexGamma_residue_neg_nat (n : ℕ) :
     Tendsto (fun z : ℂ => (z + (n : ℂ)) * Complex.Gamma z)
       (𝓝[≠] (-(n : ℂ)))
       (𝓝 (((-1 : ℂ) ^ n) / (n.factorial : ℂ))) := by
@@ -3457,7 +3457,7 @@ theorem complexGamma_residue_neg_nat (n : ℕ) :
       simp only [Nat.cast_add, Nat.cast_one]
       field_simp [hz]; ring
 
-theorem saddleGamma_residue_neg_even (n : ℕ) :
+lemma saddleGamma_residue_neg_even (n : ℕ) :
     Tendsto
       (fun z : ℂ =>
         (z + ((2 * n : ℕ) : ℂ)) * Complex.Gamma (z / 2))
@@ -3489,7 +3489,7 @@ theorem saddleGamma_residue_neg_even (n : ℕ) :
     ring
   · ring_nf
 
-theorem gamma_add_nat_eq_product_of_lt (z : ℂ) (k : ℕ)
+lemma gamma_add_nat_eq_product_of_lt (z : ℂ) (k : ℕ)
     (hz : ∀ j : ℕ, j < k → z + (j : ℂ) ≠ 0) :
     Complex.Gamma (z + (k : ℂ)) =
       Complex.Gamma z *
@@ -3512,7 +3512,7 @@ def saddlePoleStrip (n : ℕ) : Set ℂ :=
     -(2 * ((n : ℝ) + 1)) < z.re ∧
       z.re < -(2 * (n : ℝ)) + 1}
 
-theorem saddlePole_mem_strip (n : ℕ) :
+lemma saddlePole_mem_strip (n : ℕ) :
     (-((2 * n : ℕ) : ℂ)) ∈ saddlePoleStrip n := by
   change
     -(2 * ((n : ℝ) + 1)) <
@@ -3522,7 +3522,7 @@ theorem saddlePole_mem_strip (n : ℕ) :
   constructor <;>
     norm_num [Nat.cast_mul, Complex.mul_re]
 
-theorem isOpen_saddlePoleStrip (n : ℕ) :
+lemma isOpen_saddlePoleStrip (n : ℕ) :
     IsOpen (saddlePoleStrip n) := by
   exact (isOpen_lt continuous_const Complex.continuous_re).inter
     (isOpen_lt Complex.continuous_re continuous_const)
@@ -3530,7 +3530,7 @@ theorem isOpen_saddlePoleStrip (n : ℕ) :
 def saddlePoleLowerProduct (n : ℕ) (z : ℂ) : ℂ :=
   ∏ j ∈ Finset.range n, (z / 2 + (j : ℂ))
 
-theorem saddlePoleLowerProduct_ne_zero
+lemma saddlePoleLowerProduct_ne_zero
     {n : ℕ} {z : ℂ} (hz : z ∈ saddlePoleStrip n) :
     saddlePoleLowerProduct n z ≠ 0 := by
   unfold saddlePoleLowerProduct
@@ -3552,12 +3552,12 @@ def saddleNthGammaPoleNumerator (n : ℕ) (z : ℂ) : ℂ :=
     Complex.Gamma (z / 2 + ((n + 1 : ℕ) : ℂ)) /
       saddlePoleLowerProduct n z
 
-theorem saddlePoleLowerProduct_differentiable (n : ℕ) :
+lemma saddlePoleLowerProduct_differentiable (n : ℕ) :
     Differentiable ℂ (saddlePoleLowerProduct n) := by
   unfold saddlePoleLowerProduct
   fun_prop
 
-theorem saddleGamma_eq_nthPoleNumerator_div
+lemma saddleGamma_eq_nthPoleNumerator_div
     {n : ℕ} {z : ℂ}
     (hstrip : z ∈ saddlePoleStrip n)
     (hpole : z ≠ (-((2 * n : ℕ) : ℂ))) :
@@ -3636,7 +3636,7 @@ theorem saddleGamma_eq_nthPoleNumerator_div
   rw [hcancel]
   field_simp [hcoordinate]; push_cast; ring
 
-theorem saddleNthGammaPoleNumerator_differentiableOn (n : ℕ) :
+lemma saddleNthGammaPoleNumerator_differentiableOn (n : ℕ) :
     DifferentiableOn ℂ (saddleNthGammaPoleNumerator n)
       (saddlePoleStrip n) := by
   intro z hz
@@ -3665,7 +3665,7 @@ theorem saddleNthGammaPoleNumerator_differentiableOn (n : ℕ) :
   exact (hnumerator.div hdenominator
     (saddlePoleLowerProduct_ne_zero hz)).differentiableWithinAt
 
-theorem saddleNthGammaPoleNumerator_at_pole (n : ℕ) :
+lemma saddleNthGammaPoleNumerator_at_pole (n : ℕ) :
     saddleNthGammaPoleNumerator n
         (-((2 * n : ℕ) : ℂ)) =
       (2 : ℂ) * (-1 : ℂ) ^ n / (n.factorial : ℂ) := by
@@ -3721,7 +3721,7 @@ def minusSaddleNthPoleNumerator
   saddleNthGammaPoleNumerator n z *
     minusSaddleRegularMellinFactor ε ℓ z
 
-theorem plusSaddleNthPoleNumerator_differentiableOn
+lemma plusSaddleNthPoleNumerator_differentiableOn
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (n : ℕ) :
@@ -3732,7 +3732,7 @@ theorem plusSaddleNthPoleNumerator_differentiableOn
     (plusSaddleRegularMellinFactor_differentiable
       hε horder ℓ).differentiableOn
 
-theorem minusSaddleNthPoleNumerator_differentiableOn
+lemma minusSaddleNthPoleNumerator_differentiableOn
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (n : ℕ) :
@@ -3743,7 +3743,7 @@ theorem minusSaddleNthPoleNumerator_differentiableOn
     (minusSaddleRegularMellinFactor_differentiable
       hε horder ℓ).differentiableOn
 
-theorem plusSaddleMellinData_eq_nthPoleNumerator_div
+lemma plusSaddleMellinData_eq_nthPoleNumerator_div
     (ε ℓ : ℝ) {n : ℕ} {z : ℂ}
     (hstrip : z ∈ saddlePoleStrip n)
     (hpole : z ≠ (-((2 * n : ℕ) : ℂ))) :
@@ -3755,7 +3755,7 @@ theorem plusSaddleMellinData_eq_nthPoleNumerator_div
   unfold plusSaddleNthPoleNumerator
   ring
 
-theorem minusSaddleMellinData_eq_nthPoleNumerator_div
+lemma minusSaddleMellinData_eq_nthPoleNumerator_div
     (ε ℓ : ℝ) {n : ℕ} {z : ℂ}
     (hstrip : z ∈ saddlePoleStrip n)
     (hpole : z ≠ (-((2 * n : ℕ) : ℂ))) :
@@ -3767,7 +3767,7 @@ theorem minusSaddleMellinData_eq_nthPoleNumerator_div
   unfold minusSaddleNthPoleNumerator
   ring
 
-theorem plusSaddleNthPoleNumerator_at_pole
+lemma plusSaddleNthPoleNumerator_at_pole
     (ε ℓ : ℝ) (n : ℕ) :
     plusSaddleNthPoleNumerator ε ℓ n
         (-((2 * n : ℕ) : ℂ)) =
@@ -3777,7 +3777,7 @@ theorem plusSaddleNthPoleNumerator_at_pole
   unfold plusSaddleNthPoleNumerator
   rw [saddleNthGammaPoleNumerator_at_pole]
 
-theorem minusSaddleNthPoleNumerator_at_pole
+lemma minusSaddleNthPoleNumerator_at_pole
     (ε ℓ : ℝ) (n : ℕ) :
     minusSaddleNthPoleNumerator ε ℓ n
         (-((2 * n : ℕ) : ℂ)) =
@@ -3797,14 +3797,14 @@ def minusSaddlePoleResidue (ε ℓ : ℝ) (n : ℕ) : ℂ :=
     minusSaddleRegularMellinFactor ε ℓ
       (-((2 * n : ℕ) : ℂ))
 
-theorem plusSaddleNthPoleNumerator_poleResidue
+lemma plusSaddleNthPoleNumerator_poleResidue
     (ε ℓ : ℝ) (n : ℕ) :
     plusSaddleNthPoleNumerator ε ℓ n
         (-((2 * n : ℕ) : ℂ)) =
       plusSaddlePoleResidue ε ℓ n := by
   exact plusSaddleNthPoleNumerator_at_pole ε ℓ n
 
-theorem minusSaddleNthPoleNumerator_poleResidue
+lemma minusSaddleNthPoleNumerator_poleResidue
     (ε ℓ : ℝ) (n : ℕ) :
     minusSaddleNthPoleNumerator ε ℓ n
         (-((2 * n : ℕ) : ℂ)) =
@@ -3821,7 +3821,7 @@ def minusSaddleNthPoleRegularPart
   dslope (minusSaddleNthPoleNumerator ε ℓ n)
     (-((2 * n : ℕ) : ℂ))
 
-theorem plusSaddleNthPoleRegularPart_differentiableOn
+lemma plusSaddleNthPoleRegularPart_differentiableOn
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (n : ℕ) :
@@ -3834,7 +3834,7 @@ theorem plusSaddleNthPoleRegularPart_differentiableOn
         (plusSaddleNthPoleNumerator_differentiableOn
           hε horder ℓ n)
 
-theorem minusSaddleNthPoleRegularPart_differentiableOn
+lemma minusSaddleNthPoleRegularPart_differentiableOn
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (n : ℕ) :
@@ -3847,7 +3847,7 @@ theorem minusSaddleNthPoleRegularPart_differentiableOn
         (minusSaddleNthPoleNumerator_differentiableOn
           hε horder ℓ n)
 
-theorem plusSaddleMellinData_nthPole_decomposition
+lemma plusSaddleMellinData_nthPole_decomposition
     (ε ℓ : ℝ) {n : ℕ} {z : ℂ}
     (hstrip : z ∈ saddlePoleStrip n)
     (hpole : z ≠ (-((2 * n : ℕ) : ℂ))) :
@@ -3883,7 +3883,7 @@ theorem plusSaddleMellinData_nthPole_decomposition
     linear_combination hzero
   field_simp [hcoordinate]
 
-theorem minusSaddleMellinData_nthPole_decomposition
+lemma minusSaddleMellinData_nthPole_decomposition
     (ε ℓ : ℝ) {n : ℕ} {z : ℂ}
     (hstrip : z ∈ saddlePoleStrip n)
     (hpole : z ≠ (-((2 * n : ℕ) : ℂ))) :
@@ -3922,7 +3922,7 @@ theorem minusSaddleMellinData_nthPole_decomposition
 def saddleFinitePoleHalfPlane (N : ℕ) : Set ℂ :=
   {z : ℂ | -(2 * ((N : ℝ) + 1)) < z.re}
 
-theorem saddlePole_mem_finiteHalfPlane_iff
+lemma saddlePole_mem_finiteHalfPlane_iff
     (N n : ℕ) :
     (-((2 * n : ℕ) : ℂ)) ∈
         saddleFinitePoleHalfPlane N ↔ n ≤ N := by
@@ -3942,7 +3942,7 @@ theorem saddlePole_mem_finiteHalfPlane_iff
       exact_mod_cast hn
     linarith
 
-theorem saddleMellinGamma_differentiableAt_of_not_pole
+lemma saddleMellinGamma_differentiableAt_of_not_pole
     {z : ℂ}
     (hz : ∀ n : ℕ,
       z ≠ (-((2 * n : ℕ) : ℂ))) :
@@ -3956,7 +3956,7 @@ theorem saddleMellinGamma_differentiableAt_of_not_pole
   exact (Complex.differentiableAt_Gamma (z / 2)
     hhalf).comp z (by fun_prop)
 
-theorem plusSaddleMellinData_differentiableAt_of_not_pole
+lemma plusSaddleMellinData_differentiableAt_of_not_pole
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) {z : ℂ}
@@ -3972,7 +3972,7 @@ theorem plusSaddleMellinData_differentiableAt_of_not_pole
     (plusSaddleRegularMellinFactor_differentiable
       hε horder ℓ z)
 
-theorem minusSaddleMellinData_differentiableAt_of_not_pole
+lemma minusSaddleMellinData_differentiableAt_of_not_pole
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) {z : ℂ}
@@ -4002,7 +4002,7 @@ def minusSaddleFinitePoleSubtraction
       minusSaddlePoleResidue ε ℓ n /
         (z + ((2 * n : ℕ) : ℂ))
 
-theorem plusSaddleFinitePoleSubtraction_meromorphic
+lemma plusSaddleFinitePoleSubtraction_meromorphic
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) :
@@ -4018,7 +4018,7 @@ theorem plusSaddleFinitePoleSubtraction_meromorphic
   exact (plusSaddleMellinData_meromorphic
     hε horder ℓ).sub hsum
 
-theorem minusSaddleFinitePoleSubtraction_meromorphic
+lemma minusSaddleFinitePoleSubtraction_meromorphic
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) :
@@ -4046,7 +4046,7 @@ def minusSaddleFinitePoleRegularPart
     (minusSaddleFinitePoleSubtraction ε ℓ N)
       (saddleFinitePoleHalfPlane N)
 
-theorem plusSaddleFinitePoleRegularPart_meromorphicNFOn
+lemma plusSaddleFinitePoleRegularPart_meromorphicNFOn
     (ε ℓ : ℝ) (N : ℕ) :
     MeromorphicNFOn
       (plusSaddleFinitePoleRegularPart ε ℓ N)
@@ -4054,7 +4054,7 @@ theorem plusSaddleFinitePoleRegularPart_meromorphicNFOn
   unfold plusSaddleFinitePoleRegularPart
   exact meromorphicNFOn_toMeromorphicNFOn _ _
 
-theorem minusSaddleFinitePoleRegularPart_meromorphicNFOn
+lemma minusSaddleFinitePoleRegularPart_meromorphicNFOn
     (ε ℓ : ℝ) (N : ℕ) :
     MeromorphicNFOn
       (minusSaddleFinitePoleRegularPart ε ℓ N)
@@ -4062,7 +4062,7 @@ theorem minusSaddleFinitePoleRegularPart_meromorphicNFOn
   unfold minusSaddleFinitePoleRegularPart
   exact meromorphicNFOn_toMeromorphicNFOn _ _
 
-theorem plusSaddleFinitePoleRegularPart_eq_on_punctured
+lemma plusSaddleFinitePoleRegularPart_eq_on_punctured
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) {z : ℂ}
@@ -4074,7 +4074,7 @@ theorem plusSaddleFinitePoleRegularPart_eq_on_punctured
     hε horder ℓ N).meromorphicOn
       |>.toMeromorphicNFOn_eq_self_on_nhdsNE hz
 
-theorem minusSaddleFinitePoleRegularPart_eq_on_punctured
+lemma minusSaddleFinitePoleRegularPart_eq_on_punctured
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) {z : ℂ}
@@ -4086,7 +4086,7 @@ theorem minusSaddleFinitePoleRegularPart_eq_on_punctured
     hε horder ℓ N).meromorphicOn
       |>.toMeromorphicNFOn_eq_self_on_nhdsNE hz
 
-theorem saddlePoleCoordinate_ne_zero_at_other
+lemma saddlePoleCoordinate_ne_zero_at_other
     {m n : ℕ} (hmn : m ≠ n) :
     -((2 * n : ℕ) : ℂ) +
       ((2 * m : ℕ) : ℂ) ≠ 0 := by
@@ -4110,7 +4110,7 @@ def minusSaddleFinitePoleRemaining
     minusSaddlePoleResidue ε ℓ m /
       (z + ((2 * m : ℕ) : ℂ))
 
-theorem plusSaddleFinitePoleRemaining_differentiableAt_pole
+lemma plusSaddleFinitePoleRemaining_differentiableAt_pole
     (ε ℓ : ℝ) (N n : ℕ) :
     DifferentiableAt ℂ
       (plusSaddleFinitePoleRemaining ε ℓ N n)
@@ -4134,7 +4134,7 @@ theorem plusSaddleFinitePoleRemaining_differentiableAt_pole
     fun_prop
   exact hconstant.div hdenominator hcoordinate
 
-theorem minusSaddleFinitePoleRemaining_differentiableAt_pole
+lemma minusSaddleFinitePoleRemaining_differentiableAt_pole
     (ε ℓ : ℝ) (N n : ℕ) :
     DifferentiableAt ℂ
       (minusSaddleFinitePoleRemaining ε ℓ N n)
@@ -4158,7 +4158,7 @@ theorem minusSaddleFinitePoleRemaining_differentiableAt_pole
     fun_prop
   exact hconstant.div hdenominator hcoordinate
 
-theorem plusSaddleFinitePoleSubtraction_differentiableAt_of_not_pole
+lemma plusSaddleFinitePoleSubtraction_differentiableAt_of_not_pole
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) {z : ℂ}
@@ -4186,7 +4186,7 @@ theorem plusSaddleFinitePoleSubtraction_differentiableAt_of_not_pole
     fun_prop
   exact hconstant.div hdenominator hcoordinate
 
-theorem minusSaddleFinitePoleSubtraction_differentiableAt_of_not_pole
+lemma minusSaddleFinitePoleSubtraction_differentiableAt_of_not_pole
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) {z : ℂ}
@@ -4214,7 +4214,7 @@ theorem minusSaddleFinitePoleSubtraction_differentiableAt_of_not_pole
     fun_prop
   exact hconstant.div hdenominator hcoordinate
 
-theorem plusSaddleFinitePoleSubtraction_eventually_eq_poleRegular
+lemma plusSaddleFinitePoleSubtraction_eventually_eq_poleRegular
     (ε ℓ : ℝ) (N n : ℕ) (hn : n ≤ N) :
     plusSaddleFinitePoleSubtraction ε ℓ N =ᶠ[𝓝[≠]
       (-((2 * n : ℕ) : ℂ))]
@@ -4252,7 +4252,7 @@ theorem plusSaddleFinitePoleSubtraction_eventually_eq_poleRegular
     ε ℓ hz hne, ← hsum]
   ring
 
-theorem minusSaddleFinitePoleSubtraction_eventually_eq_poleRegular
+lemma minusSaddleFinitePoleSubtraction_eventually_eq_poleRegular
     (ε ℓ : ℝ) (N n : ℕ) (hn : n ≤ N) :
     minusSaddleFinitePoleSubtraction ε ℓ N =ᶠ[𝓝[≠]
       (-((2 * n : ℕ) : ℂ))]
@@ -4290,7 +4290,7 @@ theorem minusSaddleFinitePoleSubtraction_eventually_eq_poleRegular
     ε ℓ hz hne, ← hsum]
   ring
 
-theorem plusSaddleFinitePoleSubtraction_tendsto_at_pole
+lemma plusSaddleFinitePoleSubtraction_tendsto_at_pole
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N n : ℕ) (hn : n ≤ N) :
@@ -4327,7 +4327,7 @@ theorem plusSaddleFinitePoleSubtraction_tendsto_at_pole
     (plusSaddleFinitePoleSubtraction_eventually_eq_poleRegular
       ε ℓ N n hn).symm
 
-theorem minusSaddleFinitePoleSubtraction_tendsto_at_pole
+lemma minusSaddleFinitePoleSubtraction_tendsto_at_pole
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N n : ℕ) (hn : n ≤ N) :
@@ -4364,7 +4364,7 @@ theorem minusSaddleFinitePoleSubtraction_tendsto_at_pole
     (minusSaddleFinitePoleSubtraction_eventually_eq_poleRegular
       ε ℓ N n hn).symm
 
-theorem plusSaddleFinitePoleSubtraction_tendsto_of_mem
+lemma plusSaddleFinitePoleSubtraction_tendsto_of_mem
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) {z : ℂ}
@@ -4394,7 +4394,7 @@ theorem plusSaddleFinitePoleSubtraction_tendsto_of_mem
       hε horder ℓ N hnot).continuousAt.tendsto.mono_left
         nhdsWithin_le_nhds
 
-theorem minusSaddleFinitePoleSubtraction_tendsto_of_mem
+lemma minusSaddleFinitePoleSubtraction_tendsto_of_mem
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) {z : ℂ}
@@ -4424,7 +4424,7 @@ theorem minusSaddleFinitePoleSubtraction_tendsto_of_mem
       hε horder ℓ N hnot).continuousAt.tendsto.mono_left
         nhdsWithin_le_nhds
 
-theorem plusSaddleFinitePoleRegularPart_analyticOnNhd
+lemma plusSaddleFinitePoleRegularPart_analyticOnNhd
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) :
@@ -4448,7 +4448,7 @@ theorem plusSaddleFinitePoleRegularPart_analyticOnNhd
     ((tendsto_nhds_iff_meromorphicOrderAt_nonneg
       hnormal.meromorphicAt).mp ⟨c, hregular⟩)
 
-theorem minusSaddleFinitePoleRegularPart_analyticOnNhd
+lemma minusSaddleFinitePoleRegularPart_analyticOnNhd
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) :
@@ -4472,7 +4472,7 @@ theorem minusSaddleFinitePoleRegularPart_analyticOnNhd
     ((tendsto_nhds_iff_meromorphicOrderAt_nonneg
       hnormal.meromorphicAt).mp ⟨c, hregular⟩)
 
-theorem plusSaddleFinitePoleRegularPart_eq_subtraction_of_not_pole
+lemma plusSaddleFinitePoleRegularPart_eq_subtraction_of_not_pole
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) {z : ℂ}
@@ -4493,7 +4493,7 @@ theorem plusSaddleFinitePoleRegularPart_eq_subtraction_of_not_pole
   exact ((hregular.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE
     hsubtraction).mp hpunctured).eq_of_nhds
 
-theorem minusSaddleFinitePoleRegularPart_eq_subtraction_of_not_pole
+lemma minusSaddleFinitePoleRegularPart_eq_subtraction_of_not_pole
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) {z : ℂ}
@@ -4514,7 +4514,7 @@ theorem minusSaddleFinitePoleRegularPart_eq_subtraction_of_not_pole
   exact ((hregular.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE
     hsubtraction).mp hpunctured).eq_of_nhds
 
-theorem plusSaddleFinitePoleRegularPart_differentiableOn
+lemma plusSaddleFinitePoleRegularPart_differentiableOn
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) :
@@ -4524,7 +4524,7 @@ theorem plusSaddleFinitePoleRegularPart_differentiableOn
   (plusSaddleFinitePoleRegularPart_analyticOnNhd
     hε horder ℓ N).differentiableOn
 
-theorem minusSaddleFinitePoleRegularPart_differentiableOn
+lemma minusSaddleFinitePoleRegularPart_differentiableOn
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) :
@@ -4534,7 +4534,7 @@ theorem minusSaddleFinitePoleRegularPart_differentiableOn
   (minusSaddleFinitePoleRegularPart_analyticOnNhd
     hε horder ℓ N).differentiableOn
 
-theorem saddleFinitePoleHalfPlane_reProdIm_subset
+lemma saddleFinitePoleHalfPlane_reProdIm_subset
     {N : ℕ} {z w : ℂ}
     (hz : z ∈ saddleFinitePoleHalfPlane N)
     (hw : w ∈ saddleFinitePoleHalfPlane N) :
@@ -4553,7 +4553,7 @@ theorem saddleFinitePoleHalfPlane_reProdIm_subset
 def saddleMellinInversePower (r : ℝ) (z : ℂ) : ℂ :=
   (r : ℂ) ^ (-z)
 
-theorem saddleMellinInversePower_differentiable
+lemma saddleMellinInversePower_differentiable
     {r : ℝ} (hr : 0 < r) :
     Differentiable ℂ (saddleMellinInversePower r) := by
   have hnonzero : (r : ℂ) ≠ 0 := by
@@ -4573,7 +4573,7 @@ theorem saddleMellinInversePower_differentiable
 def saddleGaussianPoleSlope (z : ℂ) : ℂ :=
   dslope (fun w : ℂ => Complex.exp (w ^ 2)) 0 z
 
-theorem saddleGaussianPoleSlope_differentiable :
+lemma saddleGaussianPoleSlope_differentiable :
     Differentiable ℂ saddleGaussianPoleSlope := by
   have hgaussian :
       Differentiable ℂ
@@ -4586,14 +4586,14 @@ theorem saddleGaussianPoleSlope_differentiable :
       (show Set.univ ∈ 𝓝 (0 : ℂ) from univ_mem)).mpr
         hgaussian.differentiableOn)
 
-theorem saddleGaussianPoleSlope_mul (z : ℂ) :
+lemma saddleGaussianPoleSlope_mul (z : ℂ) :
     z * saddleGaussianPoleSlope z =
       Complex.exp (z ^ 2) - 1 := by
   have h := sub_smul_dslope
     (fun w : ℂ => Complex.exp (w ^ 2)) 0 z
   simpa [saddleGaussianPoleSlope, smul_eq_mul] using! h
 
-theorem saddleGaussianPoleSlope_eq_of_ne
+lemma saddleGaussianPoleSlope_eq_of_ne
     {z : ℂ} (hz : z ≠ 0) :
     saddleGaussianPoleSlope z =
       (Complex.exp (z ^ 2) - 1) / z := by
@@ -4635,7 +4635,7 @@ def minusSaddleFiniteRapidPoleRegularPart
         saddleGaussianPoleSlope
           (z + ((2 * n : ℕ) : ℂ))
 
-theorem plusSaddleFiniteRapidPoleRegularPart_differentiableOn
+lemma plusSaddleFiniteRapidPoleRegularPart_differentiableOn
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) :
@@ -4657,7 +4657,7 @@ theorem plusSaddleFiniteRapidPoleRegularPart_differentiableOn
     saddleGaussianPoleSlope_differentiable.comp (by fun_prop)
   exact hconstant.mul hslope.differentiableOn
 
-theorem minusSaddleFiniteRapidPoleRegularPart_differentiableOn
+lemma minusSaddleFiniteRapidPoleRegularPart_differentiableOn
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) :
@@ -4679,7 +4679,7 @@ theorem minusSaddleFiniteRapidPoleRegularPart_differentiableOn
     saddleGaussianPoleSlope_differentiable.comp (by fun_prop)
   exact hconstant.mul hslope.differentiableOn
 
-theorem plusSaddleFiniteRapidPoleRegularPart_eq_subtraction_of_not_pole
+lemma plusSaddleFiniteRapidPoleRegularPart_eq_subtraction_of_not_pole
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) {z : ℂ}
@@ -4718,7 +4718,7 @@ theorem plusSaddleFiniteRapidPoleRegularPart_eq_subtraction_of_not_pole
     ring
   linear_combination -hsum
 
-theorem minusSaddleFiniteRapidPoleRegularPart_eq_subtraction_of_not_pole
+lemma minusSaddleFiniteRapidPoleRegularPart_eq_subtraction_of_not_pole
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) {z : ℂ}
@@ -4767,7 +4767,7 @@ def minusSaddleFiniteRapidContourIntegrand
   saddleMellinInversePower r z *
     minusSaddleFiniteRapidPoleRegularPart ε ℓ N z
 
-theorem plusSaddleFiniteRapidContourIntegrand_differentiableOn
+lemma plusSaddleFiniteRapidContourIntegrand_differentiableOn
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) {r : ℝ} (hr : 0 < r) :
@@ -4779,7 +4779,7 @@ theorem plusSaddleFiniteRapidContourIntegrand_differentiableOn
     (plusSaddleFiniteRapidPoleRegularPart_differentiableOn
       hε horder ℓ N)
 
-theorem minusSaddleFiniteRapidContourIntegrand_differentiableOn
+lemma minusSaddleFiniteRapidContourIntegrand_differentiableOn
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) {r : ℝ} (hr : 0 < r) :
@@ -4791,7 +4791,7 @@ theorem minusSaddleFiniteRapidContourIntegrand_differentiableOn
     (minusSaddleFiniteRapidPoleRegularPart_differentiableOn
       hε horder ℓ N)
 
-theorem plusSaddleFiniteRapidContourIntegrand_boundary_rectangle
+lemma plusSaddleFiniteRapidContourIntegrand_boundary_rectangle
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) {r : ℝ} (hr : 0 < r)
@@ -4818,7 +4818,7 @@ theorem plusSaddleFiniteRapidContourIntegrand_boundary_rectangle
     hε horder ℓ N hr).mono
       (saddleFinitePoleHalfPlane_reProdIm_subset hz hw)
 
-theorem minusSaddleFiniteRapidContourIntegrand_boundary_rectangle
+lemma minusSaddleFiniteRapidContourIntegrand_boundary_rectangle
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (N : ℕ) {r : ℝ} (hr : 0 < r)
@@ -4845,7 +4845,7 @@ theorem minusSaddleFiniteRapidContourIntegrand_boundary_rectangle
     hε horder ℓ N hr).mono
       (saddleFinitePoleHalfPlane_reProdIm_subset hz hw)
 
-theorem saddleMellinEnvelope_vertical (ε ℓ t : ℝ) :
+lemma saddleMellinEnvelope_vertical (ε ℓ t : ℝ) :
     saddleMellinEnvelope ε ℓ
       ((ℓ : ℂ) - Complex.I * (t : ℂ)) =
         saddleEnvelope ε ℓ t := by
@@ -4864,7 +4864,7 @@ theorem saddleMellinEnvelope_vertical (ε ℓ t : ℝ) :
   unfold saddleMellinEnvelope saddleEnvelope
   rw [hfrequency, hpi]
 
-theorem plusSaddleMellinData_vertical (ε ℓ t : ℝ) :
+lemma plusSaddleMellinData_vertical (ε ℓ t : ℝ) :
     plusSaddleMellinData ε ℓ
       ((ℓ : ℂ) - Complex.I * (t : ℂ)) =
         plusSaddleSpectrum ε ℓ t := by
@@ -4878,7 +4878,7 @@ theorem plusSaddleMellinData_vertical (ε ℓ t : ℝ) :
   unfold plusSaddleMellinData plusSaddleSpectrum
   rw [saddleMellinEnvelope_vertical, hfrequency]
 
-theorem minusSaddleMellinData_vertical (ε ℓ t : ℝ) :
+lemma minusSaddleMellinData_vertical (ε ℓ t : ℝ) :
     minusSaddleMellinData ε ℓ
       ((ℓ : ℂ) - Complex.I * (t : ℂ)) =
         minusSaddleSpectrum ε ℓ t := by
@@ -4906,39 +4906,39 @@ def plusSaddleFunction (ε : ℝ) (d : ℕ) (x : Euclidean d) : ℂ :=
 def minusSaddleFunction (ε : ℝ) (d : ℕ) (x : Euclidean d) : ℂ :=
   minusSaddleProfile ε ((d : ℝ) / 2) ‖x‖
 
-theorem plusSaddleFunction_radial (ε : ℝ) (d : ℕ)
+lemma plusSaddleFunction_radial (ε : ℝ) (d : ℕ)
     (x y : Euclidean d) (hxy : ‖x‖ = ‖y‖) :
     plusSaddleFunction ε d x = plusSaddleFunction ε d y := by
   simp only [plusSaddleFunction, hxy]
 
-theorem minusSaddleFunction_radial (ε : ℝ) (d : ℕ)
+lemma minusSaddleFunction_radial (ε : ℝ) (d : ℕ)
     (x y : Euclidean d) (hxy : ‖x‖ = ‖y‖) :
     minusSaddleFunction ε d x = minusSaddleFunction ε d y := by
   simp only [minusSaddleFunction, hxy]
 
-@[simp] theorem plusSaddleFunction_zero (ε : ℝ) (d : ℕ) :
+@[simp] lemma plusSaddleFunction_zero (ε : ℝ) (d : ℕ) :
     plusSaddleFunction ε d (0 : Euclidean d) =
       (saddleOriginValue ε ((d : ℝ) / 2) : ℂ) := by
   simp [plusSaddleFunction, plusSaddleProfile]
 
-@[simp] theorem minusSaddleFunction_zero (ε : ℝ) (d : ℕ) :
+@[simp] lemma minusSaddleFunction_zero (ε : ℝ) (d : ℕ) :
     minusSaddleFunction ε d (0 : Euclidean d) =
       (saddleOriginValue ε ((d : ℝ) / 2) : ℂ) := by
   simp [minusSaddleFunction, minusSaddleProfile]
 
-theorem saddleFunction_zero_pos {ε : ℝ} (hε : 0 < ε) (d : ℕ) :
+lemma saddleFunction_zero_pos {ε : ℝ} (hε : 0 < ε) (d : ℕ) :
     0 < (plusSaddleFunction ε d (0 : Euclidean d)).re ∧
       0 < (minusSaddleFunction ε d (0 : Euclidean d)).re := by
   constructor
   · simpa using! saddleOriginValue_pos hε ((d : ℝ) / 2)
   · simpa using! saddleOriginValue_pos hε ((d : ℝ) / 2)
 
-theorem minusPolynomial_neg (ε : ℝ) (z : ℂ) :
+lemma minusPolynomial_neg (ε : ℝ) (z : ℂ) :
     minusPolynomial ε (-z) = plusPolynomial ε z := by
   unfold minusPolynomial plusPolynomial
   ring
 
-theorem plusPolynomial_conj (ε : ℝ) (z : ℂ) :
+lemma plusPolynomial_conj (ε : ℝ) (z : ℂ) :
     starRingEnd ℂ (plusPolynomial ε z) =
       minusPolynomial ε (starRingEnd ℂ z) := by
   unfold plusPolynomial minusPolynomial
@@ -4946,7 +4946,7 @@ theorem plusPolynomial_conj (ε : ℝ) (z : ℂ) :
     Complex.conj_ofReal, Complex.conj_I]
   ring
 
-theorem minusPolynomial_conj (ε : ℝ) (z : ℂ) :
+lemma minusPolynomial_conj (ε : ℝ) (z : ℂ) :
     starRingEnd ℂ (minusPolynomial ε z) =
       plusPolynomial ε (starRingEnd ℂ z) := by
   unfold minusPolynomial plusPolynomial
@@ -4954,7 +4954,7 @@ theorem minusPolynomial_conj (ε : ℝ) (z : ℂ) :
     Complex.conj_ofReal, Complex.conj_I]
   ring
 
-theorem norm_plusPolynomial_le (ε : ℝ) (z : ℂ) :
+lemma norm_plusPolynomial_le (ε : ℝ) (z : ℂ) :
     ‖plusPolynomial ε z‖ ≤
       (1 + |beta ε|) * (1 + ‖z‖) ^ 3 := by
   have hz : 0 ≤ ‖z‖ := norm_nonneg _
@@ -4999,7 +4999,7 @@ theorem norm_plusPolynomial_le (ε : ℝ) (z : ℂ) :
           nlinarith [mul_le_mul_of_nonneg_left hcube
             (abs_nonneg (beta ε))]
 
-theorem norm_minusPolynomial_le (ε : ℝ) (z : ℂ) :
+lemma norm_minusPolynomial_le (ε : ℝ) (z : ℂ) :
     ‖minusPolynomial ε z‖ ≤
       (1 + |beta ε|) * (1 + ‖z‖) ^ 3 := by
   have h := norm_plusPolynomial_le ε (starRingEnd ℂ z)
@@ -5009,7 +5009,7 @@ theorem norm_minusPolynomial_le (ε : ℝ) (z : ℂ) :
   rw [← hconj, RCLike.norm_conj]
   exact h
 
-theorem norm_complexGamma_le_realGamma {z : ℂ} (hz : 0 < z.re) :
+lemma norm_complexGamma_le_realGamma {z : ℂ} (hz : 0 < z.re) :
     ‖Complex.Gamma z‖ ≤ Real.Gamma z.re := by
   rw [Complex.Gamma_eq_integral hz, Complex.GammaIntegral,
     Real.Gamma_eq_integral hz]
@@ -5029,7 +5029,7 @@ theorem norm_complexGamma_le_realGamma {z : ℂ} (hz : 0 < z.re) :
               Complex.norm_cpow_eq_rpow_re_of_pos hx]
             simp
 
-theorem complexGamma_vertical_polynomial_bound {z : ℂ}
+lemma complexGamma_vertical_polynomial_bound {z : ℂ}
     (hz : 0 < z.re) (k : ℕ) :
     |z.im| ^ k * ‖Complex.Gamma z‖ ≤
       Real.Gamma (z.re + k) := by
@@ -5066,7 +5066,7 @@ theorem complexGamma_vertical_polynomial_bound {z : ℂ}
     _ ≤ Real.Gamma (z.re + k) := by
             simpa using! norm_complexGamma_le_realGamma hshift
 
-theorem complexGamma_shifted_vertical_polynomial_bound
+lemma complexGamma_shifted_vertical_polynomial_bound
     {z : ℂ} (hz : z.im ≠ 0) (k : ℕ)
     (hshift : 0 < z.re + k) :
     |z.im| ^ k * ‖Complex.Gamma z‖ ≤
@@ -5103,7 +5103,7 @@ theorem complexGamma_shifted_vertical_polynomial_bound
     _ ≤ Real.Gamma (z.re + k) := by
             simpa using! norm_complexGamma_le_realGamma hpositive
 
-theorem saddleGamma_shiftedLine_polynomial_bound
+lemma saddleGamma_shiftedLine_polynomial_bound
     (a : ℝ) {t : ℝ} (ht : 1 ≤ |t|)
     (k m : ℕ) (hshift : 0 < a / 2 + (k : ℝ)) :
     |t| ^ m *
@@ -5157,7 +5157,7 @@ theorem saddleGamma_shiftedLine_polynomial_bound
             (a / 2 + ((k + m : ℕ) : ℝ)) := by
           gcongr
 
-theorem norm_complexCos_le_cosh_im (z : ℂ) :
+lemma norm_complexCos_le_cosh_im (z : ℂ) :
     ‖Complex.cos z‖ ≤ Real.cosh z.im := by
   change
     ‖(Complex.exp (z * Complex.I) +
@@ -5184,7 +5184,7 @@ def saddleHorizontalShellVariation (ε H : ℝ) : ℝ :=
   (∫ a in shellLocation ε..shellLocation ε + 1,
     |positiveShellDensity ε a| * (Real.cosh (a * H) + 1))
 
-theorem saddleHorizontalShellVariation_mono
+lemma saddleHorizontalShellVariation_mono
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     {H K : ℝ} (hH : 0 ≤ H) (hHK : H ≤ K) :
@@ -5239,7 +5239,7 @@ theorem saddleHorizontalShellVariation_mono
     exact hcos a
   exact add_le_add hshort hpositive
 
-theorem norm_mellinShellPhase_le_horizontalVariation
+lemma norm_mellinShellPhase_le_horizontalVariation
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     {z : ℂ} {H : ℝ} (hstrip : |z.im| ≤ H) :
@@ -5312,7 +5312,7 @@ theorem norm_mellinShellPhase_le_horizontalVariation
   unfold mellinShellPhase saddleHorizontalShellVariation
   exact (norm_add_le _ _).trans (add_le_add hshort hpositive)
 
-theorem norm_saddleShellExponential_horizontal_le
+lemma norm_saddleShellExponential_horizontal_le
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ) (z : ℂ) :
@@ -5332,7 +5332,7 @@ theorem norm_saddleShellExponential_horizontal_le
           exact norm_mellinShellPhase_le_horizontalVariation
             hε horder (le_refl |z.im|)
 
-theorem saddleMellinShellArgument_shiftedLine
+lemma saddleMellinShellArgument_shiftedLine
     {ℓ : ℝ} (hℓ : 0 < ℓ) (a t : ℝ) :
     Complex.I *
       (((a : ℂ) + (t : ℂ) * Complex.I) -
@@ -5346,7 +5346,7 @@ theorem saddleMellinShellArgument_shiftedLine
   ring_nf
   simp [Complex.I_sq]; ring
 
-theorem saddleMellinPiFactor_shiftedLine_norm
+lemma saddleMellinPiFactor_shiftedLine_norm
     (ℓ a t : ℝ) :
     ‖Complex.exp
       (((ℓ : ℂ) -
@@ -5357,7 +5357,7 @@ theorem saddleMellinPiFactor_shiftedLine_norm
   congr 1
   simp [Complex.mul_re, Complex.mul_im]
 
-theorem norm_saddleShellExponential_shiftedLine_le
+lemma norm_saddleShellExponential_shiftedLine_le
     {ε ℓ : ℝ} (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (a t : ℝ) :
@@ -5381,7 +5381,7 @@ theorem norm_saddleShellExponential_shiftedLine_le
       rw [saddleMellinShellArgument_shiftedLine hℓ a t]
       simp [Complex.mul_im, abs_of_pos hℓ]
 
-theorem saddleMellinShellArgument_shiftedLine_norm_le
+lemma saddleMellinShellArgument_shiftedLine_norm_le
     {ℓ : ℝ} (hℓ : 0 < ℓ) (a t : ℝ) :
     ‖Complex.I *
       (((a : ℂ) + (t : ℂ) * Complex.I) -
@@ -5402,7 +5402,7 @@ theorem saddleMellinShellArgument_shiftedLine_norm_le
       rw [← Complex.ofReal_sub, Complex.norm_real,
         Real.norm_eq_abs]
 
-theorem saddleMellinShellArgument_shiftedLine_linear_le
+lemma saddleMellinShellArgument_shiftedLine_linear_le
     {ℓ : ℝ} (hℓ : 0 < ℓ)
     (a : ℝ) {t : ℝ} (ht : 1 ≤ |t|) :
     1 + ‖Complex.I *
@@ -5424,7 +5424,7 @@ theorem saddleMellinShellArgument_shiftedLine_linear_le
       rw [div_eq_mul_inv]
       ring
 
-theorem norm_plusPolynomial_shiftedLine_le
+lemma norm_plusPolynomial_shiftedLine_le
     {ε ℓ : ℝ} (hℓ : 0 < ℓ)
     (a : ℝ) {t : ℝ} (ht : 1 ≤ |t|) :
     ‖plusPolynomial ε
@@ -5449,7 +5449,7 @@ theorem norm_plusPolynomial_shiftedLine_le
       rw [mul_pow]
       ring
 
-theorem norm_minusPolynomial_shiftedLine_le
+lemma norm_minusPolynomial_shiftedLine_le
     {ε ℓ : ℝ} (hℓ : 0 < ℓ)
     (a : ℝ) {t : ℝ} (ht : 1 ≤ |t|) :
     ‖minusPolynomial ε
@@ -5486,7 +5486,7 @@ def saddleShiftedLineMajorant
       (ℓ * saddleHorizontalShellVariation ε
         |(a - ℓ) / ℓ|)
 
-theorem saddleShiftedLineMajorant_nonneg
+lemma saddleShiftedLineMajorant_nonneg
     {ε ℓ a : ℝ} (hℓ : 0 < ℓ)
     (k m : ℕ) (hshift : 0 < a / 2 + (k : ℝ)) :
     0 ≤ saddleShiftedLineMajorant ε ℓ a k m := by
@@ -5499,7 +5499,7 @@ theorem saddleShiftedLineMajorant_nonneg
   unfold saddleShiftedLineMajorant
   positivity [Real.Gamma_pos_of_pos hgammaarg]
 
-theorem plusSaddleMellinData_shiftedLine_polynomial_bound
+lemma plusSaddleMellinData_shiftedLine_polynomial_bound
     {ε ℓ : ℝ} (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (a : ℝ) {t : ℝ} (ht : 1 ≤ |t|)
@@ -5611,7 +5611,7 @@ theorem plusSaddleMellinData_shiftedLine_polynomial_bound
     _ = saddleShiftedLineMajorant ε ℓ a k m := by
       rfl
 
-theorem minusSaddleMellinData_shiftedLine_polynomial_bound
+lemma minusSaddleMellinData_shiftedLine_polynomial_bound
     {ε ℓ : ℝ} (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (a : ℝ) {t : ℝ} (ht : 1 ≤ |t|)
@@ -5726,7 +5726,7 @@ theorem minusSaddleMellinData_shiftedLine_polynomial_bound
 def saddleHorizontalStripHeight (ℓ A B : ℝ) : ℝ :=
   max |(A - ℓ) / ℓ| |(B - ℓ) / ℓ|
 
-theorem saddleHorizontalStripHeight_bound
+lemma saddleHorizontalStripHeight_bound
     {ℓ A B x : ℝ} (hℓ : 0 < ℓ)
     (hx : x ∈ Set.Icc A B) :
     |(x - ℓ) / ℓ| ≤ saddleHorizontalStripHeight ℓ A B := by
@@ -5763,7 +5763,7 @@ def saddleFixedStripMajorant
     Real.exp
       (ℓ * saddleHorizontalShellVariation ε H)
 
-theorem saddleShiftedLineMajorant_le_fixedStrip
+lemma saddleShiftedLineMajorant_le_fixedStrip
     {ε ℓ a H : ℝ} (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (hH : |(a - ℓ) / ℓ| ≤ H)
@@ -5785,7 +5785,7 @@ theorem saddleShiftedLineMajorant_le_fixedStrip
   exact saddleHorizontalShellVariation_mono
     hε horder (abs_nonneg _) hH
 
-theorem saddleShiftedGamma_continuousOn
+lemma saddleShiftedGamma_continuousOn
     {A B : ℝ} (k m : ℕ)
     (hshift : 0 < A / 2 + (k : ℝ)) :
     ContinuousOn
@@ -5809,7 +5809,7 @@ theorem saddleShiftedGamma_continuousOn
     Nat.cast_nonneg _
   linarith
 
-theorem saddleFixedStripMajorant_continuousOn
+lemma saddleFixedStripMajorant_continuousOn
     {A B : ℝ} (ε ℓ H : ℝ) (k m : ℕ)
     (hshift : 0 < A / 2 + (k : ℝ)) :
     ContinuousOn
@@ -5841,7 +5841,7 @@ theorem saddleFixedStripMajorant_continuousOn
       (Set.Icc A B) := continuousOn_const
   exact ((hpoly.mul hgamma).mul hpi).mul hshell
 
-theorem plusSaddleMellinData_horizontalStrip_polynomial_bound
+lemma plusSaddleMellinData_horizontalStrip_polynomial_bound
     {ε ℓ : ℝ} (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     {A B : ℝ} (hAB : A ≤ B) (m : ℕ) :
@@ -5891,7 +5891,7 @@ theorem plusSaddleMellinData_horizontalStrip_polynomial_bound
         k m hshifta
     _ ≤ C := hC (Set.mem_image_of_mem _ ha)
 
-theorem minusSaddleMellinData_horizontalStrip_polynomial_bound
+lemma minusSaddleMellinData_horizontalStrip_polynomial_bound
     {ε ℓ : ℝ} (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     {A B : ℝ} (hAB : A ≤ B) (m : ℕ) :
@@ -5941,7 +5941,7 @@ theorem minusSaddleMellinData_horizontalStrip_polynomial_bound
         k m hshifta
     _ ≤ C := hC (Set.mem_image_of_mem _ ha)
 
-theorem saddleEnvelope_conj (ε ℓ t : ℝ) :
+lemma saddleEnvelope_conj (ε ℓ t : ℝ) :
     starRingEnd ℂ (saddleEnvelope ε ℓ t) =
       saddleEnvelope ε ℓ (-t) := by
   have harg :
@@ -5970,7 +5970,7 @@ theorem saddleEnvelope_conj (ε ℓ t : ℝ) :
   push_cast
   congr 2 <;> congr 1 <;> ring
 
-theorem norm_saddleShellExponential_le {ε ℓ : ℝ}
+lemma norm_saddleShellExponential_le {ε ℓ : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (t : ℝ) :
     ‖Complex.exp
@@ -5996,7 +5996,7 @@ theorem norm_saddleShellExponential_le {ε ℓ : ℝ}
           exact abs_realOscillatoryShellPhase_le hε horder (t / ℓ)
     _ = 2 * |ℓ| * saddleShellTotalVariation ε := by ring
 
-theorem saddleEnvelope_vertical_polynomial_bound {ε ℓ : ℝ}
+lemma saddleEnvelope_vertical_polynomial_bound {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (t : ℝ) (k : ℕ) :
@@ -6042,7 +6042,7 @@ theorem saddleEnvelope_vertical_polynomial_bound {ε ℓ : ℝ}
             gcongr
             exact norm_saddleShellExponential_le hε horder t
 
-theorem norm_plusPolynomial_scaled_le {ε ℓ t : ℝ}
+lemma norm_plusPolynomial_scaled_le {ε ℓ t : ℝ}
     (hℓ : 0 < ℓ) (ht : 1 ≤ |t|) :
     ‖plusPolynomial ε ((t : ℂ) / (ℓ : ℂ))‖ ≤
       (1 + |beta ε|) * (1 + ℓ⁻¹) ^ 3 * |t| ^ 3 := by
@@ -6067,7 +6067,7 @@ theorem norm_plusPolynomial_scaled_le {ε ℓ t : ℝ}
     _ = (1 + |beta ε|) * (1 + ℓ⁻¹) ^ 3 * |t| ^ 3 := by
           ring
 
-theorem norm_minusPolynomial_scaled_le {ε ℓ t : ℝ}
+lemma norm_minusPolynomial_scaled_le {ε ℓ t : ℝ}
     (hℓ : 0 < ℓ) (ht : 1 ≤ |t|) :
     ‖minusPolynomial ε ((t : ℂ) / (ℓ : ℂ))‖ ≤
       (1 + |beta ε|) * (1 + ℓ⁻¹) ^ 3 * |t| ^ 3 := by
@@ -6092,7 +6092,7 @@ theorem norm_minusPolynomial_scaled_le {ε ℓ t : ℝ}
     _ = (1 + |beta ε|) * (1 + ℓ⁻¹) ^ 3 * |t| ^ 3 := by
           ring
 
-theorem plusSaddleSpectrum_vertical_polynomial_bound {ε ℓ : ℝ}
+lemma plusSaddleSpectrum_vertical_polynomial_bound {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     {t : ℝ} (ht : 1 ≤ |t|) (k : ℕ) :
@@ -6128,7 +6128,7 @@ theorem plusSaddleSpectrum_vertical_polynomial_bound {ε ℓ : ℝ}
                 (show 0 ≤ (1 + |beta ε|) * (1 + ℓ⁻¹) ^ 3 by
                   positivity))
 
-theorem minusSaddleSpectrum_vertical_polynomial_bound {ε ℓ : ℝ}
+lemma minusSaddleSpectrum_vertical_polynomial_bound {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     {t : ℝ} (ht : 1 ≤ |t|) (k : ℕ) :
@@ -6164,7 +6164,7 @@ theorem minusSaddleSpectrum_vertical_polynomial_bound {ε ℓ : ℝ}
                 (show 0 ≤ (1 + |beta ε|) * (1 + ℓ⁻¹) ^ 3 by
                   positivity))
 
-theorem integrable_of_continuous_polynomial_decay
+lemma integrable_of_continuous_polynomial_decay
     {F : ℝ → ℂ} (hF : Continuous F)
     (hdecay : ∀ j : ℕ, ∃ C : ℝ, 0 ≤ C ∧
       ∀ t : ℝ, 1 ≤ |t| → |t| ^ j * ‖F t‖ ≤ C)
@@ -6238,7 +6238,7 @@ theorem integrable_of_continuous_polynomial_decay
       _ ≤ 2 * (M + C) := by
           nlinarith
 
-theorem saddleShiftedLine_ne_pole
+lemma saddleShiftedLine_ne_pole
     {a : ℝ}
     (hpole : ∀ n : ℕ, a ≠ -((2 * n : ℕ) : ℝ))
     (t : ℝ) (n : ℕ) :
@@ -6249,7 +6249,7 @@ theorem saddleShiftedLine_ne_pole
   have hre := congrArg Complex.re heq
   simpa using! hre
 
-theorem plusSaddleMellinData_shiftedLine_continuous
+lemma plusSaddleMellinData_shiftedLine_continuous
     {ε a : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ)
@@ -6270,7 +6270,7 @@ theorem plusSaddleMellinData_shiftedLine_continuous
   simpa [Function.comp_def] using!
     hcomplex.continuousAt.comp_of_eq hline (by rfl)
 
-theorem minusSaddleMellinData_shiftedLine_continuous
+lemma minusSaddleMellinData_shiftedLine_continuous
     {ε a : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ : ℝ)
@@ -6291,7 +6291,7 @@ theorem minusSaddleMellinData_shiftedLine_continuous
   simpa [Function.comp_def] using!
     hcomplex.continuousAt.comp_of_eq hline (by rfl)
 
-theorem plusSaddleMellinData_shiftedLine_moment_integrable
+lemma plusSaddleMellinData_shiftedLine_moment_integrable
     {ε ℓ a : ℝ} (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (hpole : ∀ n : ℕ, a ≠ -((2 * n : ℕ) : ℝ))
@@ -6312,7 +6312,7 @@ theorem plusSaddleMellinData_shiftedLine_moment_integrable
   exact plusSaddleMellinData_shiftedLine_polynomial_bound
     hε hℓ horder a ht k m hshift
 
-theorem minusSaddleMellinData_shiftedLine_moment_integrable
+lemma minusSaddleMellinData_shiftedLine_moment_integrable
     {ε ℓ a : ℝ} (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (hpole : ∀ n : ℕ, a ≠ -((2 * n : ℕ) : ℝ))
@@ -6333,7 +6333,7 @@ theorem minusSaddleMellinData_shiftedLine_moment_integrable
   exact minusSaddleMellinData_shiftedLine_polynomial_bound
     hε hℓ horder a ht k m hshift
 
-theorem saddleMellinInversePower_shiftedLine_norm
+lemma saddleMellinInversePower_shiftedLine_norm
     {r : ℝ} (hr : 0 < r) (a t : ℝ) :
     ‖saddleMellinInversePower r
       ((a : ℂ) + (t : ℂ) * Complex.I)‖ =
@@ -6342,7 +6342,7 @@ theorem saddleMellinInversePower_shiftedLine_norm
   rw [Complex.norm_cpow_eq_rpow_re_of_pos hr]
   simp
 
-theorem saddleMellinInversePower_shiftedLine_continuous
+lemma saddleMellinInversePower_shiftedLine_continuous
     {r : ℝ} (hr : 0 < r) (a : ℝ) :
     Continuous (fun t : ℝ =>
       saddleMellinInversePower r
@@ -6350,7 +6350,7 @@ theorem saddleMellinInversePower_shiftedLine_continuous
   exact (saddleMellinInversePower_differentiable hr).continuous.comp
     (by fun_prop)
 
-theorem plusSaddleMellinData_shiftedLine_weighted_moment_integrable
+lemma plusSaddleMellinData_shiftedLine_weighted_moment_integrable
     {ε ℓ a r : ℝ} (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (hpole : ∀ n : ℕ, a ≠ -((2 * n : ℕ) : ℝ))
@@ -6371,7 +6371,7 @@ theorem plusSaddleMellinData_shiftedLine_weighted_moment_integrable
   · filter_upwards [] with t
     rw [norm_mul, saddleMellinInversePower_shiftedLine_norm hr a t]
 
-theorem minusSaddleMellinData_shiftedLine_weighted_moment_integrable
+lemma minusSaddleMellinData_shiftedLine_weighted_moment_integrable
     {ε ℓ a r : ℝ} (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (hpole : ∀ n : ℕ, a ≠ -((2 * n : ℕ) : ℝ))
@@ -6392,7 +6392,7 @@ theorem minusSaddleMellinData_shiftedLine_weighted_moment_integrable
   · filter_upwards [] with t
     rw [norm_mul, saddleMellinInversePower_shiftedLine_norm hr a t]
 
-theorem plusSaddleMellinData_shiftedLine_weighted_integrable
+lemma plusSaddleMellinData_shiftedLine_weighted_integrable
     {ε ℓ a r : ℝ} (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (hpole : ∀ n : ℕ, a ≠ -((2 * n : ℕ) : ℝ))
@@ -6406,7 +6406,7 @@ theorem plusSaddleMellinData_shiftedLine_weighted_integrable
     plusSaddleMellinData_shiftedLine_weighted_moment_integrable
       hε hℓ horder hpole hr 0
 
-theorem minusSaddleMellinData_shiftedLine_weighted_integrable
+lemma minusSaddleMellinData_shiftedLine_weighted_integrable
     {ε ℓ a r : ℝ} (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (hpole : ∀ n : ℕ, a ≠ -((2 * n : ℕ) : ℝ))
@@ -6420,7 +6420,7 @@ theorem minusSaddleMellinData_shiftedLine_weighted_integrable
     minusSaddleMellinData_shiftedLine_weighted_moment_integrable
       hε hℓ horder hpole hr 0
 
-theorem saddleGaussianPoleRepresentative_shiftedLine_norm
+lemma saddleGaussianPoleRepresentative_shiftedLine_norm
     (a t : ℝ) (n : ℕ) :
     ‖saddleGaussianPoleRepresentative n
       ((a : ℂ) + (t : ℂ) * Complex.I)‖ =
@@ -6433,7 +6433,7 @@ theorem saddleGaussianPoleRepresentative_shiftedLine_norm
   congr 1
   simp [pow_two, Complex.mul_re, Complex.mul_im]
 
-theorem saddleGaussianPoleRepresentative_shiftedLine_continuous
+lemma saddleGaussianPoleRepresentative_shiftedLine_continuous
     {a : ℝ} (n : ℕ)
     (ha : a ≠ -((2 * n : ℕ) : ℝ)) :
     Continuous (fun t : ℝ =>
@@ -6457,7 +6457,7 @@ theorem saddleGaussianPoleRepresentative_shiftedLine_continuous
   exact (Complex.continuous_exp.comp (hline.pow 2)).div
     hline hnonzero
 
-theorem saddleGaussianPoleRepresentative_shiftedLine_bound
+lemma saddleGaussianPoleRepresentative_shiftedLine_bound
     {a : ℝ} (n : ℕ)
     (ha : a ≠ -((2 * n : ℕ) : ℝ)) (t : ℝ) :
     ‖saddleGaussianPoleRepresentative n
@@ -6495,7 +6495,7 @@ theorem saddleGaussianPoleRepresentative_shiftedLine_bound
         Real.exp (-t ^ 2) := by
           ring
 
-theorem saddleGaussianPoleRepresentative_shiftedLine_integrable
+lemma saddleGaussianPoleRepresentative_shiftedLine_integrable
     {a : ℝ} (n : ℕ)
     (ha : a ≠ -((2 * n : ℕ) : ℝ)) :
     Integrable (fun t : ℝ =>
@@ -6516,7 +6516,7 @@ theorem saddleGaussianPoleRepresentative_shiftedLine_integrable
     exact saddleGaussianPoleRepresentative_shiftedLine_bound
       n ha t
 
-theorem saddleGaussianPoleRepresentative_shiftedLine_weighted_integrable
+lemma saddleGaussianPoleRepresentative_shiftedLine_weighted_integrable
     {a r : ℝ} (n : ℕ)
     (ha : a ≠ -((2 * n : ℕ) : ℝ))
     (hr : 0 < r) :
@@ -6536,7 +6536,7 @@ theorem saddleGaussianPoleRepresentative_shiftedLine_weighted_integrable
   · filter_upwards [] with t
     rw [norm_mul, saddleMellinInversePower_shiftedLine_norm hr a t]
 
-theorem plusSaddleFiniteRapidContourIntegrand_shiftedLine_integrable
+lemma plusSaddleFiniteRapidContourIntegrand_shiftedLine_integrable
     {ε ℓ a r : ℝ} (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (N : ℕ)
@@ -6580,7 +6580,7 @@ theorem plusSaddleFiniteRapidContourIntegrand_shiftedLine_integrable
   rw [mul_sub, Finset.mul_sum]
   rfl
 
-theorem minusSaddleFiniteRapidContourIntegrand_shiftedLine_integrable
+lemma minusSaddleFiniteRapidContourIntegrand_shiftedLine_integrable
     {ε ℓ a r : ℝ} (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (N : ℕ)
@@ -6624,7 +6624,7 @@ theorem minusSaddleFiniteRapidContourIntegrand_shiftedLine_integrable
   rw [mul_sub, Finset.mul_sum]
   rfl
 
-theorem saddleMellinInversePower_horizontalStrip_bounded
+lemma saddleMellinInversePower_horizontalStrip_bounded
     {r A B : ℝ} (hr : 0 < r) (hAB : A ≤ B) :
     ∃ C : ℝ, 0 ≤ C ∧
       ∀ a ∈ Set.Icc A B, ∀ t : ℝ,
@@ -6645,7 +6645,7 @@ theorem saddleMellinInversePower_horizontalStrip_bounded
   rw [saddleMellinInversePower_shiftedLine_norm hr a t]
   exact hC (Set.mem_image_of_mem _ ha)
 
-theorem plusSaddleMellinData_weighted_horizontalStrip_polynomial_bound
+lemma plusSaddleMellinData_weighted_horizontalStrip_polynomial_bound
     {ε ℓ r : ℝ} (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (hr : 0 < r)
@@ -6683,7 +6683,7 @@ theorem plusSaddleMellinData_weighted_horizontalStrip_polynomial_bound
       · exact hweight a ha t
       · exact hdata a ha t ht
 
-theorem minusSaddleMellinData_weighted_horizontalStrip_polynomial_bound
+lemma minusSaddleMellinData_weighted_horizontalStrip_polynomial_bound
     {ε ℓ r : ℝ} (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (hr : 0 < r)
@@ -6721,7 +6721,7 @@ theorem minusSaddleMellinData_weighted_horizontalStrip_polynomial_bound
       · exact hweight a ha t
       · exact hdata a ha t ht
 
-theorem saddleHorizontalIntegral_tendsto_zero
+lemma saddleHorizontalIntegral_tendsto_zero
     {F : ℂ → ℂ} {A B C : ℝ}
     (hAB : A ≤ B)
     (hdecay : ∀ a ∈ Set.Icc A B, ∀ t : ℝ,
@@ -6756,7 +6756,7 @@ theorem saddleHorizontalIntegral_tendsto_zero
   apply (le_div_iff₀ hTpos).2
   simpa [mul_comm] using! htail
 
-theorem plusSaddleMellinData_weighted_horizontalIntegral_tendsto_zero
+lemma plusSaddleMellinData_weighted_horizontalIntegral_tendsto_zero
     {ε ℓ r : ℝ} (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (hr : 0 < r)
@@ -6780,7 +6780,7 @@ theorem plusSaddleMellinData_weighted_horizontalIntegral_tendsto_zero
     hAB (C := C) ?_ s hs
   simpa using! hbound
 
-theorem minusSaddleMellinData_weighted_horizontalIntegral_tendsto_zero
+lemma minusSaddleMellinData_weighted_horizontalIntegral_tendsto_zero
     {ε ℓ r : ℝ} (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (hr : 0 < r)
@@ -6804,7 +6804,7 @@ theorem minusSaddleMellinData_weighted_horizontalIntegral_tendsto_zero
     hAB (C := C) ?_ s hs
   simpa using! hbound
 
-theorem saddleGaussianPoleRepresentative_weighted_horizontalStrip_bound
+lemma saddleGaussianPoleRepresentative_weighted_horizontalStrip_bound
     {r A B : ℝ} (hr : 0 < r) (hAB : A ≤ B)
     (n : ℕ) :
     ∃ C : ℝ, 0 ≤ C ∧
@@ -6888,7 +6888,7 @@ theorem saddleGaussianPoleRepresentative_weighted_horizontalStrip_bound
       mul_one _
     _ ≤ C := hC (Set.mem_image_of_mem _ ha)
 
-theorem saddleFiniteGaussianPoleWeighted_horizontalStrip_bound
+lemma saddleFiniteGaussianPoleWeighted_horizontalStrip_bound
     {r A B : ℝ} (hr : 0 < r) (hAB : A ≤ B)
     (c : ℕ → ℂ) (N : ℕ) :
     ∃ C : ℝ, 0 ≤ C ∧
@@ -6953,7 +6953,7 @@ theorem saddleFiniteGaussianPoleWeighted_horizontalStrip_bound
           (norm_nonneg _)
     _ = C := rfl
 
-theorem saddleNonzeroFrequency_ne_pole
+lemma saddleNonzeroFrequency_ne_pole
     (a : ℝ) {t : ℝ} (ht : t ≠ 0) (n : ℕ) :
     (a : ℂ) + (t : ℂ) * Complex.I ≠
       (-((2 * n : ℕ) : ℂ)) := by
@@ -6962,7 +6962,7 @@ theorem saddleNonzeroFrequency_ne_pole
   norm_num [Complex.mul_im] at him
   exact ht him
 
-theorem plusSaddleFiniteRapidContourIntegrand_horizontalStrip_bound
+lemma plusSaddleFiniteRapidContourIntegrand_horizontalStrip_bound
     {ε ℓ r A B : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -7035,7 +7035,7 @@ theorem plusSaddleFiniteRapidContourIntegrand_horizontalStrip_bound
       · simpa [z] using! hdata a ha t ht
       · simpa [z] using! hgaussian a ha t ht
 
-theorem minusSaddleFiniteRapidContourIntegrand_horizontalStrip_bound
+lemma minusSaddleFiniteRapidContourIntegrand_horizontalStrip_bound
     {ε ℓ r A B : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -7108,7 +7108,7 @@ theorem minusSaddleFiniteRapidContourIntegrand_horizontalStrip_bound
       · simpa [z] using! hdata a ha t ht
       · simpa [z] using! hgaussian a ha t ht
 
-theorem plusSaddleFiniteRapidContourIntegrand_horizontalIntegral_tendsto_zero
+lemma plusSaddleFiniteRapidContourIntegrand_horizontalIntegral_tendsto_zero
     {ε ℓ r A B : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -7129,7 +7129,7 @@ theorem plusSaddleFiniteRapidContourIntegrand_horizontalIntegral_tendsto_zero
     (F := plusSaddleFiniteRapidContourIntegrand ε ℓ N r)
     hAB hbound s hs
 
-theorem minusSaddleFiniteRapidContourIntegrand_horizontalIntegral_tendsto_zero
+lemma minusSaddleFiniteRapidContourIntegrand_horizontalIntegral_tendsto_zero
     {ε ℓ r A B : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -7155,7 +7155,7 @@ def saddleCauchyPolePrimitive (a t : ℝ) : ℂ :=
     ((Real.log (a ^ 2 + t ^ 2) / 2 : ℝ) : ℂ) *
       Complex.I
 
-theorem saddleCauchyPolePrimitive_hasDerivAt
+lemma saddleCauchyPolePrimitive_hasDerivAt
     {a : ℝ} (ha : a ≠ 0) (t : ℝ) :
     HasDerivAt (saddleCauchyPolePrimitive a)
       (((a : ℂ) + (t : ℂ) * Complex.I)⁻¹) t := by
@@ -7200,7 +7200,7 @@ theorem saddleCauchyPolePrimitive_hasDerivAt
   exact hatan.ofReal_comp.sub
     (hlog.ofReal_comp.mul_const Complex.I)
 
-theorem saddleCauchyPole_symmetric_intervalIntegral
+lemma saddleCauchyPole_symmetric_intervalIntegral
     {a : ℝ} (ha : a ≠ 0) (T : ℝ) :
     (∫ t in -T..T,
       ((a : ℂ) + (t : ℂ) * Complex.I)⁻¹) =
@@ -7225,7 +7225,7 @@ theorem saddleCauchyPole_symmetric_intervalIntegral
   unfold saddleCauchyPolePrimitive
   simp [neg_div, Real.arctan_neg, pow_two]; ring
 
-theorem saddleInfiniteRectangle_vertical_integral_eq
+lemma saddleInfiniteRectangle_vertical_integral_eq
     {F : ℂ → ℂ} {A B : ℝ}
     (hA : Integrable
       (fun t : ℝ => F ((A : ℂ) + (t : ℂ) * Complex.I)))
@@ -7327,7 +7327,7 @@ theorem saddleInfiniteRectangle_vertical_integral_eq
     ((mul_eq_zero.mp hidentity).resolve_left
       Complex.I_ne_zero)
 
-theorem plusSaddleFiniteRapidContourIntegrand_vertical_integral_eq
+lemma plusSaddleFiniteRapidContourIntegrand_vertical_integral_eq
     {ε ℓ r A B : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -7386,7 +7386,7 @@ theorem plusSaddleFiniteRapidContourIntegrand_vertical_integral_eq
       plusSaddleFiniteRapidContourIntegrand_boundary_rectangle
         hε horder ℓ N hr z w hz hw
 
-theorem minusSaddleFiniteRapidContourIntegrand_vertical_integral_eq
+lemma minusSaddleFiniteRapidContourIntegrand_vertical_integral_eq
     {ε ℓ r A B : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -7445,7 +7445,7 @@ theorem minusSaddleFiniteRapidContourIntegrand_vertical_integral_eq
       minusSaddleFiniteRapidContourIntegrand_boundary_rectangle
         hε horder ℓ N hr z w hz hw
 
-theorem plusSaddleSpectrum_moment_integrable {ε ℓ : ℝ}
+lemma plusSaddleSpectrum_moment_integrable {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (k : ℕ) :
     Integrable (fun t : ℝ =>
@@ -7464,7 +7464,7 @@ theorem plusSaddleSpectrum_moment_integrable {ε ℓ : ℝ}
     exact plusSaddleSpectrum_vertical_polynomial_bound
       hε hℓ horder ht j
 
-theorem minusSaddleSpectrum_moment_integrable {ε ℓ : ℝ}
+lemma minusSaddleSpectrum_moment_integrable {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (k : ℕ) :
     Integrable (fun t : ℝ =>
@@ -7483,7 +7483,7 @@ theorem minusSaddleSpectrum_moment_integrable {ε ℓ : ℝ}
     exact minusSaddleSpectrum_vertical_polynomial_bound
       hε hℓ horder ht j
 
-theorem plusSaddleSpectrum_norm_moment_integrable {ε ℓ : ℝ}
+lemma plusSaddleSpectrum_norm_moment_integrable {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (k : ℕ) :
     Integrable (fun t : ℝ =>
@@ -7493,7 +7493,7 @@ theorem plusSaddleSpectrum_norm_moment_integrable {ε ℓ : ℝ}
       (plusSaddleSpectrum_moment_integrable
         hε hℓ horder k).norm
 
-theorem minusSaddleSpectrum_norm_moment_integrable {ε ℓ : ℝ}
+lemma minusSaddleSpectrum_norm_moment_integrable {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (k : ℕ) :
     Integrable (fun t : ℝ =>
@@ -7509,7 +7509,7 @@ def plusSaddleFourierData (ε ℓ y : ℝ) : ℂ :=
 def minusSaddleFourierData (ε ℓ y : ℝ) : ℂ :=
   minusSaddleSpectrum ε ℓ (-(2 * Real.pi * y))
 
-theorem integrable_scaled_norm_moment
+lemma integrable_scaled_norm_moment
     {F : ℝ → ℂ} (hF : Continuous F)
     (hmom : ∀ j : ℕ,
       Integrable (fun t : ℝ => |t| ^ j * ‖F t‖))
@@ -7538,7 +7538,7 @@ theorem integrable_scaled_norm_moment
       _ ≤ |c| * |y| := by gcongr
   simpa only [Real.norm_eq_abs] using! hresult
 
-theorem plusSaddleFourierData_norm_moment_integrable {ε ℓ : ℝ}
+lemma plusSaddleFourierData_norm_moment_integrable {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (k : ℕ) :
     Integrable (fun y : ℝ =>
@@ -7558,7 +7558,7 @@ theorem plusSaddleFourierData_norm_moment_integrable {ε ℓ : ℝ}
       hε hℓ horder j) hc hclarge k
   simpa [plusSaddleFourierData, c, neg_mul, mul_assoc] using! h
 
-theorem minusSaddleFourierData_norm_moment_integrable {ε ℓ : ℝ}
+lemma minusSaddleFourierData_norm_moment_integrable {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) (k : ℕ) :
     Integrable (fun y : ℝ =>
@@ -7578,7 +7578,7 @@ theorem minusSaddleFourierData_norm_moment_integrable {ε ℓ : ℝ}
       hε hℓ horder j) hc hclarge k
   simpa [minusSaddleFourierData, c, neg_mul, mul_assoc] using! h
 
-theorem plusSaddleFourierData_fourier_contDiff {ε ℓ : ℝ}
+lemma plusSaddleFourierData_fourier_contDiff {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     ContDiff ℝ ∞ (𝓕 (plusSaddleFourierData ε ℓ)) := by
@@ -7586,7 +7586,7 @@ theorem plusSaddleFourierData_fourier_contDiff {ε ℓ : ℝ}
     plusSaddleFourierData_norm_moment_integrable
       hε hℓ horder n)
 
-theorem minusSaddleFourierData_fourier_contDiff {ε ℓ : ℝ}
+lemma minusSaddleFourierData_fourier_contDiff {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     ContDiff ℝ ∞ (𝓕 (minusSaddleFourierData ε ℓ)) := by
@@ -7594,7 +7594,7 @@ theorem minusSaddleFourierData_fourier_contDiff {ε ℓ : ℝ}
     minusSaddleFourierData_norm_moment_integrable
       hε hℓ horder n)
 
-theorem plusSaddleMellinData_fourier_vertical (ε ℓ y : ℝ) :
+lemma plusSaddleMellinData_fourier_vertical (ε ℓ y : ℝ) :
     plusSaddleMellinData ε ℓ
       ((ℓ : ℂ) + (2 * Real.pi * y : ℝ) * Complex.I) =
         plusSaddleFourierData ε ℓ y := by
@@ -7607,7 +7607,7 @@ theorem plusSaddleMellinData_fourier_vertical (ε ℓ y : ℝ) :
   rw [harg, plusSaddleMellinData_vertical]
   rfl
 
-theorem minusSaddleMellinData_fourier_vertical (ε ℓ y : ℝ) :
+lemma minusSaddleMellinData_fourier_vertical (ε ℓ y : ℝ) :
     minusSaddleMellinData ε ℓ
       ((ℓ : ℂ) + (2 * Real.pi * y : ℝ) * Complex.I) =
         minusSaddleFourierData ε ℓ y := by
@@ -7620,7 +7620,7 @@ theorem minusSaddleMellinData_fourier_vertical (ε ℓ y : ℝ) :
   rw [harg, minusSaddleMellinData_vertical]
   rfl
 
-theorem plusSaddleProfile_eq_fourier (ε ℓ : ℝ)
+lemma plusSaddleProfile_eq_fourier (ε ℓ : ℝ)
     {r : ℝ} (hr : 0 < r) :
     plusSaddleProfile ε ℓ r =
       (r ^ (-ℓ) : ℝ) *
@@ -7641,7 +7641,7 @@ theorem plusSaddleProfile_eq_fourier (ε ℓ : ℝ)
     simpa using! (Complex.ofReal_cpow hr.le (-ℓ)).symm
   rw [hpow]
 
-theorem minusSaddleProfile_eq_fourier (ε ℓ : ℝ)
+lemma minusSaddleProfile_eq_fourier (ε ℓ : ℝ)
     {r : ℝ} (hr : 0 < r) :
     minusSaddleProfile ε ℓ r =
       (r ^ (-ℓ) : ℝ) *
@@ -7662,7 +7662,7 @@ theorem minusSaddleProfile_eq_fourier (ε ℓ : ℝ)
     simpa using! (Complex.ofReal_cpow hr.le (-ℓ)).symm
   rw [hpow]
 
-theorem plusSaddleProfile_contDiffOn {ε ℓ : ℝ}
+lemma plusSaddleProfile_contDiffOn {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     ContDiffOn ℝ ∞ (plusSaddleProfile ε ℓ) (Set.Ioi 0) := by
@@ -7685,7 +7685,7 @@ theorem plusSaddleProfile_contDiffOn {ε ℓ : ℝ}
     (fun r hr => (plusSaddleProfile_eq_fourier
       ε ℓ (show 0 < r from hr)))
 
-theorem minusSaddleProfile_contDiffOn {ε ℓ : ℝ}
+lemma minusSaddleProfile_contDiffOn {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     ContDiffOn ℝ ∞ (minusSaddleProfile ε ℓ) (Set.Ioi 0) := by
@@ -7708,7 +7708,7 @@ theorem minusSaddleProfile_contDiffOn {ε ℓ : ℝ}
     (fun r hr => (minusSaddleProfile_eq_fourier
       ε ℓ (show 0 < r from hr)))
 
-theorem plusSaddleFunction_contDiffOn {ε : ℝ}
+lemma plusSaddleFunction_contDiffOn {ε : ℝ}
     (hε : 0 < ε) {d : ℕ} (hd : 0 < d)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     ContDiffOn ℝ ∞ (plusSaddleFunction ε d)
@@ -7734,7 +7734,7 @@ theorem plusSaddleFunction_contDiffOn {ε : ℝ}
     (plusSaddleProfile_contDiffOn
       hε hdimension horder).comp hnorm hmaps
 
-theorem minusSaddleFunction_contDiffOn {ε : ℝ}
+lemma minusSaddleFunction_contDiffOn {ε : ℝ}
     (hε : 0 < ε) {d : ℕ} (hd : 0 < d)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     ContDiffOn ℝ ∞ (minusSaddleFunction ε d)
@@ -7760,7 +7760,7 @@ theorem minusSaddleFunction_contDiffOn {ε : ℝ}
     (minusSaddleProfile_contDiffOn
       hε hdimension horder).comp hnorm hmaps
 
-theorem plusSaddleSpectrum_conj (ε ℓ t : ℝ) :
+lemma plusSaddleSpectrum_conj (ε ℓ t : ℝ) :
     starRingEnd ℂ (plusSaddleSpectrum ε ℓ t) =
       plusSaddleSpectrum ε ℓ (-t) := by
   unfold plusSaddleSpectrum
@@ -7776,7 +7776,7 @@ theorem plusSaddleSpectrum_conj (ε ℓ t : ℝ) :
   simpa using!
     (minusPolynomial_neg ε (-((t : ℂ) / (ℓ : ℂ))))
 
-theorem minusSaddleSpectrum_conj (ε ℓ t : ℝ) :
+lemma minusSaddleSpectrum_conj (ε ℓ t : ℝ) :
     starRingEnd ℂ (minusSaddleSpectrum ε ℓ t) =
       minusSaddleSpectrum ε ℓ (-t) := by
   unfold minusSaddleSpectrum
@@ -7791,7 +7791,7 @@ theorem minusSaddleSpectrum_conj (ε ℓ t : ℝ) :
   rw [hneg]
   exact (minusPolynomial_neg ε ((t : ℂ) / (ℓ : ℂ))).symm
 
-theorem mellinInversePower_conj {r : ℝ} (hr : 0 < r)
+lemma mellinInversePower_conj {r : ℝ} (hr : 0 < r)
     (σ t : ℝ) :
     starRingEnd ℂ
       ((r : ℂ) ^ (-((σ : ℂ) + (t : ℂ) * Complex.I))) =
@@ -7806,7 +7806,7 @@ theorem mellinInversePower_conj {r : ℝ} (hr : 0 < r)
   simpa [map_neg, map_add, map_mul, Complex.conj_ofReal,
     Complex.conj_I] using! hpower
 
-theorem mellinInv_real_of_hermitian (σ : ℝ) (F : ℂ → ℂ)
+lemma mellinInv_real_of_hermitian (σ : ℝ) (F : ℂ → ℂ)
     (hF : ∀ t : ℝ,
       starRingEnd ℂ (F ((σ : ℂ) + (t : ℂ) * Complex.I)) =
         F ((σ : ℂ) + ((-t : ℝ) : ℂ) * Complex.I))
@@ -7841,7 +7841,7 @@ theorem mellinInv_real_of_hermitian (σ : ℝ) (F : ℂ → ℂ)
   simp only [Complex.real_smul, map_mul, Complex.conj_ofReal,
     hintegral]
 
-theorem plusSaddleMellinData_conj_vertical (ε ℓ t : ℝ) :
+lemma plusSaddleMellinData_conj_vertical (ε ℓ t : ℝ) :
     starRingEnd ℂ
       (plusSaddleMellinData ε ℓ
         ((ℓ : ℂ) + (t : ℂ) * Complex.I)) =
@@ -7861,7 +7861,7 @@ theorem plusSaddleMellinData_conj_vertical (ε ℓ t : ℝ) :
     hright, plusSaddleMellinData_vertical]
   simpa using! plusSaddleSpectrum_conj ε ℓ (-t)
 
-theorem minusSaddleMellinData_conj_vertical (ε ℓ t : ℝ) :
+lemma minusSaddleMellinData_conj_vertical (ε ℓ t : ℝ) :
     starRingEnd ℂ
       (minusSaddleMellinData ε ℓ
         ((ℓ : ℂ) + (t : ℂ) * Complex.I)) =
@@ -7881,7 +7881,7 @@ theorem minusSaddleMellinData_conj_vertical (ε ℓ t : ℝ) :
     hright, minusSaddleMellinData_vertical]
   simpa using! minusSaddleSpectrum_conj ε ℓ (-t)
 
-theorem plusSaddleProfile_real (ε ℓ : ℝ) {r : ℝ} (hr : 0 ≤ r) :
+lemma plusSaddleProfile_real (ε ℓ : ℝ) {r : ℝ} (hr : 0 ≤ r) :
     (plusSaddleProfile ε ℓ r).im = 0 := by
   by_cases hzero : r = 0
   · simp [plusSaddleProfile, hzero]
@@ -7891,7 +7891,7 @@ theorem plusSaddleProfile_real (ε ℓ : ℝ) {r : ℝ} (hr : 0 ≤ r) :
       (plusSaddleMellinData ε ℓ)
       (plusSaddleMellinData_conj_vertical ε ℓ) hpos
 
-theorem minusSaddleProfile_real (ε ℓ : ℝ) {r : ℝ} (hr : 0 ≤ r) :
+lemma minusSaddleProfile_real (ε ℓ : ℝ) {r : ℝ} (hr : 0 ≤ r) :
     (minusSaddleProfile ε ℓ r).im = 0 := by
   by_cases hzero : r = 0
   · simp [minusSaddleProfile, hzero]
@@ -7901,17 +7901,17 @@ theorem minusSaddleProfile_real (ε ℓ : ℝ) {r : ℝ} (hr : 0 ≤ r) :
       (minusSaddleMellinData ε ℓ)
       (minusSaddleMellinData_conj_vertical ε ℓ) hpos
 
-theorem plusSaddleFunction_real (ε : ℝ) (d : ℕ)
+lemma plusSaddleFunction_real (ε : ℝ) (d : ℕ)
     (x : Euclidean d) :
     (plusSaddleFunction ε d x).im = 0 := by
   exact plusSaddleProfile_real ε ((d : ℝ) / 2) (norm_nonneg x)
 
-theorem minusSaddleFunction_real (ε : ℝ) (d : ℕ)
+lemma minusSaddleFunction_real (ε : ℝ) (d : ℕ)
     (x : Euclidean d) :
     (minusSaddleFunction ε d x).im = 0 := by
   exact minusSaddleProfile_real ε ((d : ℝ) / 2) (norm_nonneg x)
 
-theorem mellinMultiplier_mul_saddleEnvelope_neg
+lemma mellinMultiplier_mul_saddleEnvelope_neg
     {ε ℓ : ℝ} (hℓ : 0 < ℓ) (t : ℝ) :
     mellinMultiplier ℓ t * saddleEnvelope ε ℓ (-t) =
       saddleEnvelope ε ℓ t := by
@@ -7951,7 +7951,7 @@ theorem mellinMultiplier_mul_saddleEnvelope_neg
       field_simp [hgamma]
     _ = _ := by rw [hphase]
 
-theorem mellinMultiplier_mul_minusSaddleSpectrum_neg
+lemma mellinMultiplier_mul_minusSaddleSpectrum_neg
     {ε ℓ : ℝ} (hℓ : 0 < ℓ) (t : ℝ) :
     mellinMultiplier ℓ t * minusSaddleSpectrum ε ℓ (-t) =
       plusSaddleSpectrum ε ℓ t := by
@@ -7970,7 +7970,7 @@ noncomputable section
 open Filter Set MeasureTheory intervalIntegral
 open scoped Interval Topology
 
-theorem saddleCauchyPole_symmetric_intervalIntegral_tendsto_pos
+lemma saddleCauchyPole_symmetric_intervalIntegral_tendsto_pos
     {a : ℝ} (ha : 0 < a) :
     Tendsto
       (fun T : ℝ =>
@@ -8001,7 +8001,7 @@ theorem saddleCauchyPole_symmetric_intervalIntegral_tendsto_pos
         (saddleCauchyPole_symmetric_intervalIntegral
           ha.ne' T).symm))
 
-theorem saddleCauchyPole_symmetric_intervalIntegral_tendsto_neg
+lemma saddleCauchyPole_symmetric_intervalIntegral_tendsto_neg
     {a : ℝ} (ha : a < 0) :
     Tendsto
       (fun T : ℝ =>
@@ -8034,7 +8034,7 @@ theorem saddleCauchyPole_symmetric_intervalIntegral_tendsto_neg
         (saddleCauchyPole_symmetric_intervalIntegral
           ha.ne T).symm))
 
-theorem saddleShiftedCauchyPole_symmetric_intervalIntegral_tendsto_pos
+lemma saddleShiftedCauchyPole_symmetric_intervalIntegral_tendsto_pos
     (n : ℕ) {a : ℝ}
     (ha : -((2 * n : ℕ) : ℝ) < a) :
     Tendsto
@@ -8055,7 +8055,7 @@ theorem saddleShiftedCauchyPole_symmetric_intervalIntegral_tendsto_pos
   push_cast
   ring
 
-theorem saddleShiftedCauchyPole_symmetric_intervalIntegral_tendsto_neg
+lemma saddleShiftedCauchyPole_symmetric_intervalIntegral_tendsto_neg
     (n : ℕ) {a : ℝ}
     (ha : a < -((2 * n : ℕ) : ℝ)) :
     Tendsto
@@ -8076,7 +8076,7 @@ theorem saddleShiftedCauchyPole_symmetric_intervalIntegral_tendsto_neg
   push_cast
   ring
 
-theorem saddleGaussianPoleRepresentative_eq_inv_add_slope
+lemma saddleGaussianPoleRepresentative_eq_inv_add_slope
     (n : ℕ) {z : ℂ}
     (hz : z + ((2 * n : ℕ) : ℂ) ≠ 0) :
     saddleGaussianPoleRepresentative n z =
@@ -8088,7 +8088,7 @@ theorem saddleGaussianPoleRepresentative_eq_inv_add_slope
   field_simp [hz]
   all_goals ring
 
-theorem saddleGaussianPoleShiftedSlope_differentiable
+lemma saddleGaussianPoleShiftedSlope_differentiable
     (n : ℕ) :
     Differentiable ℂ
       (fun z : ℂ =>
@@ -8097,7 +8097,7 @@ theorem saddleGaussianPoleShiftedSlope_differentiable
   saddleGaussianPoleSlope_differentiable.comp
     (by fun_prop)
 
-theorem saddleGaussianPoleShiftedSlope_boundary_rectangle
+lemma saddleGaussianPoleShiftedSlope_boundary_rectangle
     (n : ℕ) (A B T : ℝ) :
     (∫ a in A..B,
       saddleGaussianPoleSlope
@@ -8128,7 +8128,7 @@ theorem saddleGaussianPoleShiftedSlope_boundary_rectangle
         n).differentiableOn
   simpa [Complex.mul_re, Complex.mul_im, smul_eq_mul] using! hrectangle
 
-theorem saddleGaussianPoleShiftedSlope_horizontalIntegral_tendsto_zero
+lemma saddleGaussianPoleShiftedSlope_horizontalIntegral_tendsto_zero
     {A B : ℝ} (hAB : A ≤ B)
     (n : ℕ) (s : ℝ) (hs : |s| = 1) :
     Tendsto
@@ -8192,7 +8192,7 @@ theorem saddleGaussianPoleShiftedSlope_horizontalIntegral_tendsto_zero
         ring
     _ ≤ C + 1 := add_le_add hgaussian' hpole
 
-theorem saddleInfiniteRectangle_vertical_limit_eq
+lemma saddleInfiniteRectangle_vertical_limit_eq
     {F : ℂ → ℂ} {A B : ℝ} {u v : ℂ}
     (hleft : Tendsto
       (fun T : ℝ =>
@@ -8268,7 +8268,7 @@ theorem saddleInfiniteRectangle_vertical_limit_eq
     ((mul_eq_zero.mp hidentity).resolve_left
       Complex.I_ne_zero)
 
-theorem saddleGaussianPoleShiftedSlope_symmetric_intervalIntegral
+lemma saddleGaussianPoleShiftedSlope_symmetric_intervalIntegral
     (n : ℕ) {a : ℝ}
     (ha : a ≠ -((2 * n : ℕ) : ℝ)) (T : ℝ) :
     (∫ t in -T..T,
@@ -8317,7 +8317,7 @@ theorem saddleGaussianPoleShiftedSlope_symmetric_intervalIntegral
   apply (eq_sub_iff_add_eq).2
   simpa [add_comm] using! hsplit.symm
 
-theorem saddleGaussianPoleShiftedSlope_symmetric_intervalIntegral_tendsto_pos
+lemma saddleGaussianPoleShiftedSlope_symmetric_intervalIntegral_tendsto_pos
     (n : ℕ) {a : ℝ}
     (ha : -((2 * n : ℕ) : ℝ) < a) :
     Tendsto
@@ -8355,7 +8355,7 @@ theorem saddleGaussianPoleShiftedSlope_symmetric_intervalIntegral_tendsto_pos
         (saddleGaussianPoleShiftedSlope_symmetric_intervalIntegral
           n hane T).symm))
 
-theorem saddleGaussianPoleShiftedSlope_symmetric_intervalIntegral_tendsto_neg
+lemma saddleGaussianPoleShiftedSlope_symmetric_intervalIntegral_tendsto_neg
     (n : ℕ) {a : ℝ}
     (ha : a < -((2 * n : ℕ) : ℝ)) :
     Tendsto
@@ -8393,7 +8393,7 @@ theorem saddleGaussianPoleShiftedSlope_symmetric_intervalIntegral_tendsto_neg
         (saddleGaussianPoleShiftedSlope_symmetric_intervalIntegral
           n hane T).symm))
 
-theorem saddleGaussianPoleRepresentative_vertical_integral_jump
+lemma saddleGaussianPoleRepresentative_vertical_integral_jump
     (n : ℕ) {A B : ℝ}
     (hA : A < -((2 * n : ℕ) : ℝ))
     (hB : -((2 * n : ℕ) : ℝ) < B) :
@@ -8443,7 +8443,7 @@ theorem saddleGaussianPoleRepresentative_vertical_integral_jump
   push_cast
   linear_combination hidentity
 
-theorem saddleMellinInversePower_negativeEvenPole
+lemma saddleMellinInversePower_negativeEvenPole
     (r : ℝ) (n : ℕ) :
     saddleMellinInversePower r
       (-((2 * n : ℕ) : ℂ)) =
@@ -8457,7 +8457,7 @@ def saddleMellinInversePowerPoleSlope
   dslope (saddleMellinInversePower r)
     (-((2 * n : ℕ) : ℂ)) z
 
-theorem saddleMellinInversePowerPoleSlope_differentiable
+lemma saddleMellinInversePowerPoleSlope_differentiable
     {r : ℝ} (hr : 0 < r) (n : ℕ) :
     Differentiable ℂ
       (saddleMellinInversePowerPoleSlope r n) := by
@@ -8476,7 +8476,7 @@ def saddleGaussianPoleWeightedCorrection
   Complex.exp ((z + ((2 * n : ℕ) : ℂ)) ^ 2) *
     saddleMellinInversePowerPoleSlope r n z
 
-theorem saddleGaussianPoleWeightedCorrection_differentiable
+lemma saddleGaussianPoleWeightedCorrection_differentiable
     {r : ℝ} (hr : 0 < r) (n : ℕ) :
     Differentiable ℂ
       (saddleGaussianPoleWeightedCorrection r n) := by
@@ -8489,7 +8489,7 @@ theorem saddleGaussianPoleWeightedCorrection_differentiable
     (saddleMellinInversePowerPoleSlope_differentiable
       hr n)
 
-theorem saddleGaussianPoleWeightedRepresentative_eq_pole_add_correction
+lemma saddleGaussianPoleWeightedRepresentative_eq_pole_add_correction
     {r : ℝ} (n : ℕ) {z : ℂ}
     (hz : z + ((2 * n : ℕ) : ℂ) ≠ 0) :
     saddleMellinInversePower r z *
@@ -8528,7 +8528,7 @@ theorem saddleGaussianPoleWeightedRepresentative_eq_pole_add_correction
   field_simp [hz]
   all_goals ring
 
-theorem saddleGaussianPole_shiftedLine_ne_zero
+lemma saddleGaussianPole_shiftedLine_ne_zero
     (n : ℕ) {a : ℝ}
     (ha : a ≠ -((2 * n : ℕ) : ℝ))
     (t : ℝ) :
@@ -8541,7 +8541,7 @@ theorem saddleGaussianPole_shiftedLine_ne_zero
   push_cast
   linarith
 
-theorem saddleGaussianPoleWeightedCorrection_eq_sub
+lemma saddleGaussianPoleWeightedCorrection_eq_sub
     {r : ℝ} (n : ℕ) {z : ℂ}
     (hz : z + ((2 * n : ℕ) : ℂ) ≠ 0) :
     saddleGaussianPoleWeightedCorrection r n z =
@@ -8556,7 +8556,7 @@ theorem saddleGaussianPoleWeightedCorrection_eq_sub
   apply (eq_sub_iff_add_eq).2
   simpa [add_comm] using! hsplit.symm
 
-theorem saddleGaussianPoleWeightedCorrection_shiftedLine_integrable
+lemma saddleGaussianPoleWeightedCorrection_shiftedLine_integrable
     {r a : ℝ} (hr : 0 < r)
     (n : ℕ) (ha : a ≠ -((2 * n : ℕ) : ℝ)) :
     Integrable (fun t : ℝ =>
@@ -8578,7 +8578,7 @@ theorem saddleGaussianPoleWeightedCorrection_shiftedLine_integrable
       n (saddleGaussianPole_shiftedLine_ne_zero
         n ha t)).symm
 
-theorem saddleGaussianPoleWeightedCorrection_horizontalStrip_bound
+lemma saddleGaussianPoleWeightedCorrection_horizontalStrip_bound
     {r A B : ℝ} (hr : 0 < r) (hAB : A ≤ B)
     (n : ℕ) :
     ∃ C : ℝ, 0 ≤ C ∧
@@ -8669,7 +8669,7 @@ theorem saddleGaussianPoleWeightedCorrection_horizontalStrip_bound
     _ ≤ Cw + ‖saddleMellinInversePower r p‖ * Cu :=
       add_le_add hweighted' hscaled
 
-theorem saddleGaussianPoleWeightedCorrection_horizontalIntegral_tendsto_zero
+lemma saddleGaussianPoleWeightedCorrection_horizontalIntegral_tendsto_zero
     {r A B : ℝ} (hr : 0 < r) (hAB : A ≤ B)
     (n : ℕ) (s : ℝ) (hs : |s| = 1) :
     Tendsto
@@ -8686,7 +8686,7 @@ theorem saddleGaussianPoleWeightedCorrection_horizontalIntegral_tendsto_zero
     (F := saddleGaussianPoleWeightedCorrection r n)
     hAB hbound s hs
 
-theorem saddleGaussianPoleWeightedCorrection_boundary_rectangle
+lemma saddleGaussianPoleWeightedCorrection_boundary_rectangle
     {r : ℝ} (hr : 0 < r)
     (n : ℕ) (A B T : ℝ) :
     (∫ a in A..B,
@@ -8712,7 +8712,7 @@ theorem saddleGaussianPoleWeightedCorrection_boundary_rectangle
         hr n).differentiableOn
   simpa [Complex.mul_re, Complex.mul_im, smul_eq_mul] using! hrectangle
 
-theorem saddleGaussianPoleWeightedCorrection_vertical_integral_eq
+lemma saddleGaussianPoleWeightedCorrection_vertical_integral_eq
     {r A B : ℝ} (hr : 0 < r)
     (n : ℕ) (hAB : A ≤ B)
     (hA : A ≠ -((2 * n : ℕ) : ℝ))
@@ -8753,7 +8753,7 @@ theorem saddleGaussianPoleWeightedCorrection_vertical_integral_eq
       saddleGaussianPoleWeightedCorrection_boundary_rectangle
         hr n A B T)
 
-theorem saddleGaussianPoleWeightedRepresentative_shiftedLine_integral_eq
+lemma saddleGaussianPoleWeightedRepresentative_shiftedLine_integral_eq
     {r a : ℝ} (hr : 0 < r)
     (n : ℕ) (ha : a ≠ -((2 * n : ℕ) : ℝ)) :
     (∫ t : ℝ,
@@ -8819,7 +8819,7 @@ theorem saddleGaussianPoleWeightedRepresentative_shiftedLine_integral_eq
           ((a : ℂ) + (t : ℂ) * Complex.I)) := by
         rw [integral_const_mul_of_integrable hrepresentative]
 
-theorem saddleGaussianPoleWeightedRepresentative_vertical_integral_jump
+lemma saddleGaussianPoleWeightedRepresentative_vertical_integral_jump
     {r A B : ℝ} (hr : 0 < r)
     (n : ℕ)
     (hA : A < -((2 * n : ℕ) : ℝ))
@@ -8887,7 +8887,7 @@ theorem saddleGaussianPoleWeightedRepresentative_vertical_integral_jump
         rw [saddleMellinInversePower_negativeEvenPole]
         ring
 
-theorem saddleFiniteGaussianPoleWeighted_shiftedLine_integrable
+lemma saddleFiniteGaussianPoleWeighted_shiftedLine_integrable
     {r a : ℝ} (hr : 0 < r)
     (c : ℕ → ℂ) (N : ℕ)
     (ha : ∀ n : ℕ, a ≠ -((2 * n : ℕ) : ℝ)) :
@@ -8907,7 +8907,7 @@ theorem saddleFiniteGaussianPoleWeighted_shiftedLine_integrable
     (Filter.Eventually.of_forall
       (fun t : ℝ => by ring))
 
-theorem saddleFiniteGaussianPoleWeighted_shiftedLine_integral
+lemma saddleFiniteGaussianPoleWeighted_shiftedLine_integral
     {r a : ℝ} (hr : 0 < r)
     (c : ℕ → ℂ) (N : ℕ)
     (ha : ∀ n : ℕ, a ≠ -((2 * n : ℕ) : ℝ)) :
@@ -8970,7 +8970,7 @@ theorem saddleFiniteGaussianPoleWeighted_shiftedLine_integral
               ((a : ℂ) + (t : ℂ) * Complex.I)) :=
       integral_const_mul_of_integrable hweighted
 
-theorem plusSaddleFiniteRapidContourIntegrand_shiftedLine_integral_eq
+lemma plusSaddleFiniteRapidContourIntegrand_shiftedLine_integral_eq
     {ε ℓ a r : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -9057,7 +9057,7 @@ theorem plusSaddleFiniteRapidContourIntegrand_shiftedLine_integral_eq
         rw [saddleFiniteGaussianPoleWeighted_shiftedLine_integral
           hr (plusSaddlePoleResidue ε ℓ) N hpole]
 
-theorem minusSaddleFiniteRapidContourIntegrand_shiftedLine_integral_eq
+lemma minusSaddleFiniteRapidContourIntegrand_shiftedLine_integral_eq
     {ε ℓ a r : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -9144,7 +9144,7 @@ theorem minusSaddleFiniteRapidContourIntegrand_shiftedLine_integral_eq
         rw [saddleFiniteGaussianPoleWeighted_shiftedLine_integral
           hr (minusSaddlePoleResidue ε ℓ) N hpole]
 
-theorem saddleFiniteGaussianPoleWeighted_vertical_integral_jump
+lemma saddleFiniteGaussianPoleWeighted_vertical_integral_jump
     {r A B : ℝ} (hr : 0 < r)
     (c : ℕ → ℂ) (N : ℕ)
     (hcross : ∀ n ∈ Finset.range (N + 1),
@@ -9214,7 +9214,7 @@ theorem saddleFiniteGaussianPoleWeighted_vertical_integral_jump
         intro n _
         ring
 
-theorem plusSaddleMellinData_vertical_integral_residue_expansion
+lemma plusSaddleMellinData_vertical_integral_residue_expansion
     {ε ℓ r A B : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -9291,7 +9291,7 @@ theorem plusSaddleMellinData_vertical_integral_residue_expansion
               ((r ^ (2 * n) : ℝ) : ℂ) := by
           rw [hsum]
 
-theorem minusSaddleMellinData_vertical_integral_residue_expansion
+lemma minusSaddleMellinData_vertical_integral_residue_expansion
     {ε ℓ r A B : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -9371,13 +9371,13 @@ theorem minusSaddleMellinData_vertical_integral_residue_expansion
 def saddleTaylorContour (N : ℕ) : ℝ :=
   -((2 * N + 1 : ℕ) : ℝ)
 
-theorem saddleTaylorContour_mem_halfPlane (N : ℕ) :
+lemma saddleTaylorContour_mem_halfPlane (N : ℕ) :
     -(2 * ((N : ℝ) + 1)) < saddleTaylorContour N := by
   unfold saddleTaylorContour
   push_cast
   linarith
 
-theorem saddleTaylorContour_ne_pole (N n : ℕ) :
+lemma saddleTaylorContour_ne_pole (N n : ℕ) :
     saddleTaylorContour N ≠ -((2 * n : ℕ) : ℝ) := by
   intro heq
   unfold saddleTaylorContour at heq
@@ -9389,14 +9389,14 @@ theorem saddleTaylorContour_ne_pole (N n : ℕ) :
     exact_mod_cast hcast
   omega
 
-theorem saddlePositiveContour_ne_pole
+lemma saddlePositiveContour_ne_pole
     {ℓ : ℝ} (hℓ : 0 < ℓ) (n : ℕ) :
     ℓ ≠ -((2 * n : ℕ) : ℝ) := by
   have hnonpos : -((2 * n : ℕ) : ℝ) ≤ 0 := by
     exact neg_nonpos.mpr (Nat.cast_nonneg (2 * n))
   exact ne_of_gt (hnonpos.trans_lt hℓ)
 
-theorem saddleTaylorContour_crosses_poles
+lemma saddleTaylorContour_crosses_poles
     {ℓ : ℝ} (hℓ : 0 < ℓ) (N : ℕ) :
     ∀ n ∈ Finset.range (N + 1),
       saddleTaylorContour N < -((2 * n : ℕ) : ℝ) ∧
@@ -9413,7 +9413,7 @@ theorem saddleTaylorContour_crosses_poles
       exact neg_nonpos.mpr (Nat.cast_nonneg (2 * n))
     exact hnonpos.trans_lt hℓ
 
-theorem saddleTaylorContour_le_positive
+lemma saddleTaylorContour_le_positive
     {ℓ : ℝ} (hℓ : 0 < ℓ) (N : ℕ) :
     saddleTaylorContour N ≤ ℓ := by
   have hnonpos : saddleTaylorContour N ≤ 0 := by
@@ -9421,7 +9421,7 @@ theorem saddleTaylorContour_le_positive
     exact neg_nonpos.mpr (Nat.cast_nonneg (2 * N + 1))
   exact hnonpos.trans hℓ.le
 
-theorem plusSaddleProfile_eq_normalized_vertical_integral
+lemma plusSaddleProfile_eq_normalized_vertical_integral
     {ε ℓ r : ℝ} (hr : 0 < r) :
     plusSaddleProfile ε ℓ r =
       ((1 / (2 * Real.pi) : ℝ) : ℂ) *
@@ -9436,7 +9436,7 @@ theorem plusSaddleProfile_eq_normalized_vertical_integral
   simp only [smul_eq_mul, Complex.real_smul]
   rfl
 
-theorem minusSaddleProfile_eq_normalized_vertical_integral
+lemma minusSaddleProfile_eq_normalized_vertical_integral
     {ε ℓ r : ℝ} (hr : 0 < r) :
     minusSaddleProfile ε ℓ r =
       ((1 / (2 * Real.pi) : ℝ) : ℂ) *
@@ -9473,7 +9473,7 @@ def minusSaddleTaylorRemainder
           ((saddleTaylorContour N : ℂ) +
             (t : ℂ) * Complex.I))
 
-theorem plusSaddlePoleResidue_zero
+lemma plusSaddlePoleResidue_zero
     {ε ℓ : ℝ} (hℓ : 0 < ℓ) :
     plusSaddlePoleResidue ε ℓ 0 =
       (saddleOriginValue ε ℓ : ℂ) := by
@@ -9481,7 +9481,7 @@ theorem plusSaddlePoleResidue_zero
     (two_mul_plusSaddleRegularMellinFactor_zero
       (ε := ε) hℓ)
 
-theorem minusSaddlePoleResidue_zero
+lemma minusSaddlePoleResidue_zero
     {ε ℓ : ℝ} (hℓ : 0 < ℓ) :
     minusSaddlePoleResidue ε ℓ 0 =
       (saddleOriginValue ε ℓ : ℂ) := by
@@ -9489,7 +9489,7 @@ theorem minusSaddlePoleResidue_zero
     (two_mul_minusSaddleRegularMellinFactor_zero
       (ε := ε) hℓ)
 
-theorem plusSaddleProfile_eq_residue_sum_add_remainder
+lemma plusSaddleProfile_eq_residue_sum_add_remainder
     {ε ℓ r : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -9518,7 +9518,7 @@ theorem plusSaddleProfile_eq_residue_sum_add_remainder
   rw [mul_add, ← mul_assoc, hnormal, one_mul]
   ring
 
-theorem minusSaddleProfile_eq_residue_sum_add_remainder
+lemma minusSaddleProfile_eq_residue_sum_add_remainder
     {ε ℓ r : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -9547,7 +9547,7 @@ theorem minusSaddleProfile_eq_residue_sum_add_remainder
   rw [mul_add, ← mul_assoc, hnormal, one_mul]
   ring
 
-theorem saddleMellinInversePower_shiftedLine_integral_norm
+lemma saddleMellinInversePower_shiftedLine_integral_norm
     {r a : ℝ} (hr : 0 < r)
     (F : ℂ → ℂ)
     (hF : Integrable
@@ -9576,7 +9576,7 @@ theorem saddleMellinInversePower_shiftedLine_integral_norm
           ‖F ((a : ℂ) + (t : ℂ) * Complex.I)‖) :=
       integral_const_mul_of_integrable hF.norm
 
-theorem saddleTaylorContour_rpow
+lemma saddleTaylorContour_rpow
     (r : ℝ) (N : ℕ) :
     r ^ (-(saddleTaylorContour N)) =
       r ^ (2 * N + 1) := by
@@ -9592,14 +9592,14 @@ open scoped Topology
 
 def wallisProduct (n : ℕ) : ℝ := Real.Wallis.W n
 
-theorem wallisProduct_pos (n : ℕ) : 0 < wallisProduct n :=
+lemma wallisProduct_pos (n : ℕ) : 0 < wallisProduct n :=
   Real.Wallis.W_pos n
 
-theorem tendsto_wallisProduct :
+lemma tendsto_wallisProduct :
     Tendsto wallisProduct atTop (nhds (Real.pi / 2)) :=
   Real.Wallis.tendsto_W_nhds_pi_div_two
 
-theorem tendsto_log_wallisProduct :
+lemma tendsto_log_wallisProduct :
     Tendsto (fun n : ℕ => Real.log (wallisProduct n))
       atTop (nhds (Real.log (Real.pi / 2))) := by
   exact (Real.continuousAt_log (by positivity)).tendsto.comp
@@ -9615,15 +9615,15 @@ open scoped Topology
 def frullaniKernel (a b x : ℝ) : ℝ :=
   (Real.exp (-a * x) - Real.exp (-b * x)) / x
 
-theorem laplaceKernel_integrable {a : ℝ} (ha : 0 < a) :
+lemma laplaceKernel_integrable {a : ℝ} (ha : 0 < a) :
     IntegrableOn (fun x : ℝ => Real.exp (-a * x)) (Ioi 0) := by
   exact integrableOn_exp_mul_Ioi (by linarith : -a < 0) 0
 
-theorem integral_laplaceKernel {a : ℝ} (ha : 0 < a) :
+lemma integral_laplaceKernel {a : ℝ} (ha : 0 < a) :
     (∫ x : ℝ in Ioi 0, Real.exp (-a * x)) = a⁻¹ := by
   simpa using! (integral_exp_mul_Ioi (by linarith : -a < 0) 0)
 
-theorem intervalIntegral_laplaceKernel {x : ℝ} (hx : x ≠ 0)
+lemma intervalIntegral_laplaceKernel {x : ℝ} (hx : x ≠ 0)
     (a b : ℝ) :
     (∫ s in a..b, Real.exp (-s * x)) = frullaniKernel a b x := by
   have hderiv (s : ℝ) :
@@ -9642,7 +9642,7 @@ theorem intervalIntegral_laplaceKernel {x : ℝ} (hx : x ≠ 0)
   unfold frullaniKernel
   ring
 
-theorem laplaceParameter_integrable {a b : ℝ}
+lemma laplaceParameter_integrable {a b : ℝ}
     (ha : 0 < a) (hab : a ≤ b) :
     Integrable
       (Function.uncurry (fun s x : ℝ => Real.exp (-s * x)))
@@ -9682,7 +9682,7 @@ theorem laplaceParameter_integrable {a b : ℝ}
     simpa only [Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)] using!
       integral_laplaceKernel hspos
 
-theorem integral_frullaniKernel {a b : ℝ}
+lemma integral_frullaniKernel {a b : ℝ}
     (ha : 0 < a) (hab : a ≤ b) :
     (∫ x : ℝ in Ioi 0, frullaniKernel a b x) =
       Real.log (b / a) := by
@@ -9706,7 +9706,7 @@ theorem integral_frullaniKernel {a b : ℝ}
     _ = Real.log (b / a) :=
       integral_inv_of_pos ha hb
 
-theorem frullaniKernel_integrable {a b : ℝ}
+lemma frullaniKernel_integrable {a b : ℝ}
     (ha : 0 < a) (hab : a ≤ b) :
     IntegrableOn (frullaniKernel a b) (Ioi 0) := by
   have hprod := (laplaceParameter_integrable ha hab).integral_prod_right
@@ -9721,7 +9721,7 @@ def wallisPairKernel (n : ℕ) (x : ℝ) : ℝ :=
   frullaniKernel (2 * (n : ℝ) + 1) (2 * (n : ℝ) + 2) x -
     frullaniKernel (2 * (n : ℝ) + 2) (2 * (n : ℝ) + 3) x
 
-theorem wallisPairKernel_eq (n : ℕ) (x : ℝ) :
+lemma wallisPairKernel_eq (n : ℕ) (x : ℝ) :
     wallisPairKernel n x =
       Real.exp (-(2 * (n : ℝ) + 1) * x) *
         (1 - Real.exp (-x)) ^ 2 / x := by
@@ -9742,7 +9742,7 @@ theorem wallisPairKernel_eq (n : ℕ) (x : ℝ) :
   rw [htwo, hthree]
   ring
 
-theorem wallisPairKernel_integrable (n : ℕ) :
+lemma wallisPairKernel_integrable (n : ℕ) :
     IntegrableOn (wallisPairKernel n) (Ioi 0) := by
   unfold wallisPairKernel
   apply Integrable.sub
@@ -9753,7 +9753,7 @@ def wallisPairFactor (n : ℕ) : ℝ :=
   ((2 * (n : ℝ) + 2) / (2 * (n : ℝ) + 1)) *
     ((2 * (n : ℝ) + 2) / (2 * (n : ℝ) + 3))
 
-theorem integral_wallisPairKernel (n : ℕ) :
+lemma integral_wallisPairKernel (n : ℕ) :
     (∫ x : ℝ in Ioi 0, wallisPairKernel n x) =
       Real.log (wallisPairFactor n) := by
   unfold wallisPairKernel
@@ -9769,11 +9769,11 @@ theorem integral_wallisPairKernel (n : ℕ) :
     Real.log_div (by positivity) (by positivity)]
   ring
 
-theorem wallisPairFactor_pos (n : ℕ) : 0 < wallisPairFactor n := by
+lemma wallisPairFactor_pos (n : ℕ) : 0 < wallisPairFactor n := by
   unfold wallisPairFactor
   positivity
 
-theorem wallisProduct_succ (n : ℕ) :
+lemma wallisProduct_succ (n : ℕ) :
     wallisProduct (n + 1) =
       wallisProduct n * wallisPairFactor n := by
   simpa [wallisProduct, wallisPairFactor] using! Real.Wallis.W_succ n
@@ -9781,12 +9781,12 @@ theorem wallisProduct_succ (n : ℕ) :
 def wallisPartialKernel (n : ℕ) (x : ℝ) : ℝ :=
   ∑ k ∈ Finset.range n, wallisPairKernel k x
 
-theorem wallisPartialKernel_integrable (n : ℕ) :
+lemma wallisPartialKernel_integrable (n : ℕ) :
     IntegrableOn (wallisPartialKernel n) (Ioi 0) := by
   unfold wallisPartialKernel
   exact integrable_finsetSum _ fun k _ => wallisPairKernel_integrable k
 
-theorem integral_wallisPartialKernel (n : ℕ) :
+lemma integral_wallisPartialKernel (n : ℕ) :
     (∫ x : ℝ in Ioi 0, wallisPartialKernel n x) =
       Real.log (wallisProduct n) := by
   induction n with
@@ -9809,7 +9809,7 @@ def wallisLaplaceKernel (x : ℝ) : ℝ :=
   Real.exp (-x) * (1 - Real.exp (-x)) /
     (x * (1 + Real.exp (-x)))
 
-theorem wallisPartialKernel_eq (n : ℕ) {x : ℝ} (hx : x ≠ 0) :
+lemma wallisPartialKernel_eq (n : ℕ) {x : ℝ} (hx : x ≠ 0) :
     wallisPartialKernel n x =
       wallisLaplaceKernel x *
         (1 - Real.exp (-(2 * (n : ℝ)) * x)) := by
@@ -9841,7 +9841,7 @@ theorem wallisPartialKernel_eq (n : ℕ) {x : ℝ} (hx : x ≠ 0) :
       field_simp [hx, hden]
       ring
 
-theorem wallisLaplaceKernel_nonneg {x : ℝ} (hx : 0 < x) :
+lemma wallisLaplaceKernel_nonneg {x : ℝ} (hx : 0 < x) :
     0 ≤ wallisLaplaceKernel x := by
   unfold wallisLaplaceKernel
   have hq : Real.exp (-x) ≤ 1 :=
@@ -9850,7 +9850,7 @@ theorem wallisLaplaceKernel_nonneg {x : ℝ} (hx : 0 < x) :
     (mul_nonneg (Real.exp_pos _).le (sub_nonneg.mpr hq))
     (mul_nonneg hx.le (by positivity))
 
-theorem wallisLaplaceKernel_abs_le {x : ℝ} (hx : 0 < x) :
+lemma wallisLaplaceKernel_abs_le {x : ℝ} (hx : 0 < x) :
     |wallisLaplaceKernel x| ≤ Real.exp (-x) := by
   rw [abs_of_nonneg (wallisLaplaceKernel_nonneg hx)]
   unfold wallisLaplaceKernel
@@ -9863,7 +9863,7 @@ theorem wallisLaplaceKernel_abs_le {x : ℝ} (hx : 0 < x) :
     mul_nonneg hx.le hq.le
   nlinarith
 
-theorem wallisLaplaceKernel_integrable :
+lemma wallisLaplaceKernel_integrable :
     IntegrableOn wallisLaplaceKernel (Ioi 0) := by
   have hbound :
       IntegrableOn (fun x : ℝ => Real.exp (-x)) (Ioi 0) := by
@@ -9876,7 +9876,7 @@ theorem wallisLaplaceKernel_integrable :
   filter_upwards [ae_restrict_mem measurableSet_Ioi] with x hx
   simpa only [Real.norm_eq_abs] using! wallisLaplaceKernel_abs_le hx
 
-theorem wallisPartialKernel_abs_le (n : ℕ) {x : ℝ} (hx : 0 < x) :
+lemma wallisPartialKernel_abs_le (n : ℕ) {x : ℝ} (hx : 0 < x) :
     |wallisPartialKernel n x| ≤ wallisLaplaceKernel x := by
   rw [wallisPartialKernel_eq n hx.ne']
   have hexp : Real.exp (-(2 * (n : ℝ)) * x) ≤ 1 := by
@@ -9891,7 +9891,7 @@ theorem wallisPartialKernel_abs_le (n : ℕ) {x : ℝ} (hx : 0 < x) :
     (mul_nonneg (wallisLaplaceKernel_nonneg hx) hfactor)]
   exact mul_le_of_le_one_right (wallisLaplaceKernel_nonneg hx) hfactor_le
 
-theorem tendsto_wallisPartialKernel {x : ℝ} (hx : 0 < x) :
+lemma tendsto_wallisPartialKernel {x : ℝ} (hx : 0 < x) :
     Tendsto (fun n : ℕ => wallisPartialKernel n x)
       atTop (nhds (wallisLaplaceKernel x)) := by
   have hlinear :
@@ -9912,7 +9912,7 @@ theorem tendsto_wallisPartialKernel {x : ℝ} (hx : 0 < x) :
     (tendsto_const_nhds (x := wallisLaplaceKernel x)).mul hfactor
   simpa only [mul_one, wallisPartialKernel_eq _ hx.ne'] using! hproduct
 
-theorem tendsto_integral_wallisPartialKernel :
+lemma tendsto_integral_wallisPartialKernel :
     Tendsto
       (fun n : ℕ => ∫ x : ℝ in Ioi 0, wallisPartialKernel n x)
       atTop (nhds (∫ x : ℝ in Ioi 0, wallisLaplaceKernel x)) := by
@@ -9927,7 +9927,7 @@ theorem tendsto_integral_wallisPartialKernel :
   · filter_upwards [ae_restrict_mem measurableSet_Ioi] with x hx
     exact tendsto_wallisPartialKernel hx
 
-theorem integral_wallisLaplaceKernel :
+lemma integral_wallisLaplaceKernel :
     (∫ x : ℝ in Ioi 0, wallisLaplaceKernel x) =
       Real.log (Real.pi / 2) := by
   have hproduct :
@@ -9946,7 +9946,7 @@ noncomputable section
 open Filter MeasureTheory
 open scoped Topology
 
-theorem tendsto_cubic_gaussian_atTop :
+lemma tendsto_cubic_gaussian_atTop :
     Tendsto (fun x : ℝ => (x ^ 3 + 1) * Real.exp (-(x ^ 2) / 8))
       atTop (nhds 0) := by
   have hpoly :
@@ -9984,7 +9984,7 @@ def shellRadiusMajorant (ε : ℝ) : ℝ :=
   (shellLocation ε + 1) * shellWeight ε *
     Real.exp ((ε / 4) * (shellLocation ε + 1))
 
-theorem shellRadiusMajorant_inv {x : ℝ} (hx : x ≠ 0) :
+lemma shellRadiusMajorant_inv {x : ℝ} (hx : x ≠ 0) :
     shellRadiusMajorant x⁻¹ =
       ((x ^ 3 + 1) * Real.exp (-(x ^ 2) / 8)) *
         Real.exp (x⁻¹ / 4) := by
@@ -9997,7 +9997,7 @@ theorem shellRadiusMajorant_inv {x : ℝ} (hx : x ≠ 0) :
   field_simp
   ring
 
-theorem tendsto_shellRadiusMajorant :
+lemma tendsto_shellRadiusMajorant :
     Tendsto shellRadiusMajorant (𝓝[>] (0 : ℝ)) (nhds 0) := by
   apply tendsto_nhdsGT_zero_of_comp_inv_tendsto_atTop
   have hsmall :
@@ -10018,7 +10018,7 @@ theorem tendsto_shellRadiusMajorant :
   filter_upwards [eventually_ne_atTop (0 : ℝ)] with x hx
   exact (shellRadiusMajorant_inv hx).symm
 
-theorem tendsto_positiveShellRadiusContribution :
+lemma tendsto_positiveShellRadiusContribution :
     Tendsto positiveShellRadiusContribution
       (𝓝[>] (0 : ℝ)) (nhds 0) := by
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le'
@@ -10029,7 +10029,7 @@ theorem tendsto_positiveShellRadiusContribution :
   · filter_upwards [self_mem_nhdsWithin] with ε hε
     exact (positiveShellRadiusContribution_bounds hε).2
 
-theorem sinh_le_mul_cosh {a : ℝ} (ha : 0 ≤ a) :
+lemma sinh_le_mul_cosh {a : ℝ} (ha : 0 ≤ a) :
     Real.sinh a ≤ a * Real.cosh a := by
   let f : ℝ → ℝ := fun x => x * Real.cosh x - Real.sinh x
   have hderiv (x : ℝ) :
@@ -10060,7 +10060,7 @@ def shortShellRadiusIntegrand (ε a : ℝ) : ℝ :=
 def wallisRadiusIntegrand (a : ℝ) : ℝ :=
   -(Real.exp (-2 * a) * Real.tanh a / (2 * a))
 
-theorem tendsto_shortShellRadiusIntegrand {a : ℝ} (ha : 0 < a) :
+lemma tendsto_shortShellRadiusIntegrand {a : ℝ} (ha : 0 < a) :
     Tendsto (fun ε : ℝ => shortShellRadiusIntegrand ε a)
       (𝓝[>] (0 : ℝ)) (nhds (wallisRadiusIntegrand a)) := by
   have hc : Continuous (fun ε : ℝ => shortShellRadiusIntegrand ε a) := by
@@ -10080,7 +10080,7 @@ theorem tendsto_shortShellRadiusIntegrand {a : ℝ} (ha : 0 < a) :
     ring_nf
   simpa [hvalue] using! ht
 
-theorem shortMargin_abs_le_exp {ε a : ℝ}
+lemma shortMargin_abs_le_exp {ε a : ℝ}
     (hε0 : 0 ≤ ε) (hε1 : ε ≤ 1) (ha : 0 ≤ a) :
     |shortMargin ε a| ≤ 11 * Real.exp a := by
   have hterm : 0 ≤ 10 * ε * (1 + a) := by positivity
@@ -10097,7 +10097,7 @@ theorem shortMargin_abs_le_exp {ε a : ℝ}
       gcongr
       nlinarith [Real.add_one_le_exp a]
 
-theorem shortShellHyperbolicRatio_le {ε a : ℝ}
+lemma shortShellHyperbolicRatio_le {ε a : ℝ}
     (hε0 : 0 ≤ ε) (hε1 : ε ≤ 1) (ha : 0 ≤ a) :
     Real.sinh ((1 + ε / 4) * a) / Real.cosh a ≤
       (5 / 4 : ℝ) * a * Real.exp (a / 4) := by
@@ -10118,7 +10118,7 @@ theorem shortShellHyperbolicRatio_le {ε a : ℝ}
           gcongr
           nlinarith [mul_le_mul_of_nonneg_right hε1 ha]
 
-theorem shortShellRadiusIntegrand_eq_ratio {ε a : ℝ} (ha : a ≠ 0) :
+lemma shortShellRadiusIntegrand_eq_ratio {ε a : ℝ} (ha : a ≠ 0) :
     shortShellRadiusIntegrand ε a =
       -(shortMargin ε a * Real.exp (-2 * a) *
         (Real.sinh ((1 + ε / 4) * a) / Real.cosh a) /
@@ -10126,7 +10126,7 @@ theorem shortShellRadiusIntegrand_eq_ratio {ε a : ℝ} (ha : a ≠ 0) :
   unfold shortShellRadiusIntegrand shortShellDensity
   field_simp [ha, (Real.cosh_pos a).ne']
 
-theorem shortShellRadiusIntegrand_abs_le {ε a : ℝ}
+lemma shortShellRadiusIntegrand_abs_le {ε a : ℝ}
     (hε0 : 0 ≤ ε) (hε1 : ε ≤ 1) (ha : 0 < a) :
     |shortShellRadiusIntegrand ε a| ≤
       7 * Real.exp (-(3 / 4 : ℝ) * a) := by
@@ -10160,7 +10160,7 @@ theorem shortShellRadiusIntegrand_abs_le {ε a : ℝ}
 def shortShellRadiusMajorant (a : ℝ) : ℝ :=
   7 * Real.exp (-(3 / 4 : ℝ) * a)
 
-theorem shortShellRadiusMajorant_integrable :
+lemma shortShellRadiusMajorant_integrable :
     IntegrableOn shortShellRadiusMajorant (Set.Ioi (0 : ℝ)) := by
   change Integrable
     (fun a : ℝ => 7 * Real.exp (-(3 / 4 : ℝ) * a))
@@ -10169,7 +10169,7 @@ theorem shortShellRadiusMajorant_integrable :
     (integrableOn_exp_mul_Ioi (a := (-3 / 4 : ℝ))
       (by norm_num) 0).const_mul 7
 
-theorem shortShellRadiusIntegrand_measurable (ε : ℝ) :
+lemma shortShellRadiusIntegrand_measurable (ε : ℝ) :
     Measurable (shortShellRadiusIntegrand ε) := by
   have hn : Measurable (fun a : ℝ =>
       shortMargin ε a * Real.exp (-2 * a)) := by
@@ -10183,14 +10183,14 @@ theorem shortShellRadiusIntegrand_measurable (ε : ℝ) :
     fun_prop
   exact ((hn.div hd).neg.mul measurable_id).mul hs
 
-theorem tendsto_shortCutoff :
+lemma tendsto_shortCutoff :
     Tendsto shortCutoff (𝓝[>] (0 : ℝ)) (nhds 0) := by
   have ht : Tendsto (fun ε : ℝ => ε)
       (𝓝[>] (0 : ℝ)) (nhds 0) :=
     tendsto_id.mono_left (nhdsWithin_le_nhds (s := Set.Ioi (0 : ℝ)))
   simpa [shortCutoff] using! ht.pow 3
 
-theorem tendsto_shortEndpoint :
+lemma tendsto_shortEndpoint :
     Tendsto shortEndpoint (𝓝[>] (0 : ℝ)) atTop := by
   have ht : Tendsto (fun ε : ℝ => Real.log ε⁻¹)
       (𝓝[>] (0 : ℝ)) atTop :=
@@ -10208,12 +10208,12 @@ def supportedShortShellRadiusIntegrand (ε a : ℝ) : ℝ :=
   (Set.Ioc (shortCutoff ε) (shortEndpoint ε)).indicator
     (shortShellRadiusIntegrand ε) a
 
-theorem supportedShortShellRadiusIntegrand_measurable (ε : ℝ) :
+lemma supportedShortShellRadiusIntegrand_measurable (ε : ℝ) :
     Measurable (supportedShortShellRadiusIntegrand ε) := by
   exact (shortShellRadiusIntegrand_measurable ε).indicator
     measurableSet_Ioc
 
-theorem tendsto_supportedShortShellRadiusIntegrand {a : ℝ} (ha : 0 < a) :
+lemma tendsto_supportedShortShellRadiusIntegrand {a : ℝ} (ha : 0 < a) :
     Tendsto (fun ε : ℝ => supportedShortShellRadiusIntegrand ε a)
       (𝓝[>] (0 : ℝ)) (nhds (wallisRadiusIntegrand a)) := by
   refine (tendsto_shortShellRadiusIntegrand ha).congr' ?_
@@ -10225,7 +10225,7 @@ theorem tendsto_supportedShortShellRadiusIntegrand {a : ℝ} (ha : 0 < a) :
     ⟨hlower, hupper⟩
   simp [supportedShortShellRadiusIntegrand, Set.indicator_of_mem hmem]
 
-theorem tendsto_supportedShortShellRadiusIntegral :
+lemma tendsto_supportedShortShellRadiusIntegral :
     Tendsto
       (fun ε : ℝ => ∫ a in Set.Ioi (0 : ℝ),
         supportedShortShellRadiusIntegrand ε a)
@@ -10257,7 +10257,7 @@ theorem tendsto_supportedShortShellRadiusIntegral :
   · filter_upwards [ae_restrict_mem measurableSet_Ioi] with a ha
     exact tendsto_supportedShortShellRadiusIntegrand ha
 
-theorem shortShellRadiusContribution_eq_supported {ε : ℝ}
+lemma shortShellRadiusContribution_eq_supported {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     shortShellRadiusContribution ε =
@@ -10276,7 +10276,7 @@ theorem shortShellRadiusContribution_eq_supported {ε : ℝ}
     MeasureTheory.integral_indicator measurableSet_Ioc,
     Measure.restrict_restrict_of_subset hsubset]
 
-theorem tendsto_shortShellRadiusContribution :
+lemma tendsto_shortShellRadiusContribution :
     Tendsto shortShellRadiusContribution
       (𝓝[>] (0 : ℝ))
       (nhds (∫ a in Set.Ioi (0 : ℝ), wallisRadiusIntegrand a)) := by
@@ -10291,7 +10291,7 @@ theorem tendsto_shortShellRadiusContribution :
     hcutoff.le.trans hendpoint
   exact (shortShellRadiusContribution_eq_supported hε horder).symm
 
-theorem wallisRadiusIntegrand_eq_laplace (a : ℝ) :
+lemma wallisRadiusIntegrand_eq_laplace (a : ℝ) :
     wallisRadiusIntegrand a = -wallisLaplaceKernel (2 * a) := by
   by_cases ha : a = 0
   · simp [wallisRadiusIntegrand, wallisLaplaceKernel, ha]
@@ -10310,7 +10310,7 @@ theorem wallisRadiusIntegrand_eq_laplace (a : ℝ) :
     rw [hexp]
     field_simp [ha, (Real.exp_pos a).ne', hplus, hratio]
 
-theorem integral_wallisRadiusIntegrand :
+lemma integral_wallisRadiusIntegrand :
     (∫ a in Set.Ioi (0 : ℝ), wallisRadiusIntegrand a) =
       -(1 / 2 : ℝ) * Real.log (Real.pi / 2) := by
   have hscale :
@@ -10336,7 +10336,7 @@ def limitingSaddleRadius (ε : ℝ) : ℝ :=
     Real.exp (shortShellRadiusContribution ε +
       positiveShellRadiusContribution ε)
 
-theorem tendsto_limitingSaddleRadius_wallisIntegral :
+lemma tendsto_limitingSaddleRadius_wallisIntegral :
     Tendsto limitingSaddleRadius (𝓝[>] (0 : ℝ))
       (nhds (Real.sqrt (1 / (2 * Real.pi)) *
         Real.exp (∫ a in Set.Ioi (0 : ℝ), wallisRadiusIntegrand a))) := by
@@ -10368,7 +10368,7 @@ theorem tendsto_limitingSaddleRadius_wallisIntegral :
       tendsto_positiveShellRadiusContribution
   exact hfactor.mul hshell.rexp
 
-theorem saddleRadius_wallis_constant :
+lemma saddleRadius_wallis_constant :
     Real.sqrt (1 / (2 * Real.pi)) *
       Real.exp (-(1 / 2 : ℝ) * Real.log (Real.pi / 2)) =
         criticalRadius := by
@@ -10402,7 +10402,7 @@ theorem saddleRadius_wallis_constant :
   unfold criticalRadius
   nlinarith
 
-theorem tendsto_limitingSaddleRadius :
+lemma tendsto_limitingSaddleRadius :
     Tendsto limitingSaddleRadius (𝓝[>] (0 : ℝ))
       (nhds criticalRadius) := by
   have h := tendsto_limitingSaddleRadius_wallisIntegral
@@ -10419,7 +10419,7 @@ open scoped FourierTransform SchwartzMap Topology ENNReal
 def radialL1Mass {d : ℕ} (g : TestFunction d) : ℝ :=
   ∫ x : Euclidean d, ‖g x‖
 
-theorem radialL1Mass_pos {d : ℕ} (g : TestFunction d)
+lemma radialL1Mass_pos {d : ℕ} (g : TestFunction d)
     (hg : g ≠ 0) : 0 < radialL1Mass g := by
   obtain ⟨x, hx⟩ : ∃ x : Euclidean d, g x ≠ 0 := by
     by_contra h
@@ -10432,7 +10432,7 @@ theorem radialL1Mass_pos {d : ℕ} (g : TestFunction d)
     g.continuous.norm g.integrable.norm (fun _ => norm_nonneg _)
     (norm_ne_zero_iff.mpr hx)
 
-theorem integral_scaled_exp_change_Ioi {E : Type*}
+lemma integral_scaled_exp_change_Ioi {E : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
     {R : ℝ} (hR : 0 < R) (f : ℝ → E) :
     (∫ r : ℝ in Ioi 0, f r) =
@@ -10462,7 +10462,7 @@ theorem integral_scaled_exp_change_Ioi {E : Type*}
       MeasurableSet.univ hderiv hinj f
   simpa [himage, F, abs_of_pos (mul_pos hR (Real.exp_pos _))] using! h
 
-theorem integrable_scaled_exp_change_Ioi {E : Type*}
+lemma integrable_scaled_exp_change_Ioi {E : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
     {R : ℝ} (hR : 0 < R) (f : ℝ → E) :
     IntegrableOn f (Ioi 0) ↔
@@ -10492,7 +10492,7 @@ theorem integrable_scaled_exp_change_Ioi {E : Type*}
         (f := F) (f' := fun x => R * Real.exp x)
         MeasurableSet.univ hderiv hinj f)
 
-theorem radialL1Mass_eq {d : ℕ} (hd : 0 < d)
+lemma radialL1Mass_eq {d : ℕ} (hd : 0 < d)
     (g : TestFunction d) (hg : IsRadial g) :
     radialL1Mass g =
       radialSurfaceArea d *
@@ -10522,7 +10522,7 @@ def normalizedRadialLogProfile {d : ℕ} (hd : 0 < d)
     (R * Real.exp v) ^ d *
     (radialProfile hd g (R * Real.exp v)).re
 
-theorem norm_radialProfile_eq_abs_re {d : ℕ} (hd : 0 < d)
+lemma norm_radialProfile_eq_abs_re {d : ℕ} (hd : 0 < d)
     (g : TestFunction d) (hg : IsRealValued g) (r : ℝ) :
     ‖radialProfile hd g r‖ =
       |(radialProfile hd g r).re| := by
@@ -10539,7 +10539,7 @@ theorem norm_radialProfile_eq_abs_re {d : ℕ} (hd : 0 < d)
     _ = |(radialProfile hd g r).re| := by
       simp [Complex.norm_real, Real.norm_eq_abs]
 
-theorem radialProfile_re_weight_integrable {d : ℕ} (hd : 0 < d)
+lemma radialProfile_re_weight_integrable {d : ℕ} (hd : 0 < d)
     (g : TestFunction d) (hg : IsRadial g) :
     IntegrableOn
       (fun r : ℝ => r ^ (d - 1) * (radialProfile hd g r).re)
@@ -10557,7 +10557,7 @@ theorem radialProfile_re_weight_integrable {d : ℕ} (hd : 0 < d)
       (volume : Measure (Euclidean d))
       (f := fun r : ℝ => (radialProfile hd g r).re)).mp hre
 
-theorem integral_radialProfile_re {d : ℕ} (hd : 0 < d)
+lemma integral_radialProfile_re {d : ℕ} (hd : 0 < d)
     (g : TestFunction d) (hg : IsRadial g) :
     (∫ x : Euclidean d, (g x).re) =
       radialSurfaceArea d *
@@ -10580,13 +10580,13 @@ theorem integral_radialProfile_re {d : ℕ} (hd : 0 < d)
           (volume : Measure (Euclidean d))
           (fun r : ℝ => (radialProfile hd g r).re))
 
-theorem radialLogRadius_pow {d : ℕ} (hd : 0 < d) (r : ℝ) :
+lemma radialLogRadius_pow {d : ℕ} (hd : 0 < d) (r : ℝ) :
     r ^ d = r * r ^ (d - 1) := by
   have hindex : d - 1 + 1 = d := Nat.sub_add_cancel hd
   conv_lhs => rw [← hindex, pow_succ]
   ring
 
-theorem normalizedRadialLogProfile_eq {d : ℕ} (hd : 0 < d)
+lemma normalizedRadialLogProfile_eq {d : ℕ} (hd : 0 < d)
     (g : TestFunction d) (R v : ℝ) :
     normalizedRadialLogProfile hd g R v =
       (radialSurfaceArea d / radialL1Mass g) *
@@ -10597,7 +10597,7 @@ theorem normalizedRadialLogProfile_eq {d : ℕ} (hd : 0 < d)
   rw [radialLogRadius_pow hd]
   ring
 
-theorem normalizedRadialLogProfile_integrable {d : ℕ} (hd : 0 < d)
+lemma normalizedRadialLogProfile_integrable {d : ℕ} (hd : 0 < d)
     (g : TestFunction d) (hg : IsRadial g)
     {R : ℝ} (hR : 0 < R) :
     Integrable (normalizedRadialLogProfile hd g R) := by
@@ -10613,7 +10613,7 @@ theorem normalizedRadialLogProfile_integrable {d : ℕ} (hd : 0 < d)
   simpa [smul_eq_mul] using!
     (normalizedRadialLogProfile_eq hd g R v).symm
 
-theorem integral_normalizedRadialLogProfile {d : ℕ} (hd : 0 < d)
+lemma integral_normalizedRadialLogProfile {d : ℕ} (hd : 0 < d)
     (g : TestFunction d) (hg : IsRadial g)
     {R : ℝ} (hR : 0 < R) :
     (∫ v : ℝ, normalizedRadialLogProfile hd g R v) =
@@ -10645,7 +10645,7 @@ theorem integral_normalizedRadialLogProfile {d : ℕ} (hd : 0 < d)
       rw [integral_radialProfile_re hd g hg]
       ring
 
-theorem abs_normalizedRadialLogProfile {d : ℕ} (hd : 0 < d)
+lemma abs_normalizedRadialLogProfile {d : ℕ} (hd : 0 < d)
     (g : TestFunction d) (hreal : IsRealValued g)
     (hnonzero : g ≠ 0) {R : ℝ} (hR : 0 < R) (v : ℝ) :
     |normalizedRadialLogProfile hd g R v| =
@@ -10672,7 +10672,7 @@ theorem abs_normalizedRadialLogProfile {d : ℕ} (hd : 0 < d)
         radialLogRadius_pow hd]
       ring
 
-theorem integral_abs_normalizedRadialLogProfile {d : ℕ} (hd : 0 < d)
+lemma integral_abs_normalizedRadialLogProfile {d : ℕ} (hd : 0 < d)
     (g : TestFunction d) (hradial : IsRadial g)
     (hreal : IsRealValued g) (hnonzero : g ≠ 0)
     {R : ℝ} (hR : 0 < R) :
@@ -10709,7 +10709,7 @@ theorem integral_abs_normalizedRadialLogProfile {d : ℕ} (hd : 0 < d)
       rw [← radialL1Mass_eq hd g hradial]
       exact div_self hmass.ne'
 
-theorem integral_re_eq_zero_of_antiFourier {d : ℕ}
+lemma integral_re_eq_zero_of_antiFourier {d : ℕ}
     (g : TestFunction d)
     (hanti : (𝓕 g : TestFunction d) = -g)
     (hzero : g (0 : Euclidean d) = 0) :
@@ -10734,7 +10734,7 @@ theorem integral_re_eq_zero_of_antiFourier {d : ℕ}
       rw [hfourierzero]
       rfl
 
-theorem integral_normalizedRadialLogProfile_eq_zero_of_antiFourier
+lemma integral_normalizedRadialLogProfile_eq_zero_of_antiFourier
     {d : ℕ} (hd : 0 < d) (g : TestFunction d)
     (hradial : IsRadial g)
     (hanti : (𝓕 g : TestFunction d) = -g)
@@ -10745,7 +10745,7 @@ theorem integral_normalizedRadialLogProfile_eq_zero_of_antiFourier
     integral_re_eq_zero_of_antiFourier g hanti hzero]
   simp
 
-theorem normalizedRadialLogProfile_nonneg_of_exterior
+lemma normalizedRadialLogProfile_nonneg_of_exterior
     {d : ℕ} (hd : 0 < d) (g : TestFunction d)
     (hnonzero : g ≠ 0) {R : ℝ} (hR : 0 < R)
     (houtside : ∀ x : Euclidean d,
@@ -10769,7 +10769,7 @@ theorem normalizedRadialLogProfile_nonneg_of_exterior
       (radialL1Mass_pos g hnonzero)).le
   · exact houtside _ hpoint
 
-theorem antiFourierWitness_normalizedRadialLogProfile
+lemma antiFourierWitness_normalizedRadialLogProfile
     {d : ℕ} (hd : 0 < d) {R : ℝ} (hR : 0 < R)
     (w : AntiFourierWitness d R) :
     let φ := normalizedRadialLogProfile hd w.function R
@@ -10806,17 +10806,17 @@ def radialSchwartzProfile {d : ℕ}
     (radialLineIsometry hd).toContinuousLinearMap.hasTemperateGrowth
     (radialLineIsometry hd).isometry.antilipschitz f
 
-@[simp] theorem radialSchwartzProfile_apply {d : ℕ}
+@[simp] lemma radialSchwartzProfile_apply {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (r : ℝ) :
     radialSchwartzProfile hd f r = radialProfile hd f r := by
   rfl
 
-theorem radialProfile_smooth {d : ℕ}
+lemma radialProfile_smooth {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (n : ℕ∞) :
     ContDiff ℝ n (radialProfile hd f) := by
   simpa using! (radialSchwartzProfile hd f).smooth n
 
-theorem radialProfile_deriv_zero {d : ℕ}
+lemma radialProfile_deriv_zero {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hf : IsRadial f) :
     deriv (radialProfile hd f) 0 = 0 := by
   have heven :
@@ -10829,7 +10829,7 @@ theorem radialProfile_deriv_zero {d : ℕ}
   simp only [neg_zero] at hderiv
   linear_combination -hderiv / 2
 
-theorem radialProfile_quadratic_bound {d : ℕ}
+lemma radialProfile_quadratic_bound {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hf : IsRadial f)
     (hzero : f (0 : Euclidean d) = 0) :
     ∃ C : ℝ, ∀ r : ℝ, 0 ≤ r → r ≤ 1 →
@@ -10870,7 +10870,7 @@ theorem radialProfile_quadratic_bound {d : ℕ}
       simpa only [sub_zero, Nat.reduceAdd] using!
         hC r ⟨hr, hrone⟩
 
-theorem radialProfile_isBigO_rpow_two_zero {d : ℕ}
+lemma radialProfile_isBigO_rpow_two_zero {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hf : IsRadial f)
     (hzero : f (0 : Euclidean d) = 0) :
     radialProfile hd f =O[𝓝[>] (0 : ℝ)]
@@ -10885,7 +10885,7 @@ theorem radialProfile_isBigO_rpow_two_zero {d : ℕ}
     abs_of_nonneg (Real.rpow_nonneg hr.le 2), Real.rpow_two]
   exact hC r hr.le hrone.le
 
-theorem radialProfile_isBigO_rpow_atTop {d : ℕ}
+lemma radialProfile_isBigO_rpow_atTop {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (a : ℝ) :
     radialProfile hd f =O[atTop]
       (fun r : ℝ => r ^ (-a)) := by
@@ -10898,13 +10898,13 @@ theorem radialProfile_isBigO_rpow_atTop {d : ℕ}
   filter_upwards [eventually_gt_atTop (0 : ℝ)] with r hr
   simp [Real.norm_eq_abs, abs_of_pos hr]
 
-theorem radialProfile_locallyIntegrableOn {d : ℕ}
+lemma radialProfile_locallyIntegrableOn {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) :
     LocallyIntegrableOn
       (radialProfile hd f) (Ioi (0 : ℝ)) :=
   (radialProfile_continuous hd f).locallyIntegrable.locallyIntegrableOn _
 
-theorem radialProfile_mellinConvergent {d : ℕ}
+lemma radialProfile_mellinConvergent {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hf : IsRadial f)
     (hzero : f (0 : Euclidean d) = 0)
     (s : ℂ) (hs : -2 < s.re) :
@@ -10917,7 +10917,7 @@ theorem radialProfile_mellinConvergent {d : ℕ}
   · simpa using! radialProfile_isBigO_rpow_two_zero hd f hf hzero
   · exact hs
 
-theorem radialProfile_mellin_differentiableAt {d : ℕ}
+lemma radialProfile_mellin_differentiableAt {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hf : IsRadial f)
     (hzero : f (0 : Euclidean d) = 0)
     (s : ℂ) (hs : -2 < s.re) :
@@ -10935,7 +10935,7 @@ def radialMellinStrip {d : ℕ}
   mellin (radialProfile hd f)
     ((d : ℂ) / 2 - Complex.I * z)
 
-theorem radialMellinStrip_differentiableAt {d : ℕ}
+lemma radialMellinStrip_differentiableAt {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hf : IsRadial f)
     (hzero : f (0 : Euclidean d) = 0)
     (z : ℂ) (hz : -(d : ℝ) / 2 - 2 < z.im) :
@@ -10962,7 +10962,7 @@ theorem radialMellinStrip_differentiableAt {d : ℕ}
     houter.comp z hinner
   exact hcomp
 
-theorem radialMellinStrip_diffContOnCl {d : ℕ}
+lemma radialMellinStrip_diffContOnCl {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hf : IsRadial f)
     (hzero : f (0 : Euclidean d) = 0) :
     DiffContOnCl ℂ (radialMellinStrip hd f)
@@ -10986,7 +10986,7 @@ def normalizedRadialMellinStrip {d : ℕ}
         (Real.log R : ℂ)) *
       radialMellinStrip hd f z
 
-theorem normalizedRadialMellinStrip_diffContOnCl {d : ℕ}
+lemma normalizedRadialMellinStrip_diffContOnCl {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hf : IsRadial f)
     (hzero : f (0 : Euclidean d) = 0) (R : ℝ) :
     DiffContOnCl ℂ (normalizedRadialMellinStrip hd f R)
@@ -11005,7 +11005,7 @@ theorem normalizedRadialMellinStrip_diffContOnCl {d : ℕ}
     ⟨hfactor.differentiableOn.mul hstrip.differentiableOn,
       hfactor.continuous.continuousOn.mul hstrip.continuousOn⟩
 
-theorem norm_nonnegative_imaginary_cpow_le_one
+lemma norm_nonnegative_imaginary_cpow_le_one
     (r t : ℝ) (hr : 0 ≤ r) :
     ‖(r : ℂ) ^ (-(Complex.I * (t : ℂ)))‖ ≤ 1 := by
   rcases eq_or_lt_of_le hr with rfl | hrpos
@@ -11022,7 +11022,7 @@ theorem norm_nonnegative_imaginary_cpow_le_one
   · rw [Complex.norm_cpow_eq_rpow_re_of_pos hrpos]
     norm_num
 
-theorem schwartz_imaginaryRiesz_integrable {d : ℕ}
+lemma schwartz_imaginaryRiesz_integrable {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (t : ℝ) :
     Integrable
       (fun x : Euclidean d =>
@@ -11033,7 +11033,7 @@ theorem schwartz_imaginaryRiesz_integrable {d : ℕ}
     exact Nat.cast_pos.mpr hd
   · norm_num
 
-theorem norm_schwartz_imaginaryRiesz_integral_le_L1 {d : ℕ}
+lemma norm_schwartz_imaginaryRiesz_integral_le_L1 {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (t : ℝ) :
     ‖∫ x : Euclidean d,
       f x * (‖x‖ : ℂ) ^ (-(Complex.I * (t : ℂ)))‖ ≤
@@ -11062,7 +11062,7 @@ theorem norm_schwartz_imaginaryRiesz_integral_le_L1 {d : ℕ}
         _ = ‖f x‖ := mul_one _
     _ = radialL1Mass f := rfl
 
-theorem normalizedRadialMellinStrip_top_norm_le_one {d : ℕ}
+lemma normalizedRadialMellinStrip_top_norm_le_one {d : ℕ}
     (hd : 0 < d) (f : TestFunction d)
     (hf : IsRadial f) (hnonzero : f ≠ 0)
     (R : ℝ) (y : ℝ) :
@@ -11130,7 +11130,7 @@ theorem normalizedRadialMellinStrip_top_norm_le_one {d : ℕ}
       ring
     _ ≤ 1 := (div_le_one hmass).mpr hbound
 
-theorem radial_fourier_mellin_regularized_closed {d : ℕ}
+lemma radial_fourier_mellin_regularized_closed {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hf : IsRadial f)
     (hzero : f (0 : Euclidean d) = 0)
     (hhatZero : (𝓕 f : TestFunction d) (0 : Euclidean d) = 0)
@@ -11215,7 +11215,7 @@ theorem radial_fourier_mellin_regularized_closed {d : ℕ}
       closure_Ioo (ne_of_lt hdreal)]
   exact heq.of_subset_closure hL hG hUT hTU ⟨hs, hsd⟩
 
-theorem radial_fourier_mellin_antifourier_boundary {d : ℕ}
+lemma radial_fourier_mellin_antifourier_boundary {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hf : IsRadial f)
     (hzero : f (0 : Euclidean d) = 0)
     (hanti : (𝓕 f : TestFunction d) = -f)
@@ -11271,7 +11271,7 @@ theorem radial_fourier_mellin_antifourier_boundary {d : ℕ}
   convert! hcross using 1 <;> dsimp [s] <;>
     push_cast <;> ring_nf
 
-theorem radial_fourier_mellin_antifourier_boundary_norm {d : ℕ}
+lemma radial_fourier_mellin_antifourier_boundary_norm {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hf : IsRadial f)
     (hzero : f (0 : Euclidean d) = 0)
     (hanti : (𝓕 f : TestFunction d) = -f)
@@ -11318,7 +11318,7 @@ theorem radial_fourier_mellin_antifourier_boundary_norm {d : ℕ}
             ((d : ℂ) + Complex.I * (y : ℂ))‖ := by
       ring
 
-theorem normalizedRadialMellinStrip_top_norm_eq {d : ℕ}
+lemma normalizedRadialMellinStrip_top_norm_eq {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hnonzero : f ≠ 0)
     (R : ℝ) (y : ℝ) :
     ‖normalizedRadialMellinStrip hd f R
@@ -11352,7 +11352,7 @@ theorem normalizedRadialMellinStrip_top_norm_eq {d : ℕ}
     Complex.norm_exp, hphase, Real.exp_zero, hmellin]
   ring
 
-theorem normalizedRadialMellinStrip_bottom_norm_eq {d : ℕ}
+lemma normalizedRadialMellinStrip_bottom_norm_eq {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hnonzero : f ≠ 0)
     (R : ℝ) (y : ℝ) :
     ‖normalizedRadialMellinStrip hd f R
@@ -11387,7 +11387,7 @@ theorem normalizedRadialMellinStrip_bottom_norm_eq {d : ℕ}
     Real.norm_eq_abs, abs_of_pos (div_pos hsurface hmass),
     Complex.norm_exp, hphase, hmellin]
 
-theorem radialGammaBoundaryExponent_exp
+lemma radialGammaBoundaryExponent_exp
     (d : ℕ) (R A B : ℝ)
     (hR : 0 < R) (hA : 0 < A) (hB : 0 < B) :
     Real.exp
@@ -11420,7 +11420,7 @@ theorem radialGammaBoundaryExponent_exp
     Real.exp_log hA, Real.exp_log hB, hscale]
   ring
 
-theorem normalizedRadialMellinStrip_bottom_norm_le_gamma {d : ℕ}
+lemma normalizedRadialMellinStrip_bottom_norm_le_gamma {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hf : IsRadial f)
     (hzero : f (0 : Euclidean d) = 0)
     (hanti : (𝓕 f : TestFunction d) = -f)
@@ -11531,7 +11531,7 @@ theorem normalizedRadialMellinStrip_bottom_norm_le_gamma {d : ℕ}
               Complex.I * (y : ℂ) / 2)‖
           hR hnum hden).symm
 
-theorem radialProfile_mellin_uniform_strip_bound {d : ℕ}
+lemma radialProfile_mellin_uniform_strip_bound {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hf : IsRadial f)
     (hzero : f (0 : Euclidean d) = 0) :
     ∃ C : ℝ, 0 ≤ C ∧
@@ -11611,7 +11611,7 @@ theorem radialProfile_mellin_uniform_strip_bound {d : ℕ}
       _ = B := rfl
   exact hbound.trans (le_max_right _ _)
 
-theorem normalizedRadialMellinStrip_uniform_bound {d : ℕ}
+lemma normalizedRadialMellinStrip_uniform_bound {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hf : IsRadial f)
     (hzero : f (0 : Euclidean d) = 0) (R : ℝ) :
     ∃ C : ℝ, 0 ≤ C ∧
@@ -11669,7 +11669,7 @@ theorem normalizedRadialMellinStrip_uniform_bound {d : ℕ}
       exact hbound _ hsnonneg hsupper
     _ = B := rfl
 
-theorem normalizedRadialLogProfile_ofReal {d : ℕ}
+lemma normalizedRadialLogProfile_ofReal {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hreal : IsRealValued f)
     (R v : ℝ) :
     (normalizedRadialLogProfile hd f R v : ℂ) =
@@ -11688,7 +11688,7 @@ theorem normalizedRadialLogProfile_ofReal {d : ℕ}
   push_cast
   ring
 
-theorem normalizedRadialLogProfile_weighted_ofReal {d : ℕ}
+lemma normalizedRadialLogProfile_weighted_ofReal {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hreal : IsRealValued f)
     (R a v : ℝ) :
     (Real.exp (-a * v) : ℂ) *
@@ -11719,7 +11719,7 @@ theorem normalizedRadialLogProfile_weighted_ofReal {d : ℕ}
       ((radialL1Mass f : ℝ) : ℂ) *
       radialProfile hd f (R * Real.exp v)) * hcomplex
 
-theorem normalizedRadialMellinStrip_shifted_eq_fourier {d : ℕ}
+lemma normalizedRadialMellinStrip_shifted_eq_fourier {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (hreal : IsRealValued f)
     (R : ℝ) (hR : 0 < R) (a t : ℝ) :
     normalizedRadialMellinStrip hd f R
@@ -11851,7 +11851,7 @@ theorem normalizedRadialMellinStrip_shifted_eq_fourier {d : ℕ}
   rw [harg, hphase]
   exact hscale.symm.trans hfourier.symm
 
-theorem normalizedRadialLogProfile_weighted_integrable {d : ℕ}
+lemma normalizedRadialLogProfile_weighted_integrable {d : ℕ}
     (hd : 0 < d) (f : TestFunction d)
     (hf : IsRadial f) (hreal : IsRealValued f)
     (hzero : f (0 : Euclidean d) = 0)
@@ -11925,7 +11925,7 @@ theorem normalizedRadialLogProfile_weighted_integrable {d : ℕ}
   try dsimp [κ]
   ring
 
-theorem integrable_fourier_of_integrable_two_derivatives
+lemma integrable_fourier_of_integrable_two_derivatives
     (g : ℝ → ℂ) (hg : Integrable g)
     (hgdiff : Differentiable ℝ g)
     (hg' : Integrable (deriv g))
@@ -11995,7 +11995,7 @@ theorem integrable_fourier_of_integrable_two_derivatives
   nlinarith [hzero t, hquadratic t,
     norm_nonneg ((𝓕 g : ℝ → ℂ) t)]
 
-theorem schwartzRealLine_mellinConvergent_of_re_pos
+lemma schwartzRealLine_mellinConvergent_of_re_pos
     (g : 𝓢(ℝ, ℂ)) (s : ℂ) (hs : 0 < s.re) :
     MellinConvergent (g : ℝ → ℂ) s := by
   have hlocal : LocallyIntegrableOn
@@ -12027,7 +12027,7 @@ def schwartzExponentialTilt
     (g : 𝓢(ℝ, ℂ)) (κ R v : ℝ) : ℂ :=
   (Real.exp (κ * v) : ℂ) * g (R * Real.exp v)
 
-theorem schwartzExponentialTilt_integrable
+lemma schwartzExponentialTilt_integrable
     (g : 𝓢(ℝ, ℂ)) {κ R : ℝ}
     (hκ : 0 < κ) (hR : 0 < R) :
     Integrable (schwartzExponentialTilt g κ R) := by
@@ -12079,7 +12079,7 @@ theorem schwartzExponentialTilt_integrable
     schwartzExponentialTilt]
   rw [← mul_assoc, hpower]
 
-theorem schwartzExponentialTilt_differentiable
+lemma schwartzExponentialTilt_differentiable
     (g : 𝓢(ℝ, ℂ)) (κ R : ℝ) :
     Differentiable ℝ (schwartzExponentialTilt g κ R) := by
   unfold schwartzExponentialTilt
@@ -12097,7 +12097,7 @@ theorem schwartzExponentialTilt_differentiable
     fun_prop
   exact hexp.mul (hg.comp hradius)
 
-theorem schwartzExponentialTilt_deriv
+lemma schwartzExponentialTilt_deriv
     (g : 𝓢(ℝ, ℂ)) (κ R v : ℝ) :
     deriv (schwartzExponentialTilt g κ R) v =
       (κ : ℂ) * schwartzExponentialTilt g κ R v +
@@ -12143,7 +12143,7 @@ theorem schwartzExponentialTilt_deriv
     Complex.real_smul, hexpadd]
   ring
 
-theorem schwartzExponentialTilt_deriv_integrable
+lemma schwartzExponentialTilt_deriv_integrable
     (g : 𝓢(ℝ, ℂ)) {κ R : ℝ}
     (hκ : 0 < κ) (hR : 0 < R) :
     Integrable (deriv (schwartzExponentialTilt g κ R)) := by
@@ -12159,7 +12159,7 @@ theorem schwartzExponentialTilt_deriv_integrable
   filter_upwards [] with v
   exact (schwartzExponentialTilt_deriv g κ R v).symm
 
-theorem schwartzExponentialTilt_deriv_deriv
+lemma schwartzExponentialTilt_deriv_deriv
     (g : 𝓢(ℝ, ℂ)) (κ R v : ℝ) :
     deriv (deriv (schwartzExponentialTilt g κ R)) v =
       (κ : ℂ) * deriv (schwartzExponentialTilt g κ R) v +
@@ -12202,7 +12202,7 @@ theorem schwartzExponentialTilt_deriv_deriv
     deriv_const_mul_field (κ : ℂ),
     deriv_const_mul_field (R : ℂ)]
 
-theorem schwartzExponentialTilt_deriv_deriv_integrable
+lemma schwartzExponentialTilt_deriv_deriv_integrable
     (g : 𝓢(ℝ, ℂ)) {κ R : ℝ}
     (hκ : 0 < κ) (hR : 0 < R) :
     Integrable (deriv (deriv (schwartzExponentialTilt g κ R))) := by
@@ -12220,7 +12220,7 @@ theorem schwartzExponentialTilt_deriv_deriv_integrable
   filter_upwards [] with v
   exact (schwartzExponentialTilt_deriv_deriv g κ R v).symm
 
-theorem schwartzExponentialTilt_deriv_differentiable
+lemma schwartzExponentialTilt_deriv_differentiable
     (g : 𝓢(ℝ, ℂ)) (κ R : ℝ) :
     Differentiable ℝ
       (deriv (schwartzExponentialTilt g κ R)) := by
@@ -12241,7 +12241,7 @@ theorem schwartzExponentialTilt_deriv_differentiable
       ((schwartzExponentialTilt_differentiable
         g' (κ + 1) R).const_mul (R : ℂ))
 
-theorem schwartzExponentialTilt_fourier_integrable
+lemma schwartzExponentialTilt_fourier_integrable
     (g : 𝓢(ℝ, ℂ)) {κ R : ℝ}
     (hκ : 0 < κ) (hR : 0 < R) :
     Integrable (𝓕 (schwartzExponentialTilt g κ R) : ℝ → ℂ) :=
@@ -12253,7 +12253,7 @@ theorem schwartzExponentialTilt_fourier_integrable
     (schwartzExponentialTilt_deriv_differentiable g κ R)
     (schwartzExponentialTilt_deriv_deriv_integrable g hκ hR)
 
-theorem normalizedRadialLogProfile_weighted_fourier_integrable
+lemma normalizedRadialLogProfile_weighted_fourier_integrable
     {d : ℕ} (hd : 0 < d) (f : TestFunction d)
     (hreal : IsRealValued f)
     {R : ℝ} (hR : 0 < R) {a : ℝ}
@@ -12303,7 +12303,7 @@ theorem normalizedRadialLogProfile_weighted_fourier_integrable
   rw [hweight]
   exact (hscalar t).symm
 
-theorem normalizedRadialMellinStrip_shifted_integrable
+lemma normalizedRadialMellinStrip_shifted_integrable
     {d : ℕ} (hd : 0 < d) (f : TestFunction d)
     (hreal : IsRealValued f)
     {R : ℝ} (hR : 0 < R) {a : ℝ}
@@ -12325,7 +12325,7 @@ theorem normalizedRadialMellinStrip_shifted_integrable
     (normalizedRadialMellinStrip_shifted_eq_fourier
       hd f hreal R hR a t).symm
 
-theorem normalizedRadialMellinStrip_shifted_fourier_inversion
+lemma normalizedRadialMellinStrip_shifted_fourier_inversion
     {d : ℕ} (hd : 0 < d) (f : TestFunction d)
     (hf : IsRadial f) (hreal : IsRealValued f)
     (hzero : f (0 : Euclidean d) = 0)
@@ -12422,7 +12422,7 @@ def stripPoissonKernel (σ T : ℝ) : ℝ :=
 def stripBottomMass (σ : ℝ) : ℝ :=
   (1 - σ) / 2
 
-theorem stripAngle_mem_Ioo {σ : ℝ}
+lemma stripAngle_mem_Ioo {σ : ℝ}
     (hbelow : -1 < σ) (habove : σ < 1) :
     0 < stripAngle σ ∧ stripAngle σ < Real.pi := by
   unfold stripAngle
@@ -12434,17 +12434,17 @@ theorem stripAngle_mem_Ioo {σ : ℝ}
         linarith
       _ = Real.pi := by ring
 
-theorem stripBottomMass_pos {σ : ℝ} (hσ : σ < 1) :
+lemma stripBottomMass_pos {σ : ℝ} (hσ : σ < 1) :
     0 < stripBottomMass σ := by
   unfold stripBottomMass
   linarith
 
-theorem stripBottomMass_lt_one {σ : ℝ} (hσ : -1 < σ) :
+lemma stripBottomMass_lt_one {σ : ℝ} (hσ : -1 < σ) :
     stripBottomMass σ < 1 := by
   unfold stripBottomMass
   linarith
 
-theorem stripPoissonKernel_pos {σ : ℝ}
+lemma stripPoissonKernel_pos {σ : ℝ}
     (hbelow : -1 < σ) (habove : σ < 1) (T : ℝ) :
     0 < stripPoissonKernel σ T := by
   obtain ⟨hangle, hangle'⟩ := stripAngle_mem_Ioo hbelow habove
@@ -12471,19 +12471,19 @@ def stripPoissonPrimitive (σ T : ℝ) : ℝ :=
       ((Real.exp (Real.pi * T / 2) - Real.cos (stripAngle σ)) /
         Real.sin (stripAngle σ)) / Real.pi
 
-theorem stripPoissonKernel_neg (σ T : ℝ) :
+lemma stripPoissonKernel_neg (σ T : ℝ) :
     stripPoissonKernel σ (-T) = stripPoissonKernel σ T := by
   unfold stripPoissonKernel
   have hneg : Real.pi * (-T) / 2 = -(Real.pi * T / 2) := by ring
   rw [hneg, Real.cosh_neg]
 
-theorem stripPoissonKernel_abs (σ T : ℝ) :
+lemma stripPoissonKernel_abs (σ T : ℝ) :
     stripPoissonKernel σ |T| = stripPoissonKernel σ T := by
   rcases le_total 0 T with h | h
   · rw [abs_of_nonneg h]
   · rw [abs_of_nonpos h, stripPoissonKernel_neg]
 
-theorem stripPoissonPrimitive_hasDerivAt {σ : ℝ}
+lemma stripPoissonPrimitive_hasDerivAt {σ : ℝ}
     (hbelow : -1 < σ) (habove : σ < 1) (T : ℝ) :
     HasDerivAt (stripPoissonPrimitive σ)
       (stripPoissonKernel σ T) T := by
@@ -12520,7 +12520,7 @@ theorem stripPoissonPrimitive_hasDerivAt {σ : ℝ}
   field_simp [hsin0, hpi, hexp.ne', hden.ne']
   nlinarith
 
-theorem stripPoissonPrimitive_zero {σ : ℝ}
+lemma stripPoissonPrimitive_zero {σ : ℝ}
     (hbelow : -1 < σ) (habove : σ < 1) :
     stripPoissonPrimitive σ 0 = stripAngle σ / (2 * Real.pi) := by
   obtain ⟨hangle, hangle'⟩ := stripAngle_mem_Ioo hbelow habove
@@ -12550,7 +12550,7 @@ theorem stripPoissonPrimitive_zero {σ : ℝ}
   rw [hratio, Real.arctan_tan (by linarith [Real.pi_pos]) hhalf']
   ring
 
-theorem stripPoissonPrimitive_tendsto_atTop {σ : ℝ}
+lemma stripPoissonPrimitive_tendsto_atTop {σ : ℝ}
     (hbelow : -1 < σ) (habove : σ < 1) :
     Tendsto (stripPoissonPrimitive σ) atTop (nhds (1 / 2 : ℝ)) := by
   obtain ⟨hangle, hangle'⟩ := stripAngle_mem_Ioo hbelow habove
@@ -12586,7 +12586,7 @@ theorem stripPoissonPrimitive_tendsto_atTop {σ : ℝ}
   convert! hatan.div_const Real.pi using 1
   field_simp [Real.pi_ne_zero]
 
-theorem stripPoissonKernel_integrableOn_Ioi {σ : ℝ}
+lemma stripPoissonKernel_integrableOn_Ioi {σ : ℝ}
     (hbelow : -1 < σ) (habove : σ < 1) :
     IntegrableOn (stripPoissonKernel σ) (Ioi (0 : ℝ)) := by
   exact integrableOn_Ioi_deriv_of_nonneg'
@@ -12594,7 +12594,7 @@ theorem stripPoissonKernel_integrableOn_Ioi {σ : ℝ}
     (fun T _ => (stripPoissonKernel_pos hbelow habove T).le)
     (stripPoissonPrimitive_tendsto_atTop hbelow habove)
 
-theorem stripPoissonKernel_integral_Ioi {σ : ℝ}
+lemma stripPoissonKernel_integral_Ioi {σ : ℝ}
     (hbelow : -1 < σ) (habove : σ < 1) :
     (∫ T in Ioi (0 : ℝ), stripPoissonKernel σ T) =
       1 / 2 - stripAngle σ / (2 * Real.pi) := by
@@ -12608,7 +12608,7 @@ theorem stripPoissonKernel_integral_Ioi {σ : ℝ}
     _ = 1 / 2 - stripAngle σ / (2 * Real.pi) := by
       rw [stripPoissonPrimitive_zero hbelow habove]
 
-theorem stripPoissonKernel_integrable {σ : ℝ}
+lemma stripPoissonKernel_integrable {σ : ℝ}
     (hbelow : -1 < σ) (habove : σ < 1) :
     Integrable (stripPoissonKernel σ) := by
   rw [← integrableOn_univ, ← @Iio_union_Ici _ _ (0 : ℝ),
@@ -12624,7 +12624,7 @@ theorem stripPoissonKernel_integrable {σ : ℝ}
   exact ((Measure.measurePreserving_neg (volume : Measure ℝ)).integrableOn_comp_preimage
       (Homeomorph.neg ℝ).measurableEmbedding).mp hreflected
 
-theorem integral_stripPoissonKernel {σ : ℝ}
+lemma integral_stripPoissonKernel {σ : ℝ}
     (hbelow : -1 < σ) (habove : σ < 1) :
     (∫ T : ℝ, stripPoissonKernel σ T) = stripBottomMass σ := by
   calc
@@ -12642,7 +12642,7 @@ theorem integral_stripPoissonKernel {σ : ℝ}
       field_simp [Real.pi_ne_zero]
       ring
 
-theorem stripPoissonKernel_antitone_abs
+lemma stripPoissonKernel_antitone_abs
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1)
     {x y : ℝ} (hxy : |x| ≤ |y|) :
     stripPoissonKernel σ y ≤ stripPoissonKernel σ x := by
@@ -12675,7 +12675,7 @@ theorem stripPoissonKernel_antitone_abs
   unfold stripPoissonKernel
   exact div_le_div_of_nonneg_left hsin.le hxden hden
 
-theorem stripPoissonPrimitive_centered_hasDerivAt
+lemma stripPoissonPrimitive_centered_hasDerivAt
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1)
     (r x : ℝ) :
     HasDerivAt
@@ -12693,7 +12693,7 @@ theorem stripPoissonPrimitive_centered_hasDerivAt
   convert! hplus.sub hminus using 1
   all_goals simp
 
-theorem stripPoissonPrimitive_centered_antitoneOn
+lemma stripPoissonPrimitive_centered_antitoneOn
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1)
     {r : ℝ} (hr : 0 ≤ r) :
     AntitoneOn
@@ -12722,7 +12722,7 @@ theorem stripPoissonPrimitive_centered_antitoneOn
     rw [sq_abs, sq_abs]
     nlinarith [mul_nonneg hxpos hr]
 
-theorem intervalIntegral_stripPoissonKernel
+lemma intervalIntegral_stripPoissonKernel
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1)
     (a b : ℝ) :
     (∫ x in a..b, stripPoissonKernel σ x) =
@@ -12733,7 +12733,7 @@ theorem intervalIntegral_stripPoissonKernel
     exact stripPoissonPrimitive_hasDerivAt hbelow habove x
   · exact (stripPoissonKernel_integrable hbelow habove).intervalIntegrable
 
-theorem stripPoissonPrimitive_centered_neg
+lemma stripPoissonPrimitive_centered_neg
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1)
     (r s : ℝ) :
     stripPoissonPrimitive σ (-s + r) -
@@ -12749,7 +12749,7 @@ theorem stripPoissonPrimitive_centered_neg
   convert! hneg.symm using 1
   all_goals ring_nf
 
-theorem stripPoissonPrimitive_centered_le
+lemma stripPoissonPrimitive_centered_le
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1)
     {r : ℝ} (hr : 0 ≤ r) (s : ℝ) :
     stripPoissonPrimitive σ (s + r) -
@@ -12770,7 +12770,7 @@ theorem stripPoissonPrimitive_centered_le
       (show -s ∈ Ici 0 from hsneg) hsneg using 1
     all_goals ring_nf
 
-theorem stripPoissonKernel_centered_interval_max
+lemma stripPoissonKernel_centered_interval_max
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1)
     {r : ℝ} (hr : 0 ≤ r) (s : ℝ) :
     (∫ x in Icc (s - r) (s + r), stripPoissonKernel σ x) ≤
@@ -12793,7 +12793,7 @@ def stripComplexPoissonKernel (σ T : ℝ) : ℂ :=
             Complex.I * ((stripAngle σ : ℝ) : ℂ)) - 1)) /
     4
 
-theorem stripComplexPoissonKernel_re
+lemma stripComplexPoissonKernel_re
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1) (T : ℝ) :
     (stripComplexPoissonKernel σ T).re =
       stripPoissonKernel σ T := by
@@ -12828,12 +12828,12 @@ def stripSchwarzExponential (ℓ : ℝ) (z : ℂ) (y : ℝ) : ℂ :=
       (z - (y : ℂ) + Complex.I * (ℓ : ℂ))) /
         (2 * (ℓ : ℂ)))
 
-theorem stripSchwarzExponential_continuous (ℓ : ℝ) (z : ℂ) :
+lemma stripSchwarzExponential_continuous (ℓ : ℝ) (z : ℂ) :
     Continuous (fun y : ℝ => stripSchwarzExponential ℓ z y) := by
   unfold stripSchwarzExponential
   fun_prop
 
-theorem stripSchwarzExponential_hasDerivAt
+lemma stripSchwarzExponential_hasDerivAt
     (ℓ : ℝ) (z : ℂ) (y : ℝ) :
     HasDerivAt
       (fun w : ℂ => stripSchwarzExponential ℓ w y)
@@ -12847,7 +12847,7 @@ theorem stripSchwarzExponential_hasDerivAt
   convert! haffine.cexp using 1
   all_goals simp
 
-theorem norm_stripSchwarzExponential (ℓ : ℝ) (z : ℂ) (y : ℝ) :
+lemma norm_stripSchwarzExponential (ℓ : ℝ) (z : ℂ) (y : ℝ) :
     ‖stripSchwarzExponential ℓ z y‖ =
       Real.exp (Real.pi * (z.re - y) / (2 * ℓ)) := by
   unfold stripSchwarzExponential
@@ -12857,7 +12857,7 @@ theorem norm_stripSchwarzExponential (ℓ : ℝ) (z : ℂ) (y : ℝ) :
   congr 1
   simp [Complex.mul_re]
 
-theorem stripSchwarzExponential_re (ℓ : ℝ) (z : ℂ) (y : ℝ) :
+lemma stripSchwarzExponential_re (ℓ : ℝ) (z : ℂ) (y : ℝ) :
     (stripSchwarzExponential ℓ z y).re =
       Real.exp (Real.pi * (z.re - y) / (2 * ℓ)) *
         Real.cos (Real.pi * (z.im + ℓ) / (2 * ℓ)) := by
@@ -12867,7 +12867,7 @@ theorem stripSchwarzExponential_re (ℓ : ℝ) (z : ℂ) (y : ℝ) :
     Complex.div_ofReal_re, Complex.div_ofReal_im]
   congr 1 <;> simp [Complex.mul_re, Complex.mul_im]
 
-theorem stripSchwarzExponential_im (ℓ : ℝ) (z : ℂ) (y : ℝ) :
+lemma stripSchwarzExponential_im (ℓ : ℝ) (z : ℂ) (y : ℝ) :
     (stripSchwarzExponential ℓ z y).im =
       Real.exp (Real.pi * (z.re - y) / (2 * ℓ)) *
         Real.sin (Real.pi * (z.im + ℓ) / (2 * ℓ)) := by
@@ -12877,7 +12877,7 @@ theorem stripSchwarzExponential_im (ℓ : ℝ) (z : ℂ) (y : ℝ) :
     Complex.div_ofReal_re, Complex.div_ofReal_im]
   congr 1 <;> simp [Complex.mul_re, Complex.mul_im]
 
-theorem stripSchwarzAngle_mem_Ioo
+lemma stripSchwarzAngle_mem_Ioo
     {ℓ : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ) :
     0 < Real.pi * (z.im + ℓ) / (2 * ℓ) ∧
@@ -12889,7 +12889,7 @@ theorem stripSchwarzAngle_mem_Ioo
   · apply (div_lt_iff₀ (mul_pos (by norm_num) hℓ)).2
     nlinarith [mul_pos Real.pi_pos (show 0 < ℓ - z.im by linarith)]
 
-theorem stripSchwarzExponential_sub_one_norm_ge_sin
+lemma stripSchwarzExponential_sub_one_norm_ge_sin
     {ℓ : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ) (y : ℝ) :
     Real.sin (Real.pi * (z.im + ℓ) / (2 * ℓ)) ≤
@@ -12912,7 +12912,7 @@ theorem stripSchwarzExponential_sub_one_norm_ge_sin
         Real.cos (Real.pi * (z.im + ℓ) / (2 * ℓ)))]
   nlinarith [norm_nonneg (stripSchwarzExponential ℓ z y - 1)]
 
-theorem stripSchwarzExponential_sub_one_norm_ge_exp_mul_sin
+lemma stripSchwarzExponential_sub_one_norm_ge_exp_mul_sin
     {ℓ : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ) (y : ℝ) :
     Real.exp (Real.pi * (z.re - y) / (2 * ℓ)) *
@@ -12944,7 +12944,7 @@ def stripHolomorphicPoissonKernel (ℓ : ℝ) (z : ℂ) (y : ℝ) : ℂ :=
               (2 * (ℓ : ℂ))) - 1)) /
     4) / (ℓ : ℂ)
 
-theorem stripHolomorphicPoissonKernel_denominator_ne_zero
+lemma stripHolomorphicPoissonKernel_denominator_ne_zero
     {ℓ : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ) (y : ℝ) :
     Complex.exp
@@ -12973,7 +12973,7 @@ theorem stripHolomorphicPoissonKernel_denominator_ne_zero
     Complex.exp_im, hargument] at him
   exact (mul_pos (Real.exp_pos _) hsin).ne' him
 
-theorem stripHolomorphicPoissonKernel_eq_scaled
+lemma stripHolomorphicPoissonKernel_eq_scaled
     {ℓ : ℝ} (hℓ : 0 < ℓ) (σ s y : ℝ) :
     stripHolomorphicPoissonKernel ℓ
         ((s : ℂ) + Complex.I * ((σ * ℓ : ℝ) : ℂ)) y =
@@ -12994,7 +12994,7 @@ theorem stripHolomorphicPoissonKernel_eq_scaled
   unfold stripHolomorphicPoissonKernel stripComplexPoissonKernel
   rw [hargument]
 
-theorem stripHolomorphicPoissonKernel_re
+lemma stripHolomorphicPoissonKernel_re
     {ℓ σ : ℝ} (hℓ : 0 < ℓ)
     (hbelow : -1 < σ) (habove : σ < 1) (s y : ℝ) :
     (stripHolomorphicPoissonKernel ℓ
@@ -13010,7 +13010,7 @@ def stripRegularizedHolomorphicPoissonKernel
     (if 0 ≤ y then Complex.I else -Complex.I) /
       ((4 * ℓ : ℝ) : ℂ)
 
-theorem stripRegularizedHolomorphicPoissonKernel_hasDerivAt
+lemma stripRegularizedHolomorphicPoissonKernel_hasDerivAt
     {ℓ : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ) (y : ℝ) :
     HasDerivAt
@@ -13045,7 +13045,7 @@ def stripRegularizedHolomorphicPoissonKernelDeriv
     (4 * (ℓ : ℂ) ^ 2 *
       (stripSchwarzExponential ℓ z y - 1) ^ 2)
 
-theorem stripRegularizedHolomorphicPoissonKernel_hasDerivAt_deriv
+lemma stripRegularizedHolomorphicPoissonKernel_hasDerivAt_deriv
     {ℓ : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ) (y : ℝ) :
     HasDerivAt
@@ -13054,7 +13054,7 @@ theorem stripRegularizedHolomorphicPoissonKernel_hasDerivAt_deriv
   simpa [stripRegularizedHolomorphicPoissonKernelDeriv] using!
     stripRegularizedHolomorphicPoissonKernel_hasDerivAt hℓ hz y
 
-theorem norm_stripRegularizedHolomorphicPoissonKernelDeriv_pos
+lemma norm_stripRegularizedHolomorphicPoissonKernelDeriv_pos
     {ℓ : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ)
     (y : ℝ) :
@@ -13091,7 +13091,7 @@ theorem norm_stripRegularizedHolomorphicPoissonKernelDeriv_pos
         (by positivity)
       exact mul_le_mul_of_nonneg_left hsq (by positivity)
 
-theorem norm_stripRegularizedHolomorphicPoissonKernelDeriv_neg
+lemma norm_stripRegularizedHolomorphicPoissonKernelDeriv_neg
     {ℓ : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ)
     (y : ℝ) :
@@ -13140,7 +13140,7 @@ theorem norm_stripRegularizedHolomorphicPoissonKernelDeriv_neg
       rw [Real.exp_neg]
       field_simp [hℓ.ne', hexp.ne', hsin.ne']
 
-theorem stripRegularizedHolomorphicPoissonKernelDeriv_continuous
+lemma stripRegularizedHolomorphicPoissonKernelDeriv_continuous
     {ℓ : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ) :
     Continuous
@@ -13160,7 +13160,7 @@ theorem stripRegularizedHolomorphicPoissonKernelDeriv_continuous
       simpa [stripSchwarzExponential] using!
         stripHolomorphicPoissonKernel_denominator_ne_zero hℓ hz y
 
-theorem stripRegularizedHolomorphicPoissonKernelDeriv_local_bound
+lemma stripRegularizedHolomorphicPoissonKernelDeriv_local_bound
     {ℓ : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ) :
     ∃ S ∈ 𝓝 z, ∃ C : ℝ, 0 ≤ C ∧
@@ -13318,7 +13318,7 @@ theorem stripRegularizedHolomorphicPoissonKernelDeriv_local_bound
         exact mul_le_mul_of_nonneg_right
           (by linarith) (Real.exp_pos _).le
 
-theorem stripRegularizedHolomorphicPoissonKernel_of_nonneg
+lemma stripRegularizedHolomorphicPoissonKernel_of_nonneg
     {ℓ : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ)
     {y : ℝ} (hy : 0 ≤ y) :
@@ -13343,7 +13343,7 @@ theorem stripRegularizedHolomorphicPoissonKernel_of_nonneg
   field_simp [hℓc, hw]
   ring
 
-theorem stripRegularizedHolomorphicPoissonKernel_of_neg
+lemma stripRegularizedHolomorphicPoissonKernel_of_neg
     {ℓ : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ)
     {y : ℝ} (hy : y < 0) :
@@ -13368,7 +13368,7 @@ theorem stripRegularizedHolomorphicPoissonKernel_of_neg
   field_simp [hℓc, hw]
   ring
 
-theorem norm_stripRegularizedHolomorphicPoissonKernel_of_nonneg
+lemma norm_stripRegularizedHolomorphicPoissonKernel_of_nonneg
     {ℓ : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ)
     {y : ℝ} (hy : 0 ≤ y) :
@@ -13396,7 +13396,7 @@ theorem norm_stripRegularizedHolomorphicPoissonKernel_of_nonneg
       exact mul_le_mul_of_nonneg_left hden
         (mul_pos (by norm_num) hℓ).le
 
-theorem norm_stripRegularizedHolomorphicPoissonKernel_of_neg
+lemma norm_stripRegularizedHolomorphicPoissonKernel_of_neg
     {ℓ : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ)
     {y : ℝ} (hy : y < 0) :
@@ -13431,7 +13431,7 @@ theorem norm_stripRegularizedHolomorphicPoissonKernel_of_neg
       rw [Real.exp_neg]
       field_simp [hℓ.ne', hexp.ne', hsin.ne']
 
-theorem stripRegularizedHolomorphicPoissonKernel_continuousOn_Ioi
+lemma stripRegularizedHolomorphicPoissonKernel_continuousOn_Ioi
     {ℓ : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ) :
     ContinuousOn
@@ -13460,7 +13460,7 @@ theorem stripRegularizedHolomorphicPoissonKernel_continuousOn_Ioi
   exact stripRegularizedHolomorphicPoissonKernel_of_nonneg
     hℓ hz (mem_Ioi.mp hy).le
 
-theorem stripRegularizedHolomorphicPoissonKernel_continuousOn_Iio
+lemma stripRegularizedHolomorphicPoissonKernel_continuousOn_Iio
     {ℓ : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ) :
     ContinuousOn
@@ -13489,7 +13489,7 @@ theorem stripRegularizedHolomorphicPoissonKernel_continuousOn_Iio
   exact stripRegularizedHolomorphicPoissonKernel_of_neg
     hℓ hz (mem_Iio.mp hy)
 
-theorem strip_exp_abs_integrable {a : ℝ} (ha : 0 < a) :
+lemma strip_exp_abs_integrable {a : ℝ} (ha : 0 < a) :
     Integrable (fun y : ℝ => Real.exp ((-a) * |y|)) := by
   have hright :
       IntegrableOn (fun y : ℝ => Real.exp ((-a) * |y|))
@@ -13516,7 +13516,7 @@ theorem strip_exp_abs_integrable {a : ℝ} (ha : 0 < a) :
     integrableOn_union, integrableOn_Ici_iff_integrableOn_Ioi]
   exact ⟨hleft, hright⟩
 
-theorem strip_abs_log_le_add_rpow {x : ℝ} (hx : 0 < x) :
+lemma strip_abs_log_le_add_rpow {x : ℝ} (hx : 0 < x) :
     |Real.log x| ≤ x + 2 * x ^ (-(1 / 2 : ℝ)) := by
   by_cases hlarge : 1 ≤ x
   · rw [abs_of_nonneg (Real.log_nonneg hlarge)]
@@ -13530,7 +13530,7 @@ theorem strip_abs_log_le_add_rpow {x : ℝ} (hx : 0 < x) :
     rw [Real.log_rpow hx] at hlog
     nlinarith
 
-theorem strip_exp_abs_log_integrableOn_Ioi {a : ℝ} (ha : 0 < a) :
+lemma strip_exp_abs_log_integrableOn_Ioi {a : ℝ} (ha : 0 < a) :
     IntegrableOn
       (fun x : ℝ => Real.exp ((-a) * x) * |Real.log x|)
       (Ioi (0 : ℝ)) := by
@@ -13578,7 +13578,7 @@ theorem strip_exp_abs_log_integrableOn_Ioi {a : ℝ} (ha : 0 < a) :
         2 * (x ^ (-(1 / 2 : ℝ)) * Real.exp ((-a) * x)) := by
       ring
 
-theorem strip_exp_abs_log_integrableOn_Iio {a : ℝ} (ha : 0 < a) :
+lemma strip_exp_abs_log_integrableOn_Iio {a : ℝ} (ha : 0 < a) :
     IntegrableOn
       (fun x : ℝ => Real.exp (a * x) * |Real.log (-x)|)
       (Iio (0 : ℝ)) := by
@@ -13594,7 +13594,7 @@ theorem strip_exp_abs_log_integrableOn_Iio {a : ℝ} (ha : 0 < a) :
     ((Measure.measurePreserving_neg (volume : Measure ℝ)).integrableOn_comp_preimage
       (Homeomorph.neg ℝ).measurableEmbedding).mp hreflected
 
-theorem strip_exp_abs_log_abs_integrable {a : ℝ} (ha : 0 < a) :
+lemma strip_exp_abs_log_abs_integrable {a : ℝ} (ha : 0 < a) :
     Integrable
       (fun x : ℝ =>
         Real.exp ((-a) * |x|) * |Real.log (|x|)|) := by
@@ -13623,7 +13623,7 @@ theorem strip_exp_abs_log_abs_integrable {a : ℝ} (ha : 0 < a) :
     integrableOn_union, integrableOn_Ici_iff_integrableOn_Ioi]
   exact ⟨hleft, hright⟩
 
-theorem stripRegularizedHolomorphicPoissonKernel_re
+lemma stripRegularizedHolomorphicPoissonKernel_re
     {ℓ σ : ℝ} (hℓ : 0 < ℓ)
     (hbelow : -1 < σ) (habove : σ < 1) (s y : ℝ) :
     (stripRegularizedHolomorphicPoissonKernel ℓ
@@ -13644,12 +13644,12 @@ open scoped FourierTransform Interval RealInnerProductSpace Topology
 def profileNegativePart (φ : ℝ → ℝ) (v : ℝ) : ℝ :=
   max (-φ v) 0
 
-theorem profileNegativePart_integrable {φ : ℝ → ℝ}
+lemma profileNegativePart_integrable {φ : ℝ → ℝ}
     (hφ : Integrable φ) : Integrable (profileNegativePart φ) := by
   change Integrable ((-φ) ⊔ (0 : ℝ → ℝ))
   exact hφ.neg.sup (integrable_zero ℝ ℝ volume)
 
-theorem abs_sub_eq_two_profileNegativePart (φ : ℝ → ℝ) (v : ℝ) :
+lemma abs_sub_eq_two_profileNegativePart (φ : ℝ → ℝ) (v : ℝ) :
     |φ v| - φ v = 2 * profileNegativePart φ v := by
   unfold profileNegativePart
   rcases le_total 0 (φ v) with h | h
@@ -13658,7 +13658,7 @@ theorem abs_sub_eq_two_profileNegativePart (φ : ℝ → ℝ) (v : ℝ) :
   · rw [abs_of_nonpos h, max_eq_left (by linarith)]
     ring
 
-theorem integral_profileNegativePart_eq_half {φ : ℝ → ℝ}
+lemma integral_profileNegativePart_eq_half {φ : ℝ → ℝ}
     (hφ : Integrable φ)
     (hmean : (∫ v : ℝ, φ v) = 0)
     (hmass : (∫ v : ℝ, |φ v|) = 1) :
@@ -13679,7 +13679,7 @@ theorem integral_profileNegativePart_eq_half {φ : ℝ → ℝ}
         rw [integral_const_mul]
   linarith
 
-theorem profileNegativePart_setIntegral_Iic_eq_integral {φ : ℝ → ℝ}
+lemma profileNegativePart_setIntegral_Iic_eq_integral {φ : ℝ → ℝ}
     (hsign : ∀ v : ℝ, 0 ≤ v → 0 ≤ φ v) :
     (∫ v in Iic (0 : ℝ), profileNegativePart φ v) =
       ∫ v : ℝ, profileNegativePart φ v := by
@@ -13689,7 +13689,7 @@ theorem profileNegativePart_setIntegral_Iic_eq_integral {φ : ℝ → ℝ}
   unfold profileNegativePart
   exact max_eq_right (by linarith [hsign v hvpos.le])
 
-theorem normalizedProfile_negativeHalfline_mass_ge_half {φ : ℝ → ℝ}
+lemma normalizedProfile_negativeHalfline_mass_ge_half {φ : ℝ → ℝ}
     (hφ : Integrable φ)
     (hmean : (∫ v : ℝ, φ v) = 0)
     (hmass : (∫ v : ℝ, |φ v|) = 1)
@@ -13708,7 +13708,7 @@ theorem normalizedProfile_negativeHalfline_mass_ge_half {φ : ℝ → ℝ}
       unfold profileNegativePart
       exact max_le (neg_le_abs _) (abs_nonneg _)
 
-theorem normalizedProfile_negativeHalfline_le_of_exp_majorant
+lemma normalizedProfile_negativeHalfline_le_of_exp_majorant
     {φ : ℝ → ℝ} (hφ : Integrable φ)
     {a B : ℝ} (ha : 0 < a)
     (hbound : ∀ v : ℝ, v ≤ 0 → |φ v| ≤ B * Real.exp (a * v)) :
@@ -13727,12 +13727,12 @@ theorem normalizedProfile_negativeHalfline_le_of_exp_majorant
       rw [integral_const_mul, integral_exp_mul_Iic ha 0]
       simp [div_eq_mul_inv]
 
-theorem norm_fourierInv_le_integral_norm (F : ℝ → ℂ) (v : ℝ) :
+lemma norm_fourierInv_le_integral_norm (F : ℝ → ℂ) (v : ℝ) :
     ‖((𝓕⁻ F : ℝ → ℂ) v)‖ ≤ ∫ s : ℝ, ‖F s‖ := by
   exact VectorFourier.norm_fourierIntegral_le_integral_norm
     Real.fourierChar volume (-innerₗ ℝ) F v
 
-theorem norm_scaled_fourierInv_le_integral_norm (Z : ℝ → ℂ) (v : ℝ) :
+lemma norm_scaled_fourierInv_le_integral_norm (Z : ℝ → ℂ) (v : ℝ) :
     ‖((𝓕⁻ (fun ξ : ℝ => Z (2 * Real.pi * ξ)) : ℝ → ℂ) v)‖ ≤
       (2 * Real.pi)⁻¹ * ∫ s : ℝ, ‖Z s‖ := by
   calc
@@ -13747,7 +13747,7 @@ theorem norm_scaled_fourierInv_le_integral_norm (Z : ℝ → ℂ) (v : ℝ) :
         (2 * Real.pi)⁻¹ * (∫ s : ℝ, ‖Z s‖)
       rw [abs_of_pos (inv_pos.mpr (mul_pos (by norm_num) Real.pi_pos))]
 
-theorem negativeHalfline_le_of_fourierInversion
+lemma negativeHalfline_le_of_fourierInversion
     {φ : ℝ → ℝ} (hφ : Integrable φ)
     {a : ℝ} (ha : 0 < a) (Z : ℝ → ℂ)
     (hinversion : ∀ v : ℝ,
@@ -13773,7 +13773,7 @@ theorem negativeHalfline_le_of_fourierInversion
     _ = ((2 * Real.pi)⁻¹ * ∫ s : ℝ, ‖Z s‖) *
         Real.exp (a * v) := by ring
 
-theorem no_normalizedProfile_of_fourierInversion_lt_half
+lemma no_normalizedProfile_of_fourierInversion_lt_half
     {φ : ℝ → ℝ} (hφ : Integrable φ)
     (hmean : (∫ v : ℝ, φ v) = 0)
     (hmass : (∫ v : ℝ, |φ v|) = 1)
@@ -13790,7 +13790,7 @@ theorem no_normalizedProfile_of_fourierInversion_lt_half
     hφ ha Z hinversion
   linarith
 
-theorem no_antiFourierWitness_of_fourierInversion_lt_half
+lemma no_antiFourierWitness_of_fourierInversion_lt_half
     {d : ℕ} (hd : 0 < d) {R : ℝ} (hR : 0 < R)
     (w : AntiFourierWitness d R)
     {a : ℝ} (ha : 0 < a) (Z : ℝ → ℂ)
@@ -13805,7 +13805,7 @@ theorem no_antiFourierWitness_of_fourierInversion_lt_half
   exact no_normalizedProfile_of_fourierInversion_lt_half
     hintegrable hmean hmass hsign ha Z hinversion hsmall
 
-theorem antiFourierWitness_normalizedMellinStrip_diffContOnCl
+lemma antiFourierWitness_normalizedMellinStrip_diffContOnCl
     {d : ℕ} (hd : 0 < d) {R : ℝ}
     (w : AntiFourierWitness d R) :
     DiffContOnCl ℂ
@@ -13815,7 +13815,7 @@ theorem antiFourierWitness_normalizedMellinStrip_diffContOnCl
   normalizedRadialMellinStrip_diffContOnCl
     hd w.function w.radial w.zero_value R
 
-theorem antiFourierWitness_normalizedMellinStrip_top_norm_le_one
+lemma antiFourierWitness_normalizedMellinStrip_top_norm_le_one
     {d : ℕ} (hd : 0 < d) {R : ℝ}
     (w : AntiFourierWitness d R) (y : ℝ) :
     ‖normalizedRadialMellinStrip hd w.function R
@@ -13824,7 +13824,7 @@ theorem antiFourierWitness_normalizedMellinStrip_top_norm_le_one
   normalizedRadialMellinStrip_top_norm_le_one
     hd w.function w.radial w.nonzero R y
 
-theorem antiFourierWitness_normalizedMellinStrip_uniform_bound
+lemma antiFourierWitness_normalizedMellinStrip_uniform_bound
     {d : ℕ} (hd : 0 < d) {R : ℝ}
     (w : AntiFourierWitness d R) :
     ∃ C : ℝ, 0 ≤ C ∧
@@ -13835,7 +13835,7 @@ theorem antiFourierWitness_normalizedMellinStrip_uniform_bound
   normalizedRadialMellinStrip_uniform_bound
     hd w.function w.radial w.zero_value R
 
-theorem antiFourierWitness_normalizedMellinStrip_shifted_integrable
+lemma antiFourierWitness_normalizedMellinStrip_shifted_integrable
     {d : ℕ} (hd : 0 < d) {R : ℝ} (hR : 0 < R)
     (w : AntiFourierWitness d R) {a : ℝ}
     (ha : a < (d : ℝ)) :
@@ -13846,7 +13846,7 @@ theorem antiFourierWitness_normalizedMellinStrip_shifted_integrable
   normalizedRadialMellinStrip_shifted_integrable
     hd w.function w.real hR ha
 
-theorem antiFourierWitness_normalizedMellinStrip_shifted_fourier_inversion
+lemma antiFourierWitness_normalizedMellinStrip_shifted_fourier_inversion
     {d : ℕ} (hd : 0 < d) {R : ℝ} (hR : 0 < R)
     (w : AntiFourierWitness d R) {a : ℝ}
     (ha : a < (d : ℝ)) (v : ℝ) :
@@ -13861,7 +13861,7 @@ theorem antiFourierWitness_normalizedMellinStrip_shifted_fourier_inversion
   normalizedRadialMellinStrip_shifted_fourier_inversion
     hd w.function w.radial w.real w.zero_value hR ha v
 
-theorem no_antiFourierWitness_of_shiftedMellinL1_lt_half
+lemma no_antiFourierWitness_of_shiftedMellinL1_lt_half
     {d : ℕ} (hd : 0 < d) {R : ℝ} (hR : 0 < R)
     (w : AntiFourierWitness d R)
     {a : ℝ} (hapos : 0 < a) (haless : a < (d : ℝ))
@@ -13883,7 +13883,7 @@ theorem no_antiFourierWitness_of_shiftedMellinL1_lt_half
         hd hR w haless v
   · exact hsmall
 
-theorem no_antiFourierWitness_of_interiorMellinL1_lt_half
+lemma no_antiFourierWitness_of_interiorMellinL1_lt_half
     {d : ℕ} (hd : 0 < d) {R σ : ℝ} (hR : 0 < R)
     (hσbelow : -1 < σ) (hσabove : σ < 1)
     (w : AntiFourierWitness d R)
@@ -13915,7 +13915,7 @@ def lowerGammaBoundaryLog (ℓ R y : ℝ) : ℝ :=
     Real.log ‖Complex.Gamma (-Complex.I * (y : ℂ) / 2)‖ -
     Real.log ‖Complex.Gamma ((ℓ : ℂ) + Complex.I * (y : ℂ) / 2)‖
 
-theorem lowerGammaBoundaryLog_continuousOn
+lemma lowerGammaBoundaryLog_continuousOn
     {ℓ : ℝ} (hℓ : 0 < ℓ) (R : ℝ) {S : Set ℝ}
     (hS : ∀ y ∈ S, y ≠ 0) :
     ContinuousOn (lowerGammaBoundaryLog ℓ R) S := by
@@ -13985,7 +13985,7 @@ theorem lowerGammaBoundaryLog_continuousOn
           ‖Complex.Gamma ((ℓ : ℂ) + Complex.I * (y : ℂ) / 2)‖) S
   exact (continuousOn_const.add hnumlog).sub hdenlog
 
-theorem lowerGammaBoundaryLog_measurable
+lemma lowerGammaBoundaryLog_measurable
     {ℓ : ℝ} (hℓ : 0 < ℓ) (R : ℝ) :
     Measurable (lowerGammaBoundaryLog ℓ R) := by
   apply measurable_of_continuousOn_compl_singleton (0 : ℝ)
@@ -13993,7 +13993,7 @@ theorem lowerGammaBoundaryLog_measurable
   intro y hy
   simpa using! hy
 
-theorem antiFourierWitness_normalizedMellinStrip_bottom_norm_le_gamma
+lemma antiFourierWitness_normalizedMellinStrip_bottom_norm_le_gamma
     {d : ℕ} (hd : 0 < d) {R : ℝ} (hR : 0 < R)
     (w : AntiFourierWitness d R) (y : ℝ) (hy : y ≠ 0) :
     ‖normalizedRadialMellinStrip hd w.function R
@@ -14010,7 +14010,7 @@ def lowerStripPoissonMajorant (ℓ R σ s : ℝ) : ℝ :=
     stripPoissonKernel σ T *
       lowerGammaBoundaryLog ℓ R (s - ℓ * T)
 
-theorem stripPoisson_integral_changeVariables
+lemma stripPoisson_integral_changeVariables
     {ℓ : ℝ} (hℓ : 0 < ℓ) (σ s : ℝ) (h : ℝ → ℝ) :
     (∫ y : ℝ,
       stripPoissonKernel σ ((s - y) / ℓ) / ℓ * h y) =
@@ -14050,7 +14050,7 @@ theorem stripPoisson_integral_changeVariables
   exact mul_left_cancel₀ (inv_ne_zero hℓ.ne')
     (hscale.symm.trans hrewrite)
 
-theorem norm_integerGammaFactor (j : ℕ) (y : ℝ) :
+lemma norm_integerGammaFactor (j : ℕ) (y : ℝ) :
     ‖(j : ℂ) + Complex.I * (y : ℂ) / 2‖ =
       Real.sqrt ((j : ℝ) ^ 2 + (y / 2) ^ 2) := by
   rw [Complex.norm_def, Complex.normSq_apply]
@@ -14058,7 +14058,7 @@ theorem norm_integerGammaFactor (j : ℕ) (y : ℝ) :
   simp
   ring
 
-theorem integerGammaFactor_ne_zero
+lemma integerGammaFactor_ne_zero
     (j : ℕ) {y : ℝ} (hy : y ≠ 0) :
     (j : ℂ) + Complex.I * (y : ℂ) / 2 ≠ 0 := by
   intro hz
@@ -14066,7 +14066,7 @@ theorem integerGammaFactor_ne_zero
   norm_num at him
   exact hy (by linarith)
 
-theorem gamma_imaginary_ne_zero {y : ℝ} (hy : y ≠ 0) :
+lemma gamma_imaginary_ne_zero {y : ℝ} (hy : y ≠ 0) :
     Complex.Gamma (Complex.I * (y : ℂ) / 2) ≠ 0 := by
   apply Complex.Gamma_ne_zero
   intro j hj
@@ -14074,7 +14074,7 @@ theorem gamma_imaginary_ne_zero {y : ℝ} (hy : y ≠ 0) :
   norm_num at him
   exact hy (by linarith)
 
-theorem norm_gamma_neg_imaginary (y : ℝ) :
+lemma norm_gamma_neg_imaginary (y : ℝ) :
     ‖Complex.Gamma (-Complex.I * (y : ℂ) / 2)‖ =
       ‖Complex.Gamma (Complex.I * (y : ℂ) / 2)‖ := by
   have harg :
@@ -14084,7 +14084,7 @@ theorem norm_gamma_neg_imaginary (y : ℝ) :
       Complex.conj_I, Complex.conj_ofNat]
   rw [harg, Complex.Gamma_conj, RCLike.norm_conj]
 
-theorem lowerGammaBoundaryLog_integer
+lemma lowerGammaBoundaryLog_integer
     (k : ℕ) (R : ℝ) {y : ℝ} (hy : y ≠ 0) :
     lowerGammaBoundaryLog (k : ℝ) R y =
       (k : ℝ) * Real.log (Real.pi * R ^ 2) -
@@ -14123,12 +14123,12 @@ theorem lowerGammaBoundaryLog_integer
     hlogproduct]
   ring
 
-theorem lower_sqrtFactor_ge_abs_half (c y : ℝ) :
+lemma lower_sqrtFactor_ge_abs_half (c y : ℝ) :
     |y| / 2 ≤ Real.sqrt (c ^ 2 + (y / 2) ^ 2) := by
   apply (Real.le_sqrt (by positivity) (by positivity)).2
   nlinarith [sq_nonneg c, sq_abs y]
 
-theorem lowerGammaBoundaryLog_integer_log_tail
+lemma lowerGammaBoundaryLog_integer_log_tail
     (k : ℕ) {R y : ℝ} (hR : 0 < R) (hy : y ≠ 0) :
     lowerGammaBoundaryLog (k : ℝ) R y ≤
       (k : ℝ) * Real.log
@@ -14175,7 +14175,7 @@ theorem lowerGammaBoundaryLog_integer_log_tail
         (2 * Real.pi * R ^ 2 / |y|) := by
       rw [hlogratio]
 
-theorem lower_abs_log_sqrtFactor_le
+lemma lower_abs_log_sqrtFactor_le
     {c y : ℝ} (hc : 0 ≤ c) (hy : 0 < y) :
     |Real.log (Real.sqrt (c ^ 2 + (y / 2) ^ 2))| ≤
       c + y / 2 + |Real.log (y / 2)| := by
@@ -14206,7 +14206,7 @@ theorem lower_abs_log_sqrtFactor_le
     have hnonneg : 0 ≤ c + y / 2 := by positivity
     linarith
 
-theorem lower_exp_abs_log_div_two_integrableOn_Ioi
+lemma lower_exp_abs_log_div_two_integrableOn_Ioi
     {a : ℝ} (ha : 0 < a) :
     IntegrableOn
       (fun y : ℝ =>
@@ -14256,7 +14256,7 @@ theorem lower_exp_abs_log_div_two_integrableOn_Ioi
         |Real.log (2 : ℝ)| * Real.exp ((-a) * y) := by
       ring
 
-theorem lower_exp_log_sqrtFactor_integrableOn_Ioi
+lemma lower_exp_log_sqrtFactor_integrableOn_Ioi
     {a c : ℝ} (ha : 0 < a) (hc : 0 ≤ c) :
     IntegrableOn
       (fun y : ℝ => Real.exp ((-a) * y) *
@@ -14316,7 +14316,7 @@ theorem lower_exp_log_sqrtFactor_integrableOn_Ioi
           Real.exp ((-a) * y) * |Real.log (y / 2)| := by
       ring
 
-theorem lower_exp_log_sqrtFactor_integrable
+lemma lower_exp_log_sqrtFactor_integrable
     {a c : ℝ} (ha : 0 < a) (hc : 0 ≤ c) :
     Integrable
       (fun y : ℝ => Real.exp ((-a) * |y|) *
@@ -14350,7 +14350,7 @@ theorem lower_exp_log_sqrtFactor_integrable
     integrableOn_union, integrableOn_Ici_iff_integrableOn_Ioi]
   exact ⟨hleft, hright⟩
 
-theorem lowerGammaBoundaryLog_integer_exp_integrable
+lemma lowerGammaBoundaryLog_integer_exp_integrable
     {a : ℝ} (ha : 0 < a) (k : ℕ) (R : ℝ) :
     Integrable (fun y : ℝ =>
       Real.exp ((-a) * |y|) *
@@ -14386,7 +14386,7 @@ theorem lowerGammaBoundaryLog_integer_exp_integrable
   filter_upwards [Measure.ae_ne (volume : Measure ℝ) 0] with y hy
   rw [lowerGammaBoundaryLog_integer k R hy]
 
-theorem lowerStripGammaOuter_integrable_of_exp_integrable
+lemma lowerStripGammaOuter_integrable_of_exp_integrable
     {ℓ R : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ)
     (hgamma : Integrable
@@ -14570,7 +14570,7 @@ theorem lowerStripGammaOuter_integrable_of_exp_integrable
     integrableOn_union, integrableOn_Ici_iff_integrableOn_Ioi]
   exact ⟨hleft, hright⟩
 
-theorem norm_halfIntegerGammaFactor (j : ℕ) (y : ℝ) :
+lemma norm_halfIntegerGammaFactor (j : ℕ) (y : ℝ) :
     ‖(j : ℂ) + (1 / 2 : ℂ) + Complex.I * (y : ℂ) / 2‖ =
       Real.sqrt (((j : ℝ) + 1 / 2) ^ 2 + (y / 2) ^ 2) := by
   rw [Complex.norm_def, Complex.normSq_apply]
@@ -14578,7 +14578,7 @@ theorem norm_halfIntegerGammaFactor (j : ℕ) (y : ℝ) :
   simp
   ring
 
-theorem norm_gamma_half_add_imaginary_sq (x : ℝ) :
+lemma norm_gamma_half_add_imaginary_sq (x : ℝ) :
     ‖Complex.Gamma ((1 / 2 : ℂ) + Complex.I * (x : ℂ))‖ ^ 2 =
       Real.pi / Real.cosh (Real.pi * x) := by
   let z : ℂ := (1 / 2 : ℂ) + Complex.I * (x : ℂ)
@@ -14622,7 +14622,7 @@ theorem norm_gamma_half_add_imaginary_sq (x : ℝ) :
         (Real.cosh (Real.pi * x) : ℂ)).re at hre
   simpa only [Complex.div_ofReal_re] using! hre
 
-theorem norm_gamma_imaginary_sq {x : ℝ} (hx : x ≠ 0) :
+lemma norm_gamma_imaginary_sq {x : ℝ} (hx : x ≠ 0) :
     ‖Complex.Gamma (Complex.I * (x : ℂ))‖ ^ 2 =
       Real.pi / (x * Real.sinh (Real.pi * x)) := by
   let z : ℂ := Complex.I * (x : ℂ)
@@ -14693,7 +14693,7 @@ theorem norm_gamma_imaginary_sq {x : ℝ} (hx : x ≠ 0) :
     exact_mod_cast hidentity
   exact (eq_div_iff (mul_ne_zero hx hsinh)).2 hmul
 
-theorem halfIntegerGammaFactor_ne_zero (j : ℕ) (y : ℝ) :
+lemma halfIntegerGammaFactor_ne_zero (j : ℕ) (y : ℝ) :
     (j : ℂ) + (1 / 2 : ℂ) + Complex.I * (y : ℂ) / 2 ≠ 0 := by
   intro hz
   have hre := congrArg Complex.re hz
@@ -14701,7 +14701,7 @@ theorem halfIntegerGammaFactor_ne_zero (j : ℕ) (y : ℝ) :
   have hj : 0 ≤ (j : ℝ) := Nat.cast_nonneg j
   linarith
 
-theorem lowerGammaBoundaryLog_halfInteger_factorized
+lemma lowerGammaBoundaryLog_halfInteger_factorized
     (k : ℕ) (R : ℝ) {y : ℝ} (hy : y ≠ 0) :
     lowerGammaBoundaryLog ((k : ℝ) + 1 / 2) R y =
       ((k : ℝ) + 1 / 2) * Real.log (Real.pi * R ^ 2) -
@@ -14763,12 +14763,12 @@ theorem lowerGammaBoundaryLog_halfInteger_factorized
 def lowerCoth (x : ℝ) : ℝ :=
   Real.cosh x / Real.sinh x
 
-theorem lowerCoth_pos {x : ℝ} (hx : 0 < x) :
+lemma lowerCoth_pos {x : ℝ} (hx : 0 < x) :
     0 < lowerCoth x := by
   unfold lowerCoth
   exact div_pos (Real.cosh_pos x) (Real.sinh_pos_iff.mpr hx)
 
-theorem lowerCoth_one_le {x : ℝ} (hx : 0 < x) :
+lemma lowerCoth_one_le {x : ℝ} (hx : 0 < x) :
     1 ≤ lowerCoth x := by
   have hsinh : 0 < Real.sinh x := Real.sinh_pos_iff.mpr hx
   unfold lowerCoth
@@ -14776,11 +14776,11 @@ theorem lowerCoth_one_le {x : ℝ} (hx : 0 < x) :
   rw [one_mul, Real.sinh_eq, Real.cosh_eq]
   linarith [Real.exp_pos (-x)]
 
-theorem lowerCoth_log_nonneg {x : ℝ} (hx : 0 < x) :
+lemma lowerCoth_log_nonneg {x : ℝ} (hx : 0 < x) :
     0 ≤ Real.log (lowerCoth x) :=
   Real.log_nonneg (lowerCoth_one_le hx)
 
-theorem lowerCoth_hasDerivAt {x : ℝ} (hx : 0 < x) :
+lemma lowerCoth_hasDerivAt {x : ℝ} (hx : 0 < x) :
     HasDerivAt lowerCoth
       (-(Real.sinh x)⁻¹ ^ 2) x := by
   have hsinh : Real.sinh x ≠ 0 :=
@@ -14795,7 +14795,7 @@ theorem lowerCoth_hasDerivAt {x : ℝ} (hx : 0 < x) :
   field_simp [hsinh]
   nlinarith
 
-theorem lowerCoth_antitoneOn :
+lemma lowerCoth_antitoneOn :
     AntitoneOn lowerCoth (Ioi (0 : ℝ)) := by
   apply antitoneOn_of_deriv_nonpos (convex_Ioi 0)
   · intro x hx
@@ -14808,35 +14808,35 @@ theorem lowerCoth_antitoneOn :
     rw [(lowerCoth_hasDerivAt hx').deriv]
     exact neg_nonpos.mpr (sq_nonneg _)
 
-theorem lowerCoth_log_antitoneOn :
+lemma lowerCoth_log_antitoneOn :
     AntitoneOn (fun x : ℝ => Real.log (lowerCoth x))
       (Ioi (0 : ℝ)) := by
   intro x hx y hy hxy
   exact Real.log_le_log (lowerCoth_pos hy)
     (lowerCoth_antitoneOn hx hy hxy)
 
-theorem lower_cosh_le_exp {x : ℝ} (hx : 0 ≤ x) :
+lemma lower_cosh_le_exp {x : ℝ} (hx : 0 ≤ x) :
     Real.cosh x ≤ Real.exp x := by
   have hnegative : Real.exp (-x) ≤ Real.exp x :=
     Real.exp_le_exp.mpr (by linarith)
   rw [Real.cosh_eq]
   linarith
 
-theorem lower_sinh_le_exp (x : ℝ) :
+lemma lower_sinh_le_exp (x : ℝ) :
     Real.sinh x ≤ Real.exp x := by
   have hpositive := Real.exp_pos (-x)
   have hpositive' := Real.exp_pos x
   rw [Real.sinh_eq]
   linarith
 
-theorem lower_abs_log_cosh_le {x : ℝ} (hx : 0 ≤ x) :
+lemma lower_abs_log_cosh_le {x : ℝ} (hx : 0 ≤ x) :
     |Real.log (Real.cosh x)| ≤ x := by
   rw [abs_of_nonneg (Real.log_nonneg (Real.one_le_cosh x))]
   have hlog := Real.log_le_log
     (Real.cosh_pos x) (lower_cosh_le_exp hx)
   simpa using! hlog
 
-theorem lower_abs_log_sinh_le {x : ℝ} (hx : 0 < x) :
+lemma lower_abs_log_sinh_le {x : ℝ} (hx : 0 < x) :
     |Real.log (Real.sinh x)| ≤ x + |Real.log x| := by
   have hlower : x ≤ Real.sinh x :=
     Real.self_le_sinh_iff.mpr hx.le
@@ -14854,7 +14854,7 @@ theorem lower_abs_log_sinh_le {x : ℝ} (hx : 0 < x) :
     have habs := neg_le_abs (Real.log x)
     linarith
 
-theorem lower_abs_log_coth_div_le {x : ℝ} (hx : 0 < x) :
+lemma lower_abs_log_coth_div_le {x : ℝ} (hx : 0 < x) :
     |Real.log (lowerCoth (Real.pi * x) / x)| ≤
       2 * (Real.pi * x) +
         |Real.log Real.pi| + 2 * |Real.log x| := by
@@ -14894,7 +14894,7 @@ theorem lower_abs_log_coth_div_le {x : ℝ} (hx : 0 < x) :
         |Real.log Real.pi| + 2 * |Real.log x| := by
       linarith
 
-theorem lowerCoth_sub_one_eq
+lemma lowerCoth_sub_one_eq
     {x : ℝ} (hx : 0 < x) :
     lowerCoth x - 1 = Real.exp (-x) / Real.sinh x := by
   have hsinh : Real.sinh x ≠ 0 :=
@@ -14904,7 +14904,7 @@ theorem lowerCoth_sub_one_eq
   rw [Real.cosh_eq, Real.sinh_eq]
   ring
 
-theorem lower_sinh_ge_exp_quarter
+lemma lower_sinh_ge_exp_quarter
     {x : ℝ} (hx : 1 ≤ x) :
     Real.exp x / 4 ≤ Real.sinh x := by
   have hbig : 2 ≤ Real.exp x := by
@@ -14914,7 +14914,7 @@ theorem lower_sinh_ge_exp_quarter
   rw [Real.sinh_eq]
   linarith
 
-theorem lowerCoth_log_le_four_exp_neg_two
+lemma lowerCoth_log_le_four_exp_neg_two
     {x : ℝ} (hx : 1 ≤ x) :
     Real.log (lowerCoth x) ≤
       4 * Real.exp (-2 * x) := by
@@ -14934,7 +14934,7 @@ theorem lowerCoth_log_le_four_exp_neg_two
         Real.exp_sub]
       field_simp [Real.exp_ne_zero x]
 
-theorem lowerCoth_log_small_abs_bound
+lemma lowerCoth_log_small_abs_bound
     {y : ℝ} (hy : y ≠ 0) (hsmall : |y| ≤ 1) :
     Real.log (lowerCoth (Real.pi * |y| / 2)) ≤
       Real.pi + |Real.log Real.pi| +
@@ -14967,7 +14967,7 @@ theorem lowerCoth_log_small_abs_bound
     nlinarith [mul_nonneg Real.pi_pos.le (sub_nonneg.mpr hsmall)]
   linarith
 
-theorem lowerCoth_log_abs_integrable :
+lemma lowerCoth_log_abs_integrable :
     Integrable (fun y : ℝ =>
       Real.log (lowerCoth (Real.pi * |y| / 2))) := by
   let A : ℝ :=
@@ -15060,7 +15060,7 @@ theorem lowerCoth_log_abs_integrable :
         rw [hexp] at hbound
         linarith
 
-theorem lower_exp_log_coth_div_integrableOn_Ioi
+lemma lower_exp_log_coth_div_integrableOn_Ioi
     {a : ℝ} (ha : 0 < a) :
     IntegrableOn
       (fun y : ℝ =>
@@ -15155,7 +15155,7 @@ theorem lower_exp_log_coth_div_integrableOn_Ioi
           2 * (Real.exp ((-a) * y) * |Real.log (y / 2)|) := by
       ring
 
-theorem lower_exp_log_coth_div_integrable
+lemma lower_exp_log_coth_div_integrable
     {a : ℝ} (ha : 0 < a) :
     Integrable
       (fun y : ℝ =>
@@ -15197,7 +15197,7 @@ theorem lower_exp_log_coth_div_integrable
     integrableOn_union, integrableOn_Ici_iff_integrableOn_Ioi]
   exact ⟨hleft, hright⟩
 
-theorem gamma_log_coth_ratio {x : ℝ} (hx : x ≠ 0) :
+lemma gamma_log_coth_ratio {x : ℝ} (hx : x ≠ 0) :
     Real.log ‖Complex.Gamma (Complex.I * (x : ℂ))‖ -
         Real.log
           ‖Complex.Gamma ((1 / 2 : ℂ) + Complex.I * (x : ℂ))‖ =
@@ -15273,7 +15273,7 @@ theorem gamma_log_coth_ratio {x : ℝ} (hx : x ≠ 0) :
           Real.log (lowerCoth (Real.pi * |x|) / |x|) := by
         rw [hlogcoth]
 
-theorem lowerGammaBoundaryLog_halfInteger
+lemma lowerGammaBoundaryLog_halfInteger
     (k : ℕ) (R : ℝ) {y : ℝ} (hy : y ≠ 0) :
     lowerGammaBoundaryLog ((k : ℝ) + 1 / 2) R y =
       ((k : ℝ) + 1 / 2) * Real.log (Real.pi * R ^ 2) -
@@ -15305,7 +15305,7 @@ theorem lowerGammaBoundaryLog_halfInteger
         (gamma_log_coth_ratio
           (x := y / 2) (div_ne_zero hy (by norm_num)))
 
-theorem lowerGammaBoundaryLog_halfInteger_log_tail
+lemma lowerGammaBoundaryLog_halfInteger_log_tail
     (k : ℕ) {R y : ℝ} (hR : 0 < R) (hy : y ≠ 0) :
     lowerGammaBoundaryLog ((k : ℝ) + 1 / 2) R y ≤
       ((k : ℝ) + 1 / 2) * Real.log
@@ -15377,7 +15377,7 @@ theorem lowerGammaBoundaryLog_halfInteger_log_tail
           Real.log (lowerCoth (Real.pi * |y| / 2)) := by
       rw [hlogratio]
 
-theorem lowerGammaBoundaryLog_dimension_log_tail
+lemma lowerGammaBoundaryLog_dimension_log_tail
     {d : ℕ} (_hd : 0 < d) {R y : ℝ}
     (hR : 0 < R) (hy : y ≠ 0) :
     lowerGammaBoundaryLog ((d : ℝ) / 2) R y ≤
@@ -15403,7 +15403,7 @@ theorem lowerGammaBoundaryLog_dimension_log_tail
     rw [hq]
     exact lowerGammaBoundaryLog_halfInteger_log_tail k hR hy
 
-theorem lowerGammaBoundaryLog_dimension_scaled_log_tail
+lemma lowerGammaBoundaryLog_dimension_scaled_log_tail
     {d : ℕ} (hd : 0 < d) {c Y : ℝ}
     (hc : 0 < c) (hY : Y ≠ 0) :
     lowerGammaBoundaryLog ((d : ℝ) / 2)
@@ -15432,7 +15432,7 @@ theorem lowerGammaBoundaryLog_dimension_scaled_log_tail
   rw [hratio] at htail
   exact htail
 
-theorem lowerGammaBoundaryLog_dimension_scaled_log_tail_uniform
+lemma lowerGammaBoundaryLog_dimension_scaled_log_tail_uniform
     {d : ℕ} (hd : 2 ≤ d) {c Y : ℝ}
     (hc : 0 < c) (hY : Y ≠ 0) :
     lowerGammaBoundaryLog ((d : ℝ) / 2)
@@ -15460,7 +15460,7 @@ theorem lowerGammaBoundaryLog_dimension_scaled_log_tail_uniform
     hdpos hc hY
   linarith
 
-theorem lower_positiveLogRatio_integrable
+lemma lower_positiveLogRatio_integrable
     {A : ℝ} (hA : 0 < A) :
     Integrable (fun y : ℝ =>
       max (Real.log (A / |y|)) 0) := by
@@ -15539,7 +15539,7 @@ def lowerGammaScaledPositivePart
     (lowerGammaBoundaryLog ((d : ℝ) / 2)
       (c * Real.sqrt d) (((d : ℝ) / 2) * Y)) 0
 
-theorem lowerGammaScaledPositivePart_le
+lemma lowerGammaScaledPositivePart_le
     {d : ℕ} (hd : 2 ≤ d) {c Y : ℝ}
     (hc : 0 < c) (hY : Y ≠ 0) :
     lowerGammaScaledPositivePart d c Y ≤
@@ -15564,7 +15564,7 @@ theorem lowerGammaScaledPositivePart_le
   · linarith
   · positivity
 
-theorem lowerGammaScaledPositivePart_integrable
+lemma lowerGammaScaledPositivePart_integrable
     {d : ℕ} (hd : 2 ≤ d) {c : ℝ} (hc : 0 < c) :
     Integrable (lowerGammaScaledPositivePart d c) := by
   have hA : 0 < 4 * Real.pi * c ^ 2 := by positivity
@@ -15595,7 +15595,7 @@ theorem lowerGammaScaledPositivePart_integrable
         exact le_max_right _ _)]
     exact lowerGammaScaledPositivePart_le hd hc hY
 
-theorem lowerGammaScaledPositivePart_integral_le
+lemma lowerGammaScaledPositivePart_integral_le
     {d : ℕ} (hd : 2 ≤ d) {c : ℝ} (hc : 0 < c) :
     (∫ Y : ℝ, lowerGammaScaledPositivePart d c Y) ≤
       ((d : ℝ) / 2) *
@@ -15637,7 +15637,7 @@ theorem lowerGammaScaledPositivePart_integral_le
         (hcoth.const_mul (1 / 2 : ℝ)),
         integral_const_mul, integral_const_mul]
 
-theorem lowerGammaBoundaryLog_dimension_scaled_nonpos_of_large
+lemma lowerGammaBoundaryLog_dimension_scaled_nonpos_of_large
     {d : ℕ} (hd : 2 ≤ d) {c Y : ℝ}
     (hc : 0 < c)
     (hlarge : max 1 (8 * Real.pi * c ^ 2) ≤ |Y|) :
@@ -15723,7 +15723,7 @@ theorem lowerGammaBoundaryLog_dimension_scaled_nonpos_of_large
     hd hc hY
   linarith
 
-theorem lowerGammaScaledPositivePart_support
+lemma lowerGammaScaledPositivePart_support
     {d : ℕ} (hd : 2 ≤ d) {c : ℝ} (hc : 0 < c) :
     Function.support (lowerGammaScaledPositivePart d c) ⊆
       Icc (-(max 1 (8 * Real.pi * c ^ 2)))
@@ -15743,7 +15743,7 @@ theorem lowerGammaScaledPositivePart_support
   exact ⟨(neg_lt_of_abs_lt hsmall).le,
     (lt_of_abs_lt hsmall).le⟩
 
-theorem exists_lowerGammaScaledPositivePart_uniform_bound
+lemma exists_lowerGammaScaledPositivePart_uniform_bound
     {c : ℝ} (hc : 0 < c) :
     ∃ C : ℝ, 0 < C ∧
       ∀ d : ℕ, 2 ≤ d →
@@ -15798,7 +15798,7 @@ theorem exists_lowerGammaScaledPositivePart_uniform_bound
         mul_le_mul_of_nonneg_left hconstant (by positivity)
       _ = C * ((d : ℝ) / 2) := by ring
 
-theorem lowerGammaBoundaryLog_integer_neg
+lemma lowerGammaBoundaryLog_integer_neg
     (k : ℕ) (R : ℝ) {y : ℝ} (hy : y ≠ 0) :
     lowerGammaBoundaryLog (k : ℝ) R (-y) =
       lowerGammaBoundaryLog (k : ℝ) R y := by
@@ -15806,7 +15806,7 @@ theorem lowerGammaBoundaryLog_integer_neg
     lowerGammaBoundaryLog_integer k R hy]
   simp [div_pow]
 
-theorem lowerGammaBoundaryLog_halfInteger_neg
+lemma lowerGammaBoundaryLog_halfInteger_neg
     (k : ℕ) (R : ℝ) {y : ℝ} (hy : y ≠ 0) :
     lowerGammaBoundaryLog ((k : ℝ) + 1 / 2) R (-y) =
       lowerGammaBoundaryLog ((k : ℝ) + 1 / 2) R y := by
@@ -15814,7 +15814,7 @@ theorem lowerGammaBoundaryLog_halfInteger_neg
     lowerGammaBoundaryLog_halfInteger k R hy]
   simp [div_pow]
 
-theorem lowerGammaBoundaryLog_dimension_neg
+lemma lowerGammaBoundaryLog_dimension_neg
     {d : ℕ} (R : ℝ) {y : ℝ} (hy : y ≠ 0) :
     lowerGammaBoundaryLog ((d : ℝ) / 2) R (-y) =
       lowerGammaBoundaryLog ((d : ℝ) / 2) R y := by
@@ -15831,7 +15831,7 @@ theorem lowerGammaBoundaryLog_dimension_neg
     rw [hq]
     exact lowerGammaBoundaryLog_halfInteger_neg k R hy
 
-theorem lowerGammaBoundaryLog_integer_antitoneOn
+lemma lowerGammaBoundaryLog_integer_antitoneOn
     (k : ℕ) (R : ℝ) :
     AntitoneOn (lowerGammaBoundaryLog (k : ℝ) R)
       (Ioi (0 : ℝ)) := by
@@ -15858,7 +15858,7 @@ theorem lowerGammaBoundaryLog_integer_antitoneOn
         (show 0 ≤ y / 2 - x / 2 by linarith)]
   linarith
 
-theorem lowerGammaBoundaryLog_halfInteger_antitoneOn
+lemma lowerGammaBoundaryLog_halfInteger_antitoneOn
     (k : ℕ) (R : ℝ) :
     AntitoneOn (lowerGammaBoundaryLog ((k : ℝ) + 1 / 2) R)
       (Ioi (0 : ℝ)) := by
@@ -15914,7 +15914,7 @@ theorem lowerGammaBoundaryLog_halfInteger_antitoneOn
       (div_pos (lowerCoth_pos hyarg) (half_pos hy)) hratio
   linarith
 
-theorem lowerGammaBoundaryLog_dimension_antitoneOn
+lemma lowerGammaBoundaryLog_dimension_antitoneOn
     {d : ℕ} (R : ℝ) :
     AntitoneOn (lowerGammaBoundaryLog ((d : ℝ) / 2) R)
       (Ioi (0 : ℝ)) := by
@@ -15931,7 +15931,7 @@ theorem lowerGammaBoundaryLog_dimension_antitoneOn
     rw [hq]
     exact lowerGammaBoundaryLog_halfInteger_antitoneOn k R
 
-theorem even_antitone_superlevel_interval
+lemma even_antitone_superlevel_interval
     {f : ℝ → ℝ} {B t : ℝ}
     (heven : ∀ x : ℝ, f (-x) = f x)
     (hanti : AntitoneOn f (Ici (0 : ℝ)))
@@ -15991,7 +15991,7 @@ theorem even_antitone_superlevel_interval
       rw [habs]
       exact hx
 
-theorem lowerGammaBoundaryLog_halfInteger_exp_integrable
+lemma lowerGammaBoundaryLog_halfInteger_exp_integrable
     {a : ℝ} (ha : 0 < a) (k : ℕ) (R : ℝ) :
     Integrable (fun y : ℝ =>
       Real.exp ((-a) * |y|) *
@@ -16043,7 +16043,7 @@ theorem lowerGammaBoundaryLog_halfInteger_exp_integrable
   simp only [mul_add, mul_sub, Finset.mul_sum]
   ring
 
-theorem lowerGammaBoundaryLog_dimension_exp_integrable
+lemma lowerGammaBoundaryLog_dimension_exp_integrable
     {d : ℕ} (hd : 0 < d) {a : ℝ} (ha : 0 < a) (R : ℝ) :
     Integrable (fun y : ℝ =>
       Real.exp ((-a) * |y|) *
@@ -16061,7 +16061,7 @@ theorem lowerGammaBoundaryLog_dimension_exp_integrable
     rw [hq]
     exact lowerGammaBoundaryLog_halfInteger_exp_integrable ha k R
 
-theorem lowerStripGammaOuter_integrable_dimension
+lemma lowerStripGammaOuter_integrable_dimension
     {d : ℕ} (hd : 0 < d) {R : ℝ} {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹'
       Ioo (-((d : ℝ) / 2)) ((d : ℝ) / 2)) :
@@ -16079,7 +16079,7 @@ theorem lowerStripGammaOuter_integrable_dimension
 def lowerRiemannLog (T x : ℝ) : ℝ :=
   Real.log (Real.sqrt (x ^ 2 + T ^ 2 / 4))
 
-theorem lowerRiemannLog_monotoneOn {T : ℝ} (hT : T ≠ 0) :
+lemma lowerRiemannLog_monotoneOn {T : ℝ} (hT : T ≠ 0) :
     MonotoneOn (lowerRiemannLog T) (Ici (0 : ℝ)) := by
   intro x hx y hy hxy
   have hrad : 0 < x ^ 2 + T ^ 2 / 4 := by
@@ -16090,7 +16090,7 @@ theorem lowerRiemannLog_monotoneOn {T : ℝ} (hT : T ≠ 0) :
   exact Real.log_le_log (Real.sqrt_pos.2 hrad)
     (Real.sqrt_le_sqrt (by linarith))
 
-theorem monotone_leftRiemann_error
+lemma monotone_leftRiemann_error
     (f : ℝ → ℝ) {k : ℕ} (hk : 0 < k)
     (hf : MonotoneOn f (Icc (0 : ℝ) 1)) :
     0 ≤
@@ -16149,7 +16149,7 @@ theorem monotone_leftRiemann_error
   · rw [← hintegral]
     linarith
 
-theorem lower_integer_leftRiemann_error
+lemma lower_integer_leftRiemann_error
     {T : ℝ} (hT : T ≠ 0) {k : ℕ} (hk : 0 < k) :
     0 ≤
         (k : ℝ) * (∫ x in (0 : ℝ)..1, lowerRiemannLog T x) -
@@ -16162,7 +16162,7 @@ theorem lower_integer_leftRiemann_error
   exact monotone_leftRiemann_error (lowerRiemannLog T) hk
     ((lowerRiemannLog_monotoneOn hT).mono (by intro x hx; exact hx.1))
 
-theorem monotone_midpointIntegral_error
+lemma monotone_midpointIntegral_error
     (f : ℝ → ℝ) (k : ℕ)
     (hf : MonotoneOn f (Icc (0 : ℝ) (k : ℝ))) :
     |(∫ x in (0 : ℝ)..(k : ℝ), f x) -
@@ -16215,7 +16215,7 @@ theorem monotone_midpointIntegral_error
   apply (abs_le).2
   constructor <;> linarith
 
-theorem lower_halfInteger_midpointRiemann_error
+lemma lower_halfInteger_midpointRiemann_error
     {T : ℝ} (hT : T ≠ 0)
     {ℓ : ℝ} (hℓ : 0 < ℓ) (k : ℕ) :
     |ℓ * (∫ x in (0 : ℝ)..((k : ℝ) / ℓ), lowerRiemannLog T x) -
@@ -16251,7 +16251,7 @@ def lowerRiemannLogPrimitive (T x : ℝ) : ℝ :=
   x / 2 * Real.log (x ^ 2 + T ^ 2 / 4) - x +
     (|T| / 2) * Real.arctan (x / (|T| / 2))
 
-theorem lowerRiemannLogPrimitive_hasDerivAt
+lemma lowerRiemannLogPrimitive_hasDerivAt
     {T : ℝ} (hT : T ≠ 0) (x : ℝ) :
     HasDerivAt (lowerRiemannLogPrimitive T)
       (lowerRiemannLog T x) x := by
@@ -16276,7 +16276,7 @@ theorem lowerRiemannLogPrimitive_hasDerivAt
   field_simp [hrad.ne', ha.ne']
   nlinarith
 
-theorem integral_lowerRiemannLog
+lemma integral_lowerRiemannLog
     {T : ℝ} (hT : T ≠ 0) :
     -(∫ x in (0 : ℝ)..1, lowerRiemannLog T x) =
       1 + lowerEndpointPhase T := by
@@ -16315,14 +16315,14 @@ noncomputable section
 open Filter MeasureTheory Set
 open scoped Topology
 
-theorem complexLaplaceKernel_integrable {z : ℂ} (hz : 0 < z.re) :
+lemma complexLaplaceKernel_integrable {z : ℂ} (hz : 0 < z.re) :
     IntegrableOn (fun x : ℝ => Complex.exp (-z * (x : ℂ))) (Ioi 0) := by
   have hneg : (-z).re < 0 := by
     simpa using! hz
   simpa only [neg_mul] using!
     (integrableOn_exp_mul_complex_Ioi (a := -z) hneg 0)
 
-theorem integral_complexLaplaceKernel {z : ℂ} (hz : 0 < z.re) :
+lemma integral_complexLaplaceKernel {z : ℂ} (hz : 0 < z.re) :
     (∫ x : ℝ in Ioi 0, Complex.exp (-z * (x : ℂ))) = z⁻¹ := by
   have hneg : (-z).re < 0 := by
     simpa using! hz
@@ -16332,7 +16332,7 @@ theorem integral_complexLaplaceKernel {z : ℂ} (hz : 0 < z.re) :
 def complexFrullaniSegment (z w : ℂ) (s : ℝ) : ℂ :=
   z + (s : ℂ) * (w - z)
 
-theorem complexFrullaniSegment_re_pos {z w : ℂ}
+lemma complexFrullaniSegment_re_pos {z w : ℂ}
     (hz : 0 < z.re) (hw : 0 < w.re)
     {s : ℝ} (hs : s ∈ Icc (0 : ℝ) 1) :
     0 < (complexFrullaniSegment z w s).re := by
@@ -16351,7 +16351,7 @@ def complexFrullaniKernel (z w : ℂ) (x : ℝ) : ℂ :=
   (Complex.exp (-z * (x : ℂ)) -
     Complex.exp (-w * (x : ℂ))) / (x : ℂ)
 
-theorem complexFrullaniSegment_hasDerivAt
+lemma complexFrullaniSegment_hasDerivAt
     (z w : ℂ) (s : ℝ) :
     HasDerivAt (complexFrullaniSegment z w) (w - z) s := by
   have hcomplex :
@@ -16364,7 +16364,7 @@ theorem complexFrullaniSegment_hasDerivAt
     (fun r : ℝ => z + (r : ℂ) * (w - z)) (w - z) s
   exact hcomplex.comp_ofReal
 
-theorem intervalIntegral_complexLaplaceSegment
+lemma intervalIntegral_complexLaplaceSegment
     (z w : ℂ) {x : ℝ} (hx : x ≠ 0) :
     (∫ s in (0 : ℝ)..1,
       (w - z) *
@@ -16402,14 +16402,14 @@ theorem intervalIntegral_complexLaplaceSegment
   simp only [zero_mul, one_mul, add_zero]
   ring_nf
 
-theorem norm_complexLaplaceKernel (z : ℂ) (x : ℝ) :
+lemma norm_complexLaplaceKernel (z : ℂ) (x : ℝ) :
     ‖Complex.exp (-z * (x : ℂ))‖ =
       Real.exp (-z.re * x) := by
   rw [Complex.norm_exp]
   congr 1
   simp [Complex.mul_re]
 
-theorem complexFrullaniSegment_min_re_le
+lemma complexFrullaniSegment_min_re_le
     (z w : ℂ) {s : ℝ} (hs : s ∈ Icc (0 : ℝ) 1) :
     min z.re w.re ≤ (complexFrullaniSegment z w s).re := by
   simp only [complexFrullaniSegment, Complex.add_re,
@@ -16425,7 +16425,7 @@ theorem complexFrullaniSegment_min_re_le
     mul_nonneg hs.1 (sub_nonneg.mpr hwmin)
   nlinarith
 
-theorem complexFrullaniKernel_norm_le_exp
+lemma complexFrullaniKernel_norm_le_exp
     (z w : ℂ) {x : ℝ} (hx : 0 < x) :
     ‖complexFrullaniKernel z w x‖ ≤
       ‖w - z‖ *
@@ -16452,7 +16452,7 @@ theorem complexFrullaniKernel_norm_le_exp
     nlinarith
   simpa using! hbound
 
-theorem integral_norm_complexFrullaniSegment
+lemma integral_norm_complexFrullaniSegment
     {z w : ℂ} (hz : 0 < z.re) (hw : 0 < w.re)
     {s : ℝ} (hs : s ∈ Icc (0 : ℝ) 1) :
     (∫ x : ℝ in Ioi 0,
@@ -16486,7 +16486,7 @@ theorem integral_norm_complexFrullaniSegment
     _ = ‖w - z‖ * (complexFrullaniSegment z w s).re⁻¹ := by
       rw [integral_laplaceKernel hpositive]
 
-theorem complexFrullaniParameter_integrable
+lemma complexFrullaniParameter_integrable
     {z w : ℂ} (hz : 0 < z.re) (hw : 0 < w.re) :
     Integrable
       (Function.uncurry (fun s x : ℝ =>
@@ -16551,7 +16551,7 @@ theorem complexFrullaniParameter_integrable
       ⟨hs.1.le, hs.2⟩
     exact (integral_norm_complexFrullaniSegment hz hw hclosed).symm
 
-theorem complexFrullaniKernel_integrable
+lemma complexFrullaniKernel_integrable
     {z w : ℂ} (hz : 0 < z.re) (hw : 0 < w.re) :
     IntegrableOn (complexFrullaniKernel z w) (Ioi 0) := by
   have hproduct :=
@@ -16569,7 +16569,7 @@ theorem complexFrullaniKernel_integrable
       (show (0 : ℝ) ≤ 1 by norm_num)]
   exact intervalIntegral_complexLaplaceSegment z w (ne_of_gt hx)
 
-theorem intervalIntegral_complexFrullaniLogDerivative
+lemma intervalIntegral_complexFrullaniLogDerivative
     {z w : ℂ} (hz : 0 < z.re) (hw : 0 < w.re) :
     (∫ s in (0 : ℝ)..1,
       (w - z) * (complexFrullaniSegment z w s)⁻¹) =
@@ -16607,7 +16607,7 @@ theorem intervalIntegral_complexFrullaniLogDerivative
     hcontinuous.intervalIntegrable]
   simp [complexFrullaniSegment]
 
-theorem integral_complexFrullaniKernel
+lemma integral_complexFrullaniKernel
     {z w : ℂ} (hz : 0 < z.re) (hw : 0 < w.re) :
     (∫ x : ℝ in Ioi 0, complexFrullaniKernel z w x) =
       Complex.log w - Complex.log z := by
@@ -16647,7 +16647,7 @@ theorem integral_complexFrullaniKernel
     _ = Complex.log w - Complex.log z :=
       intervalIntegral_complexFrullaniLogDerivative hz hw
 
-theorem complexFrullaniShiftKernel_norm_le_exp
+lemma complexFrullaniShiftKernel_norm_le_exp
     (z : ℂ) {s x : ℝ}
     (hs : s ∈ Icc (0 : ℝ) 1) (hx : 0 < x) :
     ‖complexFrullaniKernel (z + (s : ℂ)) 1 x‖ ≤
@@ -16690,7 +16690,7 @@ theorem complexFrullaniShiftKernel_norm_le_exp
       apply Real.exp_le_exp.mpr
       nlinarith
 
-theorem complexFrullaniShiftParameter_integrable
+lemma complexFrullaniShiftParameter_integrable
     {z : ℂ} (hz : 0 < z.re) :
     Integrable
       (Function.uncurry (fun s x : ℝ =>
@@ -16788,7 +16788,7 @@ def complexWallisPhaseKernel (z : ℂ) (x : ℝ) : ℂ :=
     (x : ℂ) * Complex.exp (-(x : ℂ))) /
       (x : ℂ) ^ 2
 
-theorem intervalIntegral_complexFrullaniShift
+lemma intervalIntegral_complexFrullaniShift
     (z : ℂ) {x : ℝ} (hx : x ≠ 0) :
     (∫ s in (0 : ℝ)..1,
       complexFrullaniKernel (z + (s : ℂ)) 1 x) =
@@ -16835,7 +16835,7 @@ theorem intervalIntegral_complexFrullaniShift
   rw [hexponential]
   field_simp [hxc]
 
-theorem complexWallisPhaseKernel_integrable
+lemma complexWallisPhaseKernel_integrable
     {z : ℂ} (hz : 0 < z.re) :
     IntegrableOn (complexWallisPhaseKernel z) (Ioi 0) := by
   have hproduct :=
@@ -16851,7 +16851,7 @@ theorem complexWallisPhaseKernel_integrable
       (show (0 : ℝ) ≤ 1 by norm_num)]
   exact intervalIntegral_complexFrullaniShift z hx.ne'
 
-theorem complexWallisTranslatedSegment_hasDerivAt
+lemma complexWallisTranslatedSegment_hasDerivAt
     (z : ℂ) (s : ℝ) :
     HasDerivAt (fun r : ℝ => z + (r : ℂ)) (1 : ℂ) s := by
   have hreal :
@@ -16859,7 +16859,7 @@ theorem complexWallisTranslatedSegment_hasDerivAt
     simpa using! Complex.ofRealCLM.hasDerivAt
   simpa using! hreal.const_add z
 
-theorem complexWallisLogPrimitive_hasDerivAt
+lemma complexWallisLogPrimitive_hasDerivAt
     {z : ℂ} (hz : 0 < z.re)
     (s : ℝ) (hs : s ∈ Icc (0 : ℝ) 1) :
     HasDerivAt
@@ -16879,7 +16879,7 @@ theorem complexWallisLogPrimitive_hasDerivAt
   convert! (hline.mul hlog).sub hline using 1
   simp [div_eq_mul_inv, hnonzero]
 
-theorem intervalIntegral_complexWallisLog
+lemma intervalIntegral_complexWallisLog
     {z : ℂ} (hz : 0 < z.re) :
     (∫ s in (0 : ℝ)..1,
       Complex.log (z + (s : ℂ))) =
@@ -16907,7 +16907,7 @@ theorem intervalIntegral_complexWallisLog
   simp only [add_zero]
   ring
 
-theorem integral_complexWallisPhaseKernel
+lemma integral_complexWallisPhaseKernel
     {z : ℂ} (hz : 0 < z.re) :
     (∫ x : ℝ in Ioi 0, complexWallisPhaseKernel z x) =
       1 + z * Complex.log z -
@@ -16969,13 +16969,13 @@ def limitingStripPoissonDensity (T : ℝ) : ℝ :=
   Real.pi /
     (4 * (Real.cosh (Real.pi * T / 2) + 1))
 
-theorem stripAngle_eq_pi_sub (σ : ℝ) :
+lemma stripAngle_eq_pi_sub (σ : ℝ) :
     stripAngle σ =
       Real.pi - Real.pi * (1 - σ) / 2 := by
   unfold stripAngle
   ring
 
-theorem stripNormalizedPoissonKernel_eq_extension
+lemma stripNormalizedPoissonKernel_eq_extension
     {σ : ℝ} (_hbelow : -1 < σ) (habove : σ < 1) (T : ℝ) :
     stripNormalizedPoissonKernel σ T =
       stripNormalizedPoissonExtension σ T := by
@@ -17008,7 +17008,7 @@ theorem stripNormalizedPoissonKernel_eq_extension
     Real.sinc_of_ne_zero hsmall]
   field_simp [hmass, hsmall, hden, Real.pi_ne_zero]; ring
 
-theorem stripNormalizedPoissonExtension_one (T : ℝ) :
+lemma stripNormalizedPoissonExtension_one (T : ℝ) :
     stripNormalizedPoissonExtension 1 T =
       limitingStripPoissonDensity T := by
   have hden : Real.cosh (Real.pi * T / 2) + 1 ≠ 0 := by
@@ -17018,7 +17018,7 @@ theorem stripNormalizedPoissonExtension_one (T : ℝ) :
     Real.cos_zero, mul_one]
   field_simp [hden]
 
-theorem stripNormalizedPoissonExtension_continuousAt_one (T : ℝ) :
+lemma stripNormalizedPoissonExtension_continuousAt_one (T : ℝ) :
     ContinuousAt (fun σ : ℝ => stripNormalizedPoissonExtension σ T)
       1 := by
   unfold stripNormalizedPoissonExtension
@@ -17037,7 +17037,7 @@ theorem stripNormalizedPoissonExtension_continuousAt_one (T : ℝ) :
         ((continuous_const.add
           (Real.continuous_cos.comp hangle)).continuousAt) hden)
 
-theorem tendsto_stripNormalizedPoissonKernel (T : ℝ) :
+lemma tendsto_stripNormalizedPoissonKernel (T : ℝ) :
     Tendsto (fun σ : ℝ => stripNormalizedPoissonKernel σ T)
       (𝓝[<] 1) (𝓝 (limitingStripPoissonDensity T)) := by
   have hpos : ∀ᶠ σ : ℝ in 𝓝[<] (1 : ℝ), 0 < σ :=
@@ -17059,7 +17059,7 @@ theorem tendsto_stripNormalizedPoissonKernel (T : ℝ) :
       nhdsWithin_le_nhds
   exact hext.congr' heq.symm
 
-theorem stripNormalizedPoissonKernel_integrable
+lemma stripNormalizedPoissonKernel_integrable
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1) :
     Integrable (stripNormalizedPoissonKernel σ) := by
   unfold stripNormalizedPoissonKernel
@@ -17069,7 +17069,7 @@ def stripPoissonExponentialMajorant (T : ℝ) : ℝ :=
   (Real.pi / 2) *
     Real.exp (-(Real.pi / 2) * |T|)
 
-theorem inv_cosh_le_two_exp_neg_abs (u : ℝ) :
+lemma inv_cosh_le_two_exp_neg_abs (u : ℝ) :
     (Real.cosh u)⁻¹ ≤ 2 * Real.exp (-|u|) := by
   have hhalf : Real.exp |u| / 2 ≤ Real.cosh u := by
     rw [← Real.cosh_abs, Real.cosh_eq]
@@ -17088,7 +17088,7 @@ theorem inv_cosh_le_two_exp_neg_abs (u : ℝ) :
     _ ≤ (2 * Real.exp (-|u|)) * Real.cosh u :=
       mul_le_mul_of_nonneg_left hhalf (by positivity)
 
-theorem stripNormalizedPoissonExtension_le_majorant
+lemma stripNormalizedPoissonExtension_le_majorant
     {σ : ℝ} (hzero : 0 ≤ σ) (hone : σ ≤ 1) (T : ℝ) :
     0 ≤ stripNormalizedPoissonExtension σ T ∧
       stripNormalizedPoissonExtension σ T ≤
@@ -17151,7 +17151,7 @@ theorem stripNormalizedPoissonExtension_le_majorant
         rw [habsu]
         ring_nf
 
-theorem integrable_exp_neg_mul_abs {a : ℝ} (ha : 0 < a) :
+lemma integrable_exp_neg_mul_abs {a : ℝ} (ha : 0 < a) :
     Integrable (fun T : ℝ => Real.exp (-a * |T|)) := by
   have hright :
       IntegrableOn (fun T : ℝ => Real.exp (-a * |T|))
@@ -17177,13 +17177,13 @@ theorem integrable_exp_neg_mul_abs {a : ℝ} (ha : 0 < a) :
     integrableOn_union, integrableOn_Ici_iff_integrableOn_Ioi]
   exact ⟨hleft, hright⟩
 
-theorem stripPoissonExponentialMajorant_integrable :
+lemma stripPoissonExponentialMajorant_integrable :
     Integrable stripPoissonExponentialMajorant := by
   exact
     (integrable_exp_neg_mul_abs
       (half_pos Real.pi_pos)).const_mul (Real.pi / 2)
 
-theorem integrable_abs_pow_mul_exp_neg_mul_abs
+lemma integrable_abs_pow_mul_exp_neg_mul_abs
     (n : ℕ) {a : ℝ} (ha : 0 < a) :
     Integrable
       (fun T : ℝ => |T| ^ n * Real.exp (-a * |T|)) := by
@@ -17222,7 +17222,7 @@ theorem integrable_abs_pow_mul_exp_neg_mul_abs
     integrableOn_union, integrableOn_Ici_iff_integrableOn_Ioi]
   exact ⟨hleft, hright⟩
 
-theorem limitingStripPoissonDensity_integrable :
+lemma limitingStripPoissonDensity_integrable :
     Integrable limitingStripPoissonDensity := by
   have hcontinuous : Continuous limitingStripPoissonDensity := by
     unfold limitingStripPoissonDensity
@@ -17248,7 +17248,7 @@ def poissonLogisticDensity (u : ℝ) : ℝ :=
   Real.pi * Real.exp (Real.pi * u) /
     (1 + Real.exp (Real.pi * u)) ^ 2
 
-theorem poissonLogisticDensity_eq_limitingStripPoissonDensity
+lemma poissonLogisticDensity_eq_limitingStripPoissonDensity
     (u : ℝ) :
     poissonLogisticDensity u =
       2 * limitingStripPoissonDensity (2 * u) := by
@@ -17260,7 +17260,7 @@ theorem poissonLogisticDensity_eq_limitingStripPoissonDensity
   rw [harg, Real.cosh_eq, Real.exp_neg]
   field_simp [he]; ring
 
-theorem poissonLogistic_image_univ :
+lemma poissonLogistic_image_univ :
     poissonLogistic '' (Set.univ : Set ℝ) = Ioo (0 : ℝ) 1 := by
   ext x
   constructor
@@ -17282,7 +17282,7 @@ theorem poissonLogistic_image_univ :
     field_simp [(sub_pos.mpr hx.2).ne']
     ring
 
-theorem poissonLogistic_hasDerivAt (u : ℝ) :
+lemma poissonLogistic_hasDerivAt (u : ℝ) :
     HasDerivAt poissonLogistic (poissonLogisticDensity u) u := by
   have he :=
     (Real.hasDerivAt_exp (Real.pi * u)).comp u
@@ -17296,7 +17296,7 @@ theorem poissonLogistic_hasDerivAt (u : ℝ) :
   field_simp [hden]
   ring
 
-theorem poissonLogistic_injective :
+lemma poissonLogistic_injective :
     Function.Injective poissonLogistic := by
   intro u v huv
   have heu : 1 + Real.exp (Real.pi * u) ≠ 0 := by positivity
@@ -17310,12 +17310,12 @@ theorem poissonLogistic_injective :
     Real.exp_injective hexp
   exact mul_left_cancel₀ Real.pi_ne_zero harg
 
-theorem poissonLogistic_mem_Ioo (u : ℝ) :
+lemma poissonLogistic_mem_Ioo (u : ℝ) :
     poissonLogistic u ∈ Ioo (0 : ℝ) 1 := by
   rw [← poissonLogistic_image_univ]
   exact ⟨u, Set.mem_univ _, rfl⟩
 
-theorem poissonLogistic_odds (u : ℝ) :
+lemma poissonLogistic_odds (u : ℝ) :
     poissonLogistic u / (1 - poissonLogistic u) =
       Real.exp (Real.pi * u) := by
   have hden : 1 + Real.exp (Real.pi * u) ≠ 0 := by
@@ -17324,7 +17324,7 @@ theorem poissonLogistic_odds (u : ℝ) :
   field_simp [hden]
   ring
 
-theorem poissonLogistic_cpow_ratio (u : ℝ) (w : ℂ) :
+lemma poissonLogistic_cpow_ratio (u : ℝ) (w : ℂ) :
     ((poissonLogistic u : ℝ) : ℂ) ^ w *
         (((1 - poissonLogistic u : ℝ) : ℂ) ^ (-w)) =
       Complex.exp (((Real.pi * u : ℝ) : ℂ) * w) := by
@@ -17355,7 +17355,7 @@ theorem poissonLogistic_cpow_ratio (u : ℝ) (w : ℂ) :
     _ = ((Real.pi * u : ℝ) : ℂ) * w := by
       rw [hlog]
 
-theorem integral_poissonLogistic_change_Ioo {E : Type*}
+lemma integral_poissonLogistic_change_Ioo {E : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : ℝ → E) :
     (∫ x : ℝ in Ioo 0 1, f x) =
@@ -17380,7 +17380,7 @@ theorem integral_poissonLogistic_change_Ioo {E : Type*}
   simpa [hrange,
     abs_of_pos (hpositive _)] using! h
 
-theorem poissonLogisticDensity_integrable :
+lemma poissonLogisticDensity_integrable :
     Integrable poissonLogisticDensity := by
   have hscaled :=
     limitingStripPoissonDensity_integrable.comp_mul_left'
@@ -17389,13 +17389,13 @@ theorem poissonLogisticDensity_integrable :
   filter_upwards [] with u
   exact (poissonLogisticDensity_eq_limitingStripPoissonDensity u).symm
 
-theorem integral_poissonLogisticDensity :
+lemma integral_poissonLogisticDensity :
     (∫ u : ℝ, poissonLogisticDensity u) = 1 := by
   have h := integral_poissonLogistic_change_Ioo
     (fun _ : ℝ => (1 : ℝ))
   simpa [smul_eq_mul] using! h.symm
 
-theorem poissonLogistic_betaIntegral (w : ℂ) :
+lemma poissonLogistic_betaIntegral (w : ℂ) :
     Complex.betaIntegral (1 + w) (1 - w) =
       ∫ u : ℝ,
         (poissonLogisticDensity u : ℂ) *
@@ -17433,7 +17433,7 @@ theorem poissonLogistic_betaIntegral (w : ℂ) :
             Complex.exp (((Real.pi * u : ℝ) : ℂ) * w)
       rw [poissonLogistic_cpow_ratio]
 
-theorem gamma_one_add_imaginary_mul_gamma_one_sub
+lemma gamma_one_add_imaginary_mul_gamma_one_sub
     {x : ℝ} (hx : x ≠ 0) :
     Complex.Gamma (1 + Complex.I * (x : ℂ)) *
         Complex.Gamma (1 - Complex.I * (x : ℂ)) =
@@ -17486,7 +17486,7 @@ theorem gamma_one_add_imaginary_mul_gamma_one_sub
       congr 1
       field_simp [hx, hsinh]
 
-theorem poissonLogistic_characteristic_of_ne_zero
+lemma poissonLogistic_characteristic_of_ne_zero
     {t : ℝ} (ht : t ≠ 0) :
     (∫ u : ℝ,
       (poissonLogisticDensity u : ℂ) *
@@ -17540,7 +17540,7 @@ theorem poissonLogistic_characteristic_of_ne_zero
     _ = ((t / Real.sinh t : ℝ) : ℂ) := by
       rw [hscale]
 
-theorem poissonLogistic_characteristic (t : ℝ) :
+lemma poissonLogistic_characteristic (t : ℝ) :
     (∫ u : ℝ,
       (poissonLogisticDensity u : ℂ) *
         Complex.exp
@@ -17564,7 +17564,7 @@ theorem poissonLogistic_characteristic (t : ℝ) :
   · simpa [ht] using!
       poissonLogistic_characteristic_of_ne_zero ht
 
-theorem poissonLogistic_characteristic_integrable (t : ℝ) :
+lemma poissonLogistic_characteristic_integrable (t : ℝ) :
     Integrable
       (fun u : ℝ =>
         (poissonLogisticDensity u : ℂ) *
@@ -17597,7 +17597,7 @@ theorem poissonLogistic_characteristic_integrable (t : ℝ) :
   rw [hphase, Complex.norm_exp_I_mul_ofReal]
   simp
 
-theorem poissonLogistic_cosine_transform (t : ℝ) :
+lemma poissonLogistic_cosine_transform (t : ℝ) :
     (∫ u : ℝ,
       poissonLogisticDensity u * Real.cos (t * u)) =
       if t = 0 then 1 else t / Real.sinh t := by
@@ -17631,7 +17631,7 @@ theorem poissonLogistic_cosine_transform (t : ℝ) :
       · simp
       · exact Complex.ofReal_re (t / Real.sinh t)
 
-theorem lowerEndpointPhase_continuous :
+lemma lowerEndpointPhase_continuous :
     Continuous lowerEndpointPhase := by
   have hargument : Continuous
       (fun T : ℝ => 1 + T ^ 2 / 4) := by
@@ -17656,7 +17656,7 @@ theorem lowerEndpointPhase_continuous :
         (continuous_abs.div_const 2))
   exact (hfirst.sub hsecond).add hthird
 
-theorem abs_lowerEndpointPhase_le (T : ℝ) :
+lemma abs_lowerEndpointPhase_le (T : ℝ) :
     |lowerEndpointPhase T| ≤ Real.pi * |T| + T ^ 2 := by
   have hnonneg : 0 ≤ T ^ 2 / 4 := by positivity
   have hlogzero : 0 ≤ Real.log (1 + T ^ 2 / 4) :=
@@ -17685,7 +17685,7 @@ theorem abs_lowerEndpointPhase_le (T : ℝ) :
   · nlinarith [sq_nonneg T]
   · nlinarith [sq_nonneg T]
 
-theorem stripPoissonExponentialMajorant_mul_lowerEndpointPhase_integrable :
+lemma stripPoissonExponentialMajorant_mul_lowerEndpointPhase_integrable :
     Integrable
       (fun T : ℝ =>
         stripPoissonExponentialMajorant T *
@@ -17746,7 +17746,7 @@ theorem stripPoissonExponentialMajorant_mul_lowerEndpointPhase_integrable :
           rw [pow_one, sq_abs]
           ring
 
-theorem tendsto_integral_stripNormalizedPoissonKernel_mul
+lemma tendsto_integral_stripNormalizedPoissonKernel_mul
     (f : ℝ → ℝ) (hf : AEStronglyMeasurable f volume)
     (hmajor : Integrable
       (fun T : ℝ => stripPoissonExponentialMajorant T * ‖f T‖)) :
@@ -17788,7 +17788,7 @@ def limitingPoissonEndpointExpectation : ℝ :=
   ∫ T : ℝ,
     limitingStripPoissonDensity T * lowerEndpointPhase T
 
-theorem tendsto_lowerPoissonEndpointExpectation :
+lemma tendsto_lowerPoissonEndpointExpectation :
     Tendsto lowerPoissonEndpointExpectation (𝓝[<] 1)
       (𝓝 limitingPoissonEndpointExpectation) := by
   exact tendsto_integral_stripNormalizedPoissonKernel_mul
@@ -17796,7 +17796,7 @@ theorem tendsto_lowerPoissonEndpointExpectation :
     lowerEndpointPhase_continuous.aestronglyMeasurable
     stripPoissonExponentialMajorant_mul_lowerEndpointPhase_integrable
 
-theorem poissonLogistic_cosine_integrable (t : ℝ) :
+lemma poissonLogistic_cosine_integrable (t : ℝ) :
     Integrable
       (fun u : ℝ =>
         poissonLogisticDensity u * Real.cos (t * u)) := by
@@ -17817,7 +17817,7 @@ theorem poissonLogistic_cosine_integrable (t : ℝ) :
   exact mul_le_of_le_one_right hpositive.le
     (Real.abs_cos_le_one _)
 
-theorem poissonLogisticDensity_le_pi_exp (u : ℝ) :
+lemma poissonLogisticDensity_le_pi_exp (u : ℝ) :
     poissonLogisticDensity u ≤
       Real.pi * Real.exp (-Real.pi * |u|) := by
   have hbound :=
@@ -17835,7 +17835,7 @@ theorem poissonLogisticDensity_le_pi_exp (u : ℝ) :
       rw [abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 2)]
       ring_nf
 
-theorem poissonLogisticDensity_abs_moment_integrable (n : ℕ) :
+lemma poissonLogisticDensity_abs_moment_integrable (n : ℕ) :
     Integrable
       (fun u : ℝ => poissonLogisticDensity u * |u| ^ n) := by
   have hmajor :=
@@ -17865,7 +17865,7 @@ def lowerWallisPhaseKernel (u t : ℝ) : ℝ :=
   ((1 - Real.exp (-t)) * Real.cos (u * t) -
     t * Real.exp (-t)) / t ^ 2
 
-theorem lowerWallisPhaseKernel_abs_le_moment
+lemma lowerWallisPhaseKernel_abs_le_moment
     (u : ℝ) {t : ℝ} (ht : 0 < t) :
     |lowerWallisPhaseKernel u t| ≤ |u| + 1 := by
   let q : ℝ := Real.exp (-t)
@@ -17935,7 +17935,7 @@ theorem lowerWallisPhaseKernel_abs_le_moment
     _ = (|u| + 1) * t ^ 2 := by
       ring
 
-theorem lowerWallisPhaseKernel_abs_le_tail
+lemma lowerWallisPhaseKernel_abs_le_tail
     (u : ℝ) {t : ℝ} (ht : 1 ≤ t) :
     |lowerWallisPhaseKernel u t| ≤
       1 / t ^ 2 + Real.exp (-t) := by
@@ -17985,7 +17985,7 @@ theorem lowerWallisPhaseKernel_abs_le_tail
     _ = (1 / t ^ 2 + q) * t ^ 2 := by
       field_simp [htpos.ne']
 
-theorem lowerWallisPhaseTail_integrable :
+lemma lowerWallisPhaseTail_integrable :
     IntegrableOn
       (fun t : ℝ => 1 / t ^ 2 + Real.exp (-t))
       (Ioi 1) := by
@@ -18015,7 +18015,7 @@ theorem lowerWallisPhaseTail_integrable :
     simpa using! hrestrict
   exact hinverse.add hexponential
 
-theorem poissonLogistic_lowerWallisPhase_product_integrable :
+lemma poissonLogistic_lowerWallisPhase_product_integrable :
     Integrable
       (fun p : ℝ × ℝ =>
         poissonLogisticDensity p.1 *
@@ -18136,7 +18136,7 @@ theorem poissonLogistic_lowerWallisPhase_product_integrable :
   rw [← Measure.prod_restrict] at hproduct
   simpa only [Measure.restrict_univ] using! hproduct
 
-theorem integral_poissonLogistic_mul_lowerWallisPhaseKernel
+lemma integral_poissonLogistic_mul_lowerWallisPhaseKernel
     {t : ℝ} (ht : 0 < t) :
     (∫ u : ℝ,
       poissonLogisticDensity u * lowerWallisPhaseKernel u t) =
@@ -18208,7 +18208,7 @@ def lowerWallisRegularizedPhaseKernel (a u t : ℝ) : ℝ :=
   ((1 - Real.exp (-t)) * Real.exp (-a * t) *
       Real.cos (u * t) - t * Real.exp (-t)) / t ^ 2
 
-theorem complexWallisPhaseKernel_re (a u t : ℝ) :
+lemma complexWallisPhaseKernel_re (a u t : ℝ) :
     (complexWallisPhaseKernel
       ((a : ℂ) - Complex.I * (u : ℂ)) t).re =
         lowerWallisRegularizedPhaseKernel a u t := by
@@ -18218,7 +18218,7 @@ theorem complexWallisPhaseKernel_re (a u t : ℝ) :
   simp [Complex.mul_re, Complex.exp_re, Complex.exp_im]
   ring
 
-theorem lowerWallisRegularizedPhaseKernel_eq_add
+lemma lowerWallisRegularizedPhaseKernel_eq_add
     (a u t : ℝ) :
     lowerWallisRegularizedPhaseKernel a u t =
       lowerWallisPhaseKernel u t +
@@ -18228,7 +18228,7 @@ theorem lowerWallisRegularizedPhaseKernel_eq_add
   unfold lowerWallisRegularizedPhaseKernel lowerWallisPhaseKernel
   ring
 
-theorem lowerWallisRegularizedPhaseKernel_abs_le_moment
+lemma lowerWallisRegularizedPhaseKernel_abs_le_moment
     {a : ℝ} (hazero : 0 ≤ a) (haone : a ≤ 1)
     (u : ℝ) {t : ℝ} (ht : 0 < t) :
     |lowerWallisRegularizedPhaseKernel a u t| ≤ |u| + 2 := by
@@ -18293,7 +18293,7 @@ theorem lowerWallisRegularizedPhaseKernel_abs_le_moment
         hcorrection
     _ = |u| + 2 := by ring
 
-theorem lowerWallisRegularizedPhaseKernel_abs_le_tail
+lemma lowerWallisRegularizedPhaseKernel_abs_le_tail
     {a : ℝ} (hazero : 0 ≤ a)
     (u : ℝ) {t : ℝ} (ht : 1 ≤ t) :
     |lowerWallisRegularizedPhaseKernel a u t| ≤
@@ -18349,7 +18349,7 @@ theorem lowerWallisRegularizedPhaseKernel_abs_le_tail
 def lowerWallisRegularizedPhaseMajorant (u t : ℝ) : ℝ :=
   if t ≤ 1 then |u| + 2 else 1 / t ^ 2 + Real.exp (-t)
 
-theorem lowerWallisRegularizedPhaseMajorant_integrable (u : ℝ) :
+lemma lowerWallisRegularizedPhaseMajorant_integrable (u : ℝ) :
     IntegrableOn (lowerWallisRegularizedPhaseMajorant u) (Ioi 0) := by
   have hnear :
       IntegrableOn (lowerWallisRegularizedPhaseMajorant u)
@@ -18372,7 +18372,7 @@ theorem lowerWallisRegularizedPhaseMajorant_integrable (u : ℝ) :
   rw [← Ioc_union_Ioi_eq_Ioi (show (0 : ℝ) ≤ 1 by norm_num)]
   exact hnear.union hfar
 
-theorem tendsto_integral_lowerWallisRegularizedPhaseKernel
+lemma tendsto_integral_lowerWallisRegularizedPhaseKernel
     (u : ℝ) :
     Tendsto
       (fun n : ℕ =>
@@ -18427,7 +18427,7 @@ theorem tendsto_integral_lowerWallisRegularizedPhaseKernel
     exact hcontinuous.continuousAt.tendsto.comp
       tendsto_one_div_add_atTop_nhds_zero_nat
 
-theorem integral_lowerWallisRegularizedPhaseKernel
+lemma integral_lowerWallisRegularizedPhaseKernel
     {a : ℝ} (ha : 0 < a) (u : ℝ) :
     (∫ t : ℝ in Ioi 0,
       lowerWallisRegularizedPhaseKernel a u t) =
@@ -18454,7 +18454,7 @@ theorem integral_lowerWallisRegularizedPhaseKernel
           (z + 1) * Complex.log (z + 1)).re := by
       rw [integral_complexWallisPhaseKernel hz]
 
-theorem lowerWallis_arg_one_sub_I_mul (u : ℝ) :
+lemma lowerWallis_arg_one_sub_I_mul (u : ℝ) :
     Complex.arg (1 - Complex.I * (u : ℂ)) =
       -Real.arctan u := by
   let z : ℂ := 1 - Complex.I * (u : ℂ)
@@ -18475,7 +18475,7 @@ theorem lowerWallis_arg_one_sub_I_mul (u : ℝ) :
     _ = Real.arctan (-u) := by rw [htan]
     _ = -Real.arctan u := Real.arctan_neg u
 
-theorem lowerWallis_imaginary_log_mul_re (u : ℝ) :
+lemma lowerWallis_imaginary_log_mul_re (u : ℝ) :
     ((-Complex.I * (u : ℂ)) *
       Complex.log (-Complex.I * (u : ℂ))).re =
         -Real.pi * |u| / 2 := by
@@ -18506,7 +18506,7 @@ theorem lowerWallis_imaginary_log_mul_re (u : ℝ) :
     simp
     ring
 
-theorem lowerWallis_norm_one_sub_I_mul (u : ℝ) :
+lemma lowerWallis_norm_one_sub_I_mul (u : ℝ) :
     ‖1 - Complex.I * (u : ℂ)‖ =
       Real.sqrt (1 + u ^ 2) := by
   rw [Complex.norm_def, Complex.normSq_apply]
@@ -18514,7 +18514,7 @@ theorem lowerWallis_norm_one_sub_I_mul (u : ℝ) :
   simp
   ring
 
-theorem lowerWallis_shifted_log_mul_re (u : ℝ) :
+lemma lowerWallis_shifted_log_mul_re (u : ℝ) :
     ((1 - Complex.I * (u : ℂ)) *
       Complex.log (1 - Complex.I * (u : ℂ))).re =
         Real.log (1 + u ^ 2) / 2 -
@@ -18525,7 +18525,7 @@ theorem lowerWallis_shifted_log_mul_re (u : ℝ) :
     Real.log_sqrt (show 0 ≤ 1 + u ^ 2 by positivity)]
   simp
 
-theorem lowerWallis_abs_mul_arctan_abs (u : ℝ) :
+lemma lowerWallis_abs_mul_arctan_abs (u : ℝ) :
     |u| * Real.arctan |u| = u * Real.arctan u := by
   by_cases hu : 0 ≤ u
   · simp [abs_of_nonneg hu]
@@ -18533,7 +18533,7 @@ theorem lowerWallis_abs_mul_arctan_abs (u : ℝ) :
     rw [abs_of_neg hnegative, Real.arctan_neg]
     ring
 
-theorem lowerWallis_complexEndpointPhase_re (u : ℝ) :
+lemma lowerWallis_complexEndpointPhase_re (u : ℝ) :
     (1 + (-Complex.I * (u : ℂ)) *
       Complex.log (-Complex.I * (u : ℂ)) -
       ((-Complex.I * (u : ℂ)) + 1) *
@@ -18562,7 +18562,7 @@ def lowerWallisComplexLogPhase (z : ℂ) : ℝ :=
   (1 + z * Complex.log z -
     (z + 1) * Complex.log (z + 1)).re
 
-theorem lowerWallisComplexLogPhase_ofReal
+lemma lowerWallisComplexLogPhase_ofReal
     {a : ℝ} (ha : 0 ≤ a) :
     lowerWallisComplexLogPhase (a : ℂ) =
       1 + a * Real.log a -
@@ -18577,7 +18577,7 @@ theorem lowerWallisComplexLogPhase_ofReal
   simp [Complex.mul_re, Complex.log_re, hnorm,
     abs_of_nonneg ha]
 
-theorem tendsto_lowerWallisComplexLogPhase_regularized (u : ℝ) :
+lemma tendsto_lowerWallisComplexLogPhase_regularized (u : ℝ) :
     Tendsto
       (fun n : ℕ =>
         lowerWallisComplexLogPhase
@@ -18685,7 +18685,7 @@ theorem tendsto_lowerWallisComplexLogPhase_regularized (u : ℝ) :
     rw [hendpoint] at hreal
     exact hreal
 
-theorem integral_lowerWallisPhaseKernel (u : ℝ) :
+lemma integral_lowerWallisPhaseKernel (u : ℝ) :
     (∫ t : ℝ in Ioi 0, lowerWallisPhaseKernel u t) =
       1 + lowerEndpointPhase (2 * u) := by
   have hdominated :=
@@ -18710,7 +18710,7 @@ theorem integral_lowerWallisPhaseKernel (u : ℝ) :
     exact tendsto_lowerWallisComplexLogPhase_regularized u
   exact tendsto_nhds_unique hdominated hcomputed
 
-theorem integral_poissonLogistic_one_add_lowerEndpointPhase :
+lemma integral_poissonLogistic_one_add_lowerEndpointPhase :
     (∫ u : ℝ,
       poissonLogisticDensity u *
         (1 + lowerEndpointPhase (2 * u))) =
@@ -18737,7 +18737,7 @@ theorem integral_poissonLogistic_one_add_lowerEndpointPhase :
     _ = Real.log (Real.pi / 2) :=
       integral_wallisLaplaceKernel
 
-theorem poissonLogistic_lowerEndpointPhase_integrable :
+lemma poissonLogistic_lowerEndpointPhase_integrable :
     Integrable
       (fun u : ℝ =>
         poissonLogisticDensity u *
@@ -18762,7 +18762,7 @@ theorem poissonLogistic_lowerEndpointPhase_integrable :
         poissonLogisticDensity u * lowerEndpointPhase (2 * u)
   ring
 
-theorem integral_poissonLogistic_lowerEndpointPhase :
+lemma integral_poissonLogistic_lowerEndpointPhase :
     (∫ u : ℝ,
       poissonLogisticDensity u *
         lowerEndpointPhase (2 * u)) =
@@ -18797,7 +18797,7 @@ theorem integral_poissonLogistic_lowerEndpointPhase :
   rw [hsplit, integral_poissonLogisticDensity] at hwallis
   linarith
 
-theorem limitingPoissonEndpointExpectation_eq_log_pi_div_two_sub_one :
+lemma limitingPoissonEndpointExpectation_eq_log_pi_div_two_sub_one :
     limitingPoissonEndpointExpectation =
       Real.log (Real.pi / 2) - 1 := by
   have hscale :
@@ -18837,7 +18837,7 @@ theorem limitingPoissonEndpointExpectation_eq_log_pi_div_two_sub_one :
   have hphase := integral_poissonLogistic_lowerEndpointPhase
   linarith
 
-theorem lowerPoissonEndpointSharpCoefficient_eq
+lemma lowerPoissonEndpointSharpCoefficient_eq
     {c : ℝ} (hc : 0 < c) :
     Real.log (2 * Real.pi * Real.exp 1 * c ^ 2) +
         limitingPoissonEndpointExpectation =
@@ -18868,7 +18868,7 @@ theorem lowerPoissonEndpointSharpCoefficient_eq
         Real.log_exp]
       ring
 
-theorem lowerPoissonEndpointSharpCoefficient_neg
+lemma lowerPoissonEndpointSharpCoefficient_neg
     {c : ℝ} (hc : 0 < c)
     (hsharp : c < Real.pi⁻¹) :
     Real.log (2 * Real.pi * Real.exp 1 * c ^ 2) +
@@ -18889,7 +18889,7 @@ theorem lowerPoissonEndpointSharpCoefficient_neg
     nlinarith
   exact Real.log_neg (by positivity) hbelow
 
-theorem tendsto_lowerPoissonEndpointSharpCoefficient
+lemma tendsto_lowerPoissonEndpointSharpCoefficient
     {c : ℝ} (hc : 0 < c) :
     Tendsto
       (fun σ : ℝ =>
@@ -18901,7 +18901,7 @@ theorem tendsto_lowerPoissonEndpointSharpCoefficient
   exact tendsto_const_nhds.add
     tendsto_lowerPoissonEndpointExpectation
 
-theorem eventually_lowerPoissonEndpointSharpCoefficient_neg
+lemma eventually_lowerPoissonEndpointSharpCoefficient_neg
     {c : ℝ} (hc : 0 < c)
     (hsharp : c < Real.pi⁻¹) :
     ∀ᶠ σ : ℝ in 𝓝[<] 1,
@@ -18920,14 +18920,14 @@ noncomputable section
 open Filter MeasureTheory Set
 open scoped Topology
 
-theorem saddle_one_add_abs_cube_le (T : ℝ) :
+lemma saddle_one_add_abs_cube_le (T : ℝ) :
     (1 + |T|) ^ 3 ≤ 4 * (1 + |T| ^ 3) := by
   have hfactor : 0 ≤
       (|T| - 1) ^ 2 * (|T| + 1) :=
     mul_nonneg (sq_nonneg _) (by positivity)
   nlinarith
 
-theorem plusPolynomial_imaginary_norm_ge_beta
+lemma plusPolynomial_imaginary_norm_ge_beta
     {ε u : ℝ} (hε : 0 < ε) (hu : -1 ≤ u) :
     beta ε ≤ ‖plusPolynomial ε (Complex.I * (u : ℂ))‖ := by
   have hb : 0 < beta ε := beta_pos hε
@@ -18939,7 +18939,7 @@ theorem plusPolynomial_imaginary_norm_ge_beta
     Real.norm_eq_abs, abs_of_pos hvalue]
   linarith
 
-theorem plusPolynomial_imaginary_cubic_growth_le
+lemma plusPolynomial_imaginary_cubic_growth_le
     {ε u : ℝ} (hε : 0 < ε) (hu : -1 ≤ u) :
     (1 + |u|) ^ 3 ≤
       (27 / beta ε + 9) *
@@ -19006,7 +19006,7 @@ theorem plusPolynomial_imaginary_cubic_growth_le
           positivity
         nlinarith [mul_nonneg hcoefficient hnonnegative]
 
-theorem minusPolynomial_imaginary_norm_ge_three_beta
+lemma minusPolynomial_imaginary_norm_ge_three_beta
     {ε u : ℝ} (hε : 0 < ε)
     (hu : 1 + ε / 4 ≤ u) :
     3 * beta ε ≤
@@ -19034,7 +19034,7 @@ theorem minusPolynomial_imaginary_norm_ge_three_beta
   rw [abs_of_neg harg]
   nlinarith
 
-theorem minusPolynomial_imaginary_cubic_growth_le
+lemma minusPolynomial_imaginary_cubic_growth_le
     {ε u : ℝ} (hε : 0 < ε)
     (hu : 1 + ε / 4 ≤ u) :
     (1 + |u|) ^ 3 ≤
@@ -19117,7 +19117,7 @@ theorem minusPolynomial_imaginary_cubic_growth_le
           positivity
         nlinarith [mul_nonneg hcoefficient hnonnegative]
 
-theorem saddle_complex_frequency_norm_le (T u : ℝ) :
+lemma saddle_complex_frequency_norm_le (T u : ℝ) :
     ‖(T : ℂ) + Complex.I * (u : ℂ)‖ ≤ |T| + |u| := by
   calc
     ‖(T : ℂ) + Complex.I * (u : ℂ)‖ ≤
@@ -19126,7 +19126,7 @@ theorem saddle_complex_frequency_norm_le (T u : ℝ) :
     _ = |T| + |u| := by
       simp [Complex.norm_real, Real.norm_eq_abs]
 
-theorem exists_plusPolynomial_uniform_norm_ratio
+lemma exists_plusPolynomial_uniform_norm_ratio
     {ε : ℝ} (hε : 0 < ε) :
     ∃ C : ℝ, 0 < C ∧
       ∀ u : ℝ, -1 ≤ u → ∀ T : ℝ,
@@ -19177,7 +19177,7 @@ theorem exists_plusPolynomial_uniform_norm_ratio
         (1 + |T| ^ 3)) * D := by
       ring
 
-theorem exists_minusPolynomial_uniform_norm_ratio
+lemma exists_minusPolynomial_uniform_norm_ratio
     {ε : ℝ} (hε : 0 < ε) :
     ∃ C : ℝ, 0 < C ∧
       ∀ u : ℝ, 1 + ε / 4 ≤ u → ∀ T : ℝ,
@@ -19231,7 +19231,7 @@ theorem exists_minusPolynomial_uniform_norm_ratio
         (1 + |T| ^ 3)) * D := by
       ring
 
-theorem plusPolynomial_add_sub (ε : ℝ) (z w : ℂ) :
+lemma plusPolynomial_add_sub (ε : ℝ) (z w : ℂ) :
     plusPolynomial ε (z + w) - plusPolynomial ε z =
       w * (2 * z + Complex.I * (1 + 3 * z ^ 2)) +
         w ^ 2 * (1 + 3 * Complex.I * z) +
@@ -19239,7 +19239,7 @@ theorem plusPolynomial_add_sub (ε : ℝ) (z w : ℂ) :
   unfold plusPolynomial
   ring
 
-theorem minusPolynomial_add_sub (ε : ℝ) (z w : ℂ) :
+lemma minusPolynomial_add_sub (ε : ℝ) (z w : ℂ) :
     minusPolynomial ε (z + w) - minusPolynomial ε z =
       w * (2 * z - Complex.I * (1 + 3 * z ^ 2)) +
         w ^ 2 * (1 - 3 * Complex.I * z) -
@@ -19247,7 +19247,7 @@ theorem minusPolynomial_add_sub (ε : ℝ) (z w : ℂ) :
   unfold minusPolynomial
   ring
 
-theorem plusSaddleLinearCoefficient_norm_le (z : ℂ) :
+lemma plusSaddleLinearCoefficient_norm_le (z : ℂ) :
     ‖2 * z + Complex.I * (1 + 3 * z ^ 2)‖ ≤
       3 * (1 + ‖z‖) ^ 2 := by
   have hinner :
@@ -19270,7 +19270,7 @@ theorem plusSaddleLinearCoefficient_norm_le (z : ℂ) :
     _ ≤ 3 * (1 + ‖z‖) ^ 2 := by
       nlinarith [norm_nonneg z]
 
-theorem minusSaddleLinearCoefficient_norm_le (z : ℂ) :
+lemma minusSaddleLinearCoefficient_norm_le (z : ℂ) :
     ‖2 * z - Complex.I * (1 + 3 * z ^ 2)‖ ≤
       3 * (1 + ‖z‖) ^ 2 := by
   have hinner :
@@ -19293,7 +19293,7 @@ theorem minusSaddleLinearCoefficient_norm_le (z : ℂ) :
     _ ≤ 3 * (1 + ‖z‖) ^ 2 := by
       nlinarith [norm_nonneg z]
 
-theorem plusSaddleQuadraticCoefficient_norm_le (z : ℂ) :
+lemma plusSaddleQuadraticCoefficient_norm_le (z : ℂ) :
     ‖1 + 3 * Complex.I * z‖ ≤
       3 * (1 + ‖z‖) ^ 2 := by
   calc
@@ -19305,7 +19305,7 @@ theorem plusSaddleQuadraticCoefficient_norm_le (z : ℂ) :
     _ ≤ 3 * (1 + ‖z‖) ^ 2 := by
       nlinarith [norm_nonneg z, sq_nonneg ‖z‖]
 
-theorem minusSaddleQuadraticCoefficient_norm_le (z : ℂ) :
+lemma minusSaddleQuadraticCoefficient_norm_le (z : ℂ) :
     ‖1 - 3 * Complex.I * z‖ ≤
       3 * (1 + ‖z‖) ^ 2 := by
   calc
@@ -19317,14 +19317,14 @@ theorem minusSaddleQuadraticCoefficient_norm_le (z : ℂ) :
     _ ≤ 3 * (1 + ‖z‖) ^ 2 := by
       nlinarith [norm_nonneg z, sq_nonneg ‖z‖]
 
-theorem saddle_abs_sq_le_add_cube (T : ℝ) :
+lemma saddle_abs_sq_le_add_cube (T : ℝ) :
     |T| ^ 2 ≤ |T| + |T| ^ 3 := by
   have hfactor :
       0 ≤ |T| * (|T| - (1 / 2 : ℝ)) ^ 2 :=
     mul_nonneg (abs_nonneg T) (sq_nonneg _)
   nlinarith [abs_nonneg T]
 
-theorem saddle_cubic_translation_norm_le
+lemma saddle_cubic_translation_norm_le
     (u T : ℝ) (A B C : ℂ)
     (hA : ‖A‖ ≤ 3 * (1 + |u|) ^ 2)
     (hB : ‖B‖ ≤ 3 * (1 + |u|) ^ 2)
@@ -19392,7 +19392,7 @@ theorem saddle_cubic_translation_norm_le
     _ = 9 * (1 + |u|) ^ 2 * (|T| + |T| ^ 3) := by
       rfl
 
-theorem plusPolynomial_translation_norm_le
+lemma plusPolynomial_translation_norm_le
     (ε u T : ℝ) :
     ‖plusPolynomial ε ((T : ℂ) + Complex.I * (u : ℂ)) -
         plusPolynomial ε (Complex.I * (u : ℂ))‖ ≤
@@ -19426,7 +19426,7 @@ theorem plusPolynomial_translation_norm_le
     (1 + 3 * Complex.I * z) Complex.I
     hA hB (by simp)
 
-theorem minusPolynomial_translation_norm_le
+lemma minusPolynomial_translation_norm_le
     (ε u T : ℝ) :
     ‖minusPolynomial ε ((T : ℂ) + Complex.I * (u : ℂ)) -
         minusPolynomial ε (Complex.I * (u : ℂ))‖ ≤
@@ -19461,7 +19461,7 @@ theorem minusPolynomial_translation_norm_le
     (1 - 3 * Complex.I * z) (-Complex.I)
     hA hB (by simp)
 
-theorem exists_plusPolynomial_uniform_difference_ratio
+lemma exists_plusPolynomial_uniform_difference_ratio
     {ε : ℝ} (hε : 0 < ε) :
     ∃ C : ℝ, 0 < C ∧
       ∀ u : ℝ, -1 ≤ u → ∀ T : ℝ,
@@ -19507,7 +19507,7 @@ theorem exists_plusPolynomial_uniform_difference_ratio
     _ = ((9 * (27 / beta ε + 9)) * S) * D := by
       ring
 
-theorem exists_minusPolynomial_uniform_difference_ratio
+lemma exists_minusPolynomial_uniform_difference_ratio
     {ε : ℝ} (hε : 0 < ε) :
     ∃ C : ℝ, 0 < C ∧
       ∀ u : ℝ, 1 + ε / 4 ≤ u → ∀ T : ℝ,
@@ -19560,7 +19560,7 @@ def upperNegativeHalfGammaArgument (N : ℕ) (s : ℝ) : ℂ :=
   -((N : ℂ) + (1 / 2 : ℂ)) -
     Complex.I * ((s / 2 : ℝ) : ℂ)
 
-theorem upperNegativeHalfGammaArgument_ne_zero
+lemma upperNegativeHalfGammaArgument_ne_zero
     (N : ℕ) (s : ℝ) :
     upperNegativeHalfGammaArgument N s ≠ 0 := by
   intro hzero
@@ -19569,7 +19569,7 @@ theorem upperNegativeHalfGammaArgument_ne_zero
   have hN : 0 ≤ (N : ℝ) := Nat.cast_nonneg N
   linarith
 
-theorem upperNegativeHalfGammaArgument_succ_add_one
+lemma upperNegativeHalfGammaArgument_succ_add_one
     (N : ℕ) (s : ℝ) :
     upperNegativeHalfGammaArgument (N + 1) s + 1 =
       upperNegativeHalfGammaArgument N s := by
@@ -19577,7 +19577,7 @@ theorem upperNegativeHalfGammaArgument_succ_add_one
   simp only [Nat.cast_add, Nat.cast_one]
   ring
 
-theorem tendsto_upper_shortEndpoint_scaled :
+lemma tendsto_upper_shortEndpoint_scaled :
     Tendsto (fun ε : ℝ => ε * shortEndpoint ε)
       (𝓝[>] (0 : ℝ)) (𝓝 (0 : ℝ)) := by
   have hlog := tendsto_log_mul_rpow_nhdsGT_zero
@@ -19591,7 +19591,7 @@ theorem tendsto_upper_shortEndpoint_scaled :
     ring
   · norm_num
 
-theorem tendsto_upper_one_add_shortEndpoint_scaled :
+lemma tendsto_upper_one_add_shortEndpoint_scaled :
     Tendsto (fun ε : ℝ => ε * (1 + shortEndpoint ε))
       (𝓝[>] (0 : ℝ)) (𝓝 (0 : ℝ)) := by
   have hid : Tendsto (fun ε : ℝ => ε)
@@ -19602,7 +19602,7 @@ theorem tendsto_upper_one_add_shortEndpoint_scaled :
     ring
   · norm_num
 
-theorem eventually_upper_shortMargin_positive :
+lemma eventually_upper_shortMargin_positive :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ a ∈ Set.Icc (shortCutoff ε) (shortEndpoint ε),
         (1 / 2 : ℝ) ≤ shortMargin ε a := by
@@ -19625,7 +19625,7 @@ theorem eventually_upper_shortMargin_positive :
     at hbound
   nlinarith
 
-theorem eventually_upper_shellLocation_gt_shortEndpoint :
+lemma eventually_upper_shellLocation_gt_shortEndpoint :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       shortEndpoint ε + 1 < shellLocation ε := by
   have hid : Tendsto (fun ε : ℝ => ε)
@@ -19669,7 +19669,7 @@ def upperShellMarginRatio (ε : ℝ) : ℝ :=
     (shellWeight ε *
       Real.exp ((ε / 2) * shellLocation ε))
 
-theorem upperShellMarginRatio_inv
+lemma upperShellMarginRatio_inv
     {x : ℝ} (hx : x ≠ 0) :
     upperShellMarginRatio x⁻¹ =
       5000 * (10 * Real.log x + x ^ 3) *
@@ -19715,7 +19715,7 @@ theorem upperShellMarginRatio_inv
         Real.exp (-(x ^ 2) / 8) *
           Real.exp (5 * Real.log x / x) := by ring
 
-theorem tendsto_upper_log_cubic_gaussian_atTop :
+lemma tendsto_upper_log_cubic_gaussian_atTop :
     Tendsto (fun x : ℝ =>
       (10 * Real.log x + x ^ 3) *
         Real.exp (-(x ^ 2) / 8))
@@ -19753,7 +19753,7 @@ theorem tendsto_upper_log_cubic_gaussian_atTop :
       _ = 11 * ((x ^ 3 + 1) *
           Real.exp (-(x ^ 2) / 8)) := by ring
 
-theorem tendsto_upper_shell_log_correction_atTop :
+lemma tendsto_upper_shell_log_correction_atTop :
     Tendsto (fun x : ℝ =>
       Real.exp (5 * Real.log x / x))
       atTop (𝓝 (1 : ℝ)) := by
@@ -19771,7 +19771,7 @@ theorem tendsto_upper_shell_log_correction_atTop :
     · norm_num
   simpa using! hscaled.rexp
 
-theorem tendsto_upperShellMarginRatio :
+lemma tendsto_upperShellMarginRatio :
     Tendsto upperShellMarginRatio
       (𝓝[>] (0 : ℝ)) (𝓝 (0 : ℝ)) := by
   apply tendsto_nhdsGT_zero_of_comp_inv_tendsto_atTop
@@ -19790,7 +19790,7 @@ theorem tendsto_upperShellMarginRatio :
   rw [upperShellMarginRatio_inv hx]
   ring
 
-theorem eventually_upper_shell_parameter_margin :
+lemma eventually_upper_shell_parameter_margin :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       upperShellShortCoefficient ε *
           Real.exp ((ε / 2) * shortEndpoint ε) ≤
@@ -19812,13 +19812,13 @@ theorem eventually_upper_shell_parameter_margin :
     exact (div_lt_one hden).mp hε
   nlinarith
 
-theorem upper_one_sub_cos_le_min (x : ℝ) :
+lemma upper_one_sub_cos_le_min (x : ℝ) :
     1 - Real.cos x ≤ min (x ^ 2 / 2) 2 := by
   apply le_min
   · nlinarith [Real.one_sub_sq_div_two_le_cos (x := x)]
   · nlinarith [Real.neg_one_le_cos x]
 
-theorem upper_min_frequency_inverse_sq_le
+lemma upper_min_frequency_inverse_sq_le
     {a : ℝ} (ha : 0 < a) (T : ℝ) :
     min (T ^ 2) ((a ^ 2)⁻¹) ≤
       min (T ^ 2) 1 * (1 + (a ^ 2)⁻¹) := by
@@ -19837,7 +19837,7 @@ def upperShortShellDamping (ε ℓ δ T : ℝ) : ℝ :=
       Real.cosh ((1 + δ) * a) *
         (1 - Real.cos (a * T))
 
-theorem upper_shortShell_oscillation_div_sq_le
+lemma upper_shortShell_oscillation_div_sq_le
     {a : ℝ} (ha : 0 < a) (T : ℝ) :
     (1 - Real.cos (a * T)) / (2 * a ^ 2) ≤
       min (T ^ 2) ((a ^ 2)⁻¹) := by
@@ -19861,7 +19861,7 @@ theorem upper_shortShell_oscillation_div_sq_le
       _ = (a ^ 2)⁻¹ := by
         field_simp [ha.ne']
 
-theorem upper_shortShellDensity_damping_le
+lemma upper_shortShellDensity_damping_le
     {ε δ a A : ℝ}
     (hε : 0 < ε) (hδ : 0 ≤ δ)
     (ha : 0 < a) (haA : a ≤ A)
@@ -19928,7 +19928,7 @@ theorem upper_shortShellDensity_damping_le
     _ = Real.exp (δ * A) * min (T ^ 2) 1 *
         (1 + (a ^ 2)⁻¹) := by ring
 
-theorem upper_intervalIntegral_one_add_inv_sq
+lemma upper_intervalIntegral_one_add_inv_sq
     {a b : ℝ} (ha : 0 < a) (hab : a ≤ b) :
     (∫ x in a..b, 1 + (x ^ 2)⁻¹) =
       b - a + a⁻¹ - b⁻¹ := by
@@ -19952,7 +19952,7 @@ theorem upper_intervalIntegral_one_add_inv_sq
     (hcont.intervalIntegrable_of_Icc hab)]
   ring
 
-theorem upperShortShellDamping_global_bound
+lemma upperShortShellDamping_global_bound
     {ε ℓ δ T : ℝ}
     (hε : 0 < ε) (hℓ : 0 ≤ ℓ) (hδ : 0 ≤ δ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -20063,7 +20063,7 @@ theorem upperShortShellDamping_global_bound
       try dsimp [a₀, A, K]
       ring
 
-theorem eventually_upper_shortCutoff_le_shortEndpoint :
+lemma eventually_upper_shortCutoff_le_shortEndpoint :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       shortCutoff ε ≤ shortEndpoint ε := by
   have hlower := tendsto_shortCutoff.eventually
@@ -20073,7 +20073,7 @@ theorem eventually_upper_shortCutoff_le_shortEndpoint :
   filter_upwards [hlower, hupper] with ε hl hu
   linarith
 
-theorem upper_shell_parameter_margin_propagate
+lemma upper_shell_parameter_margin_propagate
     {ε δ : ℝ}
     (hδ : ε / 2 ≤ δ)
     (hseparation : shortEndpoint ε ≤ shellLocation ε)
@@ -20127,7 +20127,7 @@ theorem upper_shell_parameter_margin_propagate
       try dsimp [q]
       ring
 
-theorem eventually_upper_shortShell_domination :
+lemma eventually_upper_shortShell_domination :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ ℓ : ℝ, 0 ≤ ℓ →
         ∀ δ : ℝ, ε / 2 ≤ δ →
@@ -20191,7 +20191,7 @@ def upperPositiveShellVariance (ε δ : ℝ) : ℝ :=
     positiveShellDensity ε a * a ^ 2 *
       Real.cosh ((1 + δ) * a)
 
-theorem upperPositiveShellVariance_bounds
+lemma upperPositiveShellVariance_bounds
     {ε δ : ℝ} (hε : 0 < ε) (hδ : 0 ≤ δ) :
     (1 / 2 : ℝ) * (shellLocation ε) ^ 2 *
         shellWeight ε *
@@ -20302,7 +20302,7 @@ def upperShortShellVariance (ε δ : ℝ) : ℝ :=
     (-shortShellDensity ε a) * a ^ 2 *
       Real.cosh ((1 + δ) * a)
 
-theorem upper_shortShellDensity_variance_le
+lemma upper_shortShellDensity_variance_le
     {ε δ a A : ℝ}
     (hε : 0 < ε) (hδ : 0 ≤ δ)
     (ha : 0 < a) (haA : a ≤ A) :
@@ -20342,7 +20342,7 @@ theorem upper_shortShellDensity_variance_le
     _ = (1 / 2 : ℝ) * Real.exp (δ * A) := by
       ring
 
-theorem upperShortShellVariance_global_bound
+lemma upperShortShellVariance_global_bound
     {ε δ : ℝ}
     (hε : 0 < ε) (hδ : 0 ≤ δ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
@@ -20419,7 +20419,7 @@ theorem upperShortShellVariance_global_bound
       try dsimp [A, a₀, K]
       ring
 
-theorem upperShortShellVariance_nonneg
+lemma upperShortShellVariance_nonneg
     {ε δ : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -20444,7 +20444,7 @@ theorem upperShortShellVariance_nonneg
     (mul_nonneg hdensity (sq_nonneg a))
     (Real.cosh_pos _).le
 
-theorem upper_shellLocation_one_le
+lemma upper_shellLocation_one_le
     {ε : ℝ} (hε : 0 < ε) (hεone : ε ≤ 1) :
     1 ≤ shellLocation ε := by
   have hinv : 1 ≤ ε⁻¹ :=
@@ -20453,7 +20453,7 @@ theorem upper_shellLocation_one_le
   convert! pow_le_pow_left₀
     (show (0 : ℝ) ≤ 1 by norm_num) hinv 3 using 1; norm_num
 
-theorem eventually_upper_shortShellVariance_domination :
+lemma eventually_upper_shortShellVariance_domination :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ δ : ℝ, ε / 2 ≤ δ →
         upperShortShellVariance ε δ ≤
@@ -20517,7 +20517,7 @@ def upperNetShellVariance (ε δ : ℝ) : ℝ :=
   upperPositiveShellVariance ε δ -
     upperShortShellVariance ε δ
 
-theorem eventually_upper_netShellVariance_bounds :
+lemma eventually_upper_netShellVariance_bounds :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ δ : ℝ, ε / 2 ≤ δ →
         (99 / 100 : ℝ) *
@@ -20547,7 +20547,7 @@ def upperPositiveShellThirdMoment (ε δ : ℝ) : ℝ :=
     positiveShellDensity ε a * a ^ 3 *
       Real.cosh ((1 + δ) * a)
 
-theorem upperPositiveShellThirdMoment_le
+lemma upperPositiveShellThirdMoment_le
     {ε δ : ℝ} (hε : 0 < ε) :
     upperPositiveShellThirdMoment ε δ ≤
       (shellLocation ε + 1) *
@@ -20614,7 +20614,7 @@ def upperShortShellThirdMoment (ε δ : ℝ) : ℝ :=
     (-shortShellDensity ε a) * a ^ 3 *
       Real.cosh ((1 + δ) * a)
 
-theorem upperShortShellThirdMoment_le
+lemma upperShortShellThirdMoment_le
     {ε δ : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -20703,7 +20703,7 @@ theorem upperShortShellThirdMoment_le
     upperShortShellVariance, a₀, A,
     intervalIntegral.integral_const_mul] using! hmono
 
-theorem eventually_upper_shortShellThirdMoment_domination :
+lemma eventually_upper_shortShellThirdMoment_domination :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ δ : ℝ, ε / 2 ≤ δ →
         upperShortShellThirdMoment ε δ ≤
@@ -20742,7 +20742,7 @@ def upperNetShellThirdMoment (ε δ : ℝ) : ℝ :=
   upperPositiveShellThirdMoment ε δ +
     upperShortShellThirdMoment ε δ
 
-theorem eventually_upper_netShellThirdMoment_bound :
+lemma eventually_upper_netShellThirdMoment_bound :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ δ : ℝ, ε / 2 ≤ δ →
         upperNetShellThirdMoment ε δ ≤
@@ -20760,7 +20760,7 @@ theorem eventually_upper_netShellThirdMoment_bound :
   unfold upperNetShellThirdMoment
   nlinarith
 
-theorem upper_inv_one_sub_exp_neg_bounds
+lemma upper_inv_one_sub_exp_neg_bounds
     {x : ℝ} (hx : 0 < x) :
     x⁻¹ ≤ (1 - Real.exp (-x))⁻¹ ∧
       (1 - Real.exp (-x))⁻¹ ≤ 1 + x⁻¹ := by
@@ -20796,7 +20796,7 @@ def upperGammaMeasureDensity (ℓ η a : ℝ) : ℝ :=
   Real.exp (-η * a) /
     (a * (1 - Real.exp (-(2 * a / ℓ))))
 
-theorem upper_laplace_monomial_integrable
+lemma upper_laplace_monomial_integrable
     {η : ℝ} (hη : 0 < η) (k : ℕ) :
     IntegrableOn
       (fun a : ℝ => a ^ k * Real.exp (-η * a))
@@ -20809,7 +20809,7 @@ theorem upper_laplace_monomial_integrable
   intro a ha
   simp [Real.rpow_natCast]
 
-theorem upper_laplace_monomial_integral
+lemma upper_laplace_monomial_integral
     {η : ℝ} (hη : 0 < η) (k : ℕ) :
     (∫ a : ℝ in Set.Ioi 0,
       a ^ k * Real.exp (-η * a)) =
@@ -20841,7 +20841,7 @@ theorem upper_laplace_monomial_integral
         push_cast; ring, Real.Gamma_nat_eq_factorial]
       simp [inv_pow, div_eq_mul_inv, mul_comm]
 
-theorem upperGammaVarianceDensity_pointwise_bounds
+lemma upperGammaVarianceDensity_pointwise_bounds
     {ℓ η a : ℝ} (hℓ : 0 < ℓ) (ha : 0 < a) :
     (ℓ / 2) * Real.exp (-η * a) ≤
       a ^ 2 * upperGammaMeasureDensity ℓ η a ∧
@@ -20886,7 +20886,7 @@ theorem upperGammaVarianceDensity_pointwise_bounds
         try dsimp [x]
         field_simp [ha.ne', hℓ.ne']
 
-theorem upperGammaThirdMomentDensity_pointwise_bounds
+lemma upperGammaThirdMomentDensity_pointwise_bounds
     {ℓ η a : ℝ} (hℓ : 0 < ℓ) (ha : 0 < a) :
     (ℓ / 2) * a * Real.exp (-η * a) ≤
       a ^ 3 * upperGammaMeasureDensity ℓ η a ∧
@@ -20900,7 +20900,7 @@ theorem upperGammaThirdMomentDensity_pointwise_bounds
   have hupp := mul_le_mul_of_nonneg_left hupper ha.le
   constructor <;> nlinarith
 
-theorem upperGammaVarianceDensity_integrable
+lemma upperGammaVarianceDensity_integrable
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η) :
     IntegrableOn
       (fun a : ℝ => a ^ 2 * upperGammaMeasureDensity ℓ η a)
@@ -20934,7 +20934,7 @@ theorem upperGammaVarianceDensity_integrable
   rw [Real.norm_eq_abs, abs_of_nonneg hpositive]
   exact hbounds.2
 
-theorem upperGammaThirdMomentDensity_integrable
+lemma upperGammaThirdMomentDensity_integrable
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η) :
     IntegrableOn
       (fun a : ℝ => a ^ 3 * upperGammaMeasureDensity ℓ η a)
@@ -20978,7 +20978,7 @@ def upperGammaThirdMoment (ℓ η : ℝ) : ℝ :=
   ℓ⁻¹ * ∫ a : ℝ in Set.Ioi 0,
     a ^ 3 * upperGammaMeasureDensity ℓ η a
 
-theorem upperGammaVariance_bounds
+lemma upperGammaVariance_bounds
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η) :
     1 / (2 * η) ≤ upperGammaVariance ℓ η ∧
       upperGammaVariance ℓ η ≤
@@ -21087,7 +21087,7 @@ theorem upperGammaVariance_bounds
       _ = 1 / (2 * η) + 1 / (ℓ * η ^ 2) := by
             field_simp [hℓ.ne', hη.ne']; ring
 
-theorem upperGammaThirdMoment_bounds
+lemma upperGammaThirdMoment_bounds
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η) :
     1 / (2 * η ^ 2) ≤ upperGammaThirdMoment ℓ η ∧
       upperGammaThirdMoment ℓ η ≤
@@ -21223,7 +21223,7 @@ theorem upperGammaThirdMoment_bounds
       _ = 1 / (2 * η ^ 2) + 2 / (ℓ * η ^ 3) := by
             field_simp [hℓ.ne', hη.ne']; ring
 
-theorem plusPolynomial_negative_imaginary_residue
+lemma plusPolynomial_negative_imaginary_residue
     (ε s : ℝ) :
     plusPolynomial ε
         (Complex.I * ((-(1 + s) : ℝ) : ℂ)) =
@@ -21253,7 +21253,7 @@ def plusSaddleSmallRadiusCoefficient
         (2 + 2 * (n : ℝ) / ℓ) ^ 2) /
       beta ε)
 
-theorem plusSaddlePoleResidue_explicit_real
+lemma plusSaddlePoleResidue_explicit_real
     {ε ℓ : ℝ} (hℓ : 0 < ℓ) (n : ℕ) :
     plusSaddlePoleResidue ε ℓ n =
       ((2 * (-1 : ℝ) ^ n / (n.factorial : ℝ) *
@@ -21269,12 +21269,12 @@ theorem plusSaddlePoleResidue_explicit_real
   push_cast
   ring
 
-theorem saddleSmallRadiusVariable_nonneg (ε r : ℝ) :
+lemma saddleSmallRadiusVariable_nonneg (ε r : ℝ) :
     0 ≤ saddleSmallRadiusVariable ε r := by
   unfold saddleSmallRadiusVariable
   positivity
 
-theorem saddleSmallRadiusVariable_neg_pow
+lemma saddleSmallRadiusVariable_neg_pow
     (ε r : ℝ) (n : ℕ) :
     (-saddleSmallRadiusVariable ε r) ^ n =
       (-1 : ℝ) ^ n * Real.pi ^ n *
@@ -21297,7 +21297,7 @@ theorem saddleSmallRadiusVariable_neg_pow
             r ^ (2 * n) := by
               rw [← pow_mul]
 
-theorem saddleSmallRadiusPhase_pole_factorization
+lemma saddleSmallRadiusPhase_pole_factorization
     (ε ℓ : ℝ) (n : ℕ) :
     Real.exp
         (ℓ * realHyperbolicShellPhase ε
@@ -21325,7 +21325,7 @@ theorem saddleSmallRadiusPhase_pole_factorization
   rw [harg, Real.exp_add, Real.exp_add,
     Real.exp_nat_mul]
 
-theorem plusSaddlePoleResidue_mul_pow_eq_smallCoefficient
+lemma plusSaddlePoleResidue_mul_pow_eq_smallCoefficient
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (n : ℕ) (r : ℝ) :
@@ -21352,7 +21352,7 @@ theorem plusSaddlePoleResidue_mul_pow_eq_smallCoefficient
   rw [hpi, hphase, hy]
   field_simp [hb, hfac]
 
-theorem plusSaddleProfile_eq_small_radius_residue_series
+lemma plusSaddleProfile_eq_small_radius_residue_series
     {ε ℓ r : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -21377,7 +21377,7 @@ theorem plusSaddleProfile_eq_small_radius_residue_series
   push_cast at hterm
   simpa only [mul_assoc] using! hterm
 
-theorem plusSaddleProfile_div_origin_eq_small_radius_residue_series
+lemma plusSaddleProfile_div_origin_eq_small_radius_residue_series
     {ε ℓ r : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -21396,7 +21396,7 @@ theorem plusSaddleProfile_div_origin_eq_small_radius_residue_series
     hε hℓ horder hr N]
   field_simp [hzero]
 
-theorem realHyperbolicShellPhase_contDiff
+lemma realHyperbolicShellPhase_contDiff
     {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -21419,7 +21419,7 @@ theorem realHyperbolicShellPhase_contDiff
       Complex.reCLM.contDiff.comp hphase
   simpa only [mellinShellPhase_imaginary, Complex.ofReal_re] using! hre
 
-theorem realHyperbolicShellInterval_hasDerivAt
+lemma realHyperbolicShellInterval_hasDerivAt
     (w : ℝ → ℝ) (hw : Continuous w)
     {a b : ℝ} (hab : a ≤ b) (u : ℝ) :
     HasDerivAt
@@ -21506,7 +21506,7 @@ theorem realHyperbolicShellInterval_hasDerivAt
     hmeas hint hderivmeas hbound hconstant
     hdifferentiable).2
 
-theorem realHyperbolicShellPhase_hasDerivAt
+lemma realHyperbolicShellPhase_hasDerivAt
     {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -21575,7 +21575,7 @@ theorem realHyperbolicShellPhase_hasDerivAt
     (positiveShellDensity_continuous ε) hremote u
   exact hshort.add hpositive
 
-theorem realHyperbolicShellPhase_hasDerivAt_one
+lemma realHyperbolicShellPhase_hasDerivAt_one
     {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
@@ -21584,7 +21584,7 @@ theorem realHyperbolicShellPhase_hasDerivAt_one
   simpa [saddleShellDerivativeOne] using!
     realHyperbolicShellPhase_hasDerivAt hε horder 1
 
-theorem exists_realHyperbolicShellPhase_quadratic_remainder
+lemma exists_realHyperbolicShellPhase_quadratic_remainder
     {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
@@ -21638,7 +21638,7 @@ theorem exists_realHyperbolicShellPhase_quadratic_remainder
       mul_le_mul_of_nonneg_right
         (le_max_left _ _) (sq_nonneg _)
 
-theorem exists_plusSaddleSmallRadiusPhase_error
+lemma exists_plusSaddleSmallRadiusPhase_error
     {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
@@ -21694,7 +21694,7 @@ theorem exists_plusSaddleSmallRadiusPhase_error
       try dsimp [x]
       field_simp; ring
 
-theorem plusSaddleSmallRadiusPolynomial_error
+lemma plusSaddleSmallRadiusPolynomial_error
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (n : ℕ) (hn : 2 * (n : ℝ) ≤ ℓ) :
@@ -21733,7 +21733,7 @@ theorem plusSaddleSmallRadiusPolynomial_error
       try dsimp [s]
       field_simp; ring
 
-theorem abs_exp_sub_one_le_abs_mul_exp_abs (t : ℝ) :
+lemma abs_exp_sub_one_le_abs_mul_exp_abs (t : ℝ) :
     |Real.exp t - 1| ≤ |t| * Real.exp |t| := by
   rcases le_total 0 t with ht | ht
   · have hexp : 1 ≤ Real.exp t := by
@@ -21765,7 +21765,7 @@ theorem abs_exp_sub_one_le_abs_mul_exp_abs (t : ℝ) :
         nlinarith [mul_nonneg hnegt
           (sub_nonneg.mpr hexpneg)]
 
-theorem plusSaddleSmallRadiusCoefficient_error_of_phase
+lemma plusSaddleSmallRadiusCoefficient_error_of_phase
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (n : ℕ) (hn : 2 * (n : ℝ) ≤ ℓ)
@@ -21829,7 +21829,7 @@ theorem plusSaddleSmallRadiusCoefficient_error_of_phase
       add_le_add htermP htermE
     _ = (q + k) * Real.exp q := by ring
 
-theorem exists_plusSaddleSmallRadiusCoefficient_error
+lemma exists_plusSaddleSmallRadiusCoefficient_error
     {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
@@ -21879,13 +21879,13 @@ theorem exists_plusSaddleSmallRadiusCoefficient_error
         mul_le_mul hpoly (Real.exp_le_exp.mpr hq)
           (Real.exp_pos _).le hright
 
-theorem saddleExpSeries_hasSum (y : ℝ) :
+lemma saddleExpSeries_hasSum (y : ℝ) :
     HasSum (fun n : ℕ => y ^ n / (n.factorial : ℝ))
       (Real.exp y) := by
   rw [Real.exp_eq_exp_ℝ]
   exact NormedSpace.expSeries_div_hasSum_exp y
 
-theorem saddleExpSeries_firstMoment_hasSum (y : ℝ) :
+lemma saddleExpSeries_firstMoment_hasSum (y : ℝ) :
     HasSum
       (fun n : ℕ => (n : ℝ) *
         (y ^ n / (n.factorial : ℝ)))
@@ -21910,7 +21910,7 @@ theorem saddleExpSeries_firstMoment_hasSum (y : ℝ) :
     exact (saddleExpSeries_hasSum y).mul_left y
   simpa [f] using! htail.zero_add
 
-theorem saddleExpSeries_secondFallingMoment_hasSum (y : ℝ) :
+lemma saddleExpSeries_secondFallingMoment_hasSum (y : ℝ) :
     HasSum
       (fun n : ℕ =>
         (n : ℝ) * ((n : ℝ) - 1) *
@@ -21941,7 +21941,7 @@ theorem saddleExpSeries_secondFallingMoment_hasSum (y : ℝ) :
   have hfull := htail.sum_range_add
   simpa [f, Finset.sum_range_succ] using! hfull
 
-theorem saddleExpSeries_polynomialMoment_hasSum (y : ℝ) :
+lemma saddleExpSeries_polynomialMoment_hasSum (y : ℝ) :
     HasSum
       (fun n : ℕ =>
         ((n : ℝ) + (n : ℝ) ^ 2) *
@@ -21957,7 +21957,7 @@ theorem saddleExpSeries_polynomialMoment_hasSum (y : ℝ) :
     ring
   · ring
 
-theorem saddleExpSeries_polynomialMoment_sum_range_le
+lemma saddleExpSeries_polynomialMoment_sum_range_le
     {y : ℝ} (hy : 0 ≤ y) (N : ℕ) :
     (∑ n ∈ Finset.range N,
       ((n : ℝ) + (n : ℝ) ^ 2) *
@@ -21967,7 +21967,7 @@ theorem saddleExpSeries_polynomialMoment_sum_range_le
     (fun n _ => by positivity)
     (saddleExpSeries_polynomialMoment_hasSum y)
 
-theorem exists_plusSaddleSmallRadius_weightedCoefficient_error
+lemma exists_plusSaddleSmallRadius_weightedCoefficient_error
     {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
@@ -22043,7 +22043,7 @@ theorem exists_plusSaddleSmallRadius_weightedCoefficient_error
           Real.exp (C * (N : ℝ) ^ 2 / ℓ) *
             (2 * y + y ^ 2) * Real.exp y := by ring
 
-theorem saddleExpSeries_tail_term_le_geometric
+lemma saddleExpSeries_tail_term_le_geometric
     {y : ℝ} (hy : 0 ≤ y)
     (m : ℕ) (hym : 2 * y ≤ (m : ℝ) + 1)
     (k : ℕ) :
@@ -22087,7 +22087,7 @@ theorem saddleExpSeries_tail_term_le_geometric
             rw [pow_succ]
             ring
 
-theorem saddleExpSeries_alternating_tail_bound
+lemma saddleExpSeries_alternating_tail_bound
     {y : ℝ} (hy : 0 ≤ y)
     (m : ℕ) (hym : 2 * y ≤ (m : ℝ) + 1) :
     |Real.exp (-y) -
@@ -22159,7 +22159,7 @@ theorem saddleExpSeries_alternating_tail_bound
           (by norm_num : (1 / 2 : ℝ) < 1)]
         norm_num; ring
 
-theorem exists_plusSaddleSmallRadius_finiteResidue_error
+lemma exists_plusSaddleSmallRadius_finiteResidue_error
     {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
@@ -22262,7 +22262,7 @@ theorem exists_plusSaddleSmallRadius_finiteResidue_error
             ((N + 1).factorial : ℝ)) :=
         add_le_add hmoment (le_refl _)
 
-theorem exists_plusSaddleSmallRadius_relativeFiniteResidue_error
+lemma exists_plusSaddleSmallRadius_relativeFiniteResidue_error
     {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
@@ -22314,7 +22314,7 @@ theorem exists_plusSaddleSmallRadius_relativeFiniteResidue_error
                 Real.exp_add]]
           ring
 
-theorem upperGammaMeasureDensity_pos
+lemma upperGammaMeasureDensity_pos
     {ℓ η a : ℝ} (hℓ : 0 < ℓ) (ha : 0 < a) :
     0 < upperGammaMeasureDensity ℓ η a := by
   have hx : 0 < 2 * a / ℓ := by positivity
@@ -22324,7 +22324,7 @@ theorem upperGammaMeasureDensity_pos
   unfold upperGammaMeasureDensity
   exact div_pos (Real.exp_pos _) (mul_pos ha hden)
 
-theorem upper_one_sub_cos_quadratic_lower
+lemma upper_one_sub_cos_quadratic_lower
     {x : ℝ} (hx : |x| ≤ 1) :
     x ^ 2 / 4 ≤ 1 - Real.cos x := by
   have hnonnegative : 0 ≤ |x| := abs_nonneg x
@@ -22354,7 +22354,7 @@ def upperGammaDamping (ℓ η T : ℝ) : ℝ :=
   ∫ a : ℝ in Ioi 0,
     upperGammaDampingIntegrand ℓ η T a
 
-theorem upperGammaDampingIntegrand_integrable
+lemma upperGammaDampingIntegrand_integrable
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η) (T : ℝ) :
     IntegrableOn
       (upperGammaDampingIntegrand ℓ η T) (Ioi 0) := by
@@ -22395,7 +22395,7 @@ theorem upperGammaDampingIntegrand_integrable
         (a ^ 2 * upperGammaMeasureDensity ℓ η a) := by
       ring
 
-theorem upperGammaDamping_nonneg
+lemma upperGammaDamping_nonneg
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (T : ℝ) :
     0 ≤ upperGammaDamping ℓ η T := by
   unfold upperGammaDamping
@@ -22407,7 +22407,7 @@ theorem upperGammaDamping_nonneg
     (upperGammaMeasureDensity_pos
       (η := η) hℓ ha).le
 
-theorem upperGammaDampingIntegrand_lower_on_window
+lemma upperGammaDampingIntegrand_lower_on_window
     {ℓ η T a : ℝ}
     (hℓ : 0 < ℓ) (hη : 0 < η)
     (ha : 0 < a)
@@ -22459,7 +22459,7 @@ theorem upperGammaDampingIntegrand_lower_on_window
       mul_le_mul_of_nonneg_right hcos hdensity.le
     _ = upperGammaDampingIntegrand ℓ η T a := rfl
 
-theorem upperGammaDamping_lower_bound
+lemma upperGammaDamping_lower_bound
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η)
     (T : ℝ) :
     (ℓ / (8 * Real.exp 1)) *
@@ -22568,7 +22568,7 @@ def upperSaddleThirdMoment (ε ℓ δ : ℝ) : ℝ :=
   upperGammaThirdMoment ℓ (2 + δ) +
     upperNetShellThirdMoment ε δ
 
-theorem eventually_upperSaddleDamping_gamma_add_shell
+lemma eventually_upperSaddleDamping_gamma_add_shell
     : ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
         ∀ ℓ : ℝ, 0 < ℓ →
           ∀ δ : ℝ, ε / 2 ≤ δ →
@@ -22584,7 +22584,7 @@ theorem eventually_upperSaddleDamping_gamma_add_shell
   unfold upperSaddleDamping
   linarith
 
-theorem eventually_upperSaddleVariance_bounds
+lemma eventually_upperSaddleVariance_bounds
     : ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
         ∀ ℓ : ℝ, 0 < ℓ →
           ∀ δ : ℝ, ε / 2 ≤ δ →
@@ -22611,7 +22611,7 @@ theorem eventually_upperSaddleVariance_bounds
   exact ⟨add_le_add hγlow hslow,
     add_le_add hγhigh hshigh⟩
 
-theorem upperPositiveShellVariance_pos
+lemma upperPositiveShellVariance_pos
     {ε δ : ℝ} (hε : 0 < ε) (hδ : 0 ≤ δ) :
     0 < upperPositiveShellVariance ε δ := by
   have hB : 0 < shellLocation ε := by
@@ -22632,7 +22632,7 @@ theorem upperPositiveShellVariance_pos
       (Real.exp_pos _)
   exact hpositive.trans_le hlower
 
-theorem eventually_upperSaddleVariance_pos
+lemma eventually_upperSaddleVariance_pos
     : ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
         ∀ ℓ : ℝ, 0 < ℓ →
           ∀ δ : ℝ, ε / 2 ≤ δ →
@@ -22656,7 +22656,7 @@ theorem eventually_upperSaddleVariance_pos
   exact hpositive.trans_le
     (hbound ℓ hℓ δ hδ).1
 
-theorem upperGammaThirdMoment_le_two_mul_variance
+lemma upperGammaThirdMoment_le_two_mul_variance
     {ℓ η : ℝ} (hℓ : 1 ≤ ℓ) (hη : 2 ≤ η) :
     upperGammaThirdMoment ℓ η ≤
       2 * upperGammaVariance ℓ η := by
@@ -22702,7 +22702,7 @@ theorem upperGammaThirdMoment_le_two_mul_variance
 def upperSaddleShellThirdCoefficient (ε : ℝ) : ℝ :=
   shellLocation ε + 1 + shortEndpoint ε / 100
 
-theorem eventually_upperSaddleThirdMoment_le_variance
+lemma eventually_upperSaddleThirdMoment_le_variance
     : ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
         ∀ ℓ : ℝ, 1 ≤ ℓ →
           ∀ δ : ℝ, ε / 2 ≤ δ →
@@ -22779,7 +22779,7 @@ theorem eventually_upperSaddleThirdMoment_le_variance
   nlinarith [mul_nonneg hC hgammavariance,
     mul_nonneg hC hnetnonnegative]
 
-theorem upperShortMargin_mul_exp_antitone
+lemma upperShortMargin_mul_exp_antitone
     {ε : ℝ} (hε : 0 < ε) :
     AntitoneOn
       (fun a : ℝ =>
@@ -22829,7 +22829,7 @@ theorem upperShortMargin_mul_exp_antitone
       (mul_nonneg hε.le (Real.exp_pos _).le)
       (by linarith)
 
-theorem upperShortMargin_mul_exp_le_zero_value
+lemma upperShortMargin_mul_exp_le_zero_value
     {ε a : ℝ} (hε : 0 < ε) (ha : 0 ≤ a) :
     shortMargin ε a * Real.exp (ε * a) ≤
       1 - 10 * ε := by
@@ -22838,7 +22838,7 @@ theorem upperShortMargin_mul_exp_le_zero_value
     (show a ∈ Ici 0 from ha) ha
   simpa [shortMargin] using! h
 
-theorem upperFirstBranch_shortRatio_le
+lemma upperFirstBranch_shortRatio_le
     {ε u a : ℝ}
     (hε : 0 < ε) (ha : 0 ≤ a)
     (hulower : -1 ≤ u)
@@ -22912,7 +22912,7 @@ theorem upperFirstBranch_shortRatio_le
           hε ha
       _ ≤ 1 - 4 * ε := by linarith
 
-theorem upperFirstBranch_shortMeasure_pointwise
+lemma upperFirstBranch_shortMeasure_pointwise
     {ε ℓ u a : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ) (ha : 0 < a)
@@ -22974,7 +22974,7 @@ theorem upperFirstBranch_shortMeasure_pointwise
           upperGammaMeasureDensity ℓ (1 + u) a :=
       mul_le_mul_of_nonneg_left hbase hfactor
 
-theorem upperFirstBranch_shortDamping_le_gamma
+lemma upperFirstBranch_shortDamping_le_gamma
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ)
@@ -23109,7 +23109,7 @@ theorem upperFirstBranch_shortDamping_le_gamma
           upperGammaDamping ℓ (1 + u) T := by
       rfl
 
-theorem positiveShellDamping_nonneg
+lemma positiveShellDamping_nonneg
     {ε ℓ δ T : ℝ}
     (hℓ : 0 ≤ ℓ) :
     0 ≤ positiveShellDamping ε ℓ δ T := by
@@ -23132,7 +23132,7 @@ def upperFirstBranchSaddleDamping
     positiveShellDamping ε ℓ (u - 1) T -
       upperShortShellDamping ε ℓ (u - 1) T
 
-theorem upperFirstBranchSaddleDamping_lower_bound
+lemma upperFirstBranchSaddleDamping_lower_bound
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ)
@@ -23151,7 +23151,7 @@ theorem upperFirstBranchSaddleDamping_lower_bound
   unfold upperFirstBranchSaddleDamping
   nlinarith
 
-theorem saddle_shifted_complexCos_re
+lemma saddle_shifted_complexCos_re
     (a T u : ℝ) :
     (Complex.cos
       ((a : ℂ) * ((T : ℂ) + Complex.I * (u : ℂ)))).re =
@@ -23171,7 +23171,7 @@ theorem saddle_shifted_complexCos_re
     Complex.I_re, Complex.I_im,
     mul_zero, zero_mul, sub_zero, mul_one]
 
-theorem saddle_complexShellInterval_re
+lemma saddle_complexShellInterval_re
     (w : ℝ → ℝ) {a b : ℝ}
     (hab : a ≤ b)
     (hw : ContinuousOn w (Icc a b))
@@ -23220,7 +23220,7 @@ theorem saddle_complexShellInterval_re
         saddle_shifted_complexCos_re]
       simp
 
-theorem shortShellDensity_continuousOn_support
+lemma shortShellDensity_continuousOn_support
     {ε : ℝ} (hε : 0 < ε) :
     ContinuousOn (shortShellDensity ε)
       (Icc (shortCutoff ε) (shortEndpoint ε)) := by
@@ -23242,7 +23242,7 @@ theorem shortShellDensity_continuousOn_support
       have ha0 : 0 < a := hcutoff.trans_le ha.1
       positivity)).neg
 
-theorem mellinShellPhase_shifted_re
+lemma mellinShellPhase_shifted_re
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (T u : ℝ) :
@@ -23266,7 +23266,7 @@ theorem mellinShellPhase_shifted_re
         linarith)
       (positiveShellDensity_continuous ε).continuousOn T u
 
-theorem saddle_shellInterval_hyperbolic_sub_oscillatory
+lemma saddle_shellInterval_hyperbolic_sub_oscillatory
     (w : ℝ → ℝ) {a b : ℝ}
     (hab : a ≤ b)
     (hw : ContinuousOn w (Icc a b))
@@ -23303,7 +23303,7 @@ theorem saddle_shellInterval_hyperbolic_sub_oscillatory
   intro x hx
   ring
 
-theorem saddleShellPhase_damping_identity
+lemma saddleShellPhase_damping_identity
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ T u : ℝ) :
@@ -23379,7 +23379,7 @@ def radialCriticalLogProfile {d : ℕ} (hd : 0 < d)
   Real.exp (-((d : ℝ) / 2) * u) •
     radialProfile hd f (Real.exp (-u))
 
-theorem radialCriticalLogProfile_eq_reflected_tilt {d : ℕ}
+lemma radialCriticalLogProfile_eq_reflected_tilt {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (u : ℝ) :
     radialCriticalLogProfile hd f u =
       schwartzExponentialTilt (radialSchwartzProfile hd f)
@@ -23387,7 +23387,7 @@ theorem radialCriticalLogProfile_eq_reflected_tilt {d : ℕ}
   simp [radialCriticalLogProfile, schwartzExponentialTilt,
     radialSchwartzProfile_apply, mul_neg]
 
-theorem radialCriticalLogProfile_integrable {d : ℕ}
+lemma radialCriticalLogProfile_integrable {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) :
     Integrable (radialCriticalLogProfile hd f) := by
   have hdimension : 0 < (d : ℝ) / 2 :=
@@ -23399,7 +23399,7 @@ theorem radialCriticalLogProfile_integrable {d : ℕ}
   filter_upwards [] with u
   exact (radialCriticalLogProfile_eq_reflected_tilt hd f u).symm
 
-theorem radialCriticalLogProfile_continuous {d : ℕ}
+lemma radialCriticalLogProfile_continuous {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) :
     Continuous (radialCriticalLogProfile hd f) := by
   unfold radialCriticalLogProfile
@@ -23408,7 +23408,7 @@ theorem radialCriticalLogProfile_continuous {d : ℕ}
       ((radialProfile_continuous hd f).comp
         (by fun_prop : Continuous (fun u : ℝ => Real.exp (-u))))
 
-theorem radialCriticalLogProfile_fourier_integrable {d : ℕ}
+lemma radialCriticalLogProfile_fourier_integrable {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) :
     Integrable (𝓕 (radialCriticalLogProfile hd f) : ℝ → ℂ) := by
   have hdimension : 0 < (d : ℝ) / 2 :=
@@ -23433,14 +23433,14 @@ theorem radialCriticalLogProfile_fourier_integrable {d : ℕ}
     (Real.fourier_comp_linearIsometry
       (LinearIsometryEquiv.neg ℝ) G u).symm
 
-theorem radialMellinFrequency_eq_criticalLogFourier {d : ℕ}
+lemma radialMellinFrequency_eq_criticalLogFourier {d : ℕ}
     (hd : 0 < d) (f : TestFunction d) (t : ℝ) :
     radialMellinFrequency hd f t =
       (𝓕 (radialCriticalLogProfile hd f) : ℝ → ℂ)
         (-t / (2 * Real.pi)) := by
   exact radialMellinFrequency_eq_fourier hd f t
 
-theorem plusSaddleFourierData_continuous {ε ℓ : ℝ}
+lemma plusSaddleFourierData_continuous {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     Continuous (plusSaddleFourierData ε ℓ) := by
@@ -23448,7 +23448,7 @@ theorem plusSaddleFourierData_continuous {ε ℓ : ℝ}
   exact (plusSaddleSpectrum_continuous hε hℓ horder).comp
     (by fun_prop)
 
-theorem minusSaddleFourierData_continuous {ε ℓ : ℝ}
+lemma minusSaddleFourierData_continuous {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     Continuous (minusSaddleFourierData ε ℓ) := by
@@ -23456,7 +23456,7 @@ theorem minusSaddleFourierData_continuous {ε ℓ : ℝ}
   exact (minusSaddleSpectrum_continuous hε hℓ horder).comp
     (by fun_prop)
 
-theorem plusSaddleFourierData_integrable {ε ℓ : ℝ}
+lemma plusSaddleFourierData_integrable {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     Integrable (plusSaddleFourierData ε ℓ) := by
@@ -23468,7 +23468,7 @@ theorem plusSaddleFourierData_integrable {ε ℓ : ℝ}
     (plusSaddleFourierData_continuous
       hε hℓ horder).aestronglyMeasurable).mp hnorm
 
-theorem minusSaddleFourierData_integrable {ε ℓ : ℝ}
+lemma minusSaddleFourierData_integrable {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     Integrable (minusSaddleFourierData ε ℓ) := by
@@ -23480,7 +23480,7 @@ theorem minusSaddleFourierData_integrable {ε ℓ : ℝ}
     (minusSaddleFourierData_continuous
       hε hℓ horder).aestronglyMeasurable).mp hnorm
 
-theorem radialProfile_eq_plusSaddleProfile_of_source
+lemma radialProfile_eq_plusSaddleProfile_of_source
     {ε : ℝ} {d : ℕ} (hd : 0 < d) (f : TestFunction d)
     (hf : ∀ x : Euclidean d, f x = plusSaddleFunction ε d x)
     {r : ℝ} (hr : 0 ≤ r) :
@@ -23490,7 +23490,7 @@ theorem radialProfile_eq_plusSaddleProfile_of_source
   simp [plusSaddleFunction, norm_smul,
     norm_radialUnitDirection hd, abs_of_nonneg hr]
 
-theorem radialProfile_eq_minusSaddleProfile_of_source
+lemma radialProfile_eq_minusSaddleProfile_of_source
     {ε : ℝ} {d : ℕ} (hd : 0 < d) (f : TestFunction d)
     (hf : ∀ x : Euclidean d, f x = minusSaddleFunction ε d x)
     {r : ℝ} (hr : 0 ≤ r) :
@@ -23500,14 +23500,14 @@ theorem radialProfile_eq_minusSaddleProfile_of_source
   simp [minusSaddleFunction, norm_smul,
     norm_radialUnitDirection hd, abs_of_nonneg hr]
 
-theorem exp_neg_rpow_neg_half_dimension {d : ℕ} (u : ℝ) :
+lemma exp_neg_rpow_neg_half_dimension {d : ℕ} (u : ℝ) :
     (Real.exp (-u)) ^ (-((d : ℝ) / 2)) =
       Real.exp (((d : ℝ) / 2) * u) := by
   rw [Real.rpow_def_of_pos (Real.exp_pos (-u)), Real.log_exp]
   congr 1
   ring
 
-theorem plusSaddleCriticalLogProfile_eq_fourierInv
+lemma plusSaddleCriticalLogProfile_eq_fourierInv
     {ε : ℝ} {d : ℕ} (hd : 0 < d) (f : TestFunction d)
     (hf : ∀ x : Euclidean d, f x = plusSaddleFunction ε d x) :
     radialCriticalLogProfile hd f =
@@ -23524,7 +23524,7 @@ theorem plusSaddleCriticalLogProfile_eq_fourierInv
   rw [← mul_assoc, ← Complex.ofReal_mul, ← Real.exp_add]
   simp
 
-theorem minusSaddleCriticalLogProfile_eq_fourierInv
+lemma minusSaddleCriticalLogProfile_eq_fourierInv
     {ε : ℝ} {d : ℕ} (hd : 0 < d) (f : TestFunction d)
     (hf : ∀ x : Euclidean d, f x = minusSaddleFunction ε d x) :
     radialCriticalLogProfile hd f =
@@ -23541,7 +23541,7 @@ theorem minusSaddleCriticalLogProfile_eq_fourierInv
   rw [← mul_assoc, ← Complex.ofReal_mul, ← Real.exp_add]
   simp
 
-theorem plusSaddleFourierData_fourier_integrable_of_source
+lemma plusSaddleFourierData_fourier_integrable_of_source
     {ε : ℝ} {d : ℕ} (hd : 0 < d) (f : TestFunction d)
     (hf : ∀ x : Euclidean d, f x = plusSaddleFunction ε d x) :
     Integrable
@@ -23553,7 +23553,7 @@ theorem plusSaddleFourierData_fourier_integrable_of_source
     (plusSaddleCriticalLogProfile_eq_fourierInv hd f hf) (-u)
   simpa [Real.fourierInv_eq_fourier_neg] using! h
 
-theorem minusSaddleFourierData_fourier_integrable_of_source
+lemma minusSaddleFourierData_fourier_integrable_of_source
     {ε : ℝ} {d : ℕ} (hd : 0 < d) (f : TestFunction d)
     (hf : ∀ x : Euclidean d, f x = minusSaddleFunction ε d x) :
     Integrable
@@ -23565,7 +23565,7 @@ theorem minusSaddleFourierData_fourier_integrable_of_source
     (minusSaddleCriticalLogProfile_eq_fourierInv hd f hf) (-u)
   simpa [Real.fourierInv_eq_fourier_neg] using! h
 
-theorem plusSaddle_radialMellinFrequency_of_source
+lemma plusSaddle_radialMellinFrequency_of_source
     {ε : ℝ} (hε : 0 < ε) {d : ℕ} (hd : 0 < d)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (f : TestFunction d)
@@ -23589,7 +23589,7 @@ theorem plusSaddle_radialMellinFrequency_of_source
   congr 1
   field_simp [Real.pi_ne_zero]
 
-theorem minusSaddle_radialMellinFrequency_of_source
+lemma minusSaddle_radialMellinFrequency_of_source
     {ε : ℝ} (hε : 0 < ε) {d : ℕ} (hd : 0 < d)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (f : TestFunction d)
@@ -23613,7 +23613,7 @@ theorem minusSaddle_radialMellinFrequency_of_source
   congr 1
   field_simp [Real.pi_ne_zero]
 
-theorem radialMellinFrequency_injective {d : ℕ}
+lemma radialMellinFrequency_injective {d : ℕ}
     (hd : 0 < d) {f g : TestFunction d}
     (hf : IsRadial f) (hg : IsRadial g)
     (hfrequency : ∀ t : ℝ,
@@ -23682,7 +23682,7 @@ theorem radialMellinFrequency_injective {d : ℕ}
       _ = radialProfile hd g ‖x‖ := hpositive ‖x‖ hr
       _ = g x := radialProfile_norm hd g hg x
 
-theorem plusSaddle_radial_of_source {ε : ℝ} {d : ℕ}
+lemma plusSaddle_radial_of_source {ε : ℝ} {d : ℕ}
     (f : TestFunction d)
     (hf : ∀ x : Euclidean d, f x = plusSaddleFunction ε d x) :
     IsRadial f := by
@@ -23690,7 +23690,7 @@ theorem plusSaddle_radial_of_source {ε : ℝ} {d : ℕ}
   rw [hf x, hf y]
   exact plusSaddleFunction_radial ε d x y hxy
 
-theorem minusSaddle_radial_of_source {ε : ℝ} {d : ℕ}
+lemma minusSaddle_radial_of_source {ε : ℝ} {d : ℕ}
     (f : TestFunction d)
     (hf : ∀ x : Euclidean d, f x = minusSaddleFunction ε d x) :
     IsRadial f := by
@@ -23698,7 +23698,7 @@ theorem minusSaddle_radial_of_source {ε : ℝ} {d : ℕ}
   rw [hf x, hf y]
   exact minusSaddleFunction_radial ε d x y hxy
 
-theorem plusSaddle_real_of_source {ε : ℝ} {d : ℕ}
+lemma plusSaddle_real_of_source {ε : ℝ} {d : ℕ}
     (f : TestFunction d)
     (hf : ∀ x : Euclidean d, f x = plusSaddleFunction ε d x) :
     IsRealValued f := by
@@ -23706,7 +23706,7 @@ theorem plusSaddle_real_of_source {ε : ℝ} {d : ℕ}
   rw [hf x]
   exact plusSaddleFunction_real ε d x
 
-theorem minusSaddle_real_of_source {ε : ℝ} {d : ℕ}
+lemma minusSaddle_real_of_source {ε : ℝ} {d : ℕ}
     (f : TestFunction d)
     (hf : ∀ x : Euclidean d, f x = minusSaddleFunction ε d x) :
     IsRealValued f := by
@@ -23714,7 +23714,7 @@ theorem minusSaddle_real_of_source {ε : ℝ} {d : ℕ}
   rw [hf x]
   exact minusSaddleFunction_real ε d x
 
-theorem saddleSource_fourier_minus_eq_plus
+lemma saddleSource_fourier_minus_eq_plus
     {ε : ℝ} (hε : 0 < ε) {d : ℕ} (hd : 0 < d)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (fminus fplus : TestFunction d)
@@ -23748,7 +23748,7 @@ theorem saddleSource_fourier_minus_eq_plus
       (plusSaddle_radialMellinFrequency_of_source
         hε hd horder fplus hplus t).symm
 
-theorem saddleSource_zero_pos
+lemma saddleSource_zero_pos
     {ε : ℝ} (hε : 0 < ε) {d : ℕ}
     (fminus fplus : TestFunction d)
     (hminus : ∀ x : Euclidean d,
@@ -23760,7 +23760,7 @@ theorem saddleSource_zero_pos
   rw [hminus, hplus]
   exact (saddleFunction_zero_pos hε d).symm
 
-theorem saddleSource_zero_eq {ε : ℝ} {d : ℕ}
+lemma saddleSource_zero_eq {ε : ℝ} {d : ℕ}
     (fminus fplus : TestFunction d)
     (hminus : ∀ x : Euclidean d,
       fminus x = minusSaddleFunction ε d x)
@@ -23822,7 +23822,7 @@ def saddleSourceAdmissible
     have hscaled := mul_le_mul_of_nonneg_left hx hR.le
     simpa [norm_smul, Real.norm_eq_abs, abs_of_pos hR] using! hscaled
 
-@[simp] theorem saddleSourceAdmissible_function
+@[simp] lemma saddleSourceAdmissible_function
     {ε : ℝ} (hε : 0 < ε) {d : ℕ} (hd : 0 < d)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     {R : ℝ} (hR : 0 < R)
@@ -23840,7 +23840,7 @@ def saddleSourceAdmissible
       hminusoutside).function = dilate fminus R hR := by
   rfl
 
-theorem saddleSourceAdmissible_quotient
+lemma saddleSourceAdmissible_quotient
     {ε : ℝ} (hε : 0 < ε) {d : ℕ} (hd : 0 < d)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     {R : ℝ} (hR : 0 < R)
@@ -23876,7 +23876,7 @@ theorem saddleSourceAdmissible_quotient
   simp only [smul_eq_mul]
   field_simp [hpow, hzero.ne']
 
-theorem saddleSourceAdmissible_normalizedCost
+lemma saddleSourceAdmissible_normalizedCost
     {ε : ℝ} (hε : 0 < ε) {d : ℕ} (hd : 0 < d)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     {R : ℝ} (hR : 0 < R)
@@ -23922,25 +23922,25 @@ def saddleLogRadius (ε : ℝ) (d : ℕ) (u : ℝ) : ℝ :=
 def saddleSourceRadius (ε : ℝ) (d : ℕ) : ℝ :=
   Real.exp (saddleLogRadius ε d (1 + ε / 4))
 
-theorem saddleSourceRadius_pos (ε : ℝ) (d : ℕ) :
+lemma saddleSourceRadius_pos (ε : ℝ) (d : ℕ) :
     0 < saddleSourceRadius ε d := by
   exact Real.exp_pos _
 
-theorem saddleLogGamma_add_one {x : ℝ} (hx : 0 < x) :
+lemma saddleLogGamma_add_one {x : ℝ} (hx : 0 < x) :
     (Real.log ∘ Real.Gamma) (x + 1) =
       (Real.log ∘ Real.Gamma) x + Real.log x := by
   simp only [Function.comp_apply, Real.Gamma_add_one hx.ne',
     Real.log_mul hx.ne' (Real.Gamma_pos_of_pos hx).ne']
   ring
 
-theorem saddleLogGamma_differentiableAt {x : ℝ} (hx : 0 < x) :
+lemma saddleLogGamma_differentiableAt {x : ℝ} (hx : 0 < x) :
     DifferentiableAt ℝ (Real.log ∘ Real.Gamma) x := by
   exact (Real.differentiableAt_Gamma
     (fun n => ne_of_gt (by
       have hn : 0 ≤ (n : ℝ) := Nat.cast_nonneg n
       linarith))).log (Real.Gamma_pos_of_pos hx).ne'
 
-theorem saddleDigamma_bounds {x : ℝ} (hx : 1 < x) :
+lemma saddleDigamma_bounds {x : ℝ} (hx : 1 < x) :
     Real.log (x - 1) ≤ saddleDigamma x ∧
       saddleDigamma x ≤ Real.log x := by
   have hxpositive : 0 < x := by linarith
@@ -23971,7 +23971,7 @@ theorem saddleDigamma_bounds {x : ℝ} (hx : 1 < x) :
     rw [hden, div_one, hrec] at hconv
     simpa using! hconv
 
-theorem tendsto_saddleDigamma_sub_log :
+lemma tendsto_saddleDigamma_sub_log :
     Tendsto (fun x : ℝ => saddleDigamma x - Real.log x)
       atTop (𝓝 (0 : ℝ)) := by
   have hinv : Tendsto (fun x : ℝ => x⁻¹)
@@ -24002,7 +24002,7 @@ theorem tendsto_saddleDigamma_sub_log :
   · filter_upwards [eventually_gt_atTop (1 : ℝ)] with x hx
     exact sub_nonpos.mpr (saddleDigamma_bounds hx).2
 
-theorem saddle_exp_half_log_eq_sqrt {x : ℝ} (hx : 0 < x) :
+lemma saddle_exp_half_log_eq_sqrt {x : ℝ} (hx : 0 < x) :
     Real.exp (Real.log x / 2) = Real.sqrt x := by
   rw [← Real.log_sqrt hx.le,
     Real.exp_log (Real.sqrt_pos.2 hx)]
@@ -24010,13 +24010,13 @@ theorem saddle_exp_half_log_eq_sqrt {x : ℝ} (hx : 0 < x) :
 def saddleCriticalGammaArgument (ε : ℝ) (d : ℕ) : ℝ :=
   ((d : ℝ) / 2) * (2 + ε / 4) / 2
 
-theorem saddleCriticalGammaArgument_pos {ε : ℝ}
+lemma saddleCriticalGammaArgument_pos {ε : ℝ}
     (hε : 0 < ε) {d : ℕ} (hd : 0 < d) :
     0 < saddleCriticalGammaArgument ε d := by
   unfold saddleCriticalGammaArgument
   positivity
 
-theorem tendsto_saddleCriticalGammaArgument_atTop
+lemma tendsto_saddleCriticalGammaArgument_atTop
     {ε : ℝ} (hε : 0 < ε) :
     Tendsto (saddleCriticalGammaArgument ε)
       atTop atTop := by
@@ -24027,7 +24027,7 @@ theorem tendsto_saddleCriticalGammaArgument_atTop
   unfold saddleCriticalGammaArgument
   ring
 
-theorem saddleLogRadius_critical_eq (ε : ℝ) (d : ℕ) :
+lemma saddleLogRadius_critical_eq (ε : ℝ) (d : ℕ) :
     saddleLogRadius ε d (1 + ε / 4) =
       -(Real.log Real.pi) / 2 +
         saddleDigamma (saddleCriticalGammaArgument ε d) / 2 +
@@ -24039,7 +24039,7 @@ theorem saddleLogRadius_critical_eq (ε : ℝ) (d : ℕ) :
   congr 2
   ring_nf
 
-theorem saddleSourceRadius_div_sqrt_eq
+lemma saddleSourceRadius_div_sqrt_eq
     {ε : ℝ} (hε : 0 < ε) {d : ℕ} (hd : 0 < d) :
     saddleSourceRadius ε d / Real.sqrt (d : ℝ) =
       Real.exp ((saddleDigamma (saddleCriticalGammaArgument ε d) -
@@ -24106,7 +24106,7 @@ theorem saddleSourceRadius_div_sqrt_eq
       try dsimp [m, a, S]
       ring
 
-theorem tendsto_saddleSourceRadius_normalized
+lemma tendsto_saddleSourceRadius_normalized
     {ε : ℝ} (hε : 0 < ε) :
     Tendsto
       (fun d : ℕ =>
@@ -24150,7 +24150,7 @@ def saddleSourceMellinContour (ℓ u T : ℝ) : ℂ :=
   ((ℓ * (1 + u) : ℝ) : ℂ) -
     Complex.I * ((ℓ * T : ℝ) : ℂ)
 
-theorem saddleSourceMellinContour_shellArgument
+lemma saddleSourceMellinContour_shellArgument
     {ℓ : ℝ} (hℓ : 0 < ℓ) (u T : ℝ) :
     Complex.I *
         (saddleSourceMellinContour ℓ u T - (ℓ : ℂ)) /
@@ -24164,7 +24164,7 @@ theorem saddleSourceMellinContour_shellArgument
   ring_nf
   simp [Complex.I_sq]
 
-theorem saddleSourceMellinContour_gammaArgument
+lemma saddleSourceMellinContour_gammaArgument
     (ℓ u T : ℝ) :
     saddleSourceMellinContour ℓ u T / 2 =
       ((ℓ * (1 + u) / 2 : ℝ) : ℂ) -
@@ -24173,7 +24173,7 @@ theorem saddleSourceMellinContour_gammaArgument
   push_cast
   ring
 
-theorem norm_saddleShellExponential_eq_exp_neg_damping
+lemma norm_saddleShellExponential_eq_exp_neg_damping
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (ℓ T u : ℝ) :
@@ -24199,12 +24199,12 @@ def saddleSourceShellDerivative (ε u : ℝ) : ℝ :=
   (∫ a in shellLocation ε..shellLocation ε + 1,
     positiveShellDensity ε a * a * Real.sinh (u * a))
 
-theorem saddleSourceShellDerivative_one (ε : ℝ) :
+lemma saddleSourceShellDerivative_one (ε : ℝ) :
     saddleSourceShellDerivative ε 1 =
       saddleShellDerivativeOne ε := by
   simp [saddleSourceShellDerivative, saddleShellDerivativeOne]
 
-theorem saddleSourceShellDerivative_neg
+lemma saddleSourceShellDerivative_neg
     (ε u : ℝ) :
     saddleSourceShellDerivative ε (-u) =
       -saddleSourceShellDerivative ε u := by
@@ -24242,7 +24242,7 @@ theorem saddleSourceShellDerivative_neg
   rw [hshort, hpositive]
   ring
 
-theorem saddleLogRadius_eq_digamma_add_shellDerivative
+lemma saddleLogRadius_eq_digamma_add_shellDerivative
     (ε : ℝ) (d : ℕ) (u : ℝ) :
     saddleLogRadius ε d u =
       -(Real.log Real.pi) / 2 +
@@ -24262,12 +24262,12 @@ def saddleSmallRadiusStar (ε : ℝ) (d : ℕ) : ℝ :=
     (saddleLogRadius ε d
       (saddleSmallRadiusStarOrdinate ε d))
 
-theorem saddleSmallRadiusStar_pos (ε : ℝ) (d : ℕ) :
+lemma saddleSmallRadiusStar_pos (ε : ℝ) (d : ℕ) :
     0 < saddleSmallRadiusStar ε d := by
   unfold saddleSmallRadiusStar
   exact Real.exp_pos _
 
-theorem saddleSmallRadiusStar_gammaArgument
+lemma saddleSmallRadiusStar_gammaArgument
     {d : ℕ} (hd : 0 < d) (ε : ℝ) :
     ((d : ℝ) / 2) *
         (1 + saddleSmallRadiusStarOrdinate ε d) / 2 =
@@ -24278,7 +24278,7 @@ theorem saddleSmallRadiusStar_gammaArgument
   field_simp
   ring
 
-theorem saddleSourceShellDerivative_eq_deriv
+lemma saddleSourceShellDerivative_eq_deriv
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (u : ℝ) :
@@ -24290,7 +24290,7 @@ theorem saddleSourceShellDerivative_eq_deriv
   unfold saddleSourceShellDerivative
   simpa [mul_comm] using! h.symm
 
-theorem saddleSourceShellDerivative_contDiff_one
+lemma saddleSourceShellDerivative_contDiff_one
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     ContDiff ℝ (1 : WithTop ℕ∞)
@@ -24312,7 +24312,7 @@ theorem saddleSourceShellDerivative_contDiff_one
   rw [heq]
   exact hderiv
 
-theorem saddleSmallRadiusVariable_star_eq
+lemma saddleSmallRadiusVariable_star_eq
     {ε : ℝ} {d : ℕ} (hd : 0 < d) :
     saddleSmallRadiusVariable ε (saddleSmallRadiusStar ε d) =
       Real.exp
@@ -24345,14 +24345,14 @@ theorem saddleSmallRadiusVariable_star_eq
   congr 1
   ring
 
-theorem saddleSourceShellDerivative_neg_one
+lemma saddleSourceShellDerivative_neg_one
     (ε : ℝ) :
     saddleSourceShellDerivative ε (-1) =
       -saddleShellDerivativeOne ε := by
   simpa [saddleSourceShellDerivative_one] using!
     saddleSourceShellDerivative_neg ε 1
 
-theorem exists_saddleSourceShellDerivative_endpoint_bound
+lemma exists_saddleSourceShellDerivative_endpoint_bound
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     ∃ C : ℝ, 0 ≤ C ∧
@@ -24396,7 +24396,7 @@ theorem exists_saddleSourceShellDerivative_endpoint_bound
           mul_le_mul_of_nonneg_right
             (le_max_left _ _) hnonneg
 
-theorem saddle_log_sq_le_four_mul
+lemma saddle_log_sq_le_four_mul
     {x : ℝ} (hx : 1 ≤ x) :
     (Real.log x) ^ 2 ≤ 4 * x := by
   have hxpos : 0 < x := by linarith
@@ -24421,7 +24421,7 @@ theorem saddle_log_sq_le_four_mul
       hlognonnegative)
   nlinarith
 
-theorem exists_saddleSmallRadiusStar_coordinate_bound
+lemma exists_saddleSmallRadiusStar_coordinate_bound
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     ∃ C : ℝ, 0 ≤ C ∧
@@ -24564,7 +24564,7 @@ theorem exists_saddleSmallRadiusStar_coordinate_bound
     _ = Real.log ((d : ℝ) / 2) / 8 + C := by
       rfl
 
-theorem exists_eventually_y_star_le_log_eighth_add
+lemma exists_eventually_y_star_le_log_eighth_add
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     ∃ C : ℝ, 0 ≤ C ∧
@@ -24612,13 +24612,13 @@ theorem exists_eventually_y_star_le_log_eighth_add
 def saddleSmallResidueTruncation (ℓ : ℝ) : ℕ :=
   Nat.ceil (20 * Real.log ℓ)
 
-theorem saddleSmallResidueTruncation_lower
+lemma saddleSmallResidueTruncation_lower
     (ℓ : ℝ) :
     20 * Real.log ℓ ≤
       (saddleSmallResidueTruncation ℓ : ℝ) := by
   exact Nat.le_ceil (20 * Real.log ℓ)
 
-theorem saddleSmallResidueTruncation_upper
+lemma saddleSmallResidueTruncation_upper
     {ℓ : ℝ} (hℓ : 1 ≤ ℓ) :
     (saddleSmallResidueTruncation ℓ : ℝ) ≤
       20 * Real.log ℓ + 1 := by
@@ -24626,7 +24626,7 @@ theorem saddleSmallResidueTruncation_upper
     (mul_nonneg (by norm_num)
       (Real.log_nonneg hℓ))).le
 
-theorem tendsto_logLinear_div_atTop :
+lemma tendsto_logLinear_div_atTop :
     Tendsto
       (fun ℓ : ℝ => (20 * Real.log ℓ + 1) / ℓ)
       atTop (𝓝 0) := by
@@ -24648,7 +24648,7 @@ theorem tendsto_logLinear_div_atTop :
     ring
   · norm_num
 
-theorem tendsto_logLinear_sq_div_atTop :
+lemma tendsto_logLinear_sq_div_atTop :
     Tendsto
       (fun ℓ : ℝ => (20 * Real.log ℓ + 1) ^ 2 / ℓ)
       atTop (𝓝 0) := by
@@ -24677,7 +24677,7 @@ theorem tendsto_logLinear_sq_div_atTop :
     ring
   · norm_num
 
-theorem tendsto_saddleSmallResidueTruncation_div :
+lemma tendsto_saddleSmallResidueTruncation_div :
     Tendsto
       (fun ℓ : ℝ =>
         (saddleSmallResidueTruncation ℓ : ℝ) / ℓ)
@@ -24696,7 +24696,7 @@ theorem tendsto_saddleSmallResidueTruncation_div :
       (by linarith)
   · exact tendsto_logLinear_div_atTop
 
-theorem tendsto_saddleSmallResidueTruncation_sq_div :
+lemma tendsto_saddleSmallResidueTruncation_sq_div :
     Tendsto
       (fun ℓ : ℝ =>
         (saddleSmallResidueTruncation ℓ : ℝ) ^ 2 / ℓ)
@@ -24719,7 +24719,7 @@ theorem tendsto_saddleSmallResidueTruncation_sq_div :
       (saddleSmallResidueTruncation_upper hℓ)
   · exact tendsto_logLinear_sq_div_atTop
 
-theorem eventually_saddleSmallResidueTruncation_double_le :
+lemma eventually_saddleSmallResidueTruncation_double_le :
     ∀ᶠ ℓ : ℝ in atTop,
       2 * (saddleSmallResidueTruncation ℓ : ℝ) ≤ ℓ := by
   have hsmall :=
@@ -24731,7 +24731,7 @@ theorem eventually_saddleSmallResidueTruncation_double_le :
   have h := (div_lt_iff₀ hℓ).mp hratio
   linarith
 
-theorem eventually_saddleSmallResidueTruncation_succ_double_le :
+lemma eventually_saddleSmallResidueTruncation_succ_double_le :
     ∀ᶠ ℓ : ℝ in atTop,
       2 * ((saddleSmallResidueTruncation ℓ + 1 : ℕ) : ℝ) ≤ ℓ := by
   have hsmall :=
@@ -24745,7 +24745,7 @@ theorem eventually_saddleSmallResidueTruncation_succ_double_le :
   push_cast
   linarith
 
-theorem eventually_saddleSmallResidueTruncation_dominates_window
+lemma eventually_saddleSmallResidueTruncation_dominates_window
     {C : ℝ} (hC : 0 ≤ C) :
     ∀ᶠ ℓ : ℝ in atTop,
       ∀ y : ℝ,
@@ -24761,7 +24761,7 @@ theorem eventually_saddleSmallResidueTruncation_dominates_window
   have hN := saddleSmallResidueTruncation_lower ℓ
   nlinarith [hlogC]
 
-theorem saddleExpSeries_term_le_exp_mul_half_pow
+lemma saddleExpSeries_term_le_exp_mul_half_pow
     {y : ℝ} (hy : 0 ≤ y) (m : ℕ) :
     y ^ m / (m.factorial : ℝ) ≤
       Real.exp (2 * y) * (1 / 2 : ℝ) ^ m := by
@@ -24785,13 +24785,13 @@ theorem saddleExpSeries_term_le_exp_mul_half_pow
     _ ≤ Real.exp (2 * y) * (1 / 2 : ℝ) ^ m :=
       mul_le_mul_of_nonneg_right hterm (by positivity)
 
-theorem saddleSmallResidue_half_log_le :
+lemma saddleSmallResidue_half_log_le :
     Real.log (1 / 2 : ℝ) ≤ -(1 / 2 : ℝ) := by
   have h := Real.log_le_sub_one_of_pos
     (by norm_num : (0 : ℝ) < 1 / 2)
   linarith
 
-theorem saddleSmallResidueTruncation_half_pow_le
+lemma saddleSmallResidueTruncation_half_pow_le
     (ℓ : ℝ) :
     (1 / 2 : ℝ) ^
         (saddleSmallResidueTruncation ℓ + 1) ≤
@@ -24822,7 +24822,7 @@ theorem saddleSmallResidueTruncation_half_pow_le
 def saddleSmallResidueTailMajorant (C ℓ : ℝ) : ℝ :=
   Real.exp (3 * C - (77 / 8 : ℝ) * Real.log ℓ)
 
-theorem saddleSmallResidue_tail_le_majorant
+lemma saddleSmallResidue_tail_le_majorant
     {C ℓ y : ℝ}
     (hy : 0 ≤ y)
     (hyupper : y ≤ Real.log ℓ / 8 + C) :
@@ -24859,7 +24859,7 @@ theorem saddleSmallResidue_tail_le_majorant
       congr 1
       ring
 
-theorem tendsto_saddleSmallResidueTailMajorant
+lemma tendsto_saddleSmallResidueTailMajorant
     (C : ℝ) :
     Tendsto (saddleSmallResidueTailMajorant C)
       atTop (𝓝 0) := by
@@ -24893,7 +24893,7 @@ def saddleSmallResidueCoefficientMajorant
     Real.exp
       (2 * C - (3 / 4 : ℝ) * Real.log ℓ)
 
-theorem saddleSmallResidue_coefficient_le_majorant
+lemma saddleSmallResidue_coefficient_le_majorant
     {K C ℓ y : ℝ}
     (hK : 0 ≤ K) (hC : 0 ≤ C)
     (hℓ : 1 ≤ ℓ)
@@ -24950,7 +24950,7 @@ theorem saddleSmallResidue_coefficient_le_majorant
       rw [hrat]
       rfl
 
-theorem tendsto_saddleLogWindowPolynomial_exp_neg
+lemma tendsto_saddleLogWindowPolynomial_exp_neg
     (C : ℝ) :
     Tendsto
       (fun t : ℝ =>
@@ -25017,7 +25017,7 @@ theorem tendsto_saddleLogWindowPolynomial_exp_neg
     ring
   · norm_num
 
-theorem tendsto_saddleSmallResidueCoefficientMajorant
+lemma tendsto_saddleSmallResidueCoefficientMajorant
     (K C : ℝ) :
     Tendsto (saddleSmallResidueCoefficientMajorant K C)
       atTop (𝓝 0) := by
@@ -25061,7 +25061,7 @@ def saddleSmallResidueRelativeErrorMajorant
   saddleSmallResidueCoefficientMajorant K C ℓ +
     2 * saddleSmallResidueTailMajorant C ℓ
 
-theorem tendsto_saddleSmallResidueRelativeErrorMajorant
+lemma tendsto_saddleSmallResidueRelativeErrorMajorant
     (K C : ℝ) :
     Tendsto (saddleSmallResidueRelativeErrorMajorant K C)
       atTop (𝓝 0) := by
@@ -25070,7 +25070,7 @@ theorem tendsto_saddleSmallResidueRelativeErrorMajorant
       ((tendsto_saddleSmallResidueTailMajorant C).const_mul 2)
   simpa [saddleSmallResidueRelativeErrorMajorant] using! h
 
-theorem eventually_plusSaddleSmallRadius_relativeFiniteResidue_lt_half
+lemma eventually_plusSaddleSmallRadius_relativeFiniteResidue_lt_half
     {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -25142,7 +25142,7 @@ theorem eventually_plusSaddleSmallRadius_relativeFiniteResidue_lt_half
     _ < 1 / 2 := by
       exact hsmall
 
-theorem tendsto_saddleResidue_dimension_half :
+lemma tendsto_saddleResidue_dimension_half :
     Tendsto
       (fun d : ℕ => (d : ℝ) / 2)
       atTop atTop := by
@@ -25153,7 +25153,7 @@ theorem tendsto_saddleResidue_dimension_half :
   funext d
   ring
 
-theorem eventually_plusSaddleSmallRadius_relativeFiniteResidue_lt_half_on_star
+lemma eventually_plusSaddleSmallRadius_relativeFiniteResidue_lt_half_on_star
     {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
@@ -25190,7 +25190,7 @@ noncomputable section
 open Filter Set MeasureTheory
 open scoped Topology BigOperators
 
-theorem gamma_half_factorial_lower (N : ℕ) :
+lemma gamma_half_factorial_lower (N : ℕ) :
     Real.Gamma (3 / 2 : ℝ) * (N.factorial : ℝ) ≤
       Real.Gamma ((N : ℝ) + 3 / 2) := by
   induction N with
@@ -25225,7 +25225,7 @@ theorem gamma_half_factorial_lower (N : ℕ) :
       _ = Real.Gamma (((N + 1 : ℕ) : ℝ) + 3 / 2) :=
         hrec.symm
 
-theorem saddleNegativeTruncation_half_pow_le (ℓ : ℝ) :
+lemma saddleNegativeTruncation_half_pow_le (ℓ : ℝ) :
     (1 / 2 : ℝ) ^ saddleSmallResidueTruncation ℓ ≤
       2 * Real.exp (-10 * Real.log ℓ) := by
   have hnext := saddleSmallResidueTruncation_half_pow_le ℓ
@@ -25238,7 +25238,7 @@ theorem saddleNegativeTruncation_half_pow_le (ℓ : ℝ) :
     _ ≤ 2 * Real.exp (-10 * Real.log ℓ) :=
       mul_le_mul_of_nonneg_left hnext (by norm_num)
 
-theorem saddleNegative_factorialTail_le_majorant
+lemma saddleNegative_factorialTail_le_majorant
     {C ℓ y : ℝ}
     (hy : 0 ≤ y)
     (hyupper : y ≤ Real.log ℓ / 8 + C) :
@@ -25285,7 +25285,7 @@ theorem saddleNegative_factorialTail_le_majorant
           congr 2
           ring
 
-theorem saddleNegative_sqrt_le_one_add
+lemma saddleNegative_sqrt_le_one_add
     {y : ℝ} (hy : 0 ≤ y) :
     Real.sqrt y ≤ 1 + y := by
   have hs := Real.sqrt_nonneg y
@@ -25302,7 +25302,7 @@ def saddleNegativeRelativeGammaTailMajorant
             (2 * (saddleSmallResidueTruncation ℓ : ℝ) + 1) ^ 2 /
               ℓ)
 
-theorem saddleNegative_relativeGammaTail_le_majorant
+lemma saddleNegative_relativeGammaTail_le_majorant
     {C K Kε ℓ y : ℝ}
     (hKε : 0 ≤ Kε)
     (hC : 0 ≤ C)
@@ -25389,7 +25389,7 @@ theorem saddleNegative_relativeGammaTail_le_majorant
       try dsimp [N, Y, E]
       ring
 
-theorem tendsto_saddleNegativeTruncation_odd_sq_div :
+lemma tendsto_saddleNegativeTruncation_odd_sq_div :
     Tendsto
       (fun ℓ : ℝ =>
         (2 * (saddleSmallResidueTruncation ℓ : ℝ) + 1) ^ 2 / ℓ)
@@ -25409,7 +25409,7 @@ theorem tendsto_saddleNegativeTruncation_odd_sq_div :
     ring
   · norm_num
 
-theorem tendsto_saddleNegativeLogWindowTailMajorant
+lemma tendsto_saddleNegativeLogWindowTailMajorant
     (C : ℝ) :
     Tendsto
       (fun ℓ : ℝ =>
@@ -25459,7 +25459,7 @@ theorem tendsto_saddleNegativeLogWindowTailMajorant
     ring
   · norm_num
 
-theorem tendsto_saddleNegativeRelativeGammaTailMajorant
+lemma tendsto_saddleNegativeRelativeGammaTailMajorant
     (C K Kε : ℝ) :
     Tendsto (saddleNegativeRelativeGammaTailMajorant C K Kε)
       atTop (𝓝 0) := by
@@ -25476,7 +25476,7 @@ theorem tendsto_saddleNegativeRelativeGammaTailMajorant
     ring_nf
   · norm_num
 
-theorem eventually_saddleNegative_relativeGammaTail_lt_half
+lemma eventually_saddleNegative_relativeGammaTail_lt_half
     {ε : ℝ} (hε : 0 < ε)
     (C K Kε : ℝ)
     (hC : 0 ≤ C)
@@ -25515,7 +25515,7 @@ open scoped Topology BigOperators
 def upperCosLaplaceKernel (c T a : ℝ) : ℝ :=
   (1 - Real.cos (a * T)) * Real.exp (-c * a) / a
 
-theorem upperCosLaplaceKernel_eq_frullani_re
+lemma upperCosLaplaceKernel_eq_frullani_re
     (c T a : ℝ) :
     upperCosLaplaceKernel c T a =
       (complexFrullaniKernel (c : ℂ)
@@ -25524,7 +25524,7 @@ theorem upperCosLaplaceKernel_eq_frullani_re
     Complex.exp_re, Real.cos_neg]
   ring_nf
 
-theorem upperCosLaplaceKernel_integrable
+lemma upperCosLaplaceKernel_integrable
     {c : ℝ} (hc : 0 < c) (T : ℝ) :
     IntegrableOn (upperCosLaplaceKernel c T) (Ioi 0) := by
   have hw : 0 < ((c : ℂ) + Complex.I * (T : ℂ)).re := by
@@ -25535,7 +25535,7 @@ theorem upperCosLaplaceKernel_integrable
   exact hr.congr (Filter.Eventually.of_forall
     (fun a => (upperCosLaplaceKernel_eq_frullani_re c T a).symm))
 
-theorem integral_upperCosLaplaceKernel
+lemma integral_upperCosLaplaceKernel
     {c : ℝ} (hc : 0 < c) (T : ℝ) :
     (∫ a : ℝ in Ioi 0, upperCosLaplaceKernel c T a) =
       Real.log
@@ -25569,7 +25569,7 @@ def upperGammaTruncatedDampingIntegrand
     ∑ k ∈ Finset.range (n + 1),
       Real.exp (-(2 * a / ℓ)) ^ k
 
-theorem upperGammaTruncatedDampingIntegrand_eq_sum
+lemma upperGammaTruncatedDampingIntegrand_eq_sum
     (ℓ η T : ℝ) (n : ℕ) (a : ℝ) :
     upperGammaTruncatedDampingIntegrand ℓ η T n a =
       ∑ k ∈ Finset.range (n + 1),
@@ -25599,7 +25599,7 @@ theorem upperGammaTruncatedDampingIntegrand_eq_sum
         Real.exp (-(η + 2 * (k : ℝ) / ℓ) * a) / a := by
           rw [he]
 
-theorem upperGammaGeometricLimit_eq_integrand
+lemma upperGammaGeometricLimit_eq_integrand
     (ℓ η T a : ℝ) :
     upperCosLaplaceKernel η T a *
         (1 - Real.exp (-(2 * a / ℓ)))⁻¹ =
@@ -25608,7 +25608,7 @@ theorem upperGammaGeometricLimit_eq_integrand
     upperGammaMeasureDensity, div_eq_mul_inv,
     mul_comm, mul_left_comm, mul_assoc]
 
-theorem tendsto_integral_upperGammaTruncatedDampingIntegrand
+lemma tendsto_integral_upperGammaTruncatedDampingIntegrand
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η) (T : ℝ) :
     Tendsto
       (fun n : ℕ =>
@@ -25682,14 +25682,14 @@ theorem tendsto_integral_upperGammaTruncatedDampingIntegrand
     simpa [upperGammaTruncatedDampingIntegrand,
       upperGammaGeometricLimit_eq_integrand] using! hlimit
 
-theorem upperGammaLaplaceRate_pos
+lemma upperGammaLaplaceRate_pos
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η) (k : ℕ) :
     0 < η + 2 * (k : ℝ) / ℓ := by
   exact add_pos_of_pos_of_nonneg hη
     (div_nonneg
       (mul_nonneg (by norm_num) (Nat.cast_nonneg k)) hℓ.le)
 
-theorem integral_upperGammaTruncatedDampingIntegrand
+lemma integral_upperGammaTruncatedDampingIntegrand
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η)
     (T : ℝ) (n : ℕ) :
     (∫ a : ℝ in Ioi 0,
@@ -25729,7 +25729,7 @@ theorem integral_upperGammaTruncatedDampingIntegrand
       exact integral_upperCosLaplaceKernel
         (upperGammaLaplaceRate_pos hℓ hη k) T
 
-theorem upperComplex_norm_ratio_scale
+lemma upperComplex_norm_ratio_scale
     {s c : ℝ} (hs : 0 < s) (hc : 0 < c) (T : ℝ) :
     ‖((s * c : ℝ) : ℂ) +
         Complex.I * ((s * T : ℝ) : ℂ)‖ / (s * c) =
@@ -25743,7 +25743,7 @@ theorem upperComplex_norm_ratio_scale
   rw [he, norm_mul, Complex.norm_of_nonneg hs.le]
   field_simp [hs.ne', hc.ne']
 
-theorem upperGammaLaplaceRate_log_ratio
+lemma upperGammaLaplaceRate_log_ratio
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η)
     (T : ℝ) (k : ℕ) :
     Real.log
@@ -25777,14 +25777,14 @@ theorem upperGammaLaplaceRate_log_ratio
   rw [hreal, himag, harg] at hscale
   exact congrArg Real.log hscale.symm
 
-theorem upperGammaEuler_real_factor_norm
+lemma upperGammaEuler_real_factor_norm
     {m : ℝ} (hm : 0 < m) (k : ℕ) :
     ‖(m : ℂ) + (k : ℂ)‖ = m + (k : ℝ) := by
   have hp : 0 ≤ m + (k : ℝ) := by positivity
   convert! Complex.norm_of_nonneg hp using 1;
     push_cast; ring
 
-theorem upperGammaEuler_complex_factor_pos
+lemma upperGammaEuler_complex_factor_pos
     {m : ℝ} (hm : 0 < m) (b : ℝ) (k : ℕ) :
     0 < ‖(m : ℂ) + Complex.I * (b : ℂ) + (k : ℂ)‖ := by
   apply norm_pos_iff.mpr
@@ -25792,7 +25792,7 @@ theorem upperGammaEuler_complex_factor_pos
   simp
   exact (add_pos_of_pos_of_nonneg hm (Nat.cast_nonneg k)).ne'
 
-theorem upperGammaEuler_log_norm_ratio
+lemma upperGammaEuler_log_norm_ratio
     {m : ℝ} (hm : 0 < m) (b : ℝ)
     {n : ℕ} (hn : 0 < n) :
     Real.log
@@ -25845,7 +25845,7 @@ theorem upperGammaEuler_log_norm_ratio
   intro k hk
   exact div_ne_zero (hcomplex k).ne' (hreal k).ne'
 
-theorem tendsto_upperGammaEuler_log_norm_ratio
+lemma tendsto_upperGammaEuler_log_norm_ratio
     {m : ℝ} (hm : 0 < m) (b : ℝ) :
     Tendsto
       (fun n : ℕ =>
@@ -25874,7 +25874,7 @@ theorem tendsto_upperGammaEuler_log_norm_ratio
       hden
   exact hratio.log (div_ne_zero hnum hden)
 
-theorem upperGammaPositiveShifted_log_norm_eq_neg_damping
+lemma upperGammaPositiveShifted_log_norm_eq_neg_damping
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η) (T : ℝ) :
     Real.log
         (‖Complex.Gamma
@@ -25942,7 +25942,7 @@ theorem upperGammaPositiveShifted_log_norm_eq_neg_damping
       Real.Gamma m) = -upperGammaDamping ℓ η T
   exact hidentity
 
-theorem upperGammaShifted_log_norm_eq_neg_damping
+lemma upperGammaShifted_log_norm_eq_neg_damping
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η) (T : ℝ) :
     Real.log
         (‖Complex.Gamma
@@ -25969,7 +25969,7 @@ theorem upperGammaShifted_log_norm_eq_neg_damping
   exact upperGammaPositiveShifted_log_norm_eq_neg_damping
     hℓ hη T
 
-theorem upperGammaShifted_modulus_eq_exp_neg_damping
+lemma upperGammaShifted_modulus_eq_exp_neg_damping
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η) (T : ℝ) :
     ‖Complex.Gamma
         (((ℓ * η / 2 : ℝ) : ℂ) -
@@ -26026,7 +26026,7 @@ noncomputable section
 open Filter MeasureTheory Set
 open scoped Topology
 
-theorem plusSaddleProfile_re_pos_of_relative_residue_bounds
+lemma plusSaddleProfile_re_pos_of_relative_residue_bounds
     {ε ℓ r : ℝ}
     (hε : 0 < ε)
     (hℓ : 0 < ℓ)
@@ -26105,7 +26105,7 @@ noncomputable section
 open Filter MeasureTheory Set
 open scoped Topology BigOperators
 
-theorem upperPositiveHalfGamma_scaled_sq_le
+lemma upperPositiveHalfGamma_scaled_sq_le
     (n : ℕ) (x : ℝ) :
     Real.Gamma ((n : ℝ) + 1 / 2) ^ 2 ≤
       ‖Complex.Gamma
@@ -26175,7 +26175,7 @@ theorem upperPositiveHalfGamma_scaled_sq_le
         _ = (‖z‖ * ‖Complex.Gamma z‖) ^ 2 *
             Real.cosh (Real.pi * x) := by ring
 
-theorem upperNegativeContour_shortMeasure_pointwise
+lemma upperNegativeContour_shortMeasure_pointwise
     {ε ℓ κ η a : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ) (hκ : 1 ≤ κ)
@@ -26265,7 +26265,7 @@ theorem upperNegativeContour_shortMeasure_pointwise
     _ ≤ (1 - 4 * ε) * upperGammaMeasureDensity ℓ η a :=
       mul_le_mul_of_nonneg_left hbase hfactor
 
-theorem upperNegativeContour_shortDamping_le_gamma
+lemma upperNegativeContour_shortDamping_le_gamma
     {ε ℓ κ η : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ) (hκ : 1 ≤ κ)
@@ -26404,13 +26404,13 @@ def saddleNegativeContourOrdinate (ℓ : ℝ) (N : ℕ) : ℝ :=
 def saddleNegativeGammaRate (ℓ : ℝ) (N : ℕ) : ℝ :=
   (2 * (N : ℝ) + 3) / ℓ
 
-theorem saddleNegativeGammaRate_pos
+lemma saddleNegativeGammaRate_pos
     {ℓ : ℝ} (hℓ : 0 < ℓ) (N : ℕ) :
     0 < saddleNegativeGammaRate ℓ N := by
   unfold saddleNegativeGammaRate
   positivity
 
-theorem one_le_saddleNegativeContourOrdinate
+lemma one_le_saddleNegativeContourOrdinate
     {ℓ : ℝ} (hℓ : 0 < ℓ) (N : ℕ) :
     1 ≤ saddleNegativeContourOrdinate ℓ N := by
   unfold saddleNegativeContourOrdinate
@@ -26418,7 +26418,7 @@ theorem one_le_saddleNegativeContourOrdinate
   have hq : 0 ≤ (2 * (N : ℝ) + 1) / ℓ := by positivity
   linarith
 
-theorem saddleNegativeContourOrdinate_add_rate_le_three
+lemma saddleNegativeContourOrdinate_add_rate_le_three
     {ℓ : ℝ} (hℓ : 0 < ℓ) (N : ℕ)
     (hN : 2 * (((N + 1 : ℕ) : ℝ)) ≤ ℓ) :
     saddleNegativeContourOrdinate ℓ N +
@@ -26436,7 +26436,7 @@ theorem saddleNegativeContourOrdinate_add_rate_le_three
       simpa [add_comm] using! add_le_add_left hratio 1
     _ = 3 := by norm_num
 
-theorem upperNegativeContour_reflectedGamma_damping_exp_le_cosh
+lemma upperNegativeContour_reflectedGamma_damping_exp_le_cosh
     {ℓ : ℝ} (hℓ : 0 < ℓ) (N : ℕ) (s : ℝ) :
     Real.exp
         (2 * upperGammaDamping ℓ
@@ -26511,7 +26511,7 @@ theorem upperNegativeContour_reflectedGamma_damping_exp_le_cosh
           Real.cosh (Real.pi * (s / 2)) by ring,
         hinverse, one_mul]
 
-theorem upperNegativeHalfGamma_reflection_norm
+lemma upperNegativeHalfGamma_reflection_norm
     (N : ℕ) (s : ℝ) :
     ‖Complex.Gamma (upperNegativeHalfGammaArgument N s)‖ *
       ‖Complex.Gamma
@@ -26618,7 +26618,7 @@ theorem upperNegativeHalfGamma_reflection_norm
         _ = Real.pi / Real.cosh (Real.pi * (s / 2)) := by
           simpa [z] using! ih
 
-theorem upperNegativeHalfGamma_norm_eq_reflected_damping
+lemma upperNegativeHalfGamma_norm_eq_reflected_damping
     {ℓ : ℝ} (hℓ : 0 < ℓ) (N : ℕ) (s : ℝ) :
     ‖Complex.Gamma (upperNegativeHalfGammaArgument N s)‖ =
       (Real.pi / Real.Gamma ((N : ℝ) + 3 / 2)) *
@@ -26664,7 +26664,7 @@ theorem upperNegativeHalfGamma_norm_eq_reflected_damping
     (Real.cosh_pos (Real.pi * (s / 2))).ne'] at href ⊢
   simpa [D, neg_div, mul_comm, mul_left_comm, mul_assoc] using! href
 
-theorem upper_log_cosh_ge_abs_sub_log_two (x : ℝ) :
+lemma upper_log_cosh_ge_abs_sub_log_two (x : ℝ) :
     |x| - Real.log 2 ≤ Real.log (Real.cosh x) := by
   have hhalf : Real.exp |x| / 2 ≤ Real.cosh x := by
     rw [← Real.cosh_abs, Real.cosh_eq]
@@ -26675,7 +26675,7 @@ theorem upper_log_cosh_ge_abs_sub_log_two (x : ℝ) :
     Real.exp_log (by norm_num : (0 : ℝ) < 2)]
   exact hhalf
 
-theorem upperNegativeContour_gamma_mul_exp_short_le
+lemma upperNegativeContour_gamma_mul_exp_short_le
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ) (N : ℕ)
@@ -26795,7 +26795,7 @@ theorem upperNegativeContour_gamma_mul_exp_short_le
         Real.exp_add]
       ring
 
-theorem upperShortShellDamping_neg_frequency
+lemma upperShortShellDamping_neg_frequency
     (ε ℓ δ T : ℝ) :
     upperShortShellDamping ε ℓ δ (-T) =
       upperShortShellDamping ε ℓ δ T := by
@@ -26812,7 +26812,7 @@ theorem upperShortShellDamping_neg_frequency
           (1 - Real.cos (a * T))
   rw [show a * (-T) = -(a * T) by ring, Real.cos_neg]
 
-theorem saddleTaylorContour_gammaArgument
+lemma saddleTaylorContour_gammaArgument
     (N : ℕ) (s : ℝ) :
     (((saddleTaylorContour N : ℂ) +
       (s : ℂ) * Complex.I) / 2) =
@@ -26821,7 +26821,7 @@ theorem saddleTaylorContour_gammaArgument
   push_cast
   ring
 
-theorem saddleTaylorContour_shellArgument
+lemma saddleTaylorContour_shellArgument
     {ℓ : ℝ} (hℓ : 0 < ℓ) (N : ℕ) (s : ℝ) :
     Complex.I *
         (((saddleTaylorContour N : ℂ) +
@@ -26836,7 +26836,7 @@ theorem saddleTaylorContour_shellArgument
   ring_nf
   simp [Complex.I_sq]; ring
 
-theorem saddleNegativeContourOrdinate_le_two
+lemma saddleNegativeContourOrdinate_le_two
     {ℓ : ℝ} (hℓ : 0 < ℓ) (N : ℕ)
     (hN : 2 * (((N + 1 : ℕ) : ℝ)) ≤ ℓ) :
     saddleNegativeContourOrdinate ℓ N ≤ 2 := by
@@ -26847,7 +26847,7 @@ theorem saddleNegativeContourOrdinate_le_two
     nlinarith
   linarith
 
-theorem upperNegativeContour_gamma_mul_shellExponential_le
+lemma upperNegativeContour_gamma_mul_shellExponential_le
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ) (N : ℕ)
@@ -26945,7 +26945,7 @@ theorem upperNegativeContour_gamma_mul_shellExponential_le
 def saddleNegativeFrequencyMajorant (ε s : ℝ) : ℝ :=
   (1 + |s|) ^ 3 * Real.exp (-ε * Real.pi * |s|)
 
-theorem saddleNegativeFrequencyMajorant_integrable
+lemma saddleNegativeFrequencyMajorant_integrable
     {ε : ℝ} (hε : 0 < ε) :
     Integrable (saddleNegativeFrequencyMajorant ε) := by
   have hrate : 0 < ε * Real.pi := mul_pos hε Real.pi_pos
@@ -26962,7 +26962,7 @@ theorem saddleNegativeFrequencyMajorant_integrable
   simp only [Pi.add_apply, pow_zero, pow_one]
   ring_nf
 
-theorem norm_plusPolynomial_negativeContour_le
+lemma norm_plusPolynomial_negativeContour_le
     {ε ℓ : ℝ} (hℓ : 0 < ℓ) (N : ℕ)
     (hN : 2 * (((N + 1 : ℕ) : ℝ)) ≤ ℓ)
     (s : ℝ) :
@@ -27016,7 +27016,7 @@ theorem norm_plusPolynomial_negativeContour_le
     _ = 27 * (1 + |beta ε|) * (1 + |s|) ^ 3 := by
       ring
 
-theorem saddleNegativeContour_piExponential_norm
+lemma saddleNegativeContour_piExponential_norm
     (ℓ : ℝ) (N : ℕ) (s : ℝ) :
     ‖Complex.exp
       ((((ℓ : ℂ) -
@@ -27042,7 +27042,7 @@ def saddleNegativeMellinMajorantCoefficient
       (ℓ * realHyperbolicShellPhase ε
         (saddleNegativeContourOrdinate ℓ N))
 
-theorem plusSaddleMellinData_negativeContour_norm_le
+lemma plusSaddleMellinData_negativeContour_norm_le
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ) (N : ℕ)
@@ -27130,7 +27130,7 @@ theorem plusSaddleMellinData_negativeContour_norm_le
 def saddleNegativeFrequencyMass (ε : ℝ) : ℝ :=
   ∫ s : ℝ, saddleNegativeFrequencyMajorant ε s
 
-theorem saddleNegativeFrequencyMass_nonneg (ε : ℝ) :
+lemma saddleNegativeFrequencyMass_nonneg (ε : ℝ) :
     0 ≤ saddleNegativeFrequencyMass ε := by
   unfold saddleNegativeFrequencyMass
   apply integral_nonneg
@@ -27138,7 +27138,7 @@ theorem saddleNegativeFrequencyMass_nonneg (ε : ℝ) :
   unfold saddleNegativeFrequencyMajorant
   positivity
 
-theorem plusSaddleMellinData_negativeContour_integral_norm_le
+lemma plusSaddleMellinData_negativeContour_integral_norm_le
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ) (N : ℕ)
@@ -27184,7 +27184,7 @@ theorem plusSaddleMellinData_negativeContour_integral_norm_le
       rw [integral_const_mul]
       rfl
 
-theorem plusSaddleTaylorRemainder_negativeContour_bound
+lemma plusSaddleTaylorRemainder_negativeContour_bound
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ) (N : ℕ)
@@ -27257,7 +27257,7 @@ theorem plusSaddleTaylorRemainder_negativeContour_bound
           saddleNegativeMellinMajorantCoefficient ε ℓ N *
             saddleNegativeFrequencyMass ε := by ring
 
-theorem saddleSmallRadiusVariable_sqrt_eq_source
+lemma saddleSmallRadiusVariable_sqrt_eq_source
     (ε : ℝ) {r : ℝ} (hr : 0 ≤ r) :
     Real.sqrt (saddleSmallRadiusVariable ε r) =
       r * Real.exp
@@ -27289,7 +27289,7 @@ theorem saddleSmallRadiusVariable_sqrt_eq_source
   change Real.sqrt (saddleSmallRadiusVariable ε r) = q
   nlinarith
 
-theorem saddleSmallRadiusVariable_halfIntegerFactor
+lemma saddleSmallRadiusVariable_halfIntegerFactor
     (ε : ℝ) {r : ℝ} (hr : 0 ≤ r) (N : ℕ) :
     r ^ (2 * N + 1) *
       Real.exp
@@ -27335,7 +27335,7 @@ def saddleNegativeContourPhaseError
     (((2 * N + 1 : ℕ) : ℝ) *
       saddleShellDerivativeOne ε)
 
-theorem saddleNegativeContour_sourceNormalizationFactor
+lemma saddleNegativeContour_sourceNormalizationFactor
     (ε ℓ : ℝ) (N : ℕ) {r : ℝ} (hr : 0 ≤ r) :
     r ^ (2 * N + 1) *
       Real.exp
@@ -27433,7 +27433,7 @@ def saddleNegativeRelativeCoefficient (ε : ℝ) : ℝ :=
     Real.exp (2 * ε * Real.log 2) *
       saddleNegativeFrequencyMass ε / (4 * beta ε)
 
-theorem saddleNegativeRelativeCoefficient_nonneg
+lemma saddleNegativeRelativeCoefficient_nonneg
     {ε : ℝ} (hε : 0 < ε) :
     0 ≤ saddleNegativeRelativeCoefficient ε := by
   unfold saddleNegativeRelativeCoefficient
@@ -27446,7 +27446,7 @@ theorem saddleNegativeRelativeCoefficient_nonneg
       (saddleNegativeFrequencyMass_nonneg ε))
     (mul_pos (by norm_num) (beta_pos hε)).le
 
-theorem saddleNegativeContour_normalizedMajorant_eq
+lemma saddleNegativeContour_normalizedMajorant_eq
     {ε : ℝ} (hε : 0 < ε)
     (ℓ : ℝ) (N : ℕ) {r : ℝ} (hr : 0 ≤ r) :
     ((1 / (2 * Real.pi)) * r ^ (2 * N + 1) *
@@ -27510,7 +27510,7 @@ theorem saddleNegativeContour_normalizedMajorant_eq
             Real.exp (saddleNegativeContourPhaseError ε ℓ N) := by
         ring
 
-theorem plusSaddleTaylorRemainder_negativeContour_relative_bound
+lemma plusSaddleTaylorRemainder_negativeContour_relative_bound
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ) (N : ℕ)
@@ -27546,7 +27546,7 @@ theorem plusSaddleTaylorRemainder_negativeContour_relative_bound
             Real.exp (saddleNegativeContourPhaseError ε ℓ N) :=
       saddleNegativeContour_normalizedMajorant_eq hε ℓ N hr.le
 
-theorem exists_saddleNegativeContourPhaseError_bound
+lemma exists_saddleNegativeContourPhaseError_bound
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     ∃ K : ℝ, 0 ≤ K ∧
@@ -27598,7 +27598,7 @@ theorem exists_saddleNegativeContourPhaseError_bound
       rw [← hscale]
       field_simp [hℓ.ne']
 
-theorem eventually_plusSaddleTaylorRemainder_relative_lt_half_on_star
+lemma eventually_plusSaddleTaylorRemainder_relative_lt_half_on_star
     {ε : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -27670,7 +27670,7 @@ theorem eventually_plusSaddleTaylorRemainder_relative_lt_half_on_star
       gcongr
     _ < 1 / 2 := htarget
 
-theorem eventually_plusSaddleProfile_re_pos_on_star_fixed
+lemma eventually_plusSaddleProfile_re_pos_on_star_fixed
     {ε : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -27700,7 +27700,7 @@ theorem eventually_plusSaddleProfile_re_pos_on_star_fixed
       (by simpa using! hfinite_d r hr hrstar)
       (by simpa using! hrem_d r hrpos hrstar)
 
-theorem eventually_plusSaddleProfile_re_pos_on_star :
+lemma eventually_plusSaddleProfile_re_pos_on_star :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ᶠ d : ℕ in atTop,
         ∀ r : ℝ, 0 ≤ r → r ≤ saddleSmallRadiusStar ε d →
@@ -27727,7 +27727,7 @@ noncomputable section
 open Filter Set MeasureTheory intervalIntegral
 open scoped ContDiff FourierTransform Interval RealInnerProductSpace Topology
 
-theorem saddleRealCpow_hasDerivAt_zero
+lemma saddleRealCpow_hasDerivAt_zero
     {z : ℂ} (hz : 1 < z.re) :
     HasDerivAt (fun x : ℝ => (x : ℂ) ^ z)
       (0 : ℂ) (0 : ℝ) := by
@@ -27759,7 +27759,7 @@ theorem saddleRealCpow_hasDerivAt_zero
   simp [hz0, Complex.real_smul, Complex.cpow_sub z 1 htc,
     div_eq_mul_inv, mul_comm]
 
-theorem saddleRealCpow_hasDerivAt
+lemma saddleRealCpow_hasDerivAt
     {z : ℂ} (hz : 1 < z.re) (x : ℝ) :
     HasDerivAt (fun y : ℝ => (y : ℂ) ^ z)
       (z * (x : ℂ) ^ (z - 1)) x := by
@@ -27781,14 +27781,14 @@ theorem saddleRealCpow_hasDerivAt
 def saddlePositiveCpow (z : ℂ) (x : ℝ) : ℂ :=
   ((max x 0 : ℝ) : ℂ) ^ z
 
-theorem saddlePositiveCpow_continuous
+lemma saddlePositiveCpow_continuous
     {z : ℂ} (hz : 0 < z.re) :
     Continuous (saddlePositiveCpow z) := by
   unfold saddlePositiveCpow
   exact (Complex.continuous_ofReal_cpow_const hz).comp
     (continuous_id.max continuous_const)
 
-theorem saddlePositiveCpow_hasDerivAt_zero
+lemma saddlePositiveCpow_hasDerivAt_zero
     {z : ℂ} (hz : 1 < z.re) :
     HasDerivAt (saddlePositiveCpow z)
       (0 : ℂ) (0 : ℝ) := by
@@ -27829,7 +27829,7 @@ theorem saddlePositiveCpow_hasDerivAt_zero
       Complex.real_smul, Complex.cpow_sub z 1 htc,
       div_eq_mul_inv, mul_comm]
 
-theorem saddlePositiveCpow_hasDerivAt
+lemma saddlePositiveCpow_hasDerivAt
     {z : ℂ} (hz : 1 < z.re) (x : ℝ) :
     HasDerivAt (saddlePositiveCpow z)
       (z * saddlePositiveCpow (z - 1) x) x := by
@@ -27876,7 +27876,7 @@ theorem saddlePositiveCpow_hasDerivAt
 def saddleContourExponent (a t : ℝ) : ℂ :=
   -(((a : ℂ) + (t : ℂ) * Complex.I) / 2)
 
-@[simp] theorem saddleContourExponent_re (a t : ℝ) :
+@[simp] lemma saddleContourExponent_re (a t : ℝ) :
     (saddleContourExponent a t).re = -a / 2 := by
   simp [saddleContourExponent, Complex.mul_re]
   ring
@@ -27885,7 +27885,7 @@ def saddleContourExponentPolynomial (a : ℝ) : Polynomial ℂ :=
   Polynomial.C (-(a : ℂ) / 2) -
     Polynomial.C (Complex.I / 2) * Polynomial.X
 
-theorem saddleContourExponentPolynomial_eval (a t : ℝ) :
+lemma saddleContourExponentPolynomial_eval (a t : ℝ) :
     (saddleContourExponentPolynomial a).eval (t : ℂ) =
       saddleContourExponent a t := by
   simp [saddleContourExponentPolynomial,
@@ -27898,7 +27898,7 @@ def saddleContourFallingPolynomial (a : ℝ) (j : ℕ) :
     (saddleContourExponentPolynomial a -
       Polynomial.C (i : ℂ))
 
-theorem saddleContourFallingPolynomial_eval_succ
+lemma saddleContourFallingPolynomial_eval_succ
     (a t : ℝ) (j : ℕ) :
     (saddleContourFallingPolynomial a (j + 1)).eval
         (t : ℂ) =
@@ -27909,7 +27909,7 @@ theorem saddleContourFallingPolynomial_eval_succ
     Finset.prod_range_succ,
     saddleContourExponentPolynomial_eval]
 
-theorem saddlePolynomialWeightedData_integrable
+lemma saddlePolynomialWeightedData_integrable
     {D : ℝ → ℂ}
     (hD : ∀ j : ℕ,
       Integrable (fun t : ℝ => (t : ℂ) ^ j * D t))
@@ -27943,13 +27943,13 @@ def saddlePositiveContourMoment
       ((saddleContourFallingPolynomial a j).eval
         (t : ℂ) * D t)
 
-@[simp] theorem saddleContourExponent_sub_nat_re
+@[simp] lemma saddleContourExponent_sub_nat_re
     (a t : ℝ) (j : ℕ) :
     (saddleContourExponent a t - (j : ℂ)).re =
       -a / 2 - (j : ℝ) := by
   simp [saddleContourExponent_re]
 
-theorem saddlePositiveCpow_norm_le_one
+lemma saddlePositiveCpow_norm_le_one
     {z : ℂ} (hz : 0 < z.re)
     {u : ℝ} (hu : u ∈ Set.Ioo (-1 : ℝ) 1) :
     ‖saddlePositiveCpow z u‖ ≤ 1 := by
@@ -27961,7 +27961,7 @@ theorem saddlePositiveCpow_norm_le_one
     hbase (ne_of_gt hz)]
   exact Real.rpow_le_one hbase hbaseone hz.le
 
-theorem saddlePositiveContourPower_frequency_continuous
+lemma saddlePositiveContourPower_frequency_continuous
     {a : ℝ} (j : ℕ)
     (ha : (j : ℝ) < -a / 2) (u : ℝ) :
     Continuous (fun t : ℝ =>
@@ -27983,7 +27983,7 @@ theorem saddlePositiveContourPower_frequency_continuous
     linarith
   simpa using! hpositive.ne'
 
-theorem saddlePositiveContourMoment_hasDerivAt
+lemma saddlePositiveContourMoment_hasDerivAt
     {D : ℝ → ℂ}
     (hD : ∀ k : ℕ,
       Integrable (fun t : ℝ => (t : ℂ) ^ k * D t))
@@ -28116,7 +28116,7 @@ theorem saddlePositiveContourMoment_hasDerivAt
           W (j + 1) t) u
   exact hresult.2
 
-theorem saddlePositiveContourMoment_contDiffOn
+lemma saddlePositiveContourMoment_contDiffOn
     {D : ℝ → ℂ}
     (hD : ∀ k : ℕ,
       Integrable (fun t : ℝ => (t : ℂ) ^ k * D t))
@@ -28160,7 +28160,7 @@ theorem saddlePositiveContourMoment_contDiffOn
             (saddlePositiveContourMoment_hasDerivAt
               hD j hj hu).deriv)
 
-theorem saddleMellinInversePower_eq_squaredPositiveCpow
+lemma saddleMellinInversePower_eq_squaredPositiveCpow
     {r : ℝ} (hr : 0 < r) (z : ℂ) :
     saddleMellinInversePower r z =
       saddlePositiveCpow (-z / 2) (r ^ 2) := by
@@ -28177,7 +28177,7 @@ theorem saddleMellinInversePower_eq_squaredPositiveCpow
       simp [saddlePositiveCpow,
         max_eq_left (sq_nonneg r)]
 
-@[simp] theorem saddlePositiveContourMoment_zero
+@[simp] lemma saddlePositiveContourMoment_zero
     {a : ℝ} (j : ℕ)
     (ha : (j : ℝ) < -a / 2) (D : ℝ → ℂ) :
     saddlePositiveContourMoment a j D 0 = 0 := by
@@ -28219,7 +28219,7 @@ def minusSaddleSquaredRemainder
           ((saddleTaylorContour N : ℂ) +
             (t : ℂ) * Complex.I)) u
 
-theorem plusSaddleTaylorRemainder_eq_squared
+lemma plusSaddleTaylorRemainder_eq_squared
     (ε ℓ : ℝ) (N : ℕ)
     {r : ℝ} (hr : 0 < r) :
     plusSaddleTaylorRemainder ε ℓ N r =
@@ -28242,7 +28242,7 @@ theorem plusSaddleTaylorRemainder_eq_squared
   rw [hq]
   simp [saddleContourFallingPolynomial]
 
-theorem minusSaddleTaylorRemainder_eq_squared
+lemma minusSaddleTaylorRemainder_eq_squared
     (ε ℓ : ℝ) (N : ℕ)
     {r : ℝ} (hr : 0 < r) :
     minusSaddleTaylorRemainder ε ℓ N r =
@@ -28265,7 +28265,7 @@ theorem minusSaddleTaylorRemainder_eq_squared
   rw [hq]
   simp [saddleContourFallingPolynomial]
 
-theorem plusSaddleSquaredRemainder_contDiffOn
+lemma plusSaddleSquaredRemainder_contDiffOn
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -28291,7 +28291,7 @@ theorem plusSaddleSquaredRemainder_contDiffOn
       n 0 (by simpa using! hshift)
   exact (contDiff_const.contDiffOn.mul hsmooth)
 
-theorem minusSaddleSquaredRemainder_contDiffOn
+lemma minusSaddleSquaredRemainder_contDiffOn
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -28322,12 +28322,12 @@ def saddleSquaredResiduePolynomial
   ∑ j ∈ Finset.range (N + 1),
     c j * ((u : ℂ) ^ j)
 
-theorem saddleTaylorContour_negativeHalf_pos (N : ℕ) :
+lemma saddleTaylorContour_negativeHalf_pos (N : ℕ) :
     0 < -(saddleTaylorContour N) / 2 := by
   simp only [saddleTaylorContour, neg_neg]
   positivity
 
-@[simp] theorem saddleSquaredResiduePolynomial_zero
+@[simp] lemma saddleSquaredResiduePolynomial_zero
     (c : ℕ → ℂ) (N : ℕ) :
     saddleSquaredResiduePolynomial c N 0 = c 0 := by
   classical
@@ -28338,7 +28338,7 @@ theorem saddleTaylorContour_negativeHalf_pos (N : ℕ) :
     simp [zero_pow hj]
   · simp
 
-theorem saddleSquaredResiduePolynomial_contDiff
+lemma saddleSquaredResiduePolynomial_contDiff
     (c : ℕ → ℂ) (N n : ℕ) :
     ContDiff ℝ n (saddleSquaredResiduePolynomial c N) := by
   unfold saddleSquaredResiduePolynomial
@@ -28347,7 +28347,7 @@ theorem saddleSquaredResiduePolynomial_contDiff
   exact contDiff_const.mul
     (Complex.ofRealCLM.contDiff.pow j)
 
-@[simp] theorem plusSaddleSquaredRemainder_zero
+@[simp] lemma plusSaddleSquaredRemainder_zero
     (ε ℓ : ℝ) (N : ℕ) :
     plusSaddleSquaredRemainder ε ℓ N 0 = 0 := by
   unfold plusSaddleSquaredRemainder
@@ -28355,7 +28355,7 @@ theorem saddleSquaredResiduePolynomial_contDiff
     (by simpa using! saddleTaylorContour_negativeHalf_pos N)]
   simp
 
-@[simp] theorem minusSaddleSquaredRemainder_zero
+@[simp] lemma minusSaddleSquaredRemainder_zero
     (ε ℓ : ℝ) (N : ℕ) :
     minusSaddleSquaredRemainder ε ℓ N 0 = 0 := by
   unfold minusSaddleSquaredRemainder
@@ -28363,7 +28363,7 @@ theorem saddleSquaredResiduePolynomial_contDiff
     (by simpa using! saddleTaylorContour_negativeHalf_pos N)]
   simp
 
-theorem plusSaddleProfile_eq_squaredTaylor
+lemma plusSaddleProfile_eq_squaredTaylor
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -28388,7 +28388,7 @@ theorem plusSaddleProfile_eq_squaredTaylor
     push_cast
     rw [← pow_mul]
 
-theorem minusSaddleProfile_eq_squaredTaylor
+lemma minusSaddleProfile_eq_squaredTaylor
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -28413,14 +28413,14 @@ theorem minusSaddleProfile_eq_squaredTaylor
     push_cast
     rw [← pow_mul]
 
-theorem saddleTaylorContour_smoothShift (n : ℕ) :
+lemma saddleTaylorContour_smoothShift (n : ℕ) :
     (n : ℝ) + 1 <
       -(saddleTaylorContour (n + 2)) / 2 := by
   simp only [saddleTaylorContour, neg_neg]
   push_cast
   linarith
 
-theorem plusSaddleFunction_contDiff_nat
+lemma plusSaddleFunction_contDiff_nat
     {ε : ℝ} (hε : 0 < ε)
     {d : ℕ} (hd : 0 < d)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -28482,7 +28482,7 @@ theorem plusSaddleFunction_contDiff_nat
               (by simpa using! hx))).of_le
                 (mod_cast le_top)
 
-theorem minusSaddleFunction_contDiff_nat
+lemma minusSaddleFunction_contDiff_nat
     {ε : ℝ} (hε : 0 < ε)
     {d : ℕ} (hd : 0 < d)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -28544,7 +28544,7 @@ theorem minusSaddleFunction_contDiff_nat
               (by simpa using! hx))).of_le
                 (mod_cast le_top)
 
-theorem plusSaddleFunction_contDiff
+lemma plusSaddleFunction_contDiff
     {ε : ℝ} (hε : 0 < ε)
     {d : ℕ} (hd : 0 < d)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
@@ -28553,7 +28553,7 @@ theorem plusSaddleFunction_contDiff
     (fun n => plusSaddleFunction_contDiff_nat
       hε hd horder n)
 
-theorem minusSaddleFunction_contDiff
+lemma minusSaddleFunction_contDiff
     {ε : ℝ} (hε : 0 < ε)
     {d : ℕ} (hd : 0 < d)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
@@ -28570,7 +28570,7 @@ open Filter Set MeasureTheory intervalIntegral
 open scoped ContDiff FourierTransform Interval RealInnerProductSpace
   SchwartzMap Topology
 
-theorem saddleRightHalfPlane_boundary_rectangle
+lemma saddleRightHalfPlane_boundary_rectangle
     {F : ℂ → ℂ}
     (hF : DifferentiableOn ℂ F {z : ℂ | 0 < z.re})
     {A B : ℝ} (hA : 0 < A) (hB : 0 < B)
@@ -28612,7 +28612,7 @@ theorem saddleRightHalfPlane_boundary_rectangle
   simpa [z, w, Complex.mul_re, Complex.mul_im,
     smul_eq_mul] using! h
 
-theorem plusSaddleMellinData_positive_vertical_integral_eq
+lemma plusSaddleMellinData_positive_vertical_integral_eq
     {ε ℓ r A B : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -28672,7 +28672,7 @@ theorem plusSaddleMellinData_positive_vertical_integral_eq
     (fun T => saddleRightHalfPlane_boundary_rectangle
       hhol hA hB T)
 
-theorem minusSaddleMellinData_positive_vertical_integral_eq
+lemma minusSaddleMellinData_positive_vertical_integral_eq
     {ε ℓ r A B : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -28732,7 +28732,7 @@ theorem minusSaddleMellinData_positive_vertical_integral_eq
     (fun T => saddleRightHalfPlane_boundary_rectangle
       hhol hA hB T)
 
-theorem plusSaddleProfile_eq_positive_contour
+lemma plusSaddleProfile_eq_positive_contour
     {ε ℓ r a : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -28754,7 +28754,7 @@ theorem plusSaddleProfile_eq_positive_contour
       plusSaddleMellinData_positive_vertical_integral_eq
         hε hℓ horder hr ha hℓ hright
 
-theorem minusSaddleProfile_eq_positive_contour
+lemma minusSaddleProfile_eq_positive_contour
     {ε ℓ r a : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -28792,7 +28792,7 @@ def minusSaddlePositiveSquaredContour
         minusSaddleMellinData ε ℓ
           ((a : ℂ) + (t : ℂ) * Complex.I)) u
 
-theorem plusSaddleProfile_eq_positive_squaredContour
+lemma plusSaddleProfile_eq_positive_squaredContour
     {ε ℓ r a : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -28816,7 +28816,7 @@ theorem plusSaddleProfile_eq_positive_squaredContour
   rw [hq]
   simp [saddleContourFallingPolynomial]
 
-theorem minusSaddleProfile_eq_positive_squaredContour
+lemma minusSaddleProfile_eq_positive_squaredContour
     {ε ℓ r a : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -28840,7 +28840,7 @@ theorem minusSaddleProfile_eq_positive_squaredContour
   rw [hq]
   simp [saddleContourFallingPolynomial]
 
-theorem saddlePositiveCpow_hasDerivAt_of_pos
+lemma saddlePositiveCpow_hasDerivAt_of_pos
     {z : ℂ} (hz : z ≠ 0)
     {u : ℝ} (hu : 0 < u) :
     HasDerivAt (saddlePositiveCpow z)
@@ -28860,7 +28860,7 @@ theorem saddlePositiveCpow_hasDerivAt_of_pos
     (hasDerivAt_ofReal_cpow_const hu.ne' hz).congr_of_eventuallyEq
       hevent
 
-theorem saddlePositiveContourPower_frequency_continuous_of_pos
+lemma saddlePositiveContourPower_frequency_continuous_of_pos
     (a : ℝ) (j : ℕ) {u : ℝ} (hu : 0 < u) :
     Continuous (fun t : ℝ =>
       saddlePositiveCpow
@@ -28876,7 +28876,7 @@ theorem saddlePositiveContourPower_frequency_continuous_of_pos
   rw [max_eq_left hu.le]
   exact Complex.ofReal_ne_zero.mpr hu.ne'
 
-theorem saddlePositiveCpow_norm_le_one_of_nonpos
+lemma saddlePositiveCpow_norm_le_one_of_nonpos
     {z : ℂ} (hz : z.re ≤ 0)
     {u : ℝ} (hu : u ∈ Set.Ioi (1 : ℝ)) :
     ‖saddlePositiveCpow z u‖ ≤ 1 := by
@@ -28886,7 +28886,7 @@ theorem saddlePositiveCpow_norm_le_one_of_nonpos
     Complex.norm_cpow_eq_rpow_re_of_pos hupos]
   exact Real.rpow_le_one_of_one_le_of_nonpos hu.le hz
 
-theorem saddlePositiveContourMoment_hasDerivAt_of_positiveContour
+lemma saddlePositiveContourMoment_hasDerivAt_of_positiveContour
     {D : ℝ → ℂ}
     (hD : ∀ k : ℕ,
       Integrable (fun t : ℝ => (t : ℂ) ^ k * D t))
@@ -29027,7 +29027,7 @@ theorem saddlePositiveContourMoment_hasDerivAt_of_positiveContour
           W (j + 1) t) u
   exact hresult.2
 
-theorem saddlePositiveContourMoment_contDiffOn_of_positiveContour
+lemma saddlePositiveContourMoment_contDiffOn_of_positiveContour
     {D : ℝ → ℂ}
     (hD : ∀ k : ℕ,
       Integrable (fun t : ℝ => (t : ℂ) ^ k * D t))
@@ -29060,7 +29060,7 @@ theorem saddlePositiveContourMoment_contDiffOn_of_positiveContour
             (saddlePositiveContourMoment_hasDerivAt_of_positiveContour
               hD ha j hu).deriv)
 
-theorem saddlePositiveContourMoment_contDiffOn_infty_of_positiveContour
+lemma saddlePositiveContourMoment_contDiffOn_infty_of_positiveContour
     {D : ℝ → ℂ}
     (hD : ∀ k : ℕ,
       Integrable (fun t : ℝ => (t : ℂ) ^ k * D t))
@@ -29073,7 +29073,7 @@ theorem saddlePositiveContourMoment_contDiffOn_infty_of_positiveContour
     saddlePositiveContourMoment_contDiffOn_of_positiveContour
       hD ha n j
 
-theorem saddlePositiveContourMoment_iteratedDeriv_of_positiveContour
+lemma saddlePositiveContourMoment_iteratedDeriv_of_positiveContour
     {D : ℝ → ℂ}
     (hD : ∀ k : ℕ,
       Integrable (fun t : ℝ => (t : ℂ) ^ k * D t))
@@ -29101,7 +29101,7 @@ def saddleContourMomentL1
     ‖(saddleContourFallingPolynomial a j).eval
         (t : ℂ) * D t‖
 
-theorem saddlePositiveContourMoment_norm_le
+lemma saddlePositiveContourMoment_norm_le
     {D : ℝ → ℂ}
     (hD : ∀ k : ℕ,
       Integrable (fun t : ℝ => (t : ℂ) ^ k * D t))
@@ -29146,7 +29146,7 @@ theorem saddlePositiveContourMoment_norm_le
               (t : ℂ) * D t‖) := by
           exact integral_const_mul_of_integrable hW.norm
 
-theorem plusSaddlePositiveSquaredContour_contDiffOn
+lemma plusSaddlePositiveSquaredContour_contDiffOn
     {ε ℓ a : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -29163,7 +29163,7 @@ theorem plusSaddlePositiveSquaredContour_contDiffOn
     hε hℓ horder
     (fun n => saddlePositiveContour_ne_pole ha n) k
 
-theorem minusSaddlePositiveSquaredContour_contDiffOn
+lemma minusSaddlePositiveSquaredContour_contDiffOn
     {ε ℓ a : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -29180,7 +29180,7 @@ theorem minusSaddlePositiveSquaredContour_contDiffOn
     hε hℓ horder
     (fun n => saddlePositiveContour_ne_pole ha n) k
 
-theorem plusSaddlePositiveSquaredContour_eq_of_pos
+lemma plusSaddlePositiveSquaredContour_eq_of_pos
     {ε ℓ a b u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -29204,7 +29204,7 @@ theorem plusSaddlePositiveSquaredContour_eq_of_pos
     _ = plusSaddlePositiveSquaredContour ε ℓ b u := by
       rw [hsquare]
 
-theorem minusSaddlePositiveSquaredContour_eq_of_pos
+lemma minusSaddlePositiveSquaredContour_eq_of_pos
     {ε ℓ a b u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -29231,7 +29231,7 @@ theorem minusSaddlePositiveSquaredContour_eq_of_pos
 def saddleOuterCutoff (u : ℝ) : ℂ :=
   (Real.smoothTransition (u - 2) : ℂ)
 
-theorem saddleOuterCutoff_contDiff :
+lemma saddleOuterCutoff_contDiff :
     ContDiff ℝ ∞ saddleOuterCutoff := by
   unfold saddleOuterCutoff
   exact Complex.ofRealCLM.contDiff.comp
@@ -29246,7 +29246,7 @@ def minusSaddleOuterSquaredProfile (ε ℓ u : ℝ) : ℂ :=
   saddleOuterCutoff u *
     minusSaddlePositiveSquaredContour ε ℓ 2 u
 
-theorem plusSaddleOuterSquaredProfile_contDiff
+lemma plusSaddleOuterSquaredProfile_contDiff
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
@@ -29276,7 +29276,7 @@ theorem plusSaddleOuterSquaredProfile_contDiff
           (isOpen_Ioi.mem_nhds hone)
     exact saddleOuterCutoff_contDiff.contDiffAt.mul hcontour
 
-theorem minusSaddleOuterSquaredProfile_contDiff
+lemma minusSaddleOuterSquaredProfile_contDiff
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
@@ -29306,21 +29306,21 @@ theorem minusSaddleOuterSquaredProfile_contDiff
           (isOpen_Ioi.mem_nhds hone)
     exact saddleOuterCutoff_contDiff.contDiffAt.mul hcontour
 
-theorem plusSaddleOuterSquaredProfile_eq_zero
+lemma plusSaddleOuterSquaredProfile_eq_zero
     (ε ℓ : ℝ) {u : ℝ} (hu : u < 2) :
     plusSaddleOuterSquaredProfile ε ℓ u = 0 := by
   have hcut : Real.smoothTransition (u - 2) = 0 :=
     Real.smoothTransition.zero_of_nonpos (by linarith)
   simp [plusSaddleOuterSquaredProfile, saddleOuterCutoff, hcut]
 
-theorem minusSaddleOuterSquaredProfile_eq_zero
+lemma minusSaddleOuterSquaredProfile_eq_zero
     (ε ℓ : ℝ) {u : ℝ} (hu : u < 2) :
     minusSaddleOuterSquaredProfile ε ℓ u = 0 := by
   have hcut : Real.smoothTransition (u - 2) = 0 :=
     Real.smoothTransition.zero_of_nonpos (by linarith)
   simp [minusSaddleOuterSquaredProfile, saddleOuterCutoff, hcut]
 
-theorem plusSaddleOuterSquaredProfile_eq_positiveContour
+lemma plusSaddleOuterSquaredProfile_eq_positiveContour
     {ε ℓ a u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -29335,7 +29335,7 @@ theorem plusSaddleOuterSquaredProfile_eq_positiveContour
   exact plusSaddlePositiveSquaredContour_eq_of_pos
     hε hℓ horder (by norm_num) ha (by linarith)
 
-theorem minusSaddleOuterSquaredProfile_eq_positiveContour
+lemma minusSaddleOuterSquaredProfile_eq_positiveContour
     {ε ℓ a u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -29350,7 +29350,7 @@ theorem minusSaddleOuterSquaredProfile_eq_positiveContour
   exact minusSaddlePositiveSquaredContour_eq_of_pos
     hε hℓ horder (by norm_num) ha (by linarith)
 
-theorem saddleOuterSquaredProfile_schwartz_decay
+lemma saddleOuterSquaredProfile_schwartz_decay
     {G : ℝ → ℂ}
     (hG : ContDiff ℝ ∞ G)
     (hzero : ∀ u : ℝ, u < 2 → G u = 0)
@@ -29472,7 +29472,7 @@ theorem saddleOuterSquaredProfile_schwartz_decay
         ((le_max_right B (‖c‖ * L)).trans
           (le_max_right 0 _))
 
-theorem plusSaddleOuterSquaredProfile_schwartz_decay
+lemma plusSaddleOuterSquaredProfile_schwartz_decay
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -29498,7 +29498,7 @@ theorem plusSaddleOuterSquaredProfile_schwartz_decay
       plusSaddleOuterSquaredProfile_eq_positiveContour
         hε hℓ horder ha hu
 
-theorem minusSaddleOuterSquaredProfile_schwartz_decay
+lemma minusSaddleOuterSquaredProfile_schwartz_decay
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -29572,7 +29572,7 @@ def minusSaddleOuterSchwartz
   saddleSquaredSchwartzPullback d
     (minusSaddleOuterScalarSchwartz hε hℓ horder)
 
-@[simp] theorem plusSaddleOuterSchwartz_apply
+@[simp] lemma plusSaddleOuterSchwartz_apply
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -29580,7 +29580,7 @@ def minusSaddleOuterSchwartz
     plusSaddleOuterSchwartz hε hℓ horder d x =
       plusSaddleOuterSquaredProfile ε ℓ (‖x‖ ^ 2) := rfl
 
-@[simp] theorem minusSaddleOuterSchwartz_apply
+@[simp] lemma minusSaddleOuterSchwartz_apply
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -29588,7 +29588,7 @@ def minusSaddleOuterSchwartz
     minusSaddleOuterSchwartz hε hℓ horder d x =
       minusSaddleOuterSquaredProfile ε ℓ (‖x‖ ^ 2) := rfl
 
-theorem plusSaddleOuterDifference_hasCompactSupport
+lemma plusSaddleOuterDifference_hasCompactSupport
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -29623,7 +29623,7 @@ theorem plusSaddleOuterDifference_hasCompactSupport
       (a := (2 : ℝ)) hε hℓ horder hr (by norm_num)
   exact hx (by rw [hsource, houter, sub_self])
 
-theorem minusSaddleOuterDifference_hasCompactSupport
+lemma minusSaddleOuterDifference_hasCompactSupport
     {ε ℓ : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -29752,7 +29752,7 @@ def saddleSourceContourDamping
     positiveShellDamping ε ℓ (u - 1) T -
       upperShortShellDamping ε ℓ (u - 1) T
 
-theorem saddleSourceContourEnvelopeScale_pos
+lemma saddleSourceContourEnvelopeScale_pos
     {ε ℓ u : ℝ} (hℓ : 0 < ℓ) (hu : -1 < u) :
     0 < saddleSourceContourEnvelopeScale ε ℓ u := by
   have hη : 0 < 1 + u := by linarith
@@ -29762,7 +29762,7 @@ theorem saddleSourceContourEnvelopeScale_pos
       (Real.Gamma_pos_of_pos (by positivity)))
     (Real.exp_pos _)
 
-theorem saddleSourceContour_piExponential_norm
+lemma saddleSourceContour_piExponential_norm
     (ℓ u T : ℝ) :
     ‖Complex.exp
         (((ℓ : ℂ) - saddleSourceMellinContour ℓ u T) *
@@ -29773,7 +29773,7 @@ theorem saddleSourceContour_piExponential_norm
   simp [saddleSourceMellinContour, Complex.mul_re]
   ring
 
-theorem saddleSourceContour_gamma_norm
+lemma saddleSourceContour_gamma_norm
     {ℓ u : ℝ} (hℓ : 0 < ℓ) (hu : -1 < u)
     (T : ℝ) :
     ‖Complex.Gamma
@@ -29784,7 +29784,7 @@ theorem saddleSourceContour_gamma_norm
   exact upperGammaShifted_modulus_eq_exp_neg_damping
     hℓ (by linarith) T
 
-theorem saddleSourceContour_shellExponential_norm
+lemma saddleSourceContour_shellExponential_norm
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -29802,7 +29802,7 @@ theorem saddleSourceContour_shellExponential_norm
   exact norm_saddleShellExponential_eq_exp_neg_damping
     hε horder ℓ T u
 
-theorem saddleSourceContour_mellinEnvelope_norm
+lemma saddleSourceContour_mellinEnvelope_norm
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ) (hu : -1 < u)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -29837,7 +29837,7 @@ def saddleSourceNormalizedEnvelope
       (saddleSourceMellinContour ℓ u T) /
     (saddleSourceContourEnvelopeScale ε ℓ u : ℂ)
 
-theorem saddleSourceNormalizedEnvelope_norm
+lemma saddleSourceNormalizedEnvelope_norm
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ) (hu : -1 < u)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -29860,7 +29860,7 @@ def saddleSourceCenteredEnvelope
   saddleSourceNormalizedEnvelope ε ℓ u T *
     Complex.exp (Complex.I * ((ℓ * T * v : ℝ) : ℂ))
 
-theorem saddleSourceCenteredEnvelope_norm
+lemma saddleSourceCenteredEnvelope_norm
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ) (hu : -1 < u)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -29883,7 +29883,7 @@ def saddleSourceCenteredMinusIntegrand
   saddleSourceCenteredEnvelope ε ℓ u v T *
     minusPolynomial ε ((T : ℂ) + Complex.I * (u : ℂ))
 
-theorem saddleSourceCenteredPlusIntegrand_norm
+lemma saddleSourceCenteredPlusIntegrand_norm
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ) (hu : -1 < u)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -29896,7 +29896,7 @@ theorem saddleSourceCenteredPlusIntegrand_norm
   rw [norm_mul,
     saddleSourceCenteredEnvelope_norm hε hℓ hu horder]
 
-theorem saddleSourceCenteredMinusIntegrand_norm
+lemma saddleSourceCenteredMinusIntegrand_norm
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ) (hu : -1 < u)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -29909,12 +29909,12 @@ theorem saddleSourceCenteredMinusIntegrand_norm
   rw [norm_mul,
     saddleSourceCenteredEnvelope_norm hε hℓ hu horder]
 
-@[simp] theorem saddleSourceContourDamping_eq_firstBranch
+@[simp] lemma saddleSourceContourDamping_eq_firstBranch
     (ε ℓ u T : ℝ) :
     saddleSourceContourDamping ε ℓ u T =
       upperFirstBranchSaddleDamping ε ℓ u T := rfl
 
-@[simp] theorem saddleSourceContourDamping_eq_secondBranch
+@[simp] lemma saddleSourceContourDamping_eq_secondBranch
     (ε ℓ δ T : ℝ) :
     saddleSourceContourDamping ε ℓ (1 + δ) T =
       upperSaddleDamping ε ℓ δ T := by
@@ -29923,7 +29923,7 @@ theorem saddleSourceCenteredMinusIntegrand_norm
   simp [saddleSourceContourDamping, upperSaddleDamping,
     hη, hδ]
 
-theorem saddleSourceMellinContour_integral_change
+lemma saddleSourceMellinContour_integral_change
     {ℓ : ℝ} (hℓ : 0 < ℓ)
     (u : ℝ) (F : ℂ → ℂ) :
     (∫ t : ℝ,
@@ -29976,7 +29976,7 @@ theorem saddleSourceMellinContour_integral_change
   rw [← mul_assoc,
     mul_inv_cancel₀ (by exact_mod_cast hℓ.ne'), one_mul]
 
-theorem plusSaddleProfile_eq_sourceContourIntegral
+lemma plusSaddleProfile_eq_sourceContourIntegral
     {ε ℓ r u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -30000,7 +30000,7 @@ theorem plusSaddleProfile_eq_sourceContourIntegral
   push_cast
   ring
 
-theorem minusSaddleProfile_eq_sourceContourIntegral
+lemma minusSaddleProfile_eq_sourceContourIntegral
     {ε ℓ r u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -30024,7 +30024,7 @@ theorem minusSaddleProfile_eq_sourceContourIntegral
   push_cast
   ring
 
-theorem saddleSourceContour_inversePower_exp
+lemma saddleSourceContour_inversePower_exp
     (ℓ u v T : ℝ) :
     saddleMellinInversePower (Real.exp v)
         (saddleSourceMellinContour ℓ u T) =
@@ -30049,7 +30049,7 @@ def saddleSourceCenteredPrefactor
     Real.exp (-(ℓ * (1 + u) * v)) *
       saddleSourceContourEnvelopeScale ε ℓ u
 
-theorem saddleSourceCenteredPrefactor_pos
+lemma saddleSourceCenteredPrefactor_pos
     {ε ℓ u : ℝ} (hℓ : 0 < ℓ) (hu : -1 < u)
     (v : ℝ) :
     0 < saddleSourceCenteredPrefactor ε ℓ u v := by
@@ -30060,7 +30060,7 @@ theorem saddleSourceCenteredPrefactor_pos
     (saddleSourceContourEnvelopeScale_pos
       (ε := ε) hℓ hu)
 
-theorem saddleSourceContour_envelope_eq_scale_mul_normalized
+lemma saddleSourceContour_envelope_eq_scale_mul_normalized
     {ε ℓ u : ℝ} (hℓ : 0 < ℓ) (hu : -1 < u)
     (T : ℝ) :
     saddleMellinEnvelope ε ℓ
@@ -30074,7 +30074,7 @@ theorem saddleSourceContour_envelope_eq_scale_mul_normalized
         (ε := ε) hℓ hu).ne'
   field_simp [hn]
 
-theorem plusSaddleProfile_exp_eq_centeredIntegral
+lemma plusSaddleProfile_exp_eq_centeredIntegral
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ) (hu : -1 < u)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -30131,7 +30131,7 @@ theorem plusSaddleProfile_exp_eq_centeredIntegral
   push_cast
   ring
 
-theorem minusSaddleProfile_exp_eq_centeredIntegral
+lemma minusSaddleProfile_exp_eq_centeredIntegral
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ) (hu : -1 < u)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -30207,7 +30207,7 @@ def saddleSourceGaussianMinusIntegrand
   (saddleSourceGaussianKernel ε ℓ u T : ℂ) *
     minusPolynomial ε (Complex.I * (u : ℂ))
 
-theorem saddleSourceGaussianKernel_integrable
+lemma saddleSourceGaussianKernel_integrable
     {ε ℓ u : ℝ}
     (hℓ : 0 < ℓ)
     (hV : 0 < saddleSourceGaussianVariance ε ℓ u) :
@@ -30215,7 +30215,7 @@ theorem saddleSourceGaussianKernel_integrable
   unfold saddleSourceGaussianKernel
   exact integrable_exp_neg_mul_sq (by positivity)
 
-theorem saddleSourceGaussianKernel_integral
+lemma saddleSourceGaussianKernel_integral
     (ε ℓ u : ℝ) :
     (∫ T : ℝ, saddleSourceGaussianKernel ε ℓ u T) =
       Real.sqrt
@@ -30224,7 +30224,7 @@ theorem saddleSourceGaussianKernel_integral
   exact integral_gaussian
     (ℓ * saddleSourceGaussianVariance ε ℓ u / 2)
 
-theorem saddleSourceGaussianKernel_integral_pos
+lemma saddleSourceGaussianKernel_integral_pos
     {ε ℓ u : ℝ}
     (hℓ : 0 < ℓ)
     (hV : 0 < saddleSourceGaussianVariance ε ℓ u) :
@@ -30232,7 +30232,7 @@ theorem saddleSourceGaussianKernel_integral_pos
   rw [saddleSourceGaussianKernel_integral]
   positivity
 
-theorem saddleSourceGaussianPlusIntegrand_integrable
+lemma saddleSourceGaussianPlusIntegrand_integrable
     {ε ℓ u : ℝ}
     (hℓ : 0 < ℓ)
     (hV : 0 < saddleSourceGaussianVariance ε ℓ u) :
@@ -30240,7 +30240,7 @@ theorem saddleSourceGaussianPlusIntegrand_integrable
   unfold saddleSourceGaussianPlusIntegrand
   exact (saddleSourceGaussianKernel_integrable hℓ hV).ofReal.mul_const _
 
-theorem saddleSourceGaussianMinusIntegrand_integrable
+lemma saddleSourceGaussianMinusIntegrand_integrable
     {ε ℓ u : ℝ}
     (hℓ : 0 < ℓ)
     (hV : 0 < saddleSourceGaussianVariance ε ℓ u) :
@@ -30248,7 +30248,7 @@ theorem saddleSourceGaussianMinusIntegrand_integrable
   unfold saddleSourceGaussianMinusIntegrand
   exact (saddleSourceGaussianKernel_integrable hℓ hV).ofReal.mul_const _
 
-theorem saddleSourceGaussianPlusIntegrand_integral
+lemma saddleSourceGaussianPlusIntegrand_integral
     (ε ℓ u : ℝ) :
     (∫ T : ℝ, saddleSourceGaussianPlusIntegrand ε ℓ u T) =
       (Real.sqrt
@@ -30259,7 +30259,7 @@ theorem saddleSourceGaussianPlusIntegrand_integral
   rw [MeasureTheory.integral_mul_const, integral_complex_ofReal,
     saddleSourceGaussianKernel_integral]
 
-theorem saddleSourceGaussianMinusIntegrand_integral
+lemma saddleSourceGaussianMinusIntegrand_integral
     (ε ℓ u : ℝ) :
     (∫ T : ℝ, saddleSourceGaussianMinusIntegrand ε ℓ u T) =
       (Real.sqrt
@@ -30270,7 +30270,7 @@ theorem saddleSourceGaussianMinusIntegrand_integral
   rw [MeasureTheory.integral_mul_const, integral_complex_ofReal,
     saddleSourceGaussianKernel_integral]
 
-theorem eventually_saddleSourceGaussianVariance_secondBranch_pos :
+lemma eventually_saddleSourceGaussianVariance_secondBranch_pos :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ ℓ : ℝ, 0 < ℓ →
         ∀ δ : ℝ, ε / 2 ≤ δ →
@@ -30281,7 +30281,7 @@ theorem eventually_saddleSourceGaussianVariance_secondBranch_pos :
   convert! hpositive ℓ hℓ δ hδ using 1
   all_goals simp [saddleSourceGaussianVariance]
 
-theorem plusSaddleProfile_exp_re_pos_of_gaussian_error
+lemma plusSaddleProfile_exp_re_pos_of_gaussian_error
     {ε ℓ u v : ℝ}
     (hε : 0 < ε)
     (hℓ : 0 < ℓ)
@@ -30320,7 +30320,7 @@ theorem plusSaddleProfile_exp_re_pos_of_gaussian_error
     (saddleSourceCenteredPrefactor_pos hℓ hu v)
     hpositive
 
-theorem minusSaddleProfile_exp_re_neg_of_gaussian_error
+lemma minusSaddleProfile_exp_re_neg_of_gaussian_error
     {ε ℓ u v : ℝ}
     (hε : 0 < ε)
     (hℓ : 0 < ℓ)
@@ -30358,7 +30358,7 @@ theorem minusSaddleProfile_exp_re_neg_of_gaussian_error
     (saddleSourceCenteredPrefactor_pos hℓ hu v)
     hnegative
 
-theorem saddleSourcePositiveShellVariance_nonneg
+lemma saddleSourcePositiveShellVariance_nonneg
     (ε δ : ℝ) :
     0 ≤ upperPositiveShellVariance ε δ := by
   unfold upperPositiveShellVariance
@@ -30373,7 +30373,7 @@ theorem saddleSourcePositiveShellVariance_nonneg
       (sq_nonneg a))
     (Real.cosh_pos _).le
 
-theorem upperFirstBranch_shortVariance_le_gamma
+lemma upperFirstBranch_shortVariance_le_gamma
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ)
@@ -30502,7 +30502,7 @@ theorem upperFirstBranch_shortVariance_le_gamma
       try dsimp [γ, η]
       ring
 
-theorem upperFirstBranch_saddleSourceGaussianVariance_lower_bound
+lemma upperFirstBranch_saddleSourceGaussianVariance_lower_bound
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ)
@@ -30523,7 +30523,7 @@ theorem upperFirstBranch_saddleSourceGaussianVariance_lower_bound
   rw [hη]
   nlinarith
 
-theorem eventually_saddleSourceGaussianVariance_firstBranch_pos :
+lemma eventually_saddleSourceGaussianVariance_firstBranch_pos :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ ℓ : ℝ, 0 < ℓ →
         ∀ u : ℝ, -1 < u → u ≤ 1 + ε / 2 →
@@ -30558,7 +30558,7 @@ theorem eventually_saddleSourceGaussianVariance_firstBranch_pos :
   exact (mul_pos (by positivity : 0 < 4 * ε)
     hgammaPos).trans_le hbound
 
-theorem saddleSourceCenteredPlusIntegrand_sourcePointwise
+lemma saddleSourceCenteredPlusIntegrand_sourcePointwise
     {ε ℓ u : ℝ}
     (hℓ : 0 < ℓ) (hu : -1 < u)
     (v T : ℝ) :
@@ -30579,7 +30579,7 @@ theorem saddleSourceCenteredPlusIntegrand_sourcePointwise
   push_cast
   ring
 
-theorem saddleSourceCenteredMinusIntegrand_sourcePointwise
+lemma saddleSourceCenteredMinusIntegrand_sourcePointwise
     {ε ℓ u : ℝ}
     (hℓ : 0 < ℓ) (hu : -1 < u)
     (v T : ℝ) :
@@ -30600,7 +30600,7 @@ theorem saddleSourceCenteredMinusIntegrand_sourcePointwise
   push_cast
   ring
 
-theorem saddleSourceCenteredPlusIntegrand_integrable
+lemma saddleSourceCenteredPlusIntegrand_integrable
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ) (hu : -1 < u)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -30655,7 +30655,7 @@ theorem saddleSourceCenteredPlusIntegrand_integrable
   filter_upwards [] with T
   rw [← mul_assoc, inv_mul_cancel₀ hc, one_mul]
 
-theorem saddleSourceCenteredMinusIntegrand_integrable
+lemma saddleSourceCenteredMinusIntegrand_integrable
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ) (hu : -1 < u)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -30720,7 +30720,7 @@ open scoped Topology
 def upperImaginaryExp (x : ℝ) : ℂ :=
   Complex.exp (Complex.I * (x : ℂ))
 
-theorem upperImaginaryExp_hasDerivAt (x : ℝ) :
+lemma upperImaginaryExp_hasDerivAt (x : ℝ) :
     HasDerivAt upperImaginaryExp
       (Complex.I * upperImaginaryExp x) x := by
   have hreal :
@@ -30734,7 +30734,7 @@ theorem upperImaginaryExp_hasDerivAt (x : ℝ) :
   convert! hlinear.cexp using 1
   all_goals simp [upperImaginaryExp, mul_comm]
 
-theorem upperImaginaryExp_iteratedDeriv
+lemma upperImaginaryExp_iteratedDeriv
     (n : ℕ) (x : ℝ) :
     iteratedDeriv n upperImaginaryExp x =
       Complex.I ^ n * upperImaginaryExp x := by
@@ -30755,11 +30755,11 @@ theorem upperImaginaryExp_iteratedDeriv
       rw [pow_succ]
       ring
 
-theorem upperImaginaryExp_norm (x : ℝ) :
+lemma upperImaginaryExp_norm (x : ℝ) :
     ‖upperImaginaryExp x‖ = 1 := by
   exact Complex.norm_exp_I_mul_ofReal x
 
-theorem upperImaginaryExp_contDiff :
+lemma upperImaginaryExp_contDiff :
     ContDiff ℝ (⊤ : WithTop ℕ∞) upperImaginaryExp := by
   unfold upperImaginaryExp
   have hreal :
@@ -30768,14 +30768,14 @@ theorem upperImaginaryExp_contDiff :
     Complex.ofRealCLM.contDiff
   exact (contDiff_const.mul hreal).cexp
 
-theorem upperImaginaryExp_iteratedDeriv_norm
+lemma upperImaginaryExp_iteratedDeriv_norm
     (n : ℕ) (x : ℝ) :
     ‖iteratedDeriv n upperImaginaryExp x‖ = 1 := by
   rw [upperImaginaryExp_iteratedDeriv,
     norm_mul, norm_pow, upperImaginaryExp_norm]
   simp
 
-theorem upperImaginaryExp_iteratedDerivWithin_Icc
+lemma upperImaginaryExp_iteratedDerivWithin_Icc
     {a b x : ℝ} (hab : a < b) (hx : x ∈ Icc a b)
     (n : ℕ) :
     iteratedDerivWithin n upperImaginaryExp (Icc a b) x =
@@ -30788,7 +30788,7 @@ theorem upperImaginaryExp_iteratedDerivWithin_Icc
     (uniqueDiffOn_Icc hab) hdiff hx,
     upperImaginaryExp_iteratedDeriv]
 
-theorem upperImaginaryExp_taylorWithinEval_two
+lemma upperImaginaryExp_taylorWithinEval_two
     {x : ℝ} (hx : 0 < x) :
     taylorWithinEval upperImaginaryExp 2
       (Icc (0 : ℝ) x) 0 x =
@@ -30805,7 +30805,7 @@ theorem upperImaginaryExp_taylorWithinEval_two
   simp [upperImaginaryExp, Complex.real_smul]
   ring
 
-theorem upperImaginaryExp_cubicIntegral_norm_le
+lemma upperImaginaryExp_cubicIntegral_norm_le
     {x : ℝ} (hx : 0 ≤ x) :
     ‖∫ t in (0 : ℝ)..x,
         ((x - t) ^ 2 / 2 : ℝ) •
@@ -30847,14 +30847,14 @@ theorem upperImaginaryExp_cubicIntegral_norm_le
         (fun t _ => hprimitive t) hint]
       ring
 
-theorem upperImaginaryExp_neg (x : ℝ) :
+lemma upperImaginaryExp_neg (x : ℝ) :
     upperImaginaryExp (-x) =
       starRingEnd ℂ (upperImaginaryExp x) := by
   apply Complex.ext <;>
     simp [upperImaginaryExp, Complex.exp_re, Complex.exp_im,
       Real.cos_neg, Real.sin_neg]
 
-theorem upperImaginaryExp_quadratic_remainder_norm_le_of_nonneg
+lemma upperImaginaryExp_quadratic_remainder_norm_le_of_nonneg
     {x : ℝ} (hx : 0 ≤ x) :
     ‖upperImaginaryExp x - 1 -
         Complex.I * (x : ℂ) +
@@ -30911,7 +30911,7 @@ theorem upperImaginaryExp_quadratic_remainder_norm_le_of_nonneg
   rw [hremainder]
   exact upperImaginaryExp_cubicIntegral_norm_le hx
 
-theorem upperImaginaryExp_quadratic_remainder_norm_le
+lemma upperImaginaryExp_quadratic_remainder_norm_le
     (x : ℝ) :
     ‖upperImaginaryExp x - 1 -
         Complex.I * (x : ℂ) +
@@ -30969,7 +30969,7 @@ noncomputable section
 open Filter Set MeasureTheory intervalIntegral
 open scoped Topology
 
-theorem saddleSourceShiftedCosine_eq_imaginaryExponentials
+lemma saddleSourceShiftedCosine_eq_imaginaryExponentials
     (a u T : ℝ) :
     Complex.cos
         ((a : ℂ) * ((T : ℂ) + Complex.I * (u : ℂ))) =
@@ -31015,7 +31015,7 @@ def saddleSourceCosineQuadraticRemainder
     Complex.I * ((a * T * Real.sinh (u * a) : ℝ) : ℂ) +
     ((a ^ 2 * T ^ 2 / 2 * Real.cosh (u * a) : ℝ) : ℂ)
 
-theorem saddleSourceCosineQuadraticRemainder_eq
+lemma saddleSourceCosineQuadraticRemainder_eq
     (a u T : ℝ) :
     saddleSourceCosineQuadraticRemainder a u T =
       ((Real.exp (-(u * a)) / 2 : ℝ) : ℂ) *
@@ -31032,7 +31032,7 @@ theorem saddleSourceCosineQuadraticRemainder_eq
   push_cast
   ring
 
-theorem saddleSourceCosineQuadraticRemainder_norm_le
+lemma saddleSourceCosineQuadraticRemainder_norm_le
     (a u T : ℝ) :
     ‖saddleSourceCosineQuadraticRemainder a u T‖ ≤
       Real.cosh (u * a) * |a * T| ^ 3 / 6 := by
@@ -31088,7 +31088,7 @@ theorem saddleSourceCosineQuadraticRemainder_norm_le
       rw [Real.cosh_eq]
       ring
 
-theorem saddleSourceWeightedCosineQuadraticRemainder_norm_le
+lemma saddleSourceWeightedCosineQuadraticRemainder_norm_le
     (w : ℝ → ℝ) {b c : ℝ}
     (hbc : b ≤ c)
     (hb : 0 ≤ b)
@@ -31148,7 +31148,7 @@ theorem saddleSourceWeightedCosineQuadraticRemainder_norm_le
         try dsimp [g]
         rw [intervalIntegral.integral_const_mul]
 
-theorem saddleSourcePositiveShellQuadraticRemainder_norm_le
+lemma saddleSourcePositiveShellQuadraticRemainder_norm_le
     {ε : ℝ} (hε : 0 < ε)
     (u T : ℝ) :
     ‖∫ a in shellLocation ε..shellLocation ε + 1,
@@ -31177,7 +31177,7 @@ theorem saddleSourcePositiveShellQuadraticRemainder_norm_le
   intro a ha
   ring_nf
 
-theorem saddleSourceShortShellQuadraticRemainder_norm_le
+lemma saddleSourceShortShellQuadraticRemainder_norm_le
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (hmargin : ∀ a ∈ Icc (shortCutoff ε) (shortEndpoint ε),
@@ -31243,7 +31243,7 @@ theorem saddleSourceShortShellQuadraticRemainder_norm_le
   intro a ha
   ring_nf
 
-theorem saddleSourceWeightedCosineQuadraticRemainder_integral_eq
+lemma saddleSourceWeightedCosineQuadraticRemainder_integral_eq
     (w : ℝ → ℝ) {b c : ℝ}
     (hbc : b ≤ c)
     (hw : ContinuousOn w (Icc b c))
@@ -31376,7 +31376,7 @@ def saddleSourceShellQuadraticRemainder
     (positiveShellDensity ε a : ℂ) *
       saddleSourceCosineQuadraticRemainder a u T)
 
-theorem saddleSourceShellQuadraticRemainder_eq
+lemma saddleSourceShellQuadraticRemainder_eq
     {ε : ℝ}
     (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -31545,7 +31545,7 @@ theorem saddleSourceShellQuadraticRemainder_eq
   push_cast
   ring
 
-theorem saddleSourceShellCenteredPhase_cubic_remainder_norm_le
+lemma saddleSourceShellCenteredPhase_cubic_remainder_norm_le
     {ε ℓ : ℝ}
     (hε : 0 < ε)
     (hℓ : 0 ≤ ℓ)
@@ -31622,7 +31622,7 @@ noncomputable section
 open Filter MeasureTheory Set
 open scoped Topology
 
-theorem upperImaginaryExp_centered_norm_le
+lemma upperImaginaryExp_centered_norm_le
     (x : ℝ) :
     ‖upperImaginaryExp x - 1 -
         Complex.I * (x : ℂ)‖ ≤
@@ -31650,7 +31650,7 @@ theorem upperImaginaryExp_centered_norm_le
         (le_refl _)
     _ = x ^ 2 / 2 + |x| ^ 3 / 6 := by ring
 
-theorem upperGammaCenteredKernel_integrable
+lemma upperGammaCenteredKernel_integrable
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η)
     (T : ℝ) :
     IntegrableOn (upperGammaCenteredKernel ℓ η T)
@@ -31702,7 +31702,7 @@ def upperGammaQuadraticKernel
   (((a * T) ^ 2 / 2 *
     upperGammaMeasureDensity ℓ η a : ℝ) : ℂ)
 
-theorem upperGammaQuadraticKernel_integrable
+lemma upperGammaQuadraticKernel_integrable
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η)
     (T : ℝ) :
     IntegrableOn (upperGammaQuadraticKernel ℓ η T)
@@ -31725,7 +31725,7 @@ theorem upperGammaQuadraticKernel_integrable
   apply congrArg Complex.ofReal
   ring
 
-theorem integral_upperGammaQuadraticKernel
+lemma integral_upperGammaQuadraticKernel
     {ℓ η : ℝ} (hℓ : 0 < ℓ)
     (T : ℝ) :
     (∫ a : ℝ in Ioi 0,
@@ -31762,7 +31762,7 @@ def upperGammaCubicRemainderKernel
       (((a * T) ^ 2 / 2 : ℝ) : ℂ)) *
         (upperGammaMeasureDensity ℓ η a : ℂ)
 
-theorem upperGammaCubicRemainderKernel_norm_le
+lemma upperGammaCubicRemainderKernel_norm_le
     {ℓ η a : ℝ} (hℓ : 0 < ℓ) (ha : 0 < a)
     (T : ℝ) :
     ‖upperGammaCubicRemainderKernel ℓ η T a‖ ≤
@@ -31788,7 +31788,7 @@ theorem upperGammaCubicRemainderKernel_norm_le
       rw [abs_mul, abs_of_pos ha]
       ring
 
-theorem upperGammaCenteredPhase_add_quadratic_eq_integral
+lemma upperGammaCenteredPhase_add_quadratic_eq_integral
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η)
     (T : ℝ) :
     upperGammaCenteredPhase ℓ η T +
@@ -31810,7 +31810,7 @@ theorem upperGammaCenteredPhase_add_quadratic_eq_integral
   push_cast
   ring
 
-theorem upperGammaCenteredPhase_cubic_remainder_norm_le
+lemma upperGammaCenteredPhase_cubic_remainder_norm_le
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η)
     (T : ℝ) :
     ‖upperGammaCenteredPhase ℓ η T +
@@ -31857,7 +31857,7 @@ noncomputable section
 open Filter MeasureTheory Set
 open scoped Topology BigOperators
 
-theorem saddleDigamma_add_one
+lemma saddleDigamma_add_one
     {m : ℝ} (hm : 0 < m) :
     saddleDigamma (m + 1) =
       saddleDigamma m + m⁻¹ := by
@@ -31872,7 +31872,7 @@ theorem saddleDigamma_add_one
     with x hx
   exact saddleLogGamma_add_one hx
 
-theorem saddleDigamma_add_nat
+lemma saddleDigamma_add_nat
     {m : ℝ} (hm : 0 < m) (n : ℕ) :
     saddleDigamma (m + (n : ℝ)) =
       saddleDigamma m +
@@ -31886,7 +31886,7 @@ theorem saddleDigamma_add_nat
       ih, Finset.sum_range_succ]
     ring
 
-theorem tendsto_saddleEulerHarmonicCorrection
+lemma tendsto_saddleEulerHarmonicCorrection
     {m : ℝ} (hm : 0 < m) :
     Tendsto
       (fun n : ℕ =>
@@ -31981,7 +31981,7 @@ def upperCenteredLaplaceKernel
       Complex.I * ((a * T : ℝ) : ℂ)) *
     ((Real.exp (-c * a) / a : ℝ) : ℂ)
 
-theorem upperCenteredLaplaceKernel_eq_frullani_sub_laplace
+lemma upperCenteredLaplaceKernel_eq_frullani_sub_laplace
     (c T : ℝ) {a : ℝ} (ha : a ≠ 0) :
     upperCenteredLaplaceKernel c T a =
       complexFrullaniKernel
@@ -32024,7 +32024,7 @@ theorem upperCenteredLaplaceKernel_eq_frullani_sub_laplace
     exact_mod_cast ha
   field_simp [hac]
 
-theorem upperCenteredLaplaceKernel_integrable
+lemma upperCenteredLaplaceKernel_integrable
     {c : ℝ} (hc : 0 < c) (T : ℝ) :
     IntegrableOn (upperCenteredLaplaceKernel c T)
       (Ioi 0) := by
@@ -32042,7 +32042,7 @@ theorem upperCenteredLaplaceKernel_integrable
   exact (upperCenteredLaplaceKernel_eq_frullani_sub_laplace
     c T ha.ne').symm
 
-theorem integral_upperCenteredLaplaceKernel
+lemma integral_upperCenteredLaplaceKernel
     {c : ℝ} (hc : 0 < c) (T : ℝ) :
     (∫ a : ℝ in Ioi 0,
       upperCenteredLaplaceKernel c T a) =
@@ -32086,7 +32086,7 @@ def upperGammaCenteredTruncatedKernel
     ((∑ k ∈ Finset.range (n + 1),
       Real.exp (-(2 * a / ℓ)) ^ k : ℝ) : ℂ)
 
-theorem upperGammaCenteredTruncatedKernel_eq_sum
+lemma upperGammaCenteredTruncatedKernel_eq_sum
     (ℓ η T : ℝ) (n : ℕ) (a : ℝ) :
     upperGammaCenteredTruncatedKernel ℓ η T n a =
       ∑ k ∈ Finset.range (n + 1),
@@ -32112,7 +32112,7 @@ theorem upperGammaCenteredTruncatedKernel_eq_sum
   rw [← he]
   ring
 
-theorem upperGammaCenteredGeometricLimit_eq_kernel
+lemma upperGammaCenteredGeometricLimit_eq_kernel
     (ℓ η T a : ℝ) :
     upperCenteredLaplaceKernel η T a *
         (((1 - Real.exp (-(2 * a / ℓ)))⁻¹ : ℝ) : ℂ) =
@@ -32121,7 +32121,7 @@ theorem upperGammaCenteredGeometricLimit_eq_kernel
     upperGammaMeasureDensity, div_eq_mul_inv,
     mul_comm, mul_left_comm, mul_assoc]
 
-theorem tendsto_integral_upperGammaCenteredTruncatedKernel
+lemma tendsto_integral_upperGammaCenteredTruncatedKernel
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η) (T : ℝ) :
     Tendsto
       (fun n : ℕ =>
@@ -32192,7 +32192,7 @@ theorem tendsto_integral_upperGammaCenteredTruncatedKernel
       upperGammaCenteredGeometricLimit_eq_kernel,
       Function.comp_apply] using! hlimit
 
-theorem exp_integral_upperCenteredLaplaceKernel
+lemma exp_integral_upperCenteredLaplaceKernel
     {c : ℝ} (hc : 0 < c) (T : ℝ) :
     Complex.exp
       (∫ a : ℝ in Ioi 0,
@@ -32231,7 +32231,7 @@ theorem exp_integral_upperCenteredLaplaceKernel
       rw [Complex.exp_sub,
         Complex.exp_log hcn, Complex.exp_log hzn]
 
-theorem upperGammaEuler_centered_cpow_ratio
+lemma upperGammaEuler_centered_cpow_ratio
     (m b : ℝ) {n : ℕ} (hn : 0 < n) :
     (n : ℂ) ^ ((m : ℂ) - Complex.I * (b : ℂ)) /
         (n : ℂ) ^ (m : ℂ) =
@@ -32247,7 +32247,7 @@ theorem upperGammaEuler_centered_cpow_ratio
   push_cast
   ring
 
-theorem exp_integral_upperCenteredLaplaceKernel_scale
+lemma exp_integral_upperCenteredLaplaceKernel_scale
     {c s : ℝ} (hc : 0 < c) (hs : 0 < s) (T : ℝ) :
     Complex.exp
       (∫ a : ℝ in Ioi 0,
@@ -32277,7 +32277,7 @@ theorem exp_integral_upperCenteredLaplaceKernel_scale
   rw [exp_integral_upperCenteredLaplaceKernel hc T,
     hratio, hphase]
 
-theorem exp_integral_upperGammaCenteredLaplaceRate
+lemma exp_integral_upperGammaCenteredLaplaceRate
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η)
     (T : ℝ) (k : ℕ) :
     Complex.exp
@@ -32314,7 +32314,7 @@ theorem exp_integral_upperGammaCenteredLaplaceRate
   rw [hreal, himag, harg] at h
   exact h
 
-theorem upperGammaEuler_centered_ratio
+lemma upperGammaEuler_centered_ratio
     {m : ℝ} (hm : 0 < m) (b : ℝ)
     {n : ℕ} (hn : 0 < n) :
     Complex.GammaSeq
@@ -32376,7 +32376,7 @@ theorem upperGammaEuler_centered_ratio
             (z + (k : ℂ))))
   field_simp [hpow, hfactorial, hprodreal, hprodcomplex]
 
-theorem integral_upperGammaCenteredTruncatedKernel_eq_shell_sum
+lemma integral_upperGammaCenteredTruncatedKernel_eq_shell_sum
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η)
     (T : ℝ) (n : ℕ) :
     (∫ a : ℝ in Ioi 0,
@@ -32406,7 +32406,7 @@ theorem integral_upperGammaCenteredTruncatedKernel_eq_shell_sum
       exact upperCenteredLaplaceKernel_integrable
         (upperGammaLaplaceRate_pos hℓ hη k) T
 
-theorem exp_integral_upperGammaCenteredTruncatedKernel_eq_product
+lemma exp_integral_upperGammaCenteredTruncatedKernel_eq_product
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η)
     (T : ℝ) (n : ℕ) :
     Complex.exp
@@ -32435,7 +32435,7 @@ theorem exp_integral_upperGammaCenteredTruncatedKernel_eq_product
   rw [Finset.mul_sum]
   simp_rw [Finset.mul_sum]
 
-theorem exp_integral_upperGammaCenteredTruncatedKernel
+lemma exp_integral_upperGammaCenteredTruncatedKernel
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η)
     (T : ℝ) {n : ℕ} (hn : 0 < n) :
     Complex.exp
@@ -32545,7 +32545,7 @@ theorem exp_integral_upperGammaCenteredTruncatedKernel
                   (m + (k : ℝ))⁻¹) : ℝ) : ℂ))) := by
       rw [upperGammaEuler_centered_ratio hm b hn]
 
-theorem exp_upperGammaCenteredPhase
+lemma exp_upperGammaCenteredPhase
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η) (T : ℝ) :
     Complex.exp (upperGammaCenteredPhase ℓ η T) =
       (Complex.Gamma
@@ -32642,7 +32642,7 @@ def saddleSourceStationaryLogRadius
     saddleDigamma (ℓ * (1 + u) / 2) / 2 +
       saddleSourceShellDerivative ε u
 
-theorem saddleSourceStationaryLogRadius_eq_saddleLogRadius
+lemma saddleSourceStationaryLogRadius_eq_saddleLogRadius
     (ε : ℝ) (d : ℕ) (u : ℝ) :
     saddleSourceStationaryLogRadius ε ((d : ℝ) / 2) u =
       saddleLogRadius ε d u := by
@@ -32654,7 +32654,7 @@ def saddleSourceCenteredPhase
   upperGammaCenteredPhase ℓ (1 + u) T +
     saddleSourceShellCenteredPhase ε ℓ u T
 
-theorem saddleSourceCenteredPhase_cubic_remainder_norm_le
+lemma saddleSourceCenteredPhase_cubic_remainder_norm_le
     {ε ℓ u : ℝ}
     (hε : 0 < ε)
     (hℓ : 0 < ℓ)
@@ -32718,7 +32718,7 @@ theorem saddleSourceCenteredPhase_cubic_remainder_norm_le
           rw [harg]
           ring
 
-theorem saddleSourceContour_piExponential_eq
+lemma saddleSourceContour_piExponential_eq
     (ℓ u T : ℝ) :
     Complex.exp
         (((ℓ : ℂ) - saddleSourceMellinContour ℓ u T) *
@@ -32733,7 +32733,7 @@ theorem saddleSourceContour_piExponential_eq
   push_cast
   ring
 
-theorem saddleSourceContour_shellExponential_eq
+lemma saddleSourceContour_shellExponential_eq
     (ε ℓ u T : ℝ) :
     Complex.exp
         ((ℓ : ℂ) *
@@ -32750,7 +32750,7 @@ theorem saddleSourceContour_shellExponential_eq
   push_cast
   ring
 
-theorem saddleSourceCenteredEnvelope_eq_gamma_shell
+lemma saddleSourceCenteredEnvelope_eq_gamma_shell
     {ε ℓ u : ℝ}
     (hℓ : 0 < ℓ)
     (hu : -1 < u)
@@ -32792,7 +32792,7 @@ theorem saddleSourceCenteredEnvelope_eq_gamma_shell
   push_cast
   field_simp [hπ, hG, hs]
 
-theorem saddleSourceStationaryFrequencyPhase_eq
+lemma saddleSourceStationaryFrequencyPhase_eq
     (ε ℓ u T : ℝ) :
     Complex.exp
         (Complex.I *
@@ -32814,7 +32814,7 @@ theorem saddleSourceStationaryFrequencyPhase_eq
   push_cast
   ring
 
-theorem exp_saddleSourceShellCenteredPhase
+lemma exp_saddleSourceShellCenteredPhase
     (ε ℓ u T : ℝ) :
     Complex.exp (saddleSourceShellCenteredPhase ε ℓ u T) =
       Complex.exp
@@ -32831,7 +32831,7 @@ theorem exp_saddleSourceShellCenteredPhase
   push_cast
   ring
 
-theorem saddleSourceCenteredEnvelope_stationary_eq_exp_phase
+lemma saddleSourceCenteredEnvelope_stationary_eq_exp_phase
     {ε ℓ u : ℝ}
     (hℓ : 0 < ℓ)
     (hu : -1 < u)
@@ -32855,7 +32855,7 @@ def saddleSourceGaussianPhaseRemainder
     ((ℓ * saddleSourceGaussianVariance ε ℓ u / 2 *
       T ^ 2 : ℝ) : ℂ)
 
-theorem exp_saddleSourceCenteredPhase_eq_gaussian_mul
+lemma exp_saddleSourceCenteredPhase_eq_gaussian_mul
     (ε ℓ u T : ℝ) :
     Complex.exp (saddleSourceCenteredPhase ε ℓ u T) =
       (saddleSourceGaussianKernel ε ℓ u T : ℂ) *
@@ -32868,7 +32868,7 @@ theorem exp_saddleSourceCenteredPhase_eq_gaussian_mul
   push_cast
   ring
 
-theorem saddleSourceCenteredEnvelope_stationary_gaussian_error_le
+lemma saddleSourceCenteredEnvelope_stationary_gaussian_error_le
     {ε ℓ u : ℝ}
     (hε : 0 < ε)
     (hℓ : 0 < ℓ)
@@ -32934,7 +32934,7 @@ noncomputable section
 open Filter MeasureTheory Set
 open scoped Topology
 
-theorem saddleSourceCenteredPolynomial_centralGaussianError_le
+lemma saddleSourceCenteredPolynomial_centralGaussianError_le
     {ε ℓ u R q p : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ) (hu : -1 < u)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -33107,7 +33107,7 @@ theorem saddleSourceCenteredPolynomial_centralGaussianError_le
           ∫ T : ℝ, saddleSourceGaussianKernel ε ℓ u T := by
       rw [integral_const_mul]
 
-theorem saddleSourceCenteredPlusIntegrand_centralGaussianError_le
+lemma saddleSourceCenteredPlusIntegrand_centralGaussianError_le
     {ε ℓ u R q p : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ) (hu : -1 < u)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -33138,7 +33138,7 @@ theorem saddleSourceCenteredPlusIntegrand_centralGaussianError_le
       hε hℓ hu horder (saddleSourceStationaryLogRadius ε ℓ u))
     hcubic hpoly
 
-theorem saddleSourceCenteredMinusIntegrand_centralGaussianError_le
+lemma saddleSourceCenteredMinusIntegrand_centralGaussianError_le
     {ε ℓ u R q p : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ) (hu : -1 < u)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -33179,12 +33179,12 @@ open scoped Topology
 def saddleGaussianTailWeight (T : ℝ) : ℝ :=
   1 + |T| ^ 3
 
-theorem saddleGaussianTailWeight_nonneg (T : ℝ) :
+lemma saddleGaussianTailWeight_nonneg (T : ℝ) :
     0 ≤ saddleGaussianTailWeight T := by
   unfold saddleGaussianTailWeight
   positivity
 
-theorem saddle_abs_le_exp_sq (T : ℝ) :
+lemma saddle_abs_le_exp_sq (T : ℝ) :
     |T| ≤ Real.exp (T ^ 2) := by
   have hsquare : (|T| - 1) ^ 2 ≥ 0 := sq_nonneg _
   have habs : |T| ^ 2 = T ^ 2 := sq_abs T
@@ -33193,7 +33193,7 @@ theorem saddle_abs_le_exp_sq (T : ℝ) :
   exact hlinear.trans (by
     simpa [add_comm] using! Real.add_one_le_exp (T ^ 2))
 
-theorem saddleGaussianTailWeight_le_two_exp_three_sq (T : ℝ) :
+lemma saddleGaussianTailWeight_le_two_exp_three_sq (T : ℝ) :
     saddleGaussianTailWeight T ≤
       2 * Real.exp (3 * T ^ 2) := by
   have habs := saddle_abs_le_exp_sq T
@@ -33209,7 +33209,7 @@ theorem saddleGaussianTailWeight_le_two_exp_three_sq (T : ℝ) :
   rw [hexpcube] at hcube
   linarith
 
-theorem saddleGaussianTailWeight_le_two_exp_three_abs (T : ℝ) :
+lemma saddleGaussianTailWeight_le_two_exp_three_abs (T : ℝ) :
     saddleGaussianTailWeight T ≤
       2 * Real.exp (3 * |T|) := by
   have hlinear : |T| ≤ Real.exp |T| := by
@@ -33229,7 +33229,7 @@ theorem saddleGaussianTailWeight_le_two_exp_three_abs (T : ℝ) :
   rw [hexpcube] at hcube
   linarith
 
-theorem saddle_integral_exp_neg_mul_abs
+lemma saddle_integral_exp_neg_mul_abs
     {a : ℝ} (ha : 0 < a) :
     (∫ T : ℝ, Real.exp (-a * |T|)) = 2 / a := by
   have hhalf := integral_exp_mul_Ioi
@@ -33244,7 +33244,7 @@ theorem saddle_integral_exp_neg_mul_abs
       rw [hhalf]
       simp [div_eq_mul_inv]
 
-theorem saddleGaussianTailWeight_mul_gaussian_integrable
+lemma saddleGaussianTailWeight_mul_gaussian_integrable
     {k : ℝ} (hk : 0 < k) :
     Integrable
       (fun T : ℝ =>
@@ -33262,7 +33262,7 @@ theorem saddleGaussianTailWeight_mul_gaussian_integrable
   simp [saddleGaussianTailWeight, Real.norm_eq_abs,
     abs_of_pos (Real.exp_pos _), add_mul]
 
-theorem saddleGaussianTailWeight_mul_exp_abs_integrable
+lemma saddleGaussianTailWeight_mul_exp_abs_integrable
     {k : ℝ} (hk : 0 < k) :
     Integrable
       (fun T : ℝ =>
@@ -33278,12 +33278,12 @@ theorem saddleGaussianTailWeight_mul_exp_abs_integrable
 def saddleGaussianTailSet (R : ℝ) : Set ℝ :=
   {T : ℝ | R ≤ |T|}
 
-theorem saddleGaussianTailSet_measurable (R : ℝ) :
+lemma saddleGaussianTailSet_measurable (R : ℝ) :
     MeasurableSet (saddleGaussianTailSet R) := by
   unfold saddleGaussianTailSet
   exact measurableSet_le measurable_const measurable_abs
 
-theorem saddleGaussian_cubic_tail_integral_le
+lemma saddleGaussian_cubic_tail_integral_le
     {k R : ℝ} (hk : 6 ≤ k) (hR : 0 ≤ R) :
     (∫ T : ℝ in saddleGaussianTailSet R,
       saddleGaussianTailWeight T *
@@ -33358,7 +33358,7 @@ theorem saddleGaussian_cubic_tail_integral_le
         Real.sqrt (Real.pi / (k / 4)) := by
       rw [integral_const_mul, integral_gaussian]
 
-theorem saddleExponential_cubic_tail_integral_le
+lemma saddleExponential_cubic_tail_integral_le
     {k R : ℝ} (hk : 6 ≤ k) (hR : 0 ≤ R) :
     (∫ T : ℝ in saddleGaussianTailSet R,
       saddleGaussianTailWeight T *
@@ -33435,7 +33435,7 @@ def saddleGaussianOuterPhi
   (B + 1) / 2 * δ + 4 * Real.log (2 + δ) -
     c * ℓ * Q * Real.exp (B * δ)
 
-theorem saddleGaussianOuterPhi_le_endpointBarrier
+lemma saddleGaussianOuterPhi_le_endpointBarrier
     {B Q c ℓ δ₀ δ : ℝ}
     (hB : 0 < B) (hQ : 0 < Q) (hc : 0 < c)
     (hℓ : 0 ≤ ℓ) (hδ₀ : 0 ≤ δ₀) (hδ : δ₀ ≤ δ)
@@ -33480,7 +33480,7 @@ theorem saddleGaussianOuterPhi_le_endpointBarrier
   unfold saddleGaussianOuterPhi
   nlinarith
 
-theorem eventually_saddleGaussianOuterPhi_uniform
+lemma eventually_saddleGaussianOuterPhi_uniform
     {B Q c δ₀ : ℝ}
     (hB : 0 < B) (hQ : 0 < Q) (hc : 0 < c)
     (hδ₀ : 0 ≤ δ₀) :
@@ -33553,7 +33553,7 @@ theorem eventually_saddleGaussianOuterPhi_uniform
     nlinarith
   exact hcompare.trans_lt hbound
 
-theorem upperPositiveShellVariance_firstBranch_le
+lemma upperPositiveShellVariance_firstBranch_le
     {ε u : ℝ}
     (hε : 0 < ε) (hulower : -1 < u)
     (huupper : u ≤ 1 + ε / 2) :
@@ -33598,7 +33598,7 @@ theorem upperPositiveShellVariance_firstBranch_le
     hpoint
   simpa [upperPositiveShellVariance, B] using! hmono
 
-theorem upperFirstBranch_saddleSourceGaussianVariance_upper_bound
+lemma upperFirstBranch_saddleSourceGaussianVariance_upper_bound
     {ε ℓ u : ℝ}
     (hε : 0 < ε)
     (hℓ : 0 < ℓ)
@@ -33667,7 +33667,7 @@ theorem upperFirstBranch_saddleSourceGaussianVariance_upper_bound
             upperPositiveShellVariance ε (ε / 2)) /
           (1 + u) := by rfl
 
-theorem saddle_exp_neg_mul_min_le_add
+lemma saddle_exp_neg_mul_min_le_add
     {a x y : ℝ} (ha : 0 ≤ a) :
     Real.exp (-a * min x y) ≤
       Real.exp (-a * x) + Real.exp (-a * y) := by
@@ -33685,7 +33685,7 @@ theorem saddle_exp_neg_mul_min_le_add
   exact max_le_add_of_nonneg
     (Real.exp_pos (-a * x)).le (Real.exp_pos (-a * y)).le
 
-theorem saddleSourceNormalizedEnvelope_continuous
+lemma saddleSourceNormalizedEnvelope_continuous
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ) (hu : -1 < u)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
@@ -33729,7 +33729,7 @@ theorem saddleSourceNormalizedEnvelope_continuous
   unfold saddleSourceNormalizedEnvelope
   exact henvelope.div_const _
 
-theorem saddleSourceDampingExponential_continuous
+lemma saddleSourceDampingExponential_continuous
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ) (hu : -1 < u)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
@@ -33744,7 +33744,7 @@ theorem saddleSourceDampingExponential_continuous
   exact saddleSourceNormalizedEnvelope_norm
     hε hℓ hu horder T
 
-theorem saddleSourceTailIntegrand_continuous
+lemma saddleSourceTailIntegrand_continuous
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hℓ : 0 < ℓ) (hu : -1 < u)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
@@ -33759,7 +33759,7 @@ theorem saddleSourceTailIntegrand_continuous
     (saddleSourceDampingExponential_continuous
       hε hℓ hu horder)
 
-theorem saddleSourceContourDamping_firstBranch_min_lower_bound
+lemma saddleSourceContourDamping_firstBranch_min_lower_bound
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ)
@@ -33788,7 +33788,7 @@ theorem saddleSourceContourDamping_firstBranch_min_lower_bound
       exact mul_le_mul_of_nonneg_left hgamma (by positivity)
     _ ≤ upperFirstBranchSaddleDamping ε ℓ u T := hfirst
 
-theorem saddleSource_firstBranch_weighted_integrable
+lemma saddleSource_firstBranch_weighted_integrable
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ)
@@ -33852,7 +33852,7 @@ theorem saddleSource_firstBranch_weighted_integrable
   nlinarith [mul_le_mul_of_nonneg_left hexp
     (saddleGaussianTailWeight_nonneg T)]
 
-theorem saddleSource_firstBranch_weighted_tail_le
+lemma saddleSource_firstBranch_weighted_tail_le
     {ε ℓ u R : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ)
@@ -33971,7 +33971,7 @@ theorem saddleSource_firstBranch_weighted_tail_le
         · exact hR
     _ = _ := by rfl
 
-theorem saddleFirstBranch_normalizedGaussian_prefactor_le
+lemma saddleFirstBranch_normalizedGaussian_prefactor_le
     {ℓ V η c C : ℝ}
     (hℓ : 0 < ℓ) (hV : 0 < V) (hη : 0 < η)
     (hc : 0 < c)
@@ -34000,7 +34000,7 @@ theorem saddleFirstBranch_normalizedGaussian_prefactor_le
       rw [Real.sqrt_mul (by norm_num : (0 : ℝ) ≤ 4)]
       norm_num
 
-theorem saddleFirstBranch_normalizedGaussian_exponent_le
+lemma saddleFirstBranch_normalizedGaussian_exponent_le
     {ℓ V η c C z : ℝ}
     (hℓ : 0 < ℓ) (hV : 0 < V) (hη : 0 < η)
     (hc : 0 < c) (hC : 0 < C)
@@ -34026,7 +34026,7 @@ theorem saddleFirstBranch_normalizedGaussian_exponent_le
           (z ^ 2 / (ℓ * V)) := by
       field_simp [hℓ.ne', hV.ne', hη.ne']
 
-theorem saddleFirstBranch_normalizedLinear_prefactor_le
+lemma saddleFirstBranch_normalizedLinear_prefactor_le
     {ℓ V η C : ℝ}
     (hℓ : 0 < ℓ) (hV : 0 < V) (hη : 0 < η)
     (hC : 0 < C)
@@ -34053,7 +34053,7 @@ theorem saddleFirstBranch_normalizedLinear_prefactor_le
   exact (Real.sqrt_le_sqrt_iff
     (div_pos hC (mul_pos hℓ hη)).le).mpr hfrac
 
-theorem saddleSource_firstBranch_normalized_tail_bound
+lemma saddleSource_firstBranch_normalized_tail_bound
     {ε ℓ u z C : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ)
@@ -34204,7 +34204,7 @@ def saddleSourceFirstBranchVarianceCoefficient
     (2 + ε / 2) *
       upperPositiveShellVariance ε (ε / 2)
 
-theorem saddleSourceFirstBranchVarianceCoefficient_pos
+lemma saddleSourceFirstBranchVarianceCoefficient_pos
     {ε : ℝ} (hε : 0 < ε) :
     0 < saddleSourceFirstBranchVarianceCoefficient ε := by
   have hshell :=
@@ -34222,7 +34222,7 @@ def saddleFirstBranchTailLogMajorant
     (16 / c) *
       Real.sqrt (C / (Real.log ℓ / 4))
 
-theorem tendsto_saddleFirstBranchTailLogMajorant
+lemma tendsto_saddleFirstBranchTailLogMajorant
     {c C : ℝ} (hc : 0 < c) (hC : 0 < C) :
     Tendsto (saddleFirstBranchTailLogMajorant c C)
       atTop (𝓝 (0 : ℝ)) := by
@@ -34274,7 +34274,7 @@ theorem tendsto_saddleFirstBranchTailLogMajorant
     atTop (𝓝 (0 : ℝ))
   simpa using! hfirst.add hsecond
 
-theorem eventually_saddleSource_firstBranch_uniform_tail :
+lemma eventually_saddleSource_firstBranch_uniform_tail :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ κ : ℝ, 0 < κ →
         ∀ᶠ ℓ : ℝ in atTop,
@@ -34438,7 +34438,7 @@ theorem eventually_saddleSource_firstBranch_uniform_tail :
       gcongr
     _ < κ := htailℓ
 
-theorem eventually_saddleGaussianOuterPhi_uniform_polynomial
+lemma eventually_saddleGaussianOuterPhi_uniform_polynomial
     {B Q c δ₀ K : ℝ}
     (hB : 0 < B) (hQ : 0 < Q) (hc : 0 < c)
     (hδ₀ : 0 ≤ δ₀) (hK : 0 ≤ K) :
@@ -34527,7 +34527,7 @@ noncomputable section
 open Filter Set MeasureTheory intervalIntegral
 open scoped Topology
 
-theorem saddleSourcePositiveShellThirdMoment_nonneg
+lemma saddleSourcePositiveShellThirdMoment_nonneg
     {ε : ℝ} (hε : 0 < ε) (δ : ℝ) :
     0 ≤ upperPositiveShellThirdMoment ε δ := by
   have hB : 0 ≤ shellLocation ε := by
@@ -34545,7 +34545,7 @@ theorem saddleSourcePositiveShellThirdMoment_nonneg
     (mul_nonneg hdensity (pow_nonneg ha 3))
     (Real.cosh_pos _).le
 
-theorem upperPositiveShellThirdMoment_firstBranch_le
+lemma upperPositiveShellThirdMoment_firstBranch_le
     {ε u : ℝ}
     (hε : 0 < ε) (hulower : -1 < u)
     (huupper : u ≤ 1 + ε / 2) :
@@ -34590,7 +34590,7 @@ theorem upperPositiveShellThirdMoment_firstBranch_le
     hpoint
   simpa [upperPositiveShellThirdMoment, B] using! hmono
 
-theorem upperGammaVariance_firstBranch_scaled_le
+lemma upperGammaVariance_firstBranch_scaled_le
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η)
     (hscale : 1 ≤ ℓ * η) :
     η * upperGammaVariance ℓ η ≤ (3 / 2 : ℝ) := by
@@ -34606,7 +34606,7 @@ theorem upperGammaVariance_firstBranch_scaled_le
       field_simp [hℓ.ne', hη.ne']
     _ ≤ (3 / 2 : ℝ) := by linarith
 
-theorem upperGammaThirdMoment_firstBranch_scaled_le
+lemma upperGammaThirdMoment_firstBranch_scaled_le
     {ℓ η : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η)
     (hscale : 1 ≤ ℓ * η) :
     η ^ 2 * upperGammaThirdMoment ℓ η ≤ (5 / 2 : ℝ) := by
@@ -34636,7 +34636,7 @@ def saddleSourceFirstBranchThirdMomentCoefficient
     (2 + ε / 2) ^ 2 *
       upperPositiveShellThirdMoment ε (ε / 2)
 
-theorem upperFirstBranch_saddleSourceThirdMoment_scaled_le
+lemma upperFirstBranch_saddleSourceThirdMoment_scaled_le
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ)
@@ -34736,14 +34736,14 @@ def saddleSourceSecondBranchVarianceFloor (ε : ℝ) : ℝ :=
     shellWeight ε *
       Real.exp ((ε / 2) * shellLocation ε)
 
-theorem saddleSourceSecondBranchVarianceFloor_pos
+lemma saddleSourceSecondBranchVarianceFloor_pos
     {ε : ℝ} (hε : 0 < ε) :
     0 < saddleSourceSecondBranchVarianceFloor ε := by
   unfold saddleSourceSecondBranchVarianceFloor shellLocation
   have hweight := shellWeight_pos ε
   positivity
 
-theorem eventually_saddleSourceGaussianVariance_secondBranch_floor :
+lemma eventually_saddleSourceGaussianVariance_secondBranch_floor :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ ℓ : ℝ, 0 < ℓ →
         ∀ δ : ℝ, ε / 2 ≤ δ →
@@ -34801,7 +34801,7 @@ theorem eventually_saddleSourceGaussianVariance_secondBranch_floor :
   rw [hargument]
   linarith
 
-theorem saddleSource_cubic_window_le
+lemma saddleSource_cubic_window_le
     {ℓ V M C z T : ℝ}
     (hℓ : 0 < ℓ) (hV : 0 < V)
     (hC : 0 ≤ C) (hz : 0 ≤ z)
@@ -34824,7 +34824,7 @@ theorem saddleSource_cubic_window_le
       rw [Real.sq_sqrt (mul_nonneg hℓ.le hV.le)]
       ring
 
-theorem saddleSource_cubic_window_le_of_variance_floor
+lemma saddleSource_cubic_window_le_of_variance_floor
     {ℓ V M C V₀ z T : ℝ}
     (hℓ : 0 < ℓ) (hV₀ : 0 < V₀)
     (hfloor : V₀ ≤ V)
@@ -34853,7 +34853,7 @@ noncomputable section
 open Filter Set
 open scoped Topology
 
-theorem exists_plusPolynomial_uniform_weighted_bound
+lemma exists_plusPolynomial_uniform_weighted_bound
     {ε : ℝ} (hε : 0 < ε) :
     ∃ C : ℝ, 0 < C ∧
       ∀ u : ℝ, -1 ≤ u → ∀ T : ℝ,
@@ -34871,7 +34871,7 @@ theorem exists_plusPolynomial_uniform_weighted_bound
       (plusPolynomial_imaginary_norm_ge_beta hε hu)
   exact (div_le_iff₀ hden).mp (hbound u hu T)
 
-theorem exists_minusPolynomial_uniform_weighted_bound
+lemma exists_minusPolynomial_uniform_weighted_bound
     {ε : ℝ} (hε : 0 < ε) :
     ∃ C : ℝ, 0 < C ∧
       ∀ u : ℝ, 1 + ε / 4 ≤ u → ∀ T : ℝ,
@@ -34891,7 +34891,7 @@ theorem exists_minusPolynomial_uniform_weighted_bound
     nlinarith
   exact (div_le_iff₀ hden).mp (hbound u hu T)
 
-theorem exists_plusPolynomial_uniform_difference_bound
+lemma exists_plusPolynomial_uniform_difference_bound
     {ε : ℝ} (hε : 0 < ε) :
     ∃ C : ℝ, 0 < C ∧
       ∀ u : ℝ, -1 ≤ u → ∀ T : ℝ,
@@ -34910,7 +34910,7 @@ theorem exists_plusPolynomial_uniform_difference_bound
       (plusPolynomial_imaginary_norm_ge_beta hε hu)
   exact (div_le_iff₀ hden).mp (hbound u hu T)
 
-theorem exists_minusPolynomial_uniform_difference_bound
+lemma exists_minusPolynomial_uniform_difference_bound
     {ε : ℝ} (hε : 0 < ε) :
     ∃ C : ℝ, 0 < C ∧
       ∀ u : ℝ, 1 + ε / 4 ≤ u → ∀ T : ℝ,
@@ -34931,7 +34931,7 @@ theorem exists_minusPolynomial_uniform_difference_bound
     nlinarith
   exact (div_le_iff₀ hden).mp (hbound u hu T)
 
-theorem exists_plusPolynomial_uniform_central_window
+lemma exists_plusPolynomial_uniform_central_window
     {ε κ : ℝ} (hε : 0 < ε) (hκ : 0 < κ) :
     ∃ R : ℝ, 0 < R ∧
       ∀ u : ℝ, -1 ≤ u →
@@ -34979,7 +34979,7 @@ theorem exists_plusPolynomial_uniform_central_window
     _ ≤ κ * ‖plusPolynomial ε (Complex.I * (u : ℂ))‖ := by
       exact mul_le_mul_of_nonneg_right hscale (norm_nonneg _)
 
-theorem exists_minusPolynomial_uniform_central_window
+lemma exists_minusPolynomial_uniform_central_window
     {ε κ : ℝ} (hε : 0 < ε) (hκ : 0 < κ) :
     ∃ R : ℝ, 0 < R ∧
       ∀ u : ℝ, 1 + ε / 4 ≤ u →
@@ -35044,7 +35044,7 @@ def saddleSourceSecondBranchCentralRadius
   ℓ ^ (1 / 12 : ℝ) /
     Real.sqrt (ℓ * saddleSourceGaussianVariance ε ℓ u)
 
-theorem saddleSource_central_rpow_cube_div_sqrt
+lemma saddleSource_central_rpow_cube_div_sqrt
     {x : ℝ} (hx : 0 < x) :
     (x ^ (1 / 12 : ℝ)) ^ 3 / Real.sqrt x =
       x ^ (-(1 / 4 : ℝ)) := by
@@ -35057,14 +35057,14 @@ theorem saddleSource_central_rpow_cube_div_sqrt
     ← Real.rpow_sub hx]
   norm_num
 
-theorem saddleSource_central_rpow_div_sqrt
+lemma saddleSource_central_rpow_div_sqrt
     {x : ℝ} (hx : 0 < x) :
     x ^ (1 / 12 : ℝ) / Real.sqrt x =
       x ^ (-(5 / 12 : ℝ)) := by
   rw [Real.sqrt_eq_rpow, ← Real.rpow_sub hx]
   norm_num
 
-theorem saddleSource_scaled_cubic_window_le
+lemma saddleSource_scaled_cubic_window_le
     {ℓ η V M K c z T : ℝ}
     (hℓ : 0 < ℓ) (hη : 0 < η)
     (hc : 0 < c)
@@ -35157,7 +35157,7 @@ theorem saddleSource_scaled_cubic_window_le
       field_simp [ht.ne', hc.ne', hcroot.ne']
       rw [hcsquare]
 
-theorem upperFirstBranch_saddleSourceGaussianVariance_scaled_lower_bound
+lemma upperFirstBranch_saddleSourceGaussianVariance_scaled_lower_bound
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ)
@@ -35185,7 +35185,7 @@ theorem upperFirstBranch_saddleSourceGaussianVariance_scaled_lower_bound
         saddleSourceGaussianVariance ε ℓ u := by
       gcongr
 
-theorem saddleSourceFirstBranchThirdMomentCoefficient_pos
+lemma saddleSourceFirstBranchThirdMomentCoefficient_pos
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     0 < saddleSourceFirstBranchThirdMomentCoefficient ε := by
@@ -35199,7 +35199,7 @@ theorem saddleSourceFirstBranchThirdMomentCoefficient_pos
   unfold saddleSourceFirstBranchThirdMomentCoefficient
   positivity
 
-theorem saddleSourceFirstBranch_cubic_central_window_le
+lemma saddleSourceFirstBranch_cubic_central_window_le
     {ε ℓ u T : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ)
@@ -35248,7 +35248,7 @@ theorem saddleSourceFirstBranch_cubic_central_window_le
       rw [saddleSource_central_rpow_cube_div_sqrt hx]
       ring
 
-theorem eventually_saddleSourceSecondBranch_cubic_central_window_le :
+lemma eventually_saddleSourceSecondBranch_cubic_central_window_le :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ ℓ : ℝ, 1 ≤ ℓ →
         ∀ δ : ℝ, ε / 2 ≤ δ →
@@ -35330,7 +35330,7 @@ theorem eventually_saddleSourceSecondBranch_cubic_central_window_le :
           ℓ ^ (-(1 / 4 : ℝ)) := by
       rw [saddleSource_central_rpow_cube_div_sqrt hℓpositive]
 
-theorem saddleSource_scaled_central_radius_le
+lemma saddleSource_scaled_central_radius_le
     {ℓ η V c U z : ℝ}
     (hℓ : 0 < ℓ) (hη : 0 < η)
     (hc : 0 < c) (hηU : η ≤ U)
@@ -35383,7 +35383,7 @@ theorem saddleSource_scaled_central_radius_le
         (z / Real.sqrt (ℓ * η)) := by
       ring
 
-theorem saddleSourceFirstBranch_central_radius_le
+lemma saddleSourceFirstBranch_central_radius_le
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hεsmall : ε ≤ 1 / 4)
     (hℓ : 0 < ℓ)
@@ -35417,7 +35417,7 @@ theorem saddleSourceFirstBranch_central_radius_le
         (ℓ * (1 + u)) ^ (-(5 / 12 : ℝ)) := by
       rw [saddleSource_central_rpow_div_sqrt hx]
 
-theorem saddleSourceSecondBranch_central_radius_le
+lemma saddleSourceSecondBranch_central_radius_le
     {ε ℓ u : ℝ}
     (hℓ : 0 < ℓ)
     (hfloor : saddleSourceSecondBranchVarianceFloor ε ≤
@@ -35450,7 +35450,7 @@ theorem saddleSourceSecondBranch_central_radius_le
         ℓ ^ (-(5 / 12 : ℝ)) := by
       rw [saddleSource_central_rpow_div_sqrt hℓ]
 
-theorem eventually_saddleSourceFirstBranch_cubic_window :
+lemma eventually_saddleSourceFirstBranch_cubic_window :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ κ : ℝ, 0 < κ →
         ∀ᶠ ℓ : ℝ in atTop,
@@ -35504,7 +35504,7 @@ theorem eventually_saddleSourceFirstBranch_cubic_window :
     hxone hT
   exact hbound.trans_lt (hN (ℓ * (1 + u)) hxN)
 
-theorem eventually_saddleSourceSecondBranch_cubic_window :
+lemma eventually_saddleSourceSecondBranch_cubic_window :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ κ : ℝ, 0 < κ →
         ∀ᶠ ℓ : ℝ in atTop,
@@ -35536,7 +35536,7 @@ theorem eventually_saddleSourceSecondBranch_cubic_window :
   intro δ hδ T hT
   exact (hquant ℓ hℓ δ hδ T hT).trans_lt hsmall
 
-theorem eventually_saddleSourceFirstBranch_central_radius_lt :
+lemma eventually_saddleSourceFirstBranch_central_radius_lt :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ κ : ℝ, 0 < κ →
         ∀ᶠ ℓ : ℝ in atTop,
@@ -35582,7 +35582,7 @@ theorem eventually_saddleSourceFirstBranch_central_radius_lt :
     hε hεsmall hℓ hu huupper horder hmargin').trans_lt
       (hN (ℓ * (1 + u)) hxN)
 
-theorem eventually_saddleSourceSecondBranch_central_radius_lt :
+lemma eventually_saddleSourceSecondBranch_central_radius_lt :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ κ : ℝ, 0 < κ →
         ∀ᶠ ℓ : ℝ in atTop,
@@ -35611,7 +35611,7 @@ theorem eventually_saddleSourceSecondBranch_central_radius_lt :
   exact (saddleSourceSecondBranch_central_radius_le
     hℓ (hfloor ℓ hℓ δ hδ) hfloorpos).trans_lt hsmall
 
-theorem exists_saddleSource_central_error_tolerance
+lemma exists_saddleSource_central_error_tolerance
     {κ : ℝ} (hκ : 0 < κ) :
     ∃ q : ℝ, 0 < q ∧ q ≤ 1 ∧
       2 * q + (1 + 2 * q) * q < κ := by
@@ -35625,7 +35625,7 @@ theorem exists_saddleSource_central_error_tolerance
   nlinarith [mul_nonneg hq.le
     (sub_nonneg.mpr hquarter)]
 
-theorem eventually_saddleSourceFirstBranch_centralGaussianErrors :
+lemma eventually_saddleSourceFirstBranch_centralGaussianErrors :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ κ : ℝ, 0 < κ →
         ∀ᶠ ℓ : ℝ in atTop,
@@ -35752,7 +35752,7 @@ theorem eventually_saddleSourceFirstBranch_centralGaussianErrors :
           (∫ T : ℝ, saddleSourceGaussianKernel ε ℓ u T) := by
         gcongr
 
-theorem eventually_saddleSourceSecondBranch_centralGaussianErrors :
+lemma eventually_saddleSourceSecondBranch_centralGaussianErrors :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ κ : ℝ, 0 < κ →
         ∀ᶠ ℓ : ℝ in atTop,
@@ -35890,7 +35890,7 @@ theorem eventually_saddleSourceSecondBranch_centralGaussianErrors :
           (∫ T : ℝ, saddleSourceGaussianKernel ε ℓ u T)
     exact hcentral.trans_lt (by gcongr)
 
-theorem upperPositiveShellDamping_local_variance_lower
+lemma upperPositiveShellDamping_local_variance_lower
     {ε ℓ δ T : ℝ}
     (hε : 0 < ε) (hℓ : 0 ≤ ℓ)
     (hT : |T| ≤ 1 / (2 * (shellLocation ε + 1))) :
@@ -35993,7 +35993,7 @@ theorem upperPositiveShellDamping_local_variance_lower
             (1 - Real.cos (a * T)) :=
       mul_le_mul_of_nonneg_left hmono hℓ
 
-theorem upperGammaVarianceDensity_laplace_linear_lower
+lemma upperGammaVarianceDensity_laplace_linear_lower
     {ℓ η a : ℝ} (hℓ : 0 < ℓ) (ha : 0 < a) :
     a * Real.exp (-η * a) ≤
       a ^ 2 * upperGammaMeasureDensity ℓ η a := by
@@ -36024,7 +36024,7 @@ theorem upperGammaVarianceDensity_laplace_linear_lower
       try dsimp [x]
       field_simp [ha.ne', hden.ne']
 
-theorem upperGammaDamping_local_variance_lower
+lemma upperGammaDamping_local_variance_lower
     {ℓ η T : ℝ} (hℓ : 0 < ℓ) (hη : 0 < η)
     (hT : |T| ≤ η) :
     (ℓ / (32 * Real.exp 1)) *
@@ -36193,7 +36193,7 @@ theorem upperGammaDamping_local_variance_lower
         upperGammaDampingIntegrand ℓ η T a := hrestrict
     _ = upperGammaDamping ℓ η T := rfl
 
-theorem eventually_saddleSourceContourDamping_secondBranch_local_coercivity :
+lemma eventually_saddleSourceContourDamping_secondBranch_local_coercivity :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ ℓ : ℝ, 0 < ℓ →
         ∀ δ : ℝ, ε / 2 ≤ δ →
@@ -36321,7 +36321,7 @@ theorem eventually_saddleSourceContourDamping_secondBranch_local_coercivity :
       (saddleSourceContourDamping_eq_secondBranch
         ε ℓ δ T).symm
 
-theorem eventually_saddleSourceContourDamping_secondBranch_min_lower_bound :
+lemma eventually_saddleSourceContourDamping_secondBranch_min_lower_bound :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ ℓ : ℝ, 0 < ℓ →
         ∀ δ : ℝ, ε / 2 ≤ δ →
@@ -36345,7 +36345,7 @@ theorem eventually_saddleSourceContourDamping_secondBranch_min_lower_bound :
   rw [saddleSourceContourDamping_eq_secondBranch]
   linarith [hdom ℓ hℓ δ hδ T]
 
-theorem eventually_saddleSource_secondBranch_weighted_integrable :
+lemma eventually_saddleSource_secondBranch_weighted_integrable :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ ℓ : ℝ, 0 < ℓ →
         ∀ δ : ℝ, ε / 2 ≤ δ →
@@ -36417,7 +36417,7 @@ theorem eventually_saddleSource_secondBranch_weighted_integrable :
   nlinarith [mul_le_mul_of_nonneg_left hexp
     (saddleGaussianTailWeight_nonneg T)]
 
-theorem saddleGaussian_weighted_integral_le_rescaled
+lemma saddleGaussian_weighted_integral_le_rescaled
     {k : ℝ} (hk : 0 < k) :
     (∫ T : ℝ,
       saddleGaussianTailWeight T *
@@ -36503,7 +36503,7 @@ theorem saddleGaussian_weighted_integral_le_rescaled
         Real.sqrt (Real.pi / (k / 2)) := by
       rw [MeasureTheory.integral_const_mul, integral_gaussian]
 
-theorem saddleExponential_weighted_integral_le_rescaled
+lemma saddleExponential_weighted_integral_le_rescaled
     {k : ℝ} (hk : 0 < k) :
     (∫ T : ℝ,
       saddleGaussianTailWeight T *
@@ -36609,7 +36609,7 @@ def saddleSourceSecondBranchOuterBarrier
     Real.exp (δ * shellLocation ε) *
       saddleSourceSecondBranchLocalFrequency ε ^ 2
 
-theorem eventually_saddleSource_secondBranch_pointwise_gaussian_plus_outer :
+lemma eventually_saddleSource_secondBranch_pointwise_gaussian_plus_outer :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ ℓ : ℝ, 0 < ℓ →
         ∀ δ : ℝ, ε / 2 ≤ δ →
@@ -36794,7 +36794,7 @@ theorem eventually_saddleSource_secondBranch_pointwise_gaussian_plus_outer :
       positivity
     nlinarith
 
-theorem eventually_saddleSource_secondBranch_weighted_tail_explicit :
+lemma eventually_saddleSource_secondBranch_weighted_tail_explicit :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ ℓ : ℝ, 0 < ℓ →
         ∀ δ : ℝ, ε / 2 ≤ δ →
@@ -36963,7 +36963,7 @@ theorem eventually_saddleSource_secondBranch_weighted_tail_explicit :
       gcongr
     _ = _ := by rfl
 
-theorem saddleSourceSecondBranch_normalizedGaussian_prefactor
+lemma saddleSourceSecondBranch_normalizedGaussian_prefactor
     {ε ℓ δ : ℝ}
     (hℓ : 0 < ℓ)
     (hV : 0 < saddleSourceGaussianVariance ε ℓ (1 + δ)) :
@@ -36986,7 +36986,7 @@ theorem saddleSourceSecondBranch_normalizedGaussian_prefactor
       400 * Real.exp 1 * Real.pi
   field_simp [hℓ.ne', hVne, (Real.exp_pos 1).ne']; ring
 
-theorem saddleSourceSecondBranch_normalizedGaussian_exponent
+lemma saddleSourceSecondBranch_normalizedGaussian_exponent
     {ε ℓ δ z : ℝ}
     (hℓ : 0 < ℓ)
     (hV : 0 < saddleSourceGaussianVariance ε ℓ (1 + δ)) :
@@ -37006,7 +37006,7 @@ theorem saddleSourceSecondBranch_normalizedGaussian_exponent
   rw [div_pow, Real.sq_sqrt hLV.le]
   field_simp [hℓ.ne', hVne, (Real.exp_pos 1).ne']; ring
 
-theorem eventually_saddleSource_secondBranch_normalized_tail_bound :
+lemma eventually_saddleSource_secondBranch_normalized_tail_bound :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ ℓ : ℝ, 0 < ℓ →
         ∀ δ : ℝ, ε / 2 ≤ δ →
@@ -37136,7 +37136,7 @@ theorem eventually_saddleSource_secondBranch_normalized_tail_bound :
         hpref'
       nlinarith
 
-theorem saddle_sqrt_le_one_add
+lemma saddle_sqrt_le_one_add
     {x : ℝ} (hx : 0 ≤ x) :
     Real.sqrt x ≤ 1 + x := by
   apply Real.sqrt_le_iff.mpr
@@ -37144,7 +37144,7 @@ theorem saddle_sqrt_le_one_add
   · linarith
   · nlinarith [sq_nonneg x]
 
-theorem saddle_inverse_sqrt_cube_le
+lemma saddle_inverse_sqrt_cube_le
     {q : ℝ} (hq : 0 < q) :
     (Real.sqrt (q / 6) ^ 3)⁻¹ ≤
       1 + (6 / q) ^ 3 := by
@@ -37167,7 +37167,7 @@ theorem saddle_inverse_sqrt_cube_le
   rw [← hidentity]
   nlinarith [sq_nonneg ((s ^ 3)⁻¹ - (1 / 2 : ℝ))]
 
-theorem saddleSecondBranch_gammaWeightedCoefficient_le
+lemma saddleSecondBranch_gammaWeightedCoefficient_le
     {q η C : ℝ}
     (hq : 0 < q)
     (hη : 1 ≤ η)
@@ -37240,7 +37240,7 @@ theorem saddleSecondBranch_gammaWeightedCoefficient_le
           (1 + 2 * Real.pi * C)) * η ^ 4 := by
       ring
 
-theorem saddleSecondBranch_linearWeightedCoefficient_le
+lemma saddleSecondBranch_linearWeightedCoefficient_le
     {a η C : ℝ}
     (ha : 0 < a)
     (hη : 1 ≤ η)
@@ -37293,12 +37293,12 @@ def saddleSourceSecondBranchMomentCoefficient : ℝ :=
       (1 + 2 * Real.pi * C) +
     8 * C * (1 + (6 * C) ^ 3)
 
-theorem saddleSourceSecondBranchMomentCoefficient_pos :
+lemma saddleSourceSecondBranchMomentCoefficient_pos :
     0 < saddleSourceSecondBranchMomentCoefficient := by
   unfold saddleSourceSecondBranchMomentCoefficient
   positivity
 
-theorem saddleSourceSecondBranch_outerMoment_le
+lemma saddleSourceSecondBranch_outerMoment_le
     {ℓ δ : ℝ} (hℓ : 1 ≤ ℓ) (hδ : 0 ≤ δ) :
     2 * max (1 : ℝ)
         ((Real.sqrt
@@ -37381,13 +37381,13 @@ theorem saddleSourceSecondBranch_outerMoment_le
 def saddleSourceSecondBranchVarianceCoefficient (ε : ℝ) : ℝ :=
   2 + (shellLocation ε + 1) ^ 2 * shellWeight ε
 
-theorem saddleSourceSecondBranchVarianceCoefficient_pos
+lemma saddleSourceSecondBranchVarianceCoefficient_pos
     (ε : ℝ) :
     0 < saddleSourceSecondBranchVarianceCoefficient ε := by
   unfold saddleSourceSecondBranchVarianceCoefficient
   positivity [shellWeight_pos ε]
 
-theorem eventually_saddleSourceGaussianVariance_secondBranch_upper :
+lemma eventually_saddleSourceGaussianVariance_secondBranch_upper :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ ℓ : ℝ, 1 ≤ ℓ →
         ∀ δ : ℝ, ε / 2 ≤ δ →
@@ -37443,7 +37443,7 @@ theorem eventually_saddleSourceGaussianVariance_secondBranch_upper :
   unfold saddleSourceSecondBranchVarianceCoefficient
   nlinarith
 
-theorem eventually_saddleSource_secondBranch_sqrtVariance_le :
+lemma eventually_saddleSource_secondBranch_sqrtVariance_le :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ ℓ : ℝ, 1 ≤ ℓ →
         ∀ δ : ℝ, ε / 2 ≤ δ →
@@ -37486,7 +37486,7 @@ theorem eventually_saddleSource_secondBranch_sqrtVariance_le :
       rw [hargument]
       ring
 
-theorem tendsto_saddleSourceSecondBranchLocalTailMajorant :
+lemma tendsto_saddleSourceSecondBranchLocalTailMajorant :
     Tendsto
       (fun ℓ : ℝ =>
         2 * Real.sqrt (400 * Real.exp 1 * Real.pi) *
@@ -37515,7 +37515,7 @@ theorem tendsto_saddleSourceSecondBranchLocalTailMajorant :
     ring
   · simp
 
-theorem eventually_saddleSource_secondBranch_uniform_tail :
+lemma eventually_saddleSource_secondBranch_uniform_tail :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ κ : ℝ, 0 < κ →
         ∀ᶠ ℓ : ℝ in atTop,
@@ -37763,7 +37763,7 @@ noncomputable section
 open Filter MeasureTheory Set
 open scoped Topology
 
-theorem saddleGaussian_central_compl_subset_tail
+lemma saddleGaussian_central_compl_subset_tail
     (R : ℝ) :
     (Icc (-R) R)ᶜ ⊆ saddleGaussianTailSet R := by
   intro T hT
@@ -37773,7 +37773,7 @@ theorem saddleGaussian_central_compl_subset_tail
   have hinterior := (abs_lt).mp hsmall
   exact hT ⟨hinterior.1.le, hinterior.2.le⟩
 
-theorem saddleGaussian_fullLine_error_le_central_add_tails
+lemma saddleGaussian_fullLine_error_le_central_add_tails
     {F G : ℝ → ℂ}
     (hF : Integrable F) (hG : Integrable G)
     (R : ℝ) :
@@ -37848,7 +37848,7 @@ theorem saddleGaussian_fullLine_error_le_central_add_tails
           try dsimp [s, tail]
           ring
 
-theorem saddleSourceGaussianKernel_scaled_integral
+lemma saddleSourceGaussianKernel_scaled_integral
     {ε ℓ u : ℝ}
     (hℓ : 0 < ℓ)
     (hV : 0 < saddleSourceGaussianVariance ε ℓ u) :
@@ -37866,7 +37866,7 @@ theorem saddleSourceGaussianKernel_scaled_integral
   congr 1
   field_simp [hℓ.ne', hV'.ne', hproduct.ne']
 
-theorem saddleSource_scaled_tail_lt_relative_gaussian
+lemma saddleSource_scaled_tail_lt_relative_gaussian
     {ε ℓ u C A κ X W : ℝ}
     (hℓ : 0 < ℓ)
     (hV : 0 < saddleSourceGaussianVariance ε ℓ u)
@@ -37904,7 +37904,7 @@ theorem saddleSource_scaled_tail_lt_relative_gaussian
       rw [hgaussian]
       field_simp [hs.ne', hg.ne']
 
-theorem saddleSource_weighted_tail_integral_le
+lemma saddleSource_weighted_tail_integral_le
     {F : ℝ → ℂ} {W : ℝ → ℝ} {C A R : ℝ}
     (hF : Integrable F)
     (hW : Integrable W)
@@ -37925,7 +37925,7 @@ theorem saddleSource_weighted_tail_integral_le
         (∫ T : ℝ in saddleGaussianTailSet R, W T) := by
       rw [integral_const_mul]
 
-theorem exists_saddleSourceCenteredPlusIntegrand_weighted_tail_integral_bound
+lemma exists_saddleSourceCenteredPlusIntegrand_weighted_tail_integral_bound
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     ∃ C : ℝ, 0 < C ∧
@@ -37966,7 +37966,7 @@ theorem exists_saddleSourceCenteredPlusIntegrand_weighted_tail_integral_bound
           Real.exp (-saddleSourceContourDamping ε ℓ u T)) := by
         ring
 
-theorem exists_saddleSourceCenteredMinusIntegrand_weighted_tail_integral_bound
+lemma exists_saddleSourceCenteredMinusIntegrand_weighted_tail_integral_bound
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε) :
     ∃ C : ℝ, 0 < C ∧
@@ -38008,7 +38008,7 @@ theorem exists_saddleSourceCenteredMinusIntegrand_weighted_tail_integral_bound
           Real.exp (-saddleSourceContourDamping ε ℓ u T)) := by
         ring
 
-theorem saddleSourceGaussianPlusIntegrand_tail_norm_eq
+lemma saddleSourceGaussianPlusIntegrand_tail_norm_eq
     (ε ℓ u R : ℝ) :
     (∫ T : ℝ in saddleGaussianTailSet R,
       ‖saddleSourceGaussianPlusIntegrand ε ℓ u T‖) =
@@ -38034,7 +38034,7 @@ theorem saddleSourceGaussianPlusIntegrand_tail_norm_eq
       rw [integral_mul_const]
       ring
 
-theorem saddleSourceGaussianMinusIntegrand_tail_norm_eq
+lemma saddleSourceGaussianMinusIntegrand_tail_norm_eq
     (ε ℓ u R : ℝ) :
     (∫ T : ℝ in saddleGaussianTailSet R,
       ‖saddleSourceGaussianMinusIntegrand ε ℓ u T‖) =
@@ -38060,7 +38060,7 @@ theorem saddleSourceGaussianMinusIntegrand_tail_norm_eq
       rw [integral_mul_const]
       ring
 
-theorem saddleGaussian_fullLine_error_lt_of_central_and_normalized_tails
+lemma saddleGaussian_fullLine_error_lt_of_central_and_normalized_tails
     {ε ℓ u R A κcentral κsource κgaussian : ℝ}
     {F G : ℝ → ℂ}
     (hF : Integrable F) (hG : Integrable G)
@@ -38118,7 +38118,7 @@ theorem saddleGaussian_fullLine_error_lt_of_central_and_normalized_tails
           (∫ T : ℝ, saddleSourceGaussianKernel ε ℓ u T) := by
       ring
 
-theorem saddleSourceGaussianKernel_normalized_tail_le
+lemma saddleSourceGaussianKernel_normalized_tail_le
     {ε ℓ u z : ℝ}
     (hℓ : 0 < ℓ)
     (hV : 0 < saddleSourceGaussianVariance ε ℓ u)
@@ -38229,7 +38229,7 @@ def saddleSourceGaussianNormalizedTailMajorant (x : ℝ) : ℝ :=
   4 * Real.sqrt (2 * Real.pi) *
     Real.exp (-(x ^ (1 / 6 : ℝ)) / 8)
 
-theorem tendsto_saddleSourceGaussianNormalizedTailMajorant :
+lemma tendsto_saddleSourceGaussianNormalizedTailMajorant :
     Tendsto saddleSourceGaussianNormalizedTailMajorant
       atTop (𝓝 (0 : ℝ)) := by
   have hpower : Tendsto
@@ -38252,7 +38252,7 @@ theorem tendsto_saddleSourceGaussianNormalizedTailMajorant :
     atTop (𝓝 (0 : ℝ))
   simpa only [Function.comp_apply, mul_zero] using! h
 
-theorem eventually_saddleSource_firstBranch_uniform_gaussian_tail :
+lemma eventually_saddleSource_firstBranch_uniform_gaussian_tail :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ κ : ℝ, 0 < κ →
         ∀ᶠ ℓ : ℝ in atTop,
@@ -38367,7 +38367,7 @@ theorem eventually_saddleSource_firstBranch_uniform_gaussian_tail :
       gcongr
     _ < κ := hdecayℓ
 
-theorem eventually_saddleSource_secondBranch_uniform_gaussian_tail :
+lemma eventually_saddleSource_secondBranch_uniform_gaussian_tail :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ κ : ℝ, 0 < κ →
         ∀ᶠ ℓ : ℝ in atTop,
@@ -38438,7 +38438,7 @@ noncomputable section
 open Filter Set MeasureTheory intervalIntegral
 open scoped Topology
 
-theorem eventually_saddleSourceFirstBranch_sourceL1Tails :
+lemma eventually_saddleSourceFirstBranch_sourceL1Tails :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ κ : ℝ, 0 < κ →
         ∀ᶠ ℓ : ℝ in atTop,
@@ -38582,7 +38582,7 @@ theorem eventually_saddleSourceFirstBranch_sourceL1Tails :
       _ = κ * ‖minusPolynomial ε (Complex.I * (u : ℂ))‖ := by
           field_simp [hCm.ne']
 
-theorem eventually_saddleSourceFirstBranch_gaussianL1Tails :
+lemma eventually_saddleSourceFirstBranch_gaussianL1Tails :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ κ : ℝ, 0 < κ →
         ∀ᶠ ℓ : ℝ in atTop,
@@ -38644,7 +38644,7 @@ theorem eventually_saddleSourceFirstBranch_gaussianL1Tails :
     rw [saddleSourceGaussianMinusIntegrand_tail_norm_eq]
     nlinarith [mul_lt_mul_of_pos_left hkernel hden]
 
-theorem eventually_saddleSourceFirstBranch_fullGaussianErrors :
+lemma eventually_saddleSourceFirstBranch_fullGaussianErrors :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ᶠ ℓ : ℝ in atTop,
         ∀ u : ℝ, -1 < u → u ≤ 1 + ε / 2 →
@@ -38772,7 +38772,7 @@ theorem eventually_saddleSourceFirstBranch_fullGaussianErrors :
             saddleSourceGaussianKernel ε ℓ u T) := by
         nlinarith [mul_pos hden hG]
 
-theorem eventually_saddleSourceSecondBranch_sourceL1Tails_of_uniform_tail
+lemma eventually_saddleSourceSecondBranch_sourceL1Tails_of_uniform_tail
     (hweighted :
       ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
         ∀ ℓ : ℝ, 0 < ℓ →
@@ -38936,7 +38936,7 @@ theorem eventually_saddleSourceSecondBranch_sourceL1Tails_of_uniform_tail
       _ = κ * ‖minusPolynomial ε (Complex.I * (u : ℂ))‖ := by
           field_simp [hCm.ne']
 
-theorem eventually_saddleSourceSecondBranch_gaussianL1Tails :
+lemma eventually_saddleSourceSecondBranch_gaussianL1Tails :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ κ : ℝ, 0 < κ →
         ∀ᶠ ℓ : ℝ in atTop,
@@ -39006,7 +39006,7 @@ theorem eventually_saddleSourceSecondBranch_gaussianL1Tails :
     rw [saddleSourceGaussianMinusIntegrand_tail_norm_eq]
     nlinarith [mul_lt_mul_of_pos_left hkernel hden]
 
-theorem eventually_saddleSourceSecondBranch_fullGaussianErrors_of_sourceL1
+lemma eventually_saddleSourceSecondBranch_fullGaussianErrors_of_sourceL1
     (hsource :
       ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
         ∀ κ : ℝ, 0 < κ →
@@ -39186,7 +39186,7 @@ theorem eventually_saddleSourceSecondBranch_fullGaussianErrors_of_sourceL1
             saddleSourceGaussianKernel ε ℓ u T) := by
         nlinarith [mul_pos hden hG]
 
-theorem eventually_saddleSourceSecondBranch_sourceL1Tails :
+lemma eventually_saddleSourceSecondBranch_sourceL1Tails :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ κ : ℝ, 0 < κ →
         ∀ᶠ ℓ : ℝ in atTop,
@@ -39218,7 +39218,7 @@ theorem eventually_saddleSourceSecondBranch_sourceL1Tails :
   simpa [saddleSourceSecondBranchCentralRadius] using!
     eventually_saddleSource_secondBranch_uniform_tail
 
-theorem eventually_saddleSourceSecondBranch_fullGaussianErrors :
+lemma eventually_saddleSourceSecondBranch_fullGaussianErrors :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ᶠ ℓ : ℝ in atTop,
         ∀ δ : ℝ, ε / 2 ≤ δ →
@@ -39252,7 +39252,7 @@ noncomputable section
 open Filter MeasureTheory Set
 open scoped Topology BigOperators
 
-theorem saddleDigamma_eq_complexDigamma_re
+lemma saddleDigamma_eq_complexDigamma_re
     {x : ℝ} (hx : 0 < x) :
     saddleDigamma x = (Complex.digamma (x : ℂ)).re := by
   have hΓ : 0 < Real.Gamma x := Real.Gamma_pos_of_pos hx
@@ -39276,7 +39276,7 @@ theorem saddleDigamma_eq_complexDigamma_re
     Complex.digamma_def, logDeriv_apply,
     Complex.Gamma_ofReal, Complex.div_ofReal_re]
 
-theorem complexGamma_differentiableOn_positiveHalfPlane :
+lemma complexGamma_differentiableOn_positiveHalfPlane :
     DifferentiableOn ℂ Complex.Gamma
       {z : ℂ | 0 < z.re} := by
   intro z hz
@@ -39289,7 +39289,7 @@ theorem complexGamma_differentiableOn_positiveHalfPlane :
   change 0 < z.re at hz
   linarith
 
-theorem complexDigamma_continuousOn_positiveHalfPlane :
+lemma complexDigamma_continuousOn_positiveHalfPlane :
     ContinuousOn Complex.digamma
       {z : ℂ | 0 < z.re} := by
   let s : Set ℂ := {z : ℂ | 0 < z.re}
@@ -39310,7 +39310,7 @@ theorem complexDigamma_continuousOn_positiveHalfPlane :
         Complex.Gamma_ne_zero_of_re_pos hz)
   simpa [s, Complex.digamma_def, logDeriv_apply] using! hratio
 
-theorem saddleDigamma_continuousOn_Ioi :
+lemma saddleDigamma_continuousOn_Ioi :
     ContinuousOn saddleDigamma (Ioi (0 : ℝ)) := by
   have hmap :
       MapsTo (fun x : ℝ => (x : ℂ))
@@ -39331,7 +39331,7 @@ theorem saddleDigamma_continuousOn_Ioi :
   intro x hx
   exact saddleDigamma_eq_complexDigamma_re hx
 
-theorem tendsto_saddleDigamma_atTop :
+lemma tendsto_saddleDigamma_atTop :
     Tendsto saddleDigamma atTop atTop := by
   have h := Real.tendsto_log_atTop.atTop_add
     tendsto_saddleDigamma_sub_log
@@ -39339,7 +39339,7 @@ theorem tendsto_saddleDigamma_atTop :
   funext x
   ring
 
-theorem saddleSinhShellInterval_hasDerivAt
+lemma saddleSinhShellInterval_hasDerivAt
     (w : ℝ → ℝ) (hw : Continuous w)
     {a b : ℝ} (hab : a ≤ b) (u : ℝ) :
     HasDerivAt
@@ -39430,7 +39430,7 @@ theorem saddleSinhShellInterval_hasDerivAt
     hmeas hint hderivmeas hbound hconstant
     hdifferentiable).2
 
-theorem saddleSourceShellDerivative_hasDerivAt
+lemma saddleSourceShellDerivative_hasDerivAt
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     (u : ℝ) :
@@ -39533,7 +39533,7 @@ theorem saddleSourceShellDerivative_hasDerivAt
   unfold upperNetShellVariance
   ring
 
-theorem eventually_saddleSourceShellDerivative_monotone_secondBranch :
+lemma eventually_saddleSourceShellDerivative_monotone_secondBranch :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       MonotoneOn (saddleSourceShellDerivative ε)
         (Ici (1 + ε / 2)) := by
@@ -39570,7 +39570,7 @@ theorem eventually_saddleSourceShellDerivative_monotone_secondBranch :
     have hnetlower := (hnet (u - 1) hδ).1
     nlinarith
 
-theorem saddleLogRadius_continuousOn_Ici
+lemma saddleLogRadius_continuousOn_Ici
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     {d : ℕ} (hd : 0 < d)
@@ -39615,7 +39615,7 @@ theorem saddleLogRadius_continuousOn_Ici
     saddleLogRadius_eq_digamma_add_shellDerivative
       ε d u
 
-theorem tendsto_saddleGammaArgument_atTop
+lemma tendsto_saddleGammaArgument_atTop
     {d : ℕ} (hd : 0 < d) :
     Tendsto
       (fun u : ℝ =>
@@ -39632,7 +39632,7 @@ theorem tendsto_saddleGammaArgument_atTop
   simp only [id_eq]
   ring
 
-theorem tendsto_saddleLogRadius_atTop_of_shell_monotone
+lemma tendsto_saddleLogRadius_atTop_of_shell_monotone
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     {d : ℕ} (hd : 0 < d)
@@ -39671,7 +39671,7 @@ theorem tendsto_saddleLogRadius_atTop_of_shell_monotone
     linarith
   exact tendsto_atTop_mono' atTop hcomparison hbaseline
 
-theorem eventually_tendsto_saddleLogRadius_atTop :
+lemma eventually_tendsto_saddleLogRadius_atTop :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ d : ℕ, 0 < d →
         Tendsto (saddleLogRadius ε d) atTop atTop := by
@@ -39685,7 +39685,7 @@ theorem eventually_tendsto_saddleLogRadius_atTop :
   exact tendsto_saddleLogRadius_atTop_of_shell_monotone
     hε horder hd hmono
 
-theorem saddleLogRadius_covers_Ici
+lemma saddleLogRadius_covers_Ici
     {ε : ℝ} (hε : 0 < ε)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
     {d : ℕ} (hd : 0 < d)
@@ -39718,7 +39718,7 @@ theorem saddleLogRadius_covers_Ici
   obtain ⟨u, hu, heq⟩ := himage hlog
   exact ⟨u, hu, heq⟩
 
-theorem eventually_saddleLogRadius_covers_Ici :
+lemma eventually_saddleLogRadius_covers_Ici :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ d : ℕ, 0 < d →
         ∀ u₀ : ℝ, -1 < u₀ →
@@ -39736,7 +39736,7 @@ theorem eventually_saddleLogRadius_covers_Ici :
   exact saddleLogRadius_covers_Ici
     hε horder hd hu₀ (htop d hd) hr
 
-theorem eventually_saddleSmallRadiusStarOrdinate_gt_neg_one
+lemma eventually_saddleSmallRadiusStarOrdinate_gt_neg_one
     (ε : ℝ) :
     ∀ᶠ d : ℕ in atTop,
       -1 < saddleSmallRadiusStarOrdinate ε d := by
@@ -39757,7 +39757,7 @@ theorem eventually_saddleSmallRadiusStarOrdinate_gt_neg_one
   unfold saddleSmallRadiusStarOrdinate
   linarith
 
-theorem eventually_saddleSmallRadiusStar_log_coverage :
+lemma eventually_saddleSmallRadiusStar_log_coverage :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ᶠ d : ℕ in atTop,
         ∀ r : ℝ,
@@ -39777,7 +39777,7 @@ theorem eventually_saddleSmallRadiusStar_log_coverage :
     (saddleSmallRadiusStarOrdinate ε d) hstar r
   exact hr
 
-theorem eventually_saddleSourceRadius_log_coverage :
+lemma eventually_saddleSourceRadius_log_coverage :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ d : ℕ, 0 < d →
         ∀ r : ℝ,
@@ -39820,19 +39820,19 @@ def ConstructivePrimalUpperBound : Prop :=
     ∀ᶠ d : ℕ in atTop,
       ∃ f : Admissible d, normalizedCost f ≤ c
 
-theorem normalizedProgram_le_normalizedCost {d : ℕ}
+lemma normalizedProgram_le_normalizedCost {d : ℕ}
     (f : Admissible d) :
     normalizedProgram d ≤ normalizedCost f := by
   unfold normalizedProgram
   exact csInf_le (normalizedCostSet_bddBelow d) ⟨f, rfl⟩
 
-theorem eventualUpperBound_of_constructivePrimal
+lemma eventualUpperBound_of_constructivePrimal
     (hupper : ConstructivePrimalUpperBound) : EventualUpperBound := by
   intro c hc
   filter_upwards [hupper c hc] with d ⟨f, hf⟩
   exact (normalizedProgram_le_normalizedCost f).trans hf
 
-theorem eventualLowerBound_of_uniform_and_constructive
+lemma eventualLowerBound_of_uniform_and_constructive
     (hlower : UniformAdmissibleLowerBound)
     (hupper : ConstructivePrimalUpperBound) : EventualLowerBound := by
   intro c hc
@@ -39844,7 +39844,7 @@ theorem eventualLowerBound_of_uniform_and_constructive
   rintro _ ⟨g, rfl⟩
   exact hcost g
 
-theorem sharpQuotient_of_eventual_bounds
+lemma sharpQuotient_of_eventual_bounds
     (hlower : EventualLowerBound)
     (hupper : EventualUpperBound) :
     SharpQuotientAsymptotic := by
@@ -39861,7 +39861,7 @@ theorem sharpQuotient_of_eventual_bounds
     filter_upwards [hupper _ hmid] with d hd
     linarith
 
-theorem sharpQuotient_of_uniform_lower_and_constructive_upper
+lemma sharpQuotient_of_uniform_lower_and_constructive_upper
     (hlower : UniformAdmissibleLowerBound)
     (hupper : ConstructivePrimalUpperBound) :
     SharpQuotientAsymptotic := by
@@ -39884,7 +39884,7 @@ structure OrderedEpsilonUpperConstruction where
       ∀ᶠ d : ℕ in atTop,
         ∃ f : Admissible d, normalizedCost f ≤ normalizedRadius ε d
 
-theorem constructivePrimal_of_orderedEpsilon
+lemma constructivePrimal_of_orderedEpsilon
     (construction : OrderedEpsilonUpperConstruction) :
     ConstructivePrimalUpperBound := by
   intro c hc
@@ -39912,7 +39912,7 @@ theorem constructivePrimal_of_orderedEpsilon
     hradius] with d ⟨f, hf⟩ hr
   exact ⟨f, hf.trans hr.le⟩
 
-theorem sharpQuotient_of_uniform_lower_and_ordered_upper
+lemma sharpQuotient_of_uniform_lower_and_ordered_upper
     (hlower : UniformAdmissibleLowerBound)
     (construction : OrderedEpsilonUpperConstruction) :
     SharpQuotientAsymptotic := by
@@ -40013,7 +40013,7 @@ open scoped FourierTransform SchwartzMap Topology
 def lowerGammaBoundaryCapped (ℓ R D y : ℝ) : ℝ :=
   if y = 0 then D else min (lowerGammaBoundaryLog ℓ R y) D
 
-theorem lowerGammaBoundaryLog_pole_decomposition
+lemma lowerGammaBoundaryLog_pole_decomposition
     (ℓ R : ℝ) {y : ℝ} (hy : y ≠ 0) :
     lowerGammaBoundaryLog ℓ R y =
       ℓ * Real.log (Real.pi * R ^ 2) +
@@ -40062,7 +40062,7 @@ theorem lowerGammaBoundaryLog_pole_decomposition
   rw [hlog, harg]
   ring
 
-theorem lowerGammaBoundaryLog_tendsto_atTop_zero
+lemma lowerGammaBoundaryLog_tendsto_atTop_zero
     {ℓ : ℝ} (hℓ : 0 < ℓ) (R : ℝ) :
     Tendsto (lowerGammaBoundaryLog ℓ R)
       (𝓝[≠] (0 : ℝ)) atTop := by
@@ -40155,7 +40155,7 @@ theorem lowerGammaBoundaryLog_tendsto_atTop_zero
   rw [lowerGammaBoundaryLog_pole_decomposition ℓ R hyzero]
   ring
 
-theorem lowerGammaBoundaryCapped_continuous
+lemma lowerGammaBoundaryCapped_continuous
     {ℓ : ℝ} (hℓ : 0 < ℓ) (R D : ℝ) :
     Continuous (lowerGammaBoundaryCapped ℓ R D) := by
   rw [continuous_iff_continuousAt]
@@ -40204,7 +40204,7 @@ theorem lowerGammaBoundaryCapped_continuous
     filter_upwards [eventually_ne_nhds hy] with x hx
     simp [lowerGammaBoundaryCapped, hx]
 
-theorem lowerGammaBoundaryCapped_exp_integrable_of_exp_integrable
+lemma lowerGammaBoundaryCapped_exp_integrable_of_exp_integrable
     {ℓ a : ℝ} (hℓ : 0 < ℓ) (ha : 0 < a)
     (R D : ℝ)
     (hgamma : Integrable (fun y : ℝ =>
@@ -40260,7 +40260,7 @@ theorem lowerGammaBoundaryCapped_exp_integrable_of_exp_integrable
         |D| * Real.exp ((-a) * |y|) := by
       ring
 
-theorem stripRegularizedOuter_integrable_of_exp_integrable
+lemma stripRegularizedOuter_integrable_of_exp_integrable
     {ℓ : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ)
     (b : ℝ → ℝ) (hb : Continuous b)
@@ -40447,7 +40447,7 @@ def stripRegularizedOuter (ℓ : ℝ) (b : ℝ → ℝ) (z : ℂ) : ℂ :=
     stripRegularizedHolomorphicPoissonKernel ℓ z y *
       (b y : ℂ)
 
-theorem stripRegularizedOuter_differentiableAt_of_exp_integrable
+lemma stripRegularizedOuter_differentiableAt_of_exp_integrable
     {ℓ : ℝ} (hℓ : 0 < ℓ) {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹' Ioo (-ℓ) ℓ)
     (b : ℝ → ℝ) (hb : Continuous b)
@@ -40561,7 +40561,7 @@ def lowerStripCappedGammaOuter
   stripRegularizedOuter ℓ
     (lowerGammaBoundaryCapped ℓ R D) z
 
-theorem lowerGammaBoundaryCapped_exp_integrable_dimension
+lemma lowerGammaBoundaryCapped_exp_integrable_dimension
     {d : ℕ} (hd : 0 < d) {a : ℝ}
     (ha : 0 < a) (R D : ℝ) :
     Integrable (fun y : ℝ =>
@@ -40575,7 +40575,7 @@ theorem lowerGammaBoundaryCapped_exp_integrable_dimension
   exact lowerGammaBoundaryLog_dimension_exp_integrable
     hd ha R
 
-theorem lowerStripCappedGammaOuter_integrable_dimension
+lemma lowerStripCappedGammaOuter_integrable_dimension
     {d : ℕ} (hd : 0 < d) {R D : ℝ} {z : ℂ}
     (hz : z ∈ Complex.im ⁻¹'
       Ioo (-((d : ℝ) / 2)) ((d : ℝ) / 2)) :
@@ -40596,7 +40596,7 @@ theorem lowerStripCappedGammaOuter_integrable_dimension
   exact lowerGammaBoundaryCapped_exp_integrable_dimension
     hd ha R D
 
-theorem lowerStripCappedGammaOuter_differentiableOn_dimension
+lemma lowerStripCappedGammaOuter_differentiableOn_dimension
     {d : ℕ} (hd : 0 < d) (R D : ℝ) :
     DifferentiableOn ℂ
       (lowerStripCappedGammaOuter ((d : ℝ) / 2) R D)
@@ -40615,7 +40615,7 @@ theorem lowerStripCappedGammaOuter_differentiableOn_dimension
     (lowerGammaBoundaryCapped_exp_integrable_dimension
       hd ha R D)).differentiableWithinAt
 
-theorem stripRegularizedOuter_re
+lemma stripRegularizedOuter_re
     {ℓ σ : ℝ} (hℓ : 0 < ℓ)
     (hσbelow : -1 < σ) (hσabove : σ < 1)
     (s : ℝ) (b : ℝ → ℝ)
@@ -40655,7 +40655,7 @@ theorem stripRegularizedOuter_re
     _ = ∫ T : ℝ, stripPoissonKernel σ T * b (s - ℓ * T) :=
       stripPoisson_integral_changeVariables hℓ σ s b
 
-theorem lowerStripCappedGammaOuter_re_dimension
+lemma lowerStripCappedGammaOuter_re_dimension
     {d : ℕ} (hd : 0 < d) {σ R D : ℝ}
     (hσbelow : -1 < σ) (hσabove : σ < 1) (s : ℝ) :
     (lowerStripCappedGammaOuter ((d : ℝ) / 2) R D
@@ -40685,7 +40685,7 @@ theorem lowerStripCappedGammaOuter_re_dimension
     (lowerStripCappedGammaOuter_integrable_dimension
       hd (R := R) (D := D) hz)
 
-theorem stripPoissonKernel_tendsto_zero_bottom_of_ne
+lemma stripPoissonKernel_tendsto_zero_bottom_of_ne
     {T : ℝ} (hT : T ≠ 0) :
     Tendsto (fun σ : ℝ => stripPoissonKernel σ T)
       (𝓝 (-1 : ℝ)) (𝓝 (0 : ℝ)) := by
@@ -40714,7 +40714,7 @@ theorem stripPoissonKernel_tendsto_zero_bottom_of_ne
   convert! hcontinuous.tendsto using 1
   all_goals simp [stripPoissonKernel, stripAngle]
 
-theorem stripPoissonKernel_le_center_of_lower_of_abs_ge
+lemma stripPoissonKernel_le_center_of_lower_of_abs_ge
     {σ δ T : ℝ}
     (hbelow : -1 < σ) (hnonpos : σ ≤ 0)
     (hδ : 0 < δ) (hT : δ ≤ |T|) :
@@ -40779,7 +40779,7 @@ theorem stripPoissonKernel_le_center_of_lower_of_abs_ge
       try dsimp [A, C, c]
       field_simp [hc.ne', hA.ne']
 
-theorem stripPoissonKernel_le_center_of_lower
+lemma stripPoissonKernel_le_center_of_lower
     {σ : ℝ} (hbelow : -1 < σ) (hnonpos : σ ≤ 0)
     (T : ℝ) :
     stripPoissonKernel σ T ≤
@@ -40834,7 +40834,7 @@ theorem stripPoissonKernel_le_center_of_lower
         (1 / c) * (1 / (4 * A))
       field_simp [hc.ne', hA.ne']
 
-theorem stripPoissonKernel_lower_product_integrable
+lemma stripPoissonKernel_lower_product_integrable
     {σ : ℝ} (hbelow : -1 < σ) (hnonpos : σ ≤ 0)
     {g : ℝ → ℝ} (hg : Continuous g)
     (hbase : Integrable (fun T : ℝ =>
@@ -40884,7 +40884,7 @@ theorem stripPoissonKernel_lower_product_integrable
       rw [norm_mul, Real.norm_of_nonneg hzero.le]
       ring
 
-theorem lowerGammaBoundaryCapped_central_poisson_shift_integrable
+lemma lowerGammaBoundaryCapped_central_poisson_shift_integrable
     {d : ℕ} (hd : 0 < d) (R D s : ℝ) :
     Integrable (fun T : ℝ =>
       stripPoissonKernel 0 T *
@@ -40936,7 +40936,7 @@ noncomputable section
 open Asymptotics Bornology Complex Filter Function MeasureTheory Metric Set
 open scoped Filter FourierTransform Real SchwartzMap Topology
 
-theorem norm_extension_le_of_frontier
+lemma norm_extension_le_of_frontier
     {U : Set ℂ}
     (hopen : IsOpen U)
     (hconnected : IsPreconnected U)
@@ -41004,7 +41004,7 @@ theorem norm_extension_le_of_frontier
       Set.not_nonempty_iff_eq_empty.mp hnonempty
     simp [hempty] at hz
 
-theorem horizontalStrip_norm_extension_majorization
+lemma horizontalStrip_norm_extension_majorization
     {a b C : ℝ} (hab : a < b) (hC : 0 < C)
     (f : ℂ → ℂ) (N : ℂ → ℝ)
     (hf : DifferentiableOn ℂ f
@@ -41276,7 +41276,7 @@ theorem horizontalStrip_norm_extension_majorization
       exact hNextinterior z hzU
     _ ≤ C := hmax
 
-theorem harmonic_abs_log_half_le_half
+lemma harmonic_abs_log_half_le_half
     {x : ℝ} (hx : 2 ≤ x) :
     |Real.log (x / 2)| ≤ x / 2 := by
   have hhalf : 1 ≤ x / 2 := by linarith
@@ -41286,7 +41286,7 @@ theorem harmonic_abs_log_half_le_half
       (show 0 < x / 2 by linarith)
   linarith
 
-theorem harmonic_abs_log_sqrtFactor_le_linear
+lemma harmonic_abs_log_sqrtFactor_le_linear
     {c x : ℝ} (hc : 0 ≤ c) (hx : 2 ≤ x) :
     |Real.log
       (Real.sqrt (c ^ 2 + (x / 2) ^ 2))| ≤ c + x := by
@@ -41295,7 +41295,7 @@ theorem harmonic_abs_log_sqrtFactor_le_linear
   have hlog := harmonic_abs_log_half_le_half hx
   linarith
 
-theorem harmonic_abs_log_coth_div_le_linear
+lemma harmonic_abs_log_coth_div_le_linear
     {x : ℝ} (hx : 2 ≤ x) :
     |Real.log
       (lowerCoth (Real.pi * (x / 2)) / (x / 2))| ≤
@@ -41305,7 +41305,7 @@ theorem harmonic_abs_log_coth_div_le_linear
   have hlog := harmonic_abs_log_half_le_half hx
   nlinarith
 
-theorem harmonic_integerGammaBoundary_abs_le_linear
+lemma harmonic_integerGammaBoundary_abs_le_linear
     (k : ℕ) (R : ℝ) :
     ∃ A : ℝ, 0 ≤ A ∧
       ∀ x : ℝ, 2 ≤ x →
@@ -41361,7 +41361,7 @@ theorem harmonic_integerGammaBoundary_abs_le_linear
   nlinarith [mul_nonneg hL hxpos,
     mul_nonneg hS hxpos, mul_nonneg hk hxpos]
 
-theorem harmonic_halfIntegerGammaBoundary_abs_le_linear
+lemma harmonic_halfIntegerGammaBoundary_abs_le_linear
     (k : ℕ) (R : ℝ) :
     ∃ A : ℝ, 0 ≤ A ∧
       ∀ x : ℝ, 2 ≤ x →
@@ -41464,7 +41464,7 @@ theorem harmonic_halfIntegerGammaBoundary_abs_le_linear
     mul_nonneg hπ hxn,
     mul_nonneg hQ hxn]
 
-theorem harmonic_dimensionGammaBoundary_eq_abs
+lemma harmonic_dimensionGammaBoundary_eq_abs
     {d : ℕ} (R : ℝ) {y : ℝ} (hy : y ≠ 0) :
     lowerGammaBoundaryLog ((d : ℝ) / 2) R y =
       lowerGammaBoundaryLog ((d : ℝ) / 2) R |y| := by
@@ -41476,7 +41476,7 @@ theorem harmonic_dimensionGammaBoundary_eq_abs
       (lowerGammaBoundaryLog_dimension_neg
         (d := d) R hy).symm
 
-theorem harmonic_dimensionGammaBoundary_abs_le_linear
+lemma harmonic_dimensionGammaBoundary_abs_le_linear
     (d : ℕ) (R : ℝ) :
     ∃ A : ℝ, 0 ≤ A ∧
       ∀ y : ℝ, 2 ≤ |y| →
@@ -41516,7 +41516,7 @@ theorem harmonic_dimensionGammaBoundary_abs_le_linear
       hcast]
     exact htail |y| hy
 
-theorem lowerGammaBoundaryCapped_dimension_abs_le_linear
+lemma lowerGammaBoundaryCapped_dimension_abs_le_linear
     {d : ℕ} (hd : 0 < d) (R D : ℝ) :
     ∃ A : ℝ, 0 ≤ A ∧
       ∀ y : ℝ,
@@ -41585,7 +41585,7 @@ theorem lowerGammaBoundaryCapped_dimension_abs_le_linear
         _ ≤ A * (1 + |y|) := by
           nlinarith [mul_nonneg hA (abs_nonneg y)]
 
-theorem stripPoissonKernel_le_exponentialMajorant_of_nonneg
+lemma stripPoissonKernel_le_exponentialMajorant_of_nonneg
     {σ : ℝ} (hσ : 0 ≤ σ) (hσone : σ < 1)
     (T : ℝ) :
     stripPoissonKernel σ T ≤
@@ -41614,7 +41614,7 @@ theorem stripPoissonKernel_le_exponentialMajorant_of_nonneg
     _ = stripNormalizedPoissonExtension σ T := one_mul _
     _ ≤ stripPoissonExponentialMajorant T := hext.2
 
-theorem harmonic_stripPoissonExponentialMajorant_abs_integrable :
+lemma harmonic_stripPoissonExponentialMajorant_abs_integrable :
     Integrable
       (fun T : ℝ =>
         stripPoissonExponentialMajorant T * |T|) := by
@@ -41628,7 +41628,7 @@ theorem harmonic_stripPoissonExponentialMajorant_abs_integrable :
   norm_num
   ring
 
-theorem harmonic_stripPoissonKernel_zero_abs_integrable :
+lemma harmonic_stripPoissonKernel_zero_abs_integrable :
     Integrable
       (fun T : ℝ => stripPoissonKernel 0 T * |T|) := by
   have hmajor :=
@@ -41654,7 +41654,7 @@ theorem harmonic_stripPoissonKernel_zero_abs_integrable :
   exact mul_le_mul_of_nonneg_right
     hkernel (abs_nonneg T)
 
-theorem harmonic_stripPoissonKernel_abs_integrable
+lemma harmonic_stripPoissonKernel_abs_integrable
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1) :
     Integrable
       (fun T : ℝ => stripPoissonKernel σ T * |T|) := by
@@ -41682,7 +41682,7 @@ theorem harmonic_stripPoissonKernel_abs_integrable
     exact mul_le_mul_of_nonneg_right
       hkernel (abs_nonneg T)
 
-theorem exists_stripPoissonKernel_uniform_abs_moment :
+lemma exists_stripPoissonKernel_uniform_abs_moment :
     ∃ M : ℝ, 0 ≤ M ∧
       ∀ σ : ℝ, -1 < σ → σ < 1 →
         (∫ T : ℝ,
@@ -41831,7 +41831,7 @@ theorem exists_stripPoissonKernel_uniform_abs_moment :
     try dsimp [M]
     nlinarith [mul_nonneg hC.le hJ]
 
-theorem lowerGammaBoundaryCapped_poisson_abs_le_linear
+lemma lowerGammaBoundaryCapped_poisson_abs_le_linear
     {d : ℕ} (hd : 0 < d) (R D : ℝ) :
     ∃ B : ℝ, 0 ≤ B ∧
       ∀ σ : ℝ, -1 < σ → σ < 1 →
@@ -41944,7 +41944,7 @@ theorem lowerGammaBoundaryCapped_poisson_abs_le_linear
         (show 0 ≤ A * ℓ * M by positivity)
         (abs_nonneg s)]
 
-theorem lowerStripCappedGammaOuter_abs_re_le_linear
+lemma lowerStripCappedGammaOuter_abs_re_le_linear
     {d : ℕ} (hd : 0 < d) (R D : ℝ) :
     ∃ B : ℝ, 0 ≤ B ∧
       ∀ z : ℂ,
@@ -41984,7 +41984,7 @@ theorem lowerStripCappedGammaOuter_abs_re_le_linear
   rw [hreal]
   exact hbound σ hσbelow hσabove z.re
 
-theorem antiFourierWitness_cappedWeightedMellinStrip_growth
+lemma antiFourierWitness_cappedWeightedMellinStrip_growth
     {d : ℕ} (hd : 0 < d) {R : ℝ}
     (w : AntiFourierWitness d R) (D : ℝ) :
     ∃ c < Real.pi /
@@ -42097,7 +42097,7 @@ theorem antiFourierWitness_cappedWeightedMellinStrip_growth
       nlinarith [Real.exp_pos
         (B * Real.exp (c * |z.re|))]
 
-theorem harmonic_bottom_normalized_height_tendsto
+lemma harmonic_bottom_normalized_height_tendsto
     {ℓ : ℝ} (hℓ : 0 < ℓ) (s : ℝ) :
     Tendsto
       (fun z : ℂ => z.im / ℓ)
@@ -42111,7 +42111,7 @@ theorem harmonic_bottom_normalized_height_tendsto
     nhdsWithin_le_nhds using 1;
       simp [hℓ.ne']
 
-theorem harmonic_bottom_real_tendsto
+lemma harmonic_bottom_real_tendsto
     {ℓ : ℝ} (s : ℝ) :
     Tendsto Complex.re
       (𝓝[Complex.im ⁻¹' Ioo (-ℓ) ℓ]
@@ -42121,7 +42121,7 @@ theorem harmonic_bottom_real_tendsto
     nhdsWithin_le_nhds using 1;
       simp
 
-theorem harmonic_bottom_far_joint_tendsto_zero
+lemma harmonic_bottom_far_joint_tendsto_zero
     {ℓ : ℝ} (hℓ : 0 < ℓ)
     {b : ℝ → ℝ} (hb : Continuous b)
     {A : ℝ} (hA : 0 ≤ A)
@@ -42345,7 +42345,7 @@ theorem harmonic_bottom_far_joint_tendsto_zero
       hmeas hdom hmajor hpoint
   simpa [U, z₀, S, integral_indicator hS] using! hDCT
 
-theorem harmonic_bottom_joint_tendsto_zero_of_zero
+lemma harmonic_bottom_joint_tendsto_zero_of_zero
     {ℓ : ℝ} (hℓ : 0 < ℓ)
     {b : ℝ → ℝ} (hb : Continuous b)
     {A : ℝ} (hA : 0 ≤ A)
@@ -42537,7 +42537,7 @@ theorem harmonic_bottom_joint_tendsto_zero_of_zero
       norm_add_le _ _
     _ < ε := by linarith
 
-theorem lowerGammaBoundaryCapped_bottom_poisson_joint_tendsto
+lemma lowerGammaBoundaryCapped_bottom_poisson_joint_tendsto
     {d : ℕ} (hd : 0 < d) (R D s : ℝ) :
     Tendsto
       (fun z : ℂ =>
@@ -42669,7 +42669,7 @@ theorem lowerGammaBoundaryCapped_bottom_poisson_joint_tendsto
   have hresult := hsum.congr' heq.symm
   simpa [ℓ, b, U, z₀] using! hresult
 
-theorem stripPoissonKernel_tendsto_zero_top
+lemma stripPoissonKernel_tendsto_zero_top
     (T : ℝ) :
     Tendsto (fun σ : ℝ => stripPoissonKernel σ T)
       (𝓝 (1 : ℝ)) (𝓝 (0 : ℝ)) := by
@@ -42695,7 +42695,7 @@ theorem stripPoissonKernel_tendsto_zero_top
   have h := (hnum.div hdencont hden).tendsto
   simpa [stripPoissonKernel, hangle, Real.sin_pi] using! h
 
-theorem harmonic_top_normalized_height_tendsto
+lemma harmonic_top_normalized_height_tendsto
     {ℓ : ℝ} (hℓ : 0 < ℓ) (s : ℝ) :
     Tendsto
       (fun z : ℂ => z.im / ℓ)
@@ -42709,7 +42709,7 @@ theorem harmonic_top_normalized_height_tendsto
     nhdsWithin_le_nhds using 1;
       simp [hℓ.ne']
 
-theorem harmonic_upper_joint_tendsto_zero
+lemma harmonic_upper_joint_tendsto_zero
     {ℓ : ℝ} (hℓ : 0 < ℓ)
     {b : ℝ → ℝ} (hb : Continuous b)
     {A : ℝ} (hA : 0 ≤ A)
@@ -42859,7 +42859,7 @@ theorem harmonic_upper_joint_tendsto_zero
       hmeas hdom hmajor hpoint
   simpa [U, z₀] using! h
 
-theorem exists_antiFourierWitness_eventually_capped_bottom_majorant
+lemma exists_antiFourierWitness_eventually_capped_bottom_majorant
     {d : ℕ} (hd : 0 < d) {R : ℝ} (hR : 0 < R)
     (w : AntiFourierWitness d R) :
     ∃ D₀ : ℝ, ∀ D : ℝ, D₀ ≤ D → ∀ y : ℝ,
@@ -42913,7 +42913,7 @@ theorem exists_antiFourierWitness_eventually_capped_bottom_majorant
     · rw [min_eq_right (le_of_not_ge hmin)]
       exact hcapped
 
-theorem lowerStripCappedGammaOuter_bottom_re_joint_tendsto
+lemma lowerStripCappedGammaOuter_bottom_re_joint_tendsto
     {d : ℕ} (hd : 0 < d) (R D s : ℝ) :
     Tendsto
       (fun z : ℂ =>
@@ -42961,7 +42961,7 @@ theorem lowerStripCappedGammaOuter_bottom_re_joint_tendsto
   have hresult := hpoisson.congr' heq.symm
   simpa [ℓ, U, z₀] using! hresult
 
-theorem lowerStripCappedGammaOuter_top_re_joint_tendsto
+lemma lowerStripCappedGammaOuter_top_re_joint_tendsto
     {d : ℕ} (hd : 0 < d) (R D s : ℝ) :
     Tendsto
       (fun z : ℂ =>
@@ -43018,7 +43018,7 @@ def horizontalStripRealTraceExtension
   else if z.im = b then top z.re
   else H z
 
-theorem horizontalStrip_closed_eq_open_union_edges
+lemma horizontalStrip_closed_eq_open_union_edges
     {a b : ℝ} (hab : a < b) :
     (Complex.im ⁻¹' Icc a b) =
       ((Complex.im ⁻¹' Ioo a b) ∪
@@ -43046,7 +43046,7 @@ theorem horizontalStrip_closed_eq_open_union_edges
     · rw [htop]
       exact ⟨hab.le, le_rfl⟩
 
-theorem horizontalStripRealTraceExtension_continuousOn
+lemma horizontalStripRealTraceExtension_continuousOn
     {a b : ℝ} (hab : a < b)
     (H : ℂ → ℝ) (bottom top : ℝ → ℝ)
     (hH : ContinuousOn H (Complex.im ⁻¹' Ioo a b))
@@ -43168,7 +43168,7 @@ def lowerStripCappedGammaHarmonic
     (lowerGammaBoundaryCapped ((d : ℝ) / 2) R D)
     (fun _ : ℝ => 0) z
 
-theorem lowerStripCappedGammaHarmonic_continuousOn
+lemma lowerStripCappedGammaHarmonic_continuousOn
     {d : ℕ} (hd : 0 < d) (R D : ℝ) :
     ContinuousOn (lowerStripCappedGammaHarmonic d R D)
       (Complex.im ⁻¹'
@@ -43191,7 +43191,7 @@ theorem lowerStripCappedGammaHarmonic_continuousOn
       lowerStripCappedGammaOuter_top_re_joint_tendsto
         hd R D s
 
-theorem antiFourierWitness_capped_poisson_majorization_of_real_extension
+lemma antiFourierWitness_capped_poisson_majorization_of_real_extension
     {d : ℕ} (hd : 0 < d) {R : ℝ}
     (w : AntiFourierWitness d R) (D : ℝ)
     (E : ℂ → ℝ)
@@ -43363,7 +43363,7 @@ theorem antiFourierWitness_capped_poisson_majorization_of_real_extension
   rw [hEz] at hfinal
   simpa [z, Z, ℓ] using! hfinal
 
-theorem exists_antiFourierWitness_capped_poisson_majorization
+lemma exists_antiFourierWitness_capped_poisson_majorization
     {d : ℕ} (hd : 0 < d) {R : ℝ} (hR : 0 < R)
     (w : AntiFourierWitness d R) :
     ∃ D₀ : ℝ,
@@ -43415,7 +43415,7 @@ noncomputable section
 open Filter MeasureTheory Metric Set
 open scoped ENNReal Interval Topology
 
-theorem stripPoissonKernel_shifted_centered_interval_max
+lemma stripPoissonKernel_shifted_centered_interval_max
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1)
     {r : ℝ} (hr : 0 ≤ r) (s : ℝ) :
     (∫ x in Icc (-r) r,
@@ -43452,7 +43452,7 @@ def stripPoissonWeightedMeasure
     (fun x : ℝ =>
       ENNReal.ofReal (stripPoissonKernel σ (s - x)))
 
-theorem stripPoissonWeightedMeasure_apply_Icc
+lemma stripPoissonWeightedMeasure_apply_Icc
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1)
     (s a b : ℝ) :
     stripPoissonWeightedMeasure σ s (Icc a b) =
@@ -43473,7 +43473,7 @@ theorem stripPoissonWeightedMeasure_apply_Icc
       (fun x => (stripPoissonKernel_pos hbelow habove (s - x)).le)
   exact (ofReal_integral_eq_lintegral_ofReal hint hnonneg).symm
 
-theorem stripPoissonWeightedMeasure_centered_interval_max
+lemma stripPoissonWeightedMeasure_centered_interval_max
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1)
     {r : ℝ} (hr : 0 ≤ r) (s : ℝ) :
     stripPoissonWeightedMeasure σ s (Icc (-r) r) ≤
@@ -43484,7 +43484,7 @@ theorem stripPoissonWeightedMeasure_centered_interval_max
     (stripPoissonKernel_shifted_centered_interval_max
       hbelow habove hr s)
 
-theorem stripPoissonWeightedMeasure_superlevel_le
+lemma stripPoissonWeightedMeasure_superlevel_le
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1)
     {f : ℝ → ℝ} {B t : ℝ}
     (heven : ∀ x : ℝ, f (-x) = f x)
@@ -43519,7 +43519,7 @@ theorem stripPoissonWeightedMeasure_superlevel_le
         {x : ℝ | t < f x} :=
       measure_mono hinner
 
-theorem even_antitone_poisson_lintegral_max
+lemma even_antitone_poisson_lintegral_max
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1)
     {f : ℝ → ℝ} {B : ℝ}
     (hfmeas : Measurable f)
@@ -43546,7 +43546,7 @@ theorem even_antitone_poisson_lintegral_max
   exact stripPoissonWeightedMeasure_superlevel_le
     hbelow habove heven hanti hsupport ht s
 
-theorem stripPoissonKernel_weighted_product_integrable
+lemma stripPoissonKernel_weighted_product_integrable
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1)
     {f : ℝ → ℝ} (hf : Integrable f) (s : ℝ) :
     Integrable (fun x : ℝ =>
@@ -43569,7 +43569,7 @@ theorem stripPoissonKernel_weighted_product_integrable
         (x := 0) (y := s - x) (by simp))
       (norm_nonneg _)
 
-theorem stripPoissonWeightedMeasure_integrable
+lemma stripPoissonWeightedMeasure_integrable
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1)
     {f : ℝ → ℝ} (hf : Integrable f) (s : ℝ) :
     Integrable f (stripPoissonWeightedMeasure σ s) := by
@@ -43597,7 +43597,7 @@ theorem stripPoissonWeightedMeasure_integrable
       (stripPoissonKernel_pos hbelow habove (s - x)).le,
     smul_eq_mul]
 
-theorem stripPoissonWeightedMeasure_integral
+lemma stripPoissonWeightedMeasure_integral
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1)
     (f : ℝ → ℝ) (s : ℝ) :
     (∫ x : ℝ, f x ∂stripPoissonWeightedMeasure σ s) =
@@ -43622,7 +43622,7 @@ theorem stripPoissonWeightedMeasure_integral
     (stripPoissonKernel_pos hbelow habove (s - x)).le]
   rfl
 
-theorem even_antitone_poisson_convolution_max
+lemma even_antitone_poisson_convolution_max
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1)
     {f : ℝ → ℝ} {B : ℝ}
     (hf : Integrable f)
@@ -43656,7 +43656,7 @@ theorem even_antitone_poisson_convolution_max
     stripPoissonWeightedMeasure_integral hbelow habove] at hreal
   exact hreal
 
-theorem lowerGammaBoundaryCapped_dimension_neg
+lemma lowerGammaBoundaryCapped_dimension_neg
     {d : ℕ} (R D y : ℝ) :
     lowerGammaBoundaryCapped ((d : ℝ) / 2) R D (-y) =
       lowerGammaBoundaryCapped ((d : ℝ) / 2) R D y := by
@@ -43665,7 +43665,7 @@ theorem lowerGammaBoundaryCapped_dimension_neg
   · simp [lowerGammaBoundaryCapped, hy,
       lowerGammaBoundaryLog_dimension_neg R hy]
 
-theorem lowerGammaBoundaryCapped_dimension_antitoneOn
+lemma lowerGammaBoundaryCapped_dimension_antitoneOn
     {d : ℕ} (R D : ℝ) :
     AntitoneOn
       (lowerGammaBoundaryCapped ((d : ℝ) / 2) R D)
@@ -43689,7 +43689,7 @@ theorem lowerGammaBoundaryCapped_dimension_antitoneOn
       if_neg hxpos.ne', if_neg hypos.ne']
     exact min_le_min hgamma (le_refl D)
 
-theorem lowerGammaBoundaryLog_dimension_scaled_le_neg_of_large
+lemma lowerGammaBoundaryLog_dimension_scaled_le_neg_of_large
     {d : ℕ} (hd : 2 ≤ d) {c Y n : ℝ}
     (hc : 0 < c) (hn : 0 ≤ n)
     (hlarge : max 1 (8 * Real.pi * c ^ 2 * Real.exp n) ≤ |Y|) :
@@ -43791,7 +43791,7 @@ def lowerGammaScaledCappedClipped
       (c * Real.sqrt d) D (((d : ℝ) / 2) * Y) + n)
     0
 
-theorem lowerGammaScaledCappedClipped_continuous
+lemma lowerGammaScaledCappedClipped_continuous
     {d : ℕ} (hd : 0 < d) (c D n : ℝ) :
     Continuous (lowerGammaScaledCappedClipped d c D n) := by
   have hℓ : 0 < (d : ℝ) / 2 :=
@@ -43803,7 +43803,7 @@ theorem lowerGammaScaledCappedClipped_continuous
   exact ((hcap.comp hscale).add continuous_const).max
     continuous_const
 
-theorem lowerGammaScaledCappedClipped_neg
+lemma lowerGammaScaledCappedClipped_neg
     (d : ℕ) (c D n Y : ℝ) :
     lowerGammaScaledCappedClipped d c D n (-Y) =
       lowerGammaScaledCappedClipped d c D n Y := by
@@ -43814,7 +43814,7 @@ theorem lowerGammaScaledCappedClipped_neg
     lowerGammaBoundaryCapped_dimension_neg
       (c * Real.sqrt d) D (((d : ℝ) / 2) * Y)]
 
-theorem lowerGammaScaledCappedClipped_antitoneOn
+lemma lowerGammaScaledCappedClipped_antitoneOn
     (d : ℕ) (c D n : ℝ) :
     AntitoneOn (lowerGammaScaledCappedClipped d c D n)
       (Ici (0 : ℝ)) := by
@@ -43833,7 +43833,7 @@ theorem lowerGammaScaledCappedClipped_antitoneOn
   unfold lowerGammaScaledCappedClipped
   exact max_le_max (by linarith) (le_refl (0 : ℝ))
 
-theorem lowerGammaScaledCappedClipped_support
+lemma lowerGammaScaledCappedClipped_support
     {d : ℕ} (hd : 2 ≤ d) {c D n : ℝ}
     (hc : 0 < c) (hn : 0 ≤ n) :
     Function.support (lowerGammaScaledCappedClipped d c D n) ⊆
@@ -43869,7 +43869,7 @@ theorem lowerGammaScaledCappedClipped_support
   exact ⟨(neg_lt_of_abs_lt hsmall).le,
     (lt_of_abs_lt hsmall).le⟩
 
-theorem lowerGammaScaledCappedClipped_integrable
+lemma lowerGammaScaledCappedClipped_integrable
     {d : ℕ} (hd : 2 ≤ d) {c D n : ℝ}
     (hc : 0 < c) (hn : 0 ≤ n) :
     Integrable (lowerGammaScaledCappedClipped d c D n) := by
@@ -43880,7 +43880,7 @@ theorem lowerGammaScaledCappedClipped_integrable
     isCompact_Icc
       (lowerGammaScaledCappedClipped_support hd hc hn)
 
-theorem lowerGammaScaledCappedClipped_poisson_convolution_max
+lemma lowerGammaScaledCappedClipped_poisson_convolution_max
     {d : ℕ} (hd : 2 ≤ d) {c D n σ : ℝ}
     (hc : 0 < c) (hn : 0 ≤ n)
     (hbelow : -1 < σ) (habove : σ < 1) (s : ℝ) :
@@ -43900,7 +43900,7 @@ theorem lowerGammaScaledCappedClipped_poisson_convolution_max
     (lowerGammaScaledCappedClipped_support hd hc hn)
     s
 
-theorem lowerGammaScaledCapped_poisson_product_integrable
+lemma lowerGammaScaledCapped_poisson_product_integrable
     {d : ℕ} (hd : 0 < d) {R D σ : ℝ}
     (hbelow : -1 < σ) (habove : σ < 1) (s : ℝ) :
     Integrable (fun Y : ℝ =>
@@ -43950,7 +43950,7 @@ theorem lowerGammaScaledCapped_poisson_product_integrable
   rw [harg]
   field_simp [hℓ.ne']
 
-theorem lowerGammaScaled_poisson_product_integrable
+lemma lowerGammaScaled_poisson_product_integrable
     {d : ℕ} (hd : 0 < d) {R σ : ℝ}
     (hbelow : -1 < σ) (habove : σ < 1) (s : ℝ) :
     Integrable (fun Y : ℝ =>
@@ -44007,7 +44007,7 @@ def lowerGammaScaledCappedLowerClip
       (c * Real.sqrt d) D (((d : ℝ) / 2) * Y))
     (-n)
 
-theorem lowerGammaScaledCappedClipped_eq_lowerClip_add
+lemma lowerGammaScaledCappedClipped_eq_lowerClip_add
     (d : ℕ) (c D n Y : ℝ) :
     lowerGammaScaledCappedClipped d c D n Y =
       lowerGammaScaledCappedLowerClip d c D n Y + n := by
@@ -44019,7 +44019,7 @@ theorem lowerGammaScaledCappedClipped_eq_lowerClip_add
     (-n) n
   simpa using! h
 
-theorem lowerGammaScaledCappedLowerClip_poisson_integrable
+lemma lowerGammaScaledCappedLowerClip_poisson_integrable
     {d : ℕ} (hd : 0 < d) {c D n σ : ℝ}
     (hbelow : -1 < σ) (habove : σ < 1) (s : ℝ) :
     Integrable (fun Y : ℝ =>
@@ -44047,7 +44047,7 @@ theorem lowerGammaScaledCappedLowerClip_poisson_integrable
     (stripPoissonKernel_pos hbelow habove (s - Y)).le]
   ring_nf
 
-theorem lowerGammaScaledCappedClipped_integral_eq
+lemma lowerGammaScaledCappedClipped_integral_eq
     {d : ℕ} (hd : 0 < d) {c D n σ : ℝ}
     (hbelow : -1 < σ) (habove : σ < 1) (s : ℝ) :
     (∫ Y : ℝ, stripPoissonKernel σ (s - Y) *
@@ -44091,7 +44091,7 @@ theorem lowerGammaScaledCappedClipped_integral_eq
         (stripPoissonKernel σ) volume s,
         integral_stripPoissonKernel hbelow habove]
 
-theorem lowerGammaScaledCappedLowerClip_poisson_convolution_max
+lemma lowerGammaScaledCappedLowerClip_poisson_convolution_max
     {d : ℕ} (hd : 2 ≤ d) {c D n σ : ℝ}
     (hc : 0 < c) (hn : 0 ≤ n)
     (hbelow : -1 < σ) (habove : σ < 1) (s : ℝ) :
@@ -44108,7 +44108,7 @@ theorem lowerGammaScaledCappedLowerClip_poisson_convolution_max
       hdpos hbelow habove 0] at hplus
   linarith
 
-theorem lowerGammaScaledCappedLowerClip_poisson_tendsto
+lemma lowerGammaScaledCappedLowerClip_poisson_tendsto
     {d : ℕ} (hd : 0 < d) {c D σ : ℝ}
     (hbelow : -1 < σ) (habove : σ < 1) (s : ℝ) :
     Tendsto
@@ -44165,7 +44165,7 @@ theorem lowerGammaScaledCappedLowerClip_poisson_tendsto
       K Y * b Y = K Y * max (b Y) (-(n : ℝ))
     rw [max_eq_left hn]
 
-theorem lowerGammaScaledCapped_poisson_convolution_max
+lemma lowerGammaScaledCapped_poisson_convolution_max
     {d : ℕ} (hd : 2 ≤ d) {c D σ : ℝ}
     (hc : 0 < c)
     (hbelow : -1 < σ) (habove : σ < 1) (s : ℝ) :
@@ -44185,7 +44185,7 @@ theorem lowerGammaScaledCapped_poisson_convolution_max
       lowerGammaScaledCappedLowerClip_poisson_convolution_max
         hd hc (Nat.cast_nonneg n) hbelow habove s))
 
-theorem lowerGammaScaledCapped_poisson_tendsto
+lemma lowerGammaScaledCapped_poisson_tendsto
     {d : ℕ} (hd : 0 < d) {c σ : ℝ}
     (hbelow : -1 < σ) (habove : σ < 1) (s : ℝ) :
     Tendsto
@@ -44254,7 +44254,7 @@ theorem lowerGammaScaledCapped_poisson_tendsto
           (((d : ℝ) / 2) * Y)
     rw [lowerGammaBoundaryCapped, if_neg harg, min_eq_left hn]
 
-theorem lowerGammaScaled_poisson_convolution_max
+lemma lowerGammaScaled_poisson_convolution_max
     {d : ℕ} (hd : 2 ≤ d) {c σ : ℝ}
     (hc : 0 < c)
     (hbelow : -1 < σ) (habove : σ < 1) (s : ℝ) :
@@ -44274,7 +44274,7 @@ theorem lowerGammaScaled_poisson_convolution_max
       lowerGammaScaledCapped_poisson_convolution_max
         (D := (n : ℝ)) hd hc hbelow habove s))
 
-theorem lowerStripPoissonMajorant_scaled_convolution
+lemma lowerStripPoissonMajorant_scaled_convolution
     {ℓ : ℝ} (hℓ : 0 < ℓ) (R σ s : ℝ) :
     lowerStripPoissonMajorant ℓ R σ s =
       ∫ Y : ℝ,
@@ -44298,7 +44298,7 @@ theorem lowerStripPoissonMajorant_scaled_convolution
     _ = ∫ Y : ℝ, f Y :=
       integral_sub_left_eq_self f volume (s / ℓ)
 
-theorem lowerStripPoissonMajorant_dimension_centered_max
+lemma lowerStripPoissonMajorant_dimension_centered_max
     {d : ℕ} (hd : 2 ≤ d) {c σ : ℝ}
     (hc : 0 < c)
     (hbelow : -1 < σ) (habove : σ < 1) (s : ℝ) :
@@ -44315,7 +44315,7 @@ theorem lowerStripPoissonMajorant_dimension_centered_max
   exact lowerGammaScaled_poisson_convolution_max
     hd hc hbelow habove (s / ((d : ℝ) / 2))
 
-theorem lowerRiemannLog_zero (T : ℝ) :
+lemma lowerRiemannLog_zero (T : ℝ) :
     lowerRiemannLog T 0 = Real.log (|T| / 2) := by
   unfold lowerRiemannLog
   have hsqrt : Real.sqrt (T ^ 2 / 4) = |T| / 2 := by
@@ -44324,7 +44324,7 @@ theorem lowerRiemannLog_zero (T : ℝ) :
     norm_num
   simp [hsqrt]
 
-theorem lowerRiemannLog_scaled_factor
+lemma lowerRiemannLog_scaled_factor
     {ℓ T : ℝ} (hℓ : 0 < ℓ) (j : ℝ) :
     Real.sqrt (j ^ 2 + (ℓ * T / 2) ^ 2) =
       ℓ * Real.sqrt ((j / ℓ) ^ 2 + T ^ 2 / 4) := by
@@ -44336,7 +44336,7 @@ theorem lowerRiemannLog_scaled_factor
   rw [hinside, Real.sqrt_mul (sq_nonneg ℓ),
     Real.sqrt_sq_eq_abs, abs_of_pos hℓ]
 
-theorem lowerGammaBoundaryLog_integer_scaled
+lemma lowerGammaBoundaryLog_integer_scaled
     {k : ℕ} (hk : 0 < k) {R T : ℝ}
     (hR : 0 < R) (hT : T ≠ 0) :
     lowerGammaBoundaryLog (k : ℝ) R ((k : ℝ) * T) =
@@ -44373,7 +44373,7 @@ theorem lowerGammaBoundaryLog_integer_scaled
   simp only [div_eq_mul_inv]
   ring
 
-theorem lowerGammaBoundaryLog_halfInteger_scaled
+lemma lowerGammaBoundaryLog_halfInteger_scaled
     (k : ℕ) {ℓ R T : ℝ}
     (hℓeq : ℓ = (k : ℝ) + 1 / 2)
     (hR : 0 < R) (hT : T ≠ 0) :
@@ -44435,7 +44435,7 @@ theorem lowerGammaBoundaryLog_halfInteger_scaled
   rw [hℓeq]
   ring
 
-theorem lowerRiemannLog_continuous
+lemma lowerRiemannLog_continuous
     {T : ℝ} (hT : T ≠ 0) :
     Continuous (lowerRiemannLog T) := by
   have hrad (x : ℝ) : 0 < x ^ 2 + T ^ 2 / 4 := by
@@ -44454,7 +44454,7 @@ def lowerRiemannErrorMajorant (T : ℝ) : ℝ :=
       (1 / 2 : ℝ) *
         Real.log (lowerCoth (Real.pi * |T| / 2))
 
-theorem lowerGammaBoundaryLog_integer_riemann_le
+lemma lowerGammaBoundaryLog_integer_riemann_le
     {k : ℕ} (hk : 0 < k) {R T : ℝ}
     (hR : 0 < R) (hT : T ≠ 0) :
     lowerGammaBoundaryLog (k : ℝ) R ((k : ℝ) * T) ≤
@@ -44473,7 +44473,7 @@ theorem lowerGammaBoundaryLog_integer_riemann_le
     abs_nonneg (lowerRiemannLog T 0),
     abs_nonneg (lowerRiemannLog T 1)]
 
-theorem lowerRiemannLog_halfInteger_tail_integral_le
+lemma lowerRiemannLog_halfInteger_tail_integral_le
     (k : ℕ) {ℓ T : ℝ}
     (hℓeq : ℓ = (k : ℝ) + 1 / 2)
     (hT : T ≠ 0) :
@@ -44524,7 +44524,7 @@ theorem lowerRiemannLog_halfInteger_tail_integral_le
     _ = (1 / 2 : ℝ) * lowerRiemannLog T 1 := by
       rw [← mul_assoc, hfactor]
 
-theorem lowerGammaBoundaryLog_halfInteger_riemann_le
+lemma lowerGammaBoundaryLog_halfInteger_riemann_le
     (k : ℕ) {ℓ R T : ℝ}
     (hℓeq : ℓ = (k : ℝ) + 1 / 2)
     (hℓone : 1 ≤ ℓ)
@@ -44607,7 +44607,7 @@ theorem lowerGammaBoundaryLog_halfInteger_riemann_le
   nlinarith [le_abs_self (q 1), neg_le_abs (q 0),
     abs_nonneg (q 0), abs_nonneg (q 1)]
 
-theorem lowerGammaBoundaryLog_dimension_riemann_le
+lemma lowerGammaBoundaryLog_dimension_riemann_le
     {d : ℕ} (hd : 2 ≤ d) {R T : ℝ}
     (hR : 0 < R) (hT : T ≠ 0) :
     lowerGammaBoundaryLog ((d : ℝ) / 2) R
@@ -44637,7 +44637,7 @@ theorem lowerGammaBoundaryLog_dimension_riemann_le
     · exact hR
     · exact hT
 
-theorem lowerGammaBoundaryLog_dimension_scaled_riemann_le
+lemma lowerGammaBoundaryLog_dimension_scaled_riemann_le
     {d : ℕ} (hd : 2 ≤ d) {c T : ℝ}
     (hc : 0 < c) (hT : T ≠ 0) :
     lowerGammaBoundaryLog ((d : ℝ) / 2)
@@ -44681,7 +44681,7 @@ theorem lowerGammaBoundaryLog_dimension_scaled_riemann_le
         lowerRiemannErrorMajorant T := by
       rw [← hconstant]
 
-theorem stripPoissonKernel_le_mass_mul_exponential
+lemma stripPoissonKernel_le_mass_mul_exponential
     {σ : ℝ} (hzero : 0 ≤ σ) (habove : σ < 1)
     (T : ℝ) :
     stripPoissonKernel σ T ≤
@@ -44702,7 +44702,7 @@ theorem stripPoissonKernel_le_mass_mul_exponential
   have h := (div_le_iff₀ hmass).mp hquotient
   nlinarith
 
-theorem stripPoissonExponentialMajorant_abs_moment_integrable :
+lemma stripPoissonExponentialMajorant_abs_moment_integrable :
     Integrable (fun T : ℝ =>
       stripPoissonExponentialMajorant T * |T|) := by
   have hmoment := integrable_abs_pow_mul_exp_neg_mul_abs
@@ -44713,7 +44713,7 @@ theorem stripPoissonExponentialMajorant_abs_moment_integrable :
   simp [stripPoissonExponentialMajorant]
   ring
 
-theorem stripPoissonKernel_abs_moment_integrable
+lemma stripPoissonKernel_abs_moment_integrable
     {σ : ℝ} (hzero : 0 ≤ σ) (habove : σ < 1) :
     Integrable (fun T : ℝ => stripPoissonKernel σ T * |T|) := by
   have hbelow : -1 < σ := by linarith
@@ -44744,7 +44744,7 @@ theorem stripPoissonKernel_abs_moment_integrable
         (stripPoissonExponentialMajorant T * |T|) := by
       ring
 
-theorem stripPoissonKernel_mul_lowerRiemannLog_zero_integrable
+lemma stripPoissonKernel_mul_lowerRiemannLog_zero_integrable
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1) :
     Integrable (fun T : ℝ =>
       stripPoissonKernel σ T * lowerRiemannLog T 0) := by
@@ -44776,7 +44776,7 @@ theorem stripPoissonKernel_mul_lowerRiemannLog_zero_integrable
   rw [hidentity]
   ring
 
-theorem lowerRiemannLog_one_nonneg_le (T : ℝ) :
+lemma lowerRiemannLog_one_nonneg_le (T : ℝ) :
     0 ≤ lowerRiemannLog T 1 ∧
       lowerRiemannLog T 1 ≤ |T| / 2 := by
   have hrad : 0 < (1 : ℝ) + T ^ 2 / 4 := by
@@ -44800,7 +44800,7 @@ theorem lowerRiemannLog_one_nonneg_le (T : ℝ) :
       (Real.sqrt_pos.mpr hrad)
     linarith
 
-theorem lowerRiemannLog_one_continuous :
+lemma lowerRiemannLog_one_continuous :
     Continuous (fun T : ℝ => lowerRiemannLog T 1) := by
   have hrad (T : ℝ) : 0 < (1 : ℝ) + T ^ 2 / 4 := by
     nlinarith [sq_nonneg T]
@@ -44812,7 +44812,7 @@ theorem lowerRiemannLog_one_continuous :
     (fun T => (Real.sqrt_pos.mpr (hrad T)).ne')
   simpa [lowerRiemannLog] using! h
 
-theorem stripPoissonKernel_mul_abs_lowerRiemannLog_one_integrable
+lemma stripPoissonKernel_mul_abs_lowerRiemannLog_one_integrable
     {σ : ℝ} (hzero : 0 ≤ σ) (habove : σ < 1) :
     Integrable (fun T : ℝ =>
       stripPoissonKernel σ T * |lowerRiemannLog T 1|) := by
@@ -44836,7 +44836,7 @@ theorem stripPoissonKernel_mul_abs_lowerRiemannLog_one_integrable
     (stripPoissonKernel_pos hbelow habove T).le
       (sub_nonneg.mpr hq.2)]
 
-theorem stripPoissonKernel_mul_abs_lowerRiemannLog_zero_integrable
+lemma stripPoissonKernel_mul_abs_lowerRiemannLog_zero_integrable
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1) :
     Integrable (fun T : ℝ =>
       stripPoissonKernel σ T * |lowerRiemannLog T 0|) := by
@@ -44848,7 +44848,7 @@ theorem stripPoissonKernel_mul_abs_lowerRiemannLog_zero_integrable
   rw [abs_mul,
     abs_of_pos (stripPoissonKernel_pos hbelow habove T)]
 
-theorem stripPoissonKernel_mul_coth_log_integrable
+lemma stripPoissonKernel_mul_coth_log_integrable
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1) :
     Integrable (fun T : ℝ =>
       stripPoissonKernel σ T *
@@ -44859,7 +44859,7 @@ theorem stripPoissonKernel_mul_coth_log_integrable
   filter_upwards [] with T
   rw [zero_sub, stripPoissonKernel_neg]
 
-theorem lowerRiemannErrorMajorant_poisson_integrable
+lemma lowerRiemannErrorMajorant_poisson_integrable
     {σ : ℝ} (hzero : 0 ≤ σ) (habove : σ < 1) :
     Integrable (fun T : ℝ =>
       stripPoissonKernel σ T *
@@ -44887,7 +44887,7 @@ theorem lowerRiemannErrorMajorant_poisson_integrable
   unfold lowerRiemannErrorMajorant
   ring
 
-theorem stripPoissonKernel_mul_lowerEndpointPhase_integrable
+lemma stripPoissonKernel_mul_lowerEndpointPhase_integrable
     {σ : ℝ} (hzero : 0 ≤ σ) (habove : σ < 1) :
     Integrable (fun T : ℝ =>
       stripPoissonKernel σ T * lowerEndpointPhase T) := by
@@ -44919,7 +44919,7 @@ theorem stripPoissonKernel_mul_lowerEndpointPhase_integrable
         (stripPoissonExponentialMajorant T *
           ‖lowerEndpointPhase T‖) := by ring
 
-theorem integral_stripPoissonKernel_mul_lowerEndpointPhase
+lemma integral_stripPoissonKernel_mul_lowerEndpointPhase
     {σ : ℝ} (habove : σ < 1) :
     (∫ T : ℝ, stripPoissonKernel σ T * lowerEndpointPhase T) =
       stripBottomMass σ * lowerPoissonEndpointExpectation σ := by
@@ -44936,7 +44936,7 @@ def lowerRiemannPoissonError (σ : ℝ) : ℝ :=
   ∫ T : ℝ,
     stripPoissonKernel σ T * lowerRiemannErrorMajorant T
 
-theorem lowerStripPoissonMajorant_dimension_central_bound
+lemma lowerStripPoissonMajorant_dimension_central_bound
     {d : ℕ} (hd : 2 ≤ d) {c σ : ℝ}
     (hc : 0 < c) (hzero : 0 ≤ σ) (habove : σ < 1) :
     lowerStripPoissonMajorant ((d : ℝ) / 2)
@@ -45041,7 +45041,7 @@ theorem lowerStripPoissonMajorant_dimension_central_bound
   simp only [zero_div, zero_sub, stripPoissonKernel_neg]
   exact hmono.trans_eq heval
 
-theorem exists_lowerStripPoissonMajorant_uniform_negative
+lemma exists_lowerStripPoissonMajorant_uniform_negative
     {c : ℝ} (hc : 0 < c)
     (hsharp : c < Real.pi⁻¹) :
     ∃ σ γ : ℝ, 0 < σ ∧ σ < 1 ∧ 0 < γ ∧
@@ -45108,7 +45108,7 @@ theorem exists_lowerStripPoissonMajorant_uniform_negative
       try dsimp [γ] at hderr ⊢
       nlinarith
 
-theorem lowerCoth_log_half_le_of_one_le_abs
+lemma lowerCoth_log_half_le_of_one_le_abs
     {Y : ℝ} (hY : 1 ≤ |Y|) :
     (1 / 2 : ℝ) *
       Real.log (lowerCoth (Real.pi * |Y| / 2)) ≤
@@ -45142,7 +45142,7 @@ theorem lowerCoth_log_half_le_of_one_le_abs
   rw [hexp] at hcoth
   nlinarith
 
-theorem lowerGammaBoundaryLog_dimension_scaled_log_tail_simple
+lemma lowerGammaBoundaryLog_dimension_scaled_log_tail_simple
     {d : ℕ} (hd : 2 ≤ d) {c Y : ℝ}
     (hc : 0 < c) (hY : 1 ≤ |Y|) :
     lowerGammaBoundaryLog ((d : ℝ) / 2)
@@ -45175,7 +45175,7 @@ theorem lowerGammaBoundaryLog_dimension_scaled_log_tail_simple
 def stripPoissonCoreMass (σ : ℝ) : ℝ :=
   ∫ T in Icc (-1 : ℝ) 1, stripPoissonKernel σ T
 
-theorem stripPoissonCoreMass_pos
+lemma stripPoissonCoreMass_pos
     {σ : ℝ} (hbelow : -1 < σ) (habove : σ < 1) :
     0 < stripPoissonCoreMass σ := by
   have hk := stripPoissonKernel_integrable hbelow habove
@@ -45206,7 +45206,7 @@ theorem stripPoissonCoreMass_pos
   unfold stripPoissonCoreMass
   nlinarith
 
-theorem lowerGammaScaledPositivePart_poisson_exponential_tail
+lemma lowerGammaScaledPositivePart_poisson_exponential_tail
     {d : ℕ} (hd : 2 ≤ d) {c σ C S : ℝ}
     (hc : 0 < c) (hσ : 0 ≤ σ) (hσone : σ < 1)
     (hC : 0 < C)
@@ -45294,7 +45294,7 @@ theorem lowerGammaScaledPositivePart_poisson_exponential_tail
           (C * ((d : ℝ) / 2)) := by
       rfl
 
-theorem lowerStripPoissonMajorant_core_tail_split
+lemma lowerStripPoissonMajorant_core_tail_split
     {d : ℕ} (hd : 2 ≤ d) {c σ S : ℝ}
     (hc : 0 < c) (hσ : 0 ≤ σ) (hσone : σ < 1)
     (hS : 2 ≤ S) :
@@ -45492,7 +45492,7 @@ theorem lowerStripPoissonMajorant_core_tail_split
             lowerGammaScaledPositivePart d c Y := by
       rfl
 
-theorem lowerStripPoissonMajorant_dimension_neg
+lemma lowerStripPoissonMajorant_dimension_neg
     {d : ℕ} (hd : 0 < d) (R σ s : ℝ) :
     lowerStripPoissonMajorant ((d : ℝ) / 2) R σ (-s) =
       lowerStripPoissonMajorant ((d : ℝ) / 2) R σ s := by
@@ -45535,7 +45535,7 @@ theorem lowerStripPoissonMajorant_dimension_neg
           (s - ((d : ℝ) / 2) * T) := by
       rfl
 
-theorem exists_lowerStripPoissonMajorant_positive_logarithmic_tail
+lemma exists_lowerStripPoissonMajorant_positive_logarithmic_tail
     {c σ : ℝ} (hc : 0 < c)
     (hσ : 0 ≤ σ) (hσone : σ < 1) :
     ∃ A B κ : ℝ, 0 < A ∧ 0 < B ∧ 0 < κ ∧
@@ -45681,7 +45681,7 @@ theorem exists_lowerStripPoissonMajorant_positive_logarithmic_tail
           nlinarith [mul_nonneg hm.le
             (show 0 ≤ Real.log (S / A) - 1 / 2 by linarith)])]
 
-theorem exists_lowerStripPoissonMajorant_logarithmic_tail
+lemma exists_lowerStripPoissonMajorant_logarithmic_tail
     {c σ : ℝ} (hc : 0 < c)
     (hσ : 0 ≤ σ) (hσone : σ < 1) :
     ∃ A B κ : ℝ, 0 < A ∧ 0 < B ∧ 0 < κ ∧
@@ -45726,7 +45726,7 @@ theorem exists_lowerStripPoissonMajorant_logarithmic_tail
           Real.log (|S| / A) := by
           rw [habs]
 
-theorem inverseQuadraticAbs_integrable :
+lemma inverseQuadraticAbs_integrable :
     Integrable (fun S : ℝ => 1 / (1 + |S|) ^ 2) := by
   have hbase := integrable_one_add_norm
     (E := ℝ) (μ := volume) (r := (2 : ℝ))
@@ -45737,7 +45737,7 @@ theorem inverseQuadraticAbs_integrable :
     Real.rpow_neg (by positivity)]
   simp [one_div]
 
-theorem exists_lowerStripPoissonMajorant_integrable_majorant
+lemma exists_lowerStripPoissonMajorant_integrable_majorant
     {c : ℝ} (hc : 0 < c) (hsharp : c < Real.pi⁻¹) :
     ∃ σ γ C : ℝ, 0 < σ ∧ σ < 1 ∧ 0 < γ ∧ 0 < C ∧
       ∀ᶠ d : ℕ in atTop,
@@ -45905,7 +45905,7 @@ theorem exists_lowerStripPoissonMajorant_integrable_majorant
 def lowerInverseQuadraticMass : ℝ :=
   ∫ S : ℝ, 1 / (1 + |S|) ^ 2
 
-theorem antiFourierWitness_interiorMellinL1_le_of_integrable_majorant
+lemma antiFourierWitness_interiorMellinL1_le_of_integrable_majorant
     {d : ℕ} (hd : 0 < d) {R σ γ C : ℝ}
     (hR : 0 < R) (hσbelow : -1 < σ) (hσabove : σ < 1)
     (w : AntiFourierWitness d R)
@@ -46014,7 +46014,7 @@ theorem antiFourierWitness_interiorMellinL1_le_of_integrable_majorant
       try dsimp [E]
       ring
 
-theorem lowerStripCappedPoisson_tendsto
+lemma lowerStripCappedPoisson_tendsto
     {d : ℕ} (hd : 0 < d) {c σ : ℝ}
     (hσbelow : -1 < σ) (hσabove : σ < 1) (s : ℝ) :
     Tendsto
@@ -46071,7 +46071,7 @@ theorem lowerStripCappedPoisson_tendsto
               (((d : ℝ) / 2) * Y) := by
       rfl
 
-theorem uniformAntiFourierSignRadius_of_poisson_majorization
+lemma uniformAntiFourierSignRadius_of_poisson_majorization
     (hpoisson :
       ∀ {d : ℕ} (hd : 0 < d) {R : ℝ} (_hR : 0 < R)
         (w : AntiFourierWitness d R)
@@ -46183,7 +46183,7 @@ theorem uniformAntiFourierSignRadius_of_poisson_majorization
     hdpos hR hσbelow hσone w
       (lt_of_le_of_lt hbound hsmall_d)
 
-theorem lowerStripCappedPoisson_tendsto_radius
+lemma lowerStripCappedPoisson_tendsto_radius
     {d : ℕ} (hd : 0 < d) {R σ : ℝ}
     (hσbelow : -1 < σ) (hσabove : σ < 1) (s : ℝ) :
     Tendsto
@@ -46207,7 +46207,7 @@ theorem lowerStripCappedPoisson_tendsto_radius
     (c := c) hd hσbelow hσabove s
   simpa only [hrad] using! h
 
-theorem antiFourierWitness_norm_le_poisson_of_eventually_capped_radius
+lemma antiFourierWitness_norm_le_poisson_of_eventually_capped_radius
     {d : ℕ} (hd : 0 < d) {R σ : ℝ}
     (w : AntiFourierWitness d R)
     (hσbelow : -1 < σ) (hσabove : σ < 1) (s : ℝ)
@@ -46234,7 +46234,7 @@ theorem antiFourierWitness_norm_le_poisson_of_eventually_capped_radius
   exact le_of_tendsto_of_tendsto
     tendsto_const_nhds hexp hcapped
 
-theorem uniformAntiFourierSignRadius_of_capped_poisson_majorization
+lemma uniformAntiFourierSignRadius_of_capped_poisson_majorization
     (hcap :
       ∀ {d : ℕ} (hd : 0 < d) {R : ℝ} (_hR : 0 < R)
         (w : AntiFourierWitness d R),
@@ -46270,7 +46270,7 @@ noncomputable section
 open Filter MeasureTheory Set
 open scoped ENNReal Interval Topology
 
-theorem uniformAntiFourierSignRadius :
+lemma uniformAntiFourierSignRadius :
     UniformAntiFourierSignRadius := by
   apply uniformAntiFourierSignRadius_of_capped_poisson_majorization
   intro d hd R hR w
@@ -46286,12 +46286,12 @@ open Set
 def quotientRootMap (d : ℕ) (x : ℝ) : ℝ :=
   x ^ ((d : ℝ)⁻¹) / Real.sqrt (d : ℝ)
 
-theorem continuous_quotientRootMap (d : ℕ) :
+lemma continuous_quotientRootMap (d : ℕ) :
     Continuous (quotientRootMap d) := by
   unfold quotientRootMap
   exact (Real.continuous_rpow_const (by positivity)).div_const _
 
-theorem monotoneOn_quotientRootMap (d : ℕ) :
+lemma monotoneOn_quotientRootMap (d : ℕ) :
     MonotoneOn (quotientRootMap d) (quotientSet d) := by
   intro x hx y _ hxy
   rcases hx with ⟨f, rfl⟩
@@ -46300,7 +46300,7 @@ theorem monotoneOn_quotientRootMap (d : ℕ) :
     (Real.rpow_le_rpow (quotient_pos f).le hxy (by positivity))
     (Real.sqrt_nonneg _)
 
-theorem normalizedCostRange_eq_quotientRootImage (d : ℕ) :
+lemma normalizedCostRange_eq_quotientRootImage (d : ℕ) :
     Set.range (normalizedCost (d := d)) =
       quotientRootMap d '' quotientSet d := by
   ext y
@@ -46310,7 +46310,7 @@ theorem normalizedCostRange_eq_quotientRootImage (d : ℕ) :
   · rintro ⟨_, ⟨f, rfl⟩, rfl⟩
     exact ⟨f, rfl⟩
 
-theorem normalizedProgram_eq_quotientInf_root
+lemma normalizedProgram_eq_quotientInf_root
     (d : ℕ) (hadmissible : Nonempty (Admissible d)) :
     normalizedProgram d =
       quotientRootMap d (sInf (quotientSet d)) := by
@@ -46325,7 +46325,7 @@ theorem normalizedProgram_eq_quotientInf_root
       (monotoneOn_quotientRootMap d) hnonempty
       (quotientSet_bddBelow d)).symm
 
-theorem quotientInf_nonneg
+lemma quotientInf_nonneg
     (d : ℕ) (hadmissible : Nonempty (Admissible d)) :
     0 ≤ sInf (quotientSet d) := by
   obtain ⟨f⟩ := hadmissible
@@ -46337,7 +46337,7 @@ def packingGeometricRoot (d : ℕ) : ℝ :=
   (unitBallVolume d / (2 : ℝ) ^ d) ^ ((d : ℝ)⁻¹) *
     Real.sqrt (d : ℝ)
 
-theorem linearProgram_root_eq_geometric_mul_normalizedProgram
+lemma linearProgram_root_eq_geometric_mul_normalizedProgram
     {d : ℕ} (hd : 0 < d) (hadmissible : Nonempty (Admissible d)) :
     (linearProgram d) ^ ((d : ℝ)⁻¹) =
       packingGeometricRoot d * normalizedProgram d := by
@@ -46356,7 +46356,7 @@ noncomputable section
 open Filter
 open scoped Nat Topology
 
-theorem unitBallVolume_odd (k : ℕ) :
+lemma unitBallVolume_odd (k : ℕ) :
     unitBallVolume (2 * k + 1) =
       Real.pi ^ k * 2 ^ (k + 1) / ((2 * k + 1)‼ : ℝ) := by
   have hhalf :
@@ -46380,7 +46380,7 @@ theorem unitBallVolume_odd (k : ℕ) :
   rw [hpi, hgamma]
   field_simp
 
-theorem oddDoubleFactorial_mul_two_pow_factorial (k : ℕ) :
+lemma oddDoubleFactorial_mul_two_pow_factorial (k : ℕ) :
     ((2 * k + 1)‼ : ℝ) * (2 : ℝ) ^ k * (k.factorial : ℝ) =
       ((2 * k + 1).factorial : ℝ) := by
   exact_mod_cast
@@ -46390,7 +46390,7 @@ theorem oddDoubleFactorial_mul_two_pow_factorial (k : ℕ) :
       : (2 * k + 1)‼ * 2 ^ k * k.factorial =
           (2 * k + 1).factorial)
 
-theorem unitBallVolume_odd_factorial (k : ℕ) :
+lemma unitBallVolume_odd_factorial (k : ℕ) :
     unitBallVolume (2 * k + 1) =
       Real.pi ^ k * (2 : ℝ) ^ (2 * k + 1) * (k.factorial : ℝ) /
         ((2 * k + 1).factorial : ℝ) := by
@@ -46410,18 +46410,18 @@ theorem unitBallVolume_odd_factorial (k : ℕ) :
   field_simp
   nlinarith [hidentity]
 
-theorem tendsto_factorialStirlingSequence :
+lemma tendsto_factorialStirlingSequence :
     Tendsto Stirling.stirlingSeq atTop
       (nhds (Real.sqrt Real.pi)) :=
   Stirling.tendsto_stirlingSeq_sqrt_pi
 
-theorem tendsto_log_factorialStirlingSequence :
+lemma tendsto_log_factorialStirlingSequence :
     Tendsto (fun k : ℕ => Real.log (Stirling.stirlingSeq k))
       atTop (nhds (Real.log (Real.sqrt Real.pi))) := by
   exact (Real.continuousAt_log (by positivity)).tendsto.comp
     tendsto_factorialStirlingSequence
 
-theorem tendsto_log_nat_div_nat :
+lemma tendsto_log_nat_div_nat :
     Tendsto (fun k : ℕ => Real.log (k : ℝ) / (k : ℝ))
       atTop (nhds 0) := by
   simpa using!
@@ -46429,7 +46429,7 @@ theorem tendsto_log_nat_div_nat :
       (by norm_num : (1 : ℝ) ≠ 0)).comp
         (tendsto_natCast_atTop_atTop (R := ℝ))
 
-theorem tendsto_log_factorialStirlingSequence_div_nat :
+lemma tendsto_log_factorialStirlingSequence_div_nat :
     Tendsto
       (fun k : ℕ => Real.log (Stirling.stirlingSeq k) / (k : ℝ))
       atTop (nhds 0) := by
@@ -46437,7 +46437,7 @@ theorem tendsto_log_factorialStirlingSequence_div_nat :
     (tendsto_inv_atTop_nhds_zero_nat (𝕜 := ℝ)) using 1;
     simp
 
-theorem tendsto_log_two_mul_nat_div_nat :
+lemma tendsto_log_two_mul_nat_div_nat :
     Tendsto (fun k : ℕ =>
       Real.log ((2 : ℝ) * (k : ℝ)) / (k : ℝ))
       atTop (nhds 0) := by
@@ -46456,7 +46456,7 @@ theorem tendsto_log_two_mul_nat_div_nat :
   rw [← add_div, Real.log_mul (by norm_num : (2 : ℝ) ≠ 0)
     (by exact_mod_cast (Nat.ne_of_gt hk))]
 
-theorem tendsto_log_factorial_div_nat_sub_log_nat :
+lemma tendsto_log_factorial_div_nat_sub_log_nat :
     Tendsto
       (fun k : ℕ =>
         Real.log (k.factorial : ℝ) / (k : ℝ) - Real.log (k : ℝ))
@@ -46486,12 +46486,12 @@ theorem tendsto_log_factorial_div_nat_sub_log_nat :
   field_simp
   nlinarith [hformula, hcomm]
 
-theorem tendsto_oddDimension_atTop :
+lemma tendsto_oddDimension_atTop :
     Tendsto (fun k : ℕ => 2 * k + 1) atTop atTop := by
   exact tendsto_atTop_mono
     (fun k => by change k ≤ 2 * k + 1; omega) tendsto_id
 
-theorem tendsto_log_nat_div_oddDimension :
+lemma tendsto_log_nat_div_oddDimension :
     Tendsto
       (fun k : ℕ => Real.log (k : ℝ) / (2 * (k : ℝ) + 1))
       atTop (nhds 0) := by
@@ -46510,7 +46510,7 @@ theorem tendsto_log_nat_div_oddDimension :
     exact_mod_cast (Nat.ne_of_gt hk)
   field_simp
 
-theorem tendsto_log_nat_sub_log_oddDimension :
+lemma tendsto_log_nat_sub_log_oddDimension :
     Tendsto
       (fun k : ℕ =>
         Real.log (k : ℝ) - Real.log (2 * (k : ℝ) + 1))
@@ -46529,7 +46529,7 @@ def normalizedVolumeLog (d : ℕ) : ℝ :=
   Real.log (unitBallVolume d) / (d : ℝ) +
     Real.log (d : ℝ) / 2
 
-theorem normalizedVolumeLog_odd_eq (k : ℕ) (hk : 0 < k) :
+lemma normalizedVolumeLog_odd_eq (k : ℕ) (hk : 0 < k) :
     normalizedVolumeLog (2 * k + 1) =
       (k : ℝ) / (2 * (k : ℝ) + 1) * Real.log Real.pi +
       Real.log 2 +
@@ -46565,7 +46565,7 @@ theorem normalizedVolumeLog_odd_eq (k : ℕ) (hk : 0 < k) :
   field_simp
   ring
 
-theorem tendsto_normalizedVolumeLog_even :
+lemma tendsto_normalizedVolumeLog_even :
     Tendsto (fun k : ℕ => normalizedVolumeLog (2 * k))
       atTop (nhds ((Real.log (2 * Real.pi) + 1) / 2)) := by
   have hcore :=
@@ -46600,7 +46600,7 @@ theorem tendsto_normalizedVolumeLog_even :
   field_simp
   ring
 
-theorem tendsto_odd_halfDimension_log_correction :
+lemma tendsto_odd_halfDimension_log_correction :
     Tendsto
       (fun k : ℕ =>
         ((k : ℝ) / (2 * (k : ℝ) + 1) - (1 / 2 : ℝ)) *
@@ -46621,7 +46621,7 @@ theorem tendsto_odd_halfDimension_log_correction :
   field_simp
   ring
 
-theorem tendsto_log_oddFactorial_div_oddDimension_sub_log :
+lemma tendsto_log_oddFactorial_div_oddDimension_sub_log :
     Tendsto
       (fun k : ℕ =>
         Real.log ((2 * k + 1).factorial : ℝ) /
@@ -46632,7 +46632,7 @@ theorem tendsto_log_oddFactorial_div_oddDimension_sub_log :
     tendsto_log_factorial_div_nat_sub_log_nat.comp
       tendsto_oddDimension_atTop
 
-theorem tendsto_normalizedVolumeLog_odd :
+lemma tendsto_normalizedVolumeLog_odd :
     Tendsto (fun k : ℕ => normalizedVolumeLog (2 * k + 1))
       atTop (nhds ((Real.log (2 * Real.pi) + 1) / 2)) := by
   have hq := Stirling.tendsto_self_div_two_mul_self_add_one
@@ -46674,7 +46674,7 @@ theorem tendsto_normalizedVolumeLog_odd :
   filter_upwards [eventually_gt_atTop (0 : ℕ)] with k hk
   exact (normalizedVolumeLog_odd_eq k hk).symm
 
-theorem tendsto_of_even_and_odd {X : Type*} [TopologicalSpace X]
+lemma tendsto_of_even_and_odd {X : Type*} [TopologicalSpace X]
     {f : ℕ → X} {x : X}
     (heven : Tendsto (fun k : ℕ => f (2 * k)) atTop (nhds x))
     (hodd : Tendsto (fun k : ℕ => f (2 * k + 1)) atTop (nhds x)) :
@@ -46696,7 +46696,7 @@ theorem tendsto_of_even_and_odd {X : Type*} [TopologicalSpace X]
     apply hNo
     omega
 
-theorem tendsto_normalizedVolumeLog :
+lemma tendsto_normalizedVolumeLog :
     Tendsto normalizedVolumeLog atTop
       (nhds ((Real.log (2 * Real.pi) + 1) / 2)) := by
   exact tendsto_of_even_and_odd tendsto_normalizedVolumeLog_even
@@ -46705,13 +46705,13 @@ theorem tendsto_normalizedVolumeLog :
 def normalizedVolumeRoot (d : ℕ) : ℝ :=
   unitBallVolume d ^ ((d : ℝ)⁻¹) * Real.sqrt (d : ℝ)
 
-theorem normalizedVolumeRoot_pos {d : ℕ} (hd : 0 < d) :
+lemma normalizedVolumeRoot_pos {d : ℕ} (hd : 0 < d) :
     0 < normalizedVolumeRoot d := by
   unfold normalizedVolumeRoot
   exact mul_pos (Real.rpow_pos_of_pos (unitBallVolume_pos d) _)
     (Real.sqrt_pos.2 (by exact_mod_cast hd))
 
-theorem log_normalizedVolumeRoot {d : ℕ} (hd : 0 < d) :
+lemma log_normalizedVolumeRoot {d : ℕ} (hd : 0 < d) :
     Real.log (normalizedVolumeRoot d) = normalizedVolumeLog d := by
   unfold normalizedVolumeRoot normalizedVolumeLog
   rw [Real.log_mul
@@ -46721,7 +46721,7 @@ theorem log_normalizedVolumeRoot {d : ℕ} (hd : 0 < d) :
     Real.log_sqrt (by exact_mod_cast (Nat.zero_le d))]
   ring
 
-theorem exp_normalizedVolumeLog_limit :
+lemma exp_normalizedVolumeLog_limit :
     Real.exp ((Real.log (2 * Real.pi) + 1) / 2) =
       Real.sqrt (2 * Real.pi * Real.exp 1) := by
   have hbase : 0 < (2 : ℝ) * Real.pi := by positivity
@@ -46745,7 +46745,7 @@ theorem exp_normalizedVolumeLog_limit :
   nlinarith [Real.exp_pos ((Real.log (2 * Real.pi) + 1) / 2),
     Real.sqrt_nonneg (2 * Real.pi * Real.exp 1)]
 
-theorem tendsto_normalizedVolumeRoot :
+lemma tendsto_normalizedVolumeRoot :
     Tendsto normalizedVolumeRoot atTop
       (nhds (Real.sqrt (2 * Real.pi * Real.exp 1))) := by
   have hexp :
@@ -46759,7 +46759,7 @@ theorem tendsto_normalizedVolumeRoot :
   rw [← log_normalizedVolumeRoot hd,
     Real.exp_log (normalizedVolumeRoot_pos hd)]
 
-theorem rpow_two_pow_inv_dimension {d : ℕ} (hd : 0 < d) :
+lemma rpow_two_pow_inv_dimension {d : ℕ} (hd : 0 < d) :
     ((2 : ℝ) ^ d) ^ ((d : ℝ)⁻¹) = 2 := by
   have hdreal : (d : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hd)
   calc
@@ -46770,7 +46770,7 @@ theorem rpow_two_pow_inv_dimension {d : ℕ} (hd : 0 < d) :
           rw [Real.rpow_mul (by norm_num : (0 : ℝ) ≤ 2)]
     _ = 2 := by rw [mul_inv_cancel₀ hdreal, Real.rpow_one]
 
-theorem packingGeometricRoot_eq_normalizedVolumeRoot_div_two
+lemma packingGeometricRoot_eq_normalizedVolumeRoot_div_two
     {d : ℕ} (hd : 0 < d) :
     packingGeometricRoot d = normalizedVolumeRoot d / 2 := by
   unfold packingGeometricRoot normalizedVolumeRoot
@@ -46778,7 +46778,7 @@ theorem packingGeometricRoot_eq_normalizedVolumeRoot_div_two
     rpow_two_pow_inv_dimension hd]
   ring
 
-theorem tendsto_packingGeometricRoot :
+lemma tendsto_packingGeometricRoot :
     Tendsto packingGeometricRoot atTop
       (nhds (Real.sqrt (2 * Real.pi * Real.exp 1) / 2)) := by
   have hlimit := tendsto_normalizedVolumeRoot.div_const (2 : ℝ)
@@ -46799,16 +46799,16 @@ def radialFlatBumpReal (d : ℕ) (x : Euclidean d) : ℝ :=
 def radialFlatBumpFun (d : ℕ) (x : Euclidean d) : ℂ :=
   (radialFlatBumpReal d x : ℂ)
 
-theorem radialFlatBumpReal_nonneg (d : ℕ) (x : Euclidean d) :
+lemma radialFlatBumpReal_nonneg (d : ℕ) (x : Euclidean d) :
     0 ≤ radialFlatBumpReal d x :=
   expNegInvGlue.nonneg _
 
-theorem radialFlatBumpReal_zero_pos (d : ℕ) :
+lemma radialFlatBumpReal_zero_pos (d : ℕ) :
     0 < radialFlatBumpReal d (0 : Euclidean d) := by
   unfold radialFlatBumpReal
   simpa using! expNegInvGlue.pos_of_pos (by norm_num : (0 : ℝ) < 1)
 
-theorem support_radialFlatBumpReal (d : ℕ) :
+lemma support_radialFlatBumpReal (d : ℕ) :
     Function.support (radialFlatBumpReal d) =
       Metric.ball (0 : Euclidean d) (1 / 2 : ℝ) := by
   ext x
@@ -46824,14 +46824,14 @@ theorem support_radialFlatBumpReal (d : ℕ) :
       nlinarith [norm_nonneg x]
     exact (expNegInvGlue.pos_of_pos hpos).ne'
 
-theorem support_radialFlatBumpFun (d : ℕ) :
+lemma support_radialFlatBumpFun (d : ℕ) :
     Function.support (radialFlatBumpFun d) =
       Metric.ball (0 : Euclidean d) (1 / 2 : ℝ) := by
   rw [← support_radialFlatBumpReal d]
   ext x
   simp [radialFlatBumpFun]
 
-theorem radialFlatBumpFun_contDiff (d : ℕ) :
+lemma radialFlatBumpFun_contDiff (d : ℕ) :
     ContDiff ℝ ∞ (radialFlatBumpFun d) := by
   change ContDiff ℝ ∞
     (fun x : Euclidean d =>
@@ -46840,7 +46840,7 @@ theorem radialFlatBumpFun_contDiff (d : ℕ) :
     (expNegInvGlue.contDiff.comp
       (contDiff_const.sub (contDiff_const.mul (contDiff_norm_sq ℝ))))
 
-theorem radialFlatBumpFun_hasCompactSupport (d : ℕ) :
+lemma radialFlatBumpFun_hasCompactSupport (d : ℕ) :
     HasCompactSupport (radialFlatBumpFun d) := by
   apply HasCompactSupport.of_support_subset_isCompact
     (isCompact_closedBall (0 : Euclidean d) (1 / 2 : ℝ))
@@ -46851,19 +46851,19 @@ def radialFlatBump (d : ℕ) : TestFunction d :=
   (radialFlatBumpFun_hasCompactSupport d).toSchwartzMap
     (radialFlatBumpFun_contDiff d)
 
-@[simp] theorem radialFlatBump_apply (d : ℕ) (x : Euclidean d) :
+@[simp] lemma radialFlatBump_apply (d : ℕ) (x : Euclidean d) :
     radialFlatBump d x = (radialFlatBumpReal d x : ℂ) := by
   rfl
 
-theorem radialFlatBump_real (d : ℕ) : IsRealValued (radialFlatBump d) := by
+lemma radialFlatBump_real (d : ℕ) : IsRealValued (radialFlatBump d) := by
   intro x
   simp
 
-theorem radialFlatBump_radial (d : ℕ) : IsRadial (radialFlatBump d) := by
+lemma radialFlatBump_radial (d : ℕ) : IsRadial (radialFlatBump d) := by
   intro x y hxy
   simp [radialFlatBumpReal, hxy]
 
-theorem integral_radialFlatBumpReal_pos (d : ℕ) :
+lemma integral_radialFlatBumpReal_pos (d : ℕ) :
     0 < ∫ x : Euclidean d, radialFlatBumpReal d x := by
   apply integral_pos_of_integrable_nonneg_nonzero
     (show Continuous (radialFlatBumpReal d) by
@@ -46876,7 +46876,7 @@ theorem integral_radialFlatBumpReal_pos (d : ℕ) :
   · exact radialFlatBumpReal_nonneg d
   · exact (radialFlatBumpReal_zero_pos d).ne'
 
-theorem IsRadial.fourier {d : ℕ} {f : TestFunction d}
+lemma IsRadial.fourier {d : ℕ} {f : TestFunction d}
     (hf : IsRadial f) : IsRadial (𝓕 f : TestFunction d) := by
   intro x y hxy
   let A : Euclidean d ≃ₗᵢ[ℝ] Euclidean d :=
@@ -46894,7 +46894,7 @@ theorem IsRadial.fourier {d : ℕ} {f : TestFunction d}
       Real.fourier_comp_linearIsometry A (f : Euclidean d → ℂ) x
     _ = (𝓕 (f : Euclidean d → ℂ)) y := by rw [hA]
 
-theorem fourier_conj_apply_of_real {d : ℕ} (f : TestFunction d)
+lemma fourier_conj_apply_of_real {d : ℕ} (f : TestFunction d)
     (hf : IsRealValued f) (ξ : Euclidean d) :
     starRingEnd ℂ ((𝓕 f : TestFunction d) ξ) =
       ((𝓕 f : TestFunction d) (-ξ)) := by
@@ -46908,7 +46908,7 @@ theorem fourier_conj_apply_of_real {d : ℕ} (f : TestFunction d)
   have htwo : starRingEnd ℂ (2 : ℂ) = 2 := Complex.conj_ofNat 2
   simp [smul_eq_mul, map_mul, ← Complex.exp_conj, hreal, htwo]
 
-theorem IsRealValued.fourier_of_radial {d : ℕ} {f : TestFunction d}
+lemma IsRealValued.fourier_of_radial {d : ℕ} {f : TestFunction d}
     (hf : IsRealValued f) (hrad : IsRadial f) :
     IsRealValued (𝓕 f : TestFunction d) := by
   intro ξ
@@ -46920,31 +46920,31 @@ def radialAutocorrelation (d : ℕ) : TestFunction d :=
   SchwartzMap.convolution (ContinuousLinearMap.mul ℂ ℂ)
     (radialFlatBump d) (radialFlatBump d)
 
-theorem fourier_radialAutocorrelation_apply (d : ℕ) (ξ : Euclidean d) :
+lemma fourier_radialAutocorrelation_apply (d : ℕ) (ξ : Euclidean d) :
     ((𝓕 (radialAutocorrelation d) : TestFunction d) ξ) =
       ((𝓕 (radialFlatBump d) : TestFunction d) ξ) ^ 2 := by
   unfold radialAutocorrelation
   rw [SchwartzMap.fourier_convolution]
   simp [pow_two]
 
-theorem fourier_radialFlatBump_real (d : ℕ) :
+lemma fourier_radialFlatBump_real (d : ℕ) :
     IsRealValued (𝓕 (radialFlatBump d) : TestFunction d) :=
   (radialFlatBump_real d).fourier_of_radial (radialFlatBump_radial d)
 
-theorem fourier_radialAutocorrelation_real (d : ℕ) :
+lemma fourier_radialAutocorrelation_real (d : ℕ) :
     IsRealValued (𝓕 (radialAutocorrelation d) : TestFunction d) := by
   intro ξ
   rw [fourier_radialAutocorrelation_apply]
   simp [pow_two, Complex.mul_im, fourier_radialFlatBump_real d ξ]
 
-theorem fourier_radialAutocorrelation_nonneg (d : ℕ) (ξ : Euclidean d) :
+lemma fourier_radialAutocorrelation_nonneg (d : ℕ) (ξ : Euclidean d) :
     0 ≤ ((𝓕 (radialAutocorrelation d) : TestFunction d) ξ).re := by
   rw [fourier_radialAutocorrelation_apply]
   simp only [pow_two, Complex.mul_re, fourier_radialFlatBump_real d ξ,
     mul_zero, sub_zero]
   exact mul_self_nonneg _
 
-theorem fourier_radialFlatBump_zero (d : ℕ) :
+lemma fourier_radialFlatBump_zero (d : ℕ) :
     ((𝓕 (radialFlatBump d) : TestFunction d) (0 : Euclidean d)) =
       (↑(∫ x : Euclidean d, radialFlatBumpReal d x) : ℂ) := by
   change (𝓕 (radialFlatBump d : Euclidean d → ℂ)) 0 = _
@@ -46954,7 +46954,7 @@ theorem fourier_radialFlatBump_zero (d : ℕ) :
       (f := radialFlatBumpReal d)
       (μ := (volume : Measure (Euclidean d))))
 
-theorem fourier_radialAutocorrelation_zero_pos (d : ℕ) :
+lemma fourier_radialAutocorrelation_zero_pos (d : ℕ) :
     0 < ((𝓕 (radialAutocorrelation d) : TestFunction d)
       (0 : Euclidean d)).re := by
   rw [fourier_radialAutocorrelation_apply,
@@ -46963,12 +46963,12 @@ theorem fourier_radialAutocorrelation_zero_pos (d : ℕ) :
     mul_pos (integral_radialFlatBumpReal_pos d)
       (integral_radialFlatBumpReal_pos d)
 
-theorem support_radialFlatBump (d : ℕ) :
+lemma support_radialFlatBump (d : ℕ) :
     Function.support (radialFlatBump d : Euclidean d → ℂ) =
       Metric.ball (0 : Euclidean d) (1 / 2 : ℝ) :=
   support_radialFlatBumpFun d
 
-theorem support_radialAutocorrelation_subset (d : ℕ) :
+lemma support_radialAutocorrelation_subset (d : ℕ) :
     Function.support (radialAutocorrelation d : Euclidean d → ℂ) ⊆
       Metric.ball (0 : Euclidean d) (1 : ℝ) := by
   have hconv :
@@ -46997,7 +46997,7 @@ theorem support_radialAutocorrelation_subset (d : ℕ) :
         (by norm_num : (0 : ℝ) < 1 / 2)]
       norm_num
 
-theorem radialAutocorrelation_outside_eq_zero (d : ℕ)
+lemma radialAutocorrelation_outside_eq_zero (d : ℕ)
     (x : Euclidean d) (hx : 1 ≤ ‖x‖) :
     radialAutocorrelation d x = 0 := by
   by_contra hne
@@ -47008,7 +47008,7 @@ theorem radialAutocorrelation_outside_eq_zero (d : ℕ)
     simpa [Metric.mem_ball, dist_zero_right] using! hball
   linarith
 
-theorem radialAutocorrelation_real (d : ℕ) :
+lemma radialAutocorrelation_real (d : ℕ) :
     IsRealValued (radialAutocorrelation d) := by
   intro x
   rw [radialAutocorrelation, SchwartzMap.convolution_apply,
@@ -47028,14 +47028,14 @@ theorem radialAutocorrelation_real (d : ℕ) :
   rw [hreal]
   simp
 
-theorem fourier_radialAutocorrelation_radial (d : ℕ) :
+lemma fourier_radialAutocorrelation_radial (d : ℕ) :
     IsRadial (𝓕 (radialAutocorrelation d) : TestFunction d) := by
   intro x y hxy
   rw [fourier_radialAutocorrelation_apply,
     fourier_radialAutocorrelation_apply]
   rw [(radialFlatBump_radial d).fourier x y hxy]
 
-theorem radialAutocorrelation_radial (d : ℕ) :
+lemma radialAutocorrelation_radial (d : ℕ) :
     IsRadial (radialAutocorrelation d) := by
   intro x y hxy
   have h := (fourier_radialAutocorrelation_radial d).fourier
@@ -47054,10 +47054,10 @@ def autocorrelationAdmissible (d : ℕ) : Admissible d where
     rw [radialAutocorrelation_outside_eq_zero d x hx]
     simp
 
-theorem admissible_nonempty (d : ℕ) : Nonempty (Admissible d) :=
+lemma admissible_nonempty (d : ℕ) : Nonempty (Admissible d) :=
   ⟨autocorrelationAdmissible d⟩
 
-theorem quotientSet_nonempty (d : ℕ) : (quotientSet d).Nonempty :=
+lemma quotientSet_nonempty (d : ℕ) : (quotientSet d).Nonempty :=
   ⟨quotient (autocorrelationAdmissible d),
     ⟨autocorrelationAdmissible d, rfl⟩⟩
 
@@ -47065,14 +47065,14 @@ end
 
 noncomputable section
 
-theorem log_criticalPackingBase :
+lemma log_criticalPackingBase :
     Real.log criticalPackingBase =
       (1 / 2 : ℝ) * Real.log (Real.exp 1 / (2 * Real.pi)) := by
   unfold criticalPackingBase
   rw [Real.log_sqrt (by positivity)]
   ring
 
-theorem logb_criticalPackingBase :
+lemma logb_criticalPackingBase :
     Real.logb 2 criticalPackingBase = -criticalBinaryExponent := by
   rw [Real.logb, log_criticalPackingBase]
   unfold criticalBinaryExponent
@@ -47081,7 +47081,7 @@ theorem logb_criticalPackingBase :
     Real.log_div (by positivity) (by positivity), Real.log_exp]
   ring
 
-theorem criticalPackingBase_lt_one : criticalPackingBase < 1 := by
+lemma criticalPackingBase_lt_one : criticalPackingBase < 1 := by
   unfold criticalPackingBase
   have hratio : Real.exp 1 / (2 * Real.pi) < 1 := by
     apply (div_lt_one (by positivity)).2
@@ -47089,7 +47089,7 @@ theorem criticalPackingBase_lt_one : criticalPackingBase < 1 := by
   exact (Real.sqrt_lt' (by norm_num : (0 : ℝ) < 1)).2
     (by simpa using! hratio)
 
-theorem criticalBinaryExponent_pos : 0 < criticalBinaryExponent := by
+lemma criticalBinaryExponent_pos : 0 < criticalBinaryExponent := by
   have hlog : Real.logb 2 criticalPackingBase < 0 := by
     exact (Real.logb_neg (by norm_num) criticalPackingBase_pos
       criticalPackingBase_lt_one)
@@ -47103,7 +47103,7 @@ noncomputable section
 open Filter
 open scoped Topology
 
-theorem uniformAdmissibleLowerBound_of_signRadius
+lemma uniformAdmissibleLowerBound_of_signRadius
     (hsign : UniformAntiFourierSignRadius) :
     UniformAdmissibleLowerBound := by
   intro c hc
@@ -47115,28 +47115,28 @@ theorem uniformAdmissibleLowerBound_of_signRadius
   · exact Filter.Eventually.of_forall fun d f =>
       (le_of_not_gt hpositive).trans (normalizedCost_nonneg f)
 
-theorem normalizedProgram_eq_quotientInf_root_unconditional (d : ℕ) :
+lemma normalizedProgram_eq_quotientInf_root_unconditional (d : ℕ) :
     normalizedProgram d =
       quotientRootMap d (sInf (quotientSet d)) :=
   normalizedProgram_eq_quotientInf_root d (admissible_nonempty d)
 
-theorem quotientInf_nonneg_unconditional (d : ℕ) :
+lemma quotientInf_nonneg_unconditional (d : ℕ) :
     0 ≤ sInf (quotientSet d) :=
   quotientInf_nonneg d (admissible_nonempty d)
 
-theorem linearProgram_nonneg (d : ℕ) : 0 ≤ linearProgram d := by
+lemma linearProgram_nonneg (d : ℕ) : 0 ≤ linearProgram d := by
   unfold linearProgram
   exact mul_nonneg (geometricFactor_pos d).le
     (quotientInf_nonneg_unconditional d)
 
-theorem linearProgram_root_eq_geometric_mul_normalizedProgram_unconditional
+lemma linearProgram_root_eq_geometric_mul_normalizedProgram_unconditional
     {d : ℕ} (hd : 0 < d) :
     (linearProgram d) ^ ((d : ℝ)⁻¹) =
       packingGeometricRoot d * normalizedProgram d :=
   linearProgram_root_eq_geometric_mul_normalizedProgram hd
     (admissible_nonempty d)
 
-theorem geometricLimit_mul_criticalRadius :
+lemma geometricLimit_mul_criticalRadius :
     (Real.sqrt (2 * Real.pi * Real.exp 1) / 2) *
         criticalRadius = criticalPackingBase := by
   have hleft :
@@ -47161,7 +47161,7 @@ theorem geometricLimit_mul_criticalRadius :
   rw [heq]
   field_simp
 
-theorem sharpPackingRoot_of_sharpQuotient
+lemma sharpPackingRoot_of_sharpQuotient
     (hquotient : SharpQuotientAsymptotic) :
     SharpPackingRootAsymptotic := by
   unfold SharpQuotientAsymptotic at hquotient
@@ -47174,7 +47174,7 @@ theorem sharpPackingRoot_of_sharpQuotient
     (linearProgram_root_eq_geometric_mul_normalizedProgram_unconditional
       hd).symm
 
-theorem eventually_linearProgram_pos_of_sharpQuotient
+lemma eventually_linearProgram_pos_of_sharpQuotient
     (hquotient : SharpQuotientAsymptotic) :
     ∀ᶠ d : ℕ in atTop, 0 < linearProgram d := by
   have hnorm : ∀ᶠ d : ℕ in atTop, 0 < normalizedProgram d :=
@@ -47193,7 +47193,7 @@ theorem eventually_linearProgram_pos_of_sharpQuotient
   unfold linearProgram
   exact mul_pos (geometricFactor_pos d) hinf
 
-theorem sharpLog_of_sharpQuotient
+lemma sharpLog_of_sharpQuotient
     (hquotient : SharpQuotientAsymptotic) :
     SharpLogAsymptotic := by
   have hroot := sharpPackingRoot_of_sharpQuotient hquotient
@@ -47212,7 +47212,7 @@ def SharpBinaryLogAsymptotic : Prop :=
     (fun d : ℕ => Real.logb 2 (linearProgram d) / (d : ℝ))
     atTop (nhds (-criticalBinaryExponent))
 
-theorem sharpBinaryLog_of_sharpQuotient
+lemma sharpBinaryLog_of_sharpQuotient
     (hquotient : SharpQuotientAsymptotic) :
     SharpBinaryLogAsymptotic := by
   have hnatural := sharpLog_of_sharpQuotient hquotient
@@ -47236,7 +47236,7 @@ theorem sharpBinaryLog_of_sharpQuotient
       (Real.log (linearProgram d) / Real.log 2) / (d : ℝ)
   ring
 
-theorem sharpAsymptotics_of_uniform_lower_and_ordered_upper
+lemma sharpAsymptotics_of_uniform_lower_and_ordered_upper
     (hlower : UniformAdmissibleLowerBound)
     (construction : OrderedEpsilonUpperConstruction) :
     SharpQuotientAsymptotic ∧ SharpPackingRootAsymptotic ∧
@@ -47247,7 +47247,7 @@ theorem sharpAsymptotics_of_uniform_lower_and_ordered_upper
     sharpLog_of_sharpQuotient hquotient,
     sharpBinaryLog_of_sharpQuotient hquotient⟩
 
-theorem sharpAsymptotics_of_signRadius_and_ordered_upper
+lemma sharpAsymptotics_of_signRadius_and_ordered_upper
     (hsign : UniformAntiFourierSignRadius)
     (construction : OrderedEpsilonUpperConstruction) :
     SharpQuotientAsymptotic ∧ SharpPackingRootAsymptotic ∧
@@ -47255,7 +47255,7 @@ theorem sharpAsymptotics_of_signRadius_and_ordered_upper
   sharpAsymptotics_of_uniform_lower_and_ordered_upper
     (uniformAdmissibleLowerBound_of_signRadius hsign) construction
 
-theorem saddleSourceSchwartzRealization :
+lemma saddleSourceSchwartzRealization :
     SaddleSourceSchwartzRealization := by
   intro ε hε horder d hd
   refine ⟨minusSaddleSchwartz hε hd horder,
@@ -47271,7 +47271,7 @@ noncomputable def saddleOrderedUpperConstruction_of_sourceSigns
   saddleOrderedUpperConstruction
     saddleSourceSchwartzRealization hsigns
 
-theorem sharpAsymptotics_of_saddleSourceEventualSigns
+lemma sharpAsymptotics_of_saddleSourceEventualSigns
     (hsigns : SaddleSourceEventualSigns) :
     SharpQuotientAsymptotic ∧ SharpPackingRootAsymptotic ∧
       SharpLogAsymptotic ∧ SharpBinaryLogAsymptotic :=
@@ -47286,7 +47286,7 @@ noncomputable section
 open Filter MeasureTheory Set
 open scoped FourierTransform SchwartzMap Topology
 
-theorem eventually_plusSaddleProfile_nonneg_on_star :
+lemma eventually_plusSaddleProfile_nonneg_on_star :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ᶠ d : ℕ in atTop,
         ∀ r : ℝ, 0 ≤ r → r ≤ saddleSmallRadiusStar ε d →
@@ -47297,7 +47297,7 @@ theorem eventually_plusSaddleProfile_nonneg_on_star :
   intro r hr hstar
   exact (hd r hr hstar).le
 
-theorem plusSaddleProfile_re_pos_at_sourceSaddle_of_gaussian_error
+lemma plusSaddleProfile_re_pos_at_sourceSaddle_of_gaussian_error
     {ε : ℝ} {d : ℕ} {u : ℝ}
     (hε : 0 < ε) (hd : 0 < d) (hu : -1 < u)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -47316,7 +47316,7 @@ theorem plusSaddleProfile_re_pos_at_sourceSaddle_of_gaussian_error
   exact plusSaddleProfile_exp_re_pos_of_gaussian_error
     hε hℓ hu horder hV herror
 
-theorem minusSaddleProfile_re_neg_at_sourceSaddle_of_gaussian_error
+lemma minusSaddleProfile_re_neg_at_sourceSaddle_of_gaussian_error
     {ε : ℝ} {d : ℕ} {u : ℝ}
     (hε : 0 < ε) (hd : 0 < d) (hu : -1 < u)
     (horder : shortCutoff ε ≤ shortEndpoint ε)
@@ -47335,7 +47335,7 @@ theorem minusSaddleProfile_re_neg_at_sourceSaddle_of_gaussian_error
   exact minusSaddleProfile_exp_re_neg_of_gaussian_error
     hε hℓ hu horder hV herror
 
-theorem saddleSourceGaussianPlusIntegrand_integral_re_eq_norm
+lemma saddleSourceGaussianPlusIntegrand_integral_re_eq_norm
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hu : -1 < u) :
     (∫ T : ℝ, saddleSourceGaussianPlusIntegrand ε ℓ u T).re =
@@ -47353,7 +47353,7 @@ theorem saddleSourceGaussianPlusIntegrand_integral_re_eq_norm
     abs_of_pos hvalue]
   ring
 
-theorem saddleSourceGaussianMinusIntegrand_neg_integral_re_eq_norm
+lemma saddleSourceGaussianMinusIntegrand_neg_integral_re_eq_norm
     {ε ℓ u : ℝ}
     (hε : 0 < ε) (hu : 1 + ε / 4 ≤ u) :
     -(∫ T : ℝ, saddleSourceGaussianMinusIntegrand ε ℓ u T).re =
@@ -47371,7 +47371,7 @@ theorem saddleSourceGaussianMinusIntegrand_neg_integral_re_eq_norm
     abs_of_neg hvalue]
   ring
 
-theorem saddleSmallRadiusStarOrdinate_sourceScale
+lemma saddleSmallRadiusStarOrdinate_sourceScale
     {d : ℕ} (hd : 0 < d) (ε : ℝ)
     {u : ℝ}
     (hu : saddleSmallRadiusStarOrdinate ε d ≤ u) :
@@ -47393,7 +47393,7 @@ theorem saddleSmallRadiusStarOrdinate_sourceScale
   apply mul_le_mul_of_nonneg_left _ hℓ.le
   linarith
 
-theorem saddleSource_positiveOrdinate_sourceScale
+lemma saddleSource_positiveOrdinate_sourceScale
     {ℓ u : ℝ} (hℓ : 0 < ℓ) (hu : 1 ≤ u) :
     Real.log ℓ / 4 ≤ ℓ * (1 + u) := by
   have hlog := Real.log_le_sub_one_of_pos hℓ
@@ -47401,7 +47401,7 @@ theorem saddleSource_positiveOrdinate_sourceScale
     mul_nonneg hℓ.le (sub_nonneg.mpr hu)
   nlinarith
 
-theorem eventually_plusSaddleProfile_re_pos_at_firstBranchSaddles :
+lemma eventually_plusSaddleProfile_re_pos_at_firstBranchSaddles :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ᶠ d : ℕ in atTop,
         ∀ u : ℝ,
@@ -47442,7 +47442,7 @@ theorem eventually_plusSaddleProfile_re_pos_at_firstBranchSaddles :
   exact plusSaddleProfile_re_pos_at_sourceSaddle_of_gaussian_error
     hε hd hulower horder hV herror
 
-theorem eventually_minusSaddleProfile_re_neg_at_firstBranchSaddles :
+lemma eventually_minusSaddleProfile_re_neg_at_firstBranchSaddles :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ᶠ d : ℕ in atTop,
         ∀ u : ℝ,
@@ -47482,7 +47482,7 @@ theorem eventually_minusSaddleProfile_re_neg_at_firstBranchSaddles :
   exact minusSaddleProfile_re_neg_at_sourceSaddle_of_gaussian_error
     hε hd hu horder hV herror
 
-theorem eventually_plusSaddleProfile_re_pos_at_secondBranchSaddles :
+lemma eventually_plusSaddleProfile_re_pos_at_secondBranchSaddles :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ᶠ d : ℕ in atTop,
         ∀ u : ℝ, 1 + ε / 2 ≤ u →
@@ -47529,7 +47529,7 @@ theorem eventually_plusSaddleProfile_re_pos_at_secondBranchSaddles :
   exact plusSaddleProfile_re_pos_at_sourceSaddle_of_gaussian_error
     hε hd hulower horder hV herror
 
-theorem eventually_minusSaddleProfile_re_neg_at_secondBranchSaddles :
+lemma eventually_minusSaddleProfile_re_neg_at_secondBranchSaddles :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ᶠ d : ℕ in atTop,
         ∀ u : ℝ, 1 + ε / 2 ≤ u →
@@ -47577,7 +47577,7 @@ theorem eventually_minusSaddleProfile_re_neg_at_secondBranchSaddles :
   exact minusSaddleProfile_re_neg_at_sourceSaddle_of_gaussian_error
     hε hd hulower horder hV herror
 
-theorem eventually_plusSaddleProfile_nonneg_of_star :
+lemma eventually_plusSaddleProfile_nonneg_of_star :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ᶠ d : ℕ in atTop,
         ∀ r : ℝ,
@@ -47605,7 +47605,7 @@ theorem eventually_plusSaddleProfile_nonneg_of_star :
     rw [hexp] at h
     exact h.le
 
-theorem eventually_minusSaddleProfile_nonpos_of_sourceRadius :
+lemma eventually_minusSaddleProfile_nonpos_of_sourceRadius :
     ∀ᶠ ε : ℝ in 𝓝[>] (0 : ℝ),
       ∀ᶠ d : ℕ in atTop,
         ∀ r : ℝ,
@@ -47633,7 +47633,7 @@ theorem eventually_minusSaddleProfile_nonpos_of_sourceRadius :
     rw [hexp] at h
     exact h.le
 
-theorem saddleSourceEventualSigns : SaddleSourceEventualSigns := by
+lemma saddleSourceEventualSigns : SaddleSourceEventualSigns := by
   unfold SaddleSourceEventualSigns
   filter_upwards [eventually_plusSaddleProfile_nonneg_on_star,
     eventually_plusSaddleProfile_nonneg_of_star,
@@ -47651,21 +47651,21 @@ theorem saddleSourceEventualSigns : SaddleSourceEventualSigns := by
     change (minusSaddleProfile ε ((d : ℝ) / 2) ‖x‖).re ≤ 0
     exact hminus_d ‖x‖ hx
 
-theorem sharpAsymptotics :
+lemma sharpAsymptotics :
     SharpQuotientAsymptotic ∧ SharpPackingRootAsymptotic ∧
       SharpLogAsymptotic ∧ SharpBinaryLogAsymptotic :=
   sharpAsymptotics_of_saddleSourceEventualSigns saddleSourceEventualSigns
 
-theorem sharpQuotientAsymptotic : SharpQuotientAsymptotic :=
+lemma sharpQuotientAsymptotic : SharpQuotientAsymptotic :=
   sharpAsymptotics.1
 
-theorem sharpPackingRootAsymptotic : SharpPackingRootAsymptotic :=
+lemma sharpPackingRootAsymptotic : SharpPackingRootAsymptotic :=
   sharpAsymptotics.2.1
 
-theorem sharpLogAsymptotic : SharpLogAsymptotic :=
+lemma sharpLogAsymptotic : SharpLogAsymptotic :=
   sharpAsymptotics.2.2.1
 
-theorem sharpBinaryLogAsymptotic : SharpBinaryLogAsymptotic :=
+lemma sharpBinaryLogAsymptotic : SharpBinaryLogAsymptotic :=
   sharpAsymptotics.2.2.2
 
 end
@@ -47678,7 +47678,7 @@ open scoped Topology
 def manuscriptQuotientRootSet (d : ℕ) : Set ℝ :=
   Set.range fun f : Admissible d => quotient f ^ ((d : ℝ)⁻¹)
 
-theorem manuscriptQuotientRootSet_eq_image (d : ℕ) :
+lemma manuscriptQuotientRootSet_eq_image (d : ℕ) :
     manuscriptQuotientRootSet d =
       (fun x : ℝ => x ^ ((d : ℝ)⁻¹)) '' quotientSet d := by
   ext y
@@ -47688,7 +47688,7 @@ theorem manuscriptQuotientRootSet_eq_image (d : ℕ) :
   · rintro ⟨_, ⟨f, rfl⟩, rfl⟩
     exact ⟨f, rfl⟩
 
-theorem manuscriptQuotientRootInf_eq (d : ℕ) :
+lemma manuscriptQuotientRootInf_eq (d : ℕ) :
     sInf (manuscriptQuotientRootSet d) =
       (sInf (quotientSet d)) ^ ((d : ℝ)⁻¹) := by
   have hcontinuous :
@@ -47711,18 +47711,18 @@ theorem manuscriptQuotientRootInf_eq (d : ℕ) :
 def manuscriptNormalizedQuotientInfRoot (d : ℕ) : ℝ :=
   (sInf (quotientSet d)) ^ ((d : ℝ)⁻¹) / Real.sqrt (d : ℝ)
 
-theorem manuscriptNormalizedQuotientInfRoot_eq (d : ℕ) :
+lemma manuscriptNormalizedQuotientInfRoot_eq (d : ℕ) :
     manuscriptNormalizedQuotientInfRoot d = normalizedProgram d := by
   rw [normalizedProgram_eq_quotientInf_root_unconditional]
   rfl
 
-theorem manuscriptQuotientRootInf_div_sqrt_eq (d : ℕ) :
+lemma manuscriptQuotientRootInf_div_sqrt_eq (d : ℕ) :
     sInf (manuscriptQuotientRootSet d) / Real.sqrt (d : ℝ) =
       normalizedProgram d := by
   rw [manuscriptQuotientRootInf_eq]
   exact manuscriptNormalizedQuotientInfRoot_eq d
 
-theorem manuscriptQuotientRootInf_div_sqrt_tendsto
+lemma manuscriptQuotientRootInf_div_sqrt_tendsto
     (hquotient : SharpQuotientAsymptotic) :
     Tendsto
       (fun d : ℕ =>
@@ -47740,11 +47740,11 @@ theorem manuscriptQuotientRootInf_div_sqrt_tendsto
 def manuscriptPackingDeficit (d : ℕ) : ℝ :=
   max 0 (criticalPackingBase - (linearProgram d) ^ ((d : ℝ)⁻¹))
 
-theorem manuscriptPackingDeficit_nonneg (d : ℕ) :
+lemma manuscriptPackingDeficit_nonneg (d : ℕ) :
     0 ≤ manuscriptPackingDeficit d := by
   exact le_max_left _ _
 
-theorem manuscriptPackingDeficit_le_criticalPackingBase (d : ℕ) :
+lemma manuscriptPackingDeficit_le_criticalPackingBase (d : ℕ) :
     manuscriptPackingDeficit d ≤ criticalPackingBase := by
   unfold manuscriptPackingDeficit
   refine max_le criticalPackingBase_pos.le ?_
@@ -47752,7 +47752,7 @@ theorem manuscriptPackingDeficit_le_criticalPackingBase (d : ℕ) :
     Real.rpow_nonneg (linearProgram_nonneg d) _
   linarith
 
-theorem tendsto_manuscriptPackingDeficit
+lemma tendsto_manuscriptPackingDeficit
     (hpacking : SharpPackingRootAsymptotic) :
     Tendsto manuscriptPackingDeficit atTop (nhds (0 : ℝ)) := by
   unfold SharpPackingRootAsymptotic at hpacking
@@ -47769,7 +47769,7 @@ theorem tendsto_manuscriptPackingDeficit
     (tendsto_const_nhds (f := atTop) (x := (0 : ℝ))).max hsub
   simpa [manuscriptPackingDeficit] using! hmax
 
-theorem manuscriptPackingRoot_sub_deficit_le (d : ℕ) :
+lemma manuscriptPackingRoot_sub_deficit_le (d : ℕ) :
     criticalPackingBase - manuscriptPackingDeficit d ≤
       (linearProgram d) ^ ((d : ℝ)⁻¹) := by
   have hdeficit :
@@ -47778,7 +47778,7 @@ theorem manuscriptPackingRoot_sub_deficit_le (d : ℕ) :
     exact le_max_right _ _
   linarith
 
-theorem manuscriptPackingRoot_sub_deficit_pow_le
+lemma manuscriptPackingRoot_sub_deficit_pow_le
     {d : ℕ} (hd : 0 < d) :
     (criticalPackingBase - manuscriptPackingDeficit d) ^ d ≤
       linearProgram d := by
@@ -47790,7 +47790,7 @@ theorem manuscriptPackingRoot_sub_deficit_pow_le
     (Nat.ne_of_gt hd)] at hpower
   exact hpower
 
-theorem linearProgram_le_geometric_mul_quotient
+lemma linearProgram_le_geometric_mul_quotient
     {d : ℕ} (f : Admissible d) :
     linearProgram d ≤
       (unitBallVolume d / (2 : ℝ) ^ d) * quotient f := by
@@ -47799,7 +47799,7 @@ theorem linearProgram_le_geometric_mul_quotient
     (csInf_le (quotientSet_bddBelow d) ⟨f, rfl⟩)
     (geometricFactor_pos d).le
 
-theorem manuscriptUniversalQuotientBound
+lemma manuscriptUniversalQuotientBound
     {d : ℕ} (hd : 0 < d) (f : Admissible d) :
     (2 : ℝ) ^ d / unitBallVolume d *
         (criticalPackingBase - manuscriptPackingDeficit d) ^ d ≤
@@ -47822,7 +47822,7 @@ theorem manuscriptUniversalQuotientBound
 def manuscriptPackingRootError (d : ℕ) : ℝ :=
   (linearProgram d) ^ ((d : ℝ)⁻¹) - criticalPackingBase
 
-theorem tendsto_manuscriptPackingRootError
+lemma tendsto_manuscriptPackingRootError
     (hpacking : SharpPackingRootAsymptotic) :
     Tendsto manuscriptPackingRootError atTop (nhds (0 : ℝ)) := by
   unfold SharpPackingRootAsymptotic at hpacking
@@ -47831,7 +47831,7 @@ theorem tendsto_manuscriptPackingRootError
         (nhds criticalPackingBase) := tendsto_const_nhds
   simpa [manuscriptPackingRootError] using! hpacking.sub hconstant
 
-theorem manuscriptLinearProgram_eq_packing_error_pow
+lemma manuscriptLinearProgram_eq_packing_error_pow
     {d : ℕ} (hd : 0 < d) :
     linearProgram d =
       (criticalPackingBase + manuscriptPackingRootError d) ^ d := by
@@ -47848,7 +47848,7 @@ def manuscriptBinaryExponentError (d : ℕ) : ℝ :=
   -(Real.logb 2 (linearProgram d) / (d : ℝ)) -
     criticalBinaryExponent
 
-theorem tendsto_manuscriptBinaryExponentError
+lemma tendsto_manuscriptBinaryExponentError
     (hbinary : SharpBinaryLogAsymptotic) :
     Tendsto manuscriptBinaryExponentError atTop (nhds (0 : ℝ)) := by
   unfold SharpBinaryLogAsymptotic at hbinary
@@ -47857,7 +47857,7 @@ theorem tendsto_manuscriptBinaryExponentError
         (nhds criticalBinaryExponent) := tendsto_const_nhds
   simpa [manuscriptBinaryExponentError] using! hbinary.neg.sub hconstant
 
-theorem manuscriptLinearProgram_eq_binary_error_rpow
+lemma manuscriptLinearProgram_eq_binary_error_rpow
     {d : ℕ} (hd : 0 < d) (hpositive : 0 < linearProgram d) :
     linearProgram d =
       (2 : ℝ) ^
@@ -47877,7 +47877,7 @@ theorem manuscriptLinearProgram_eq_binary_error_rpow
 def manuscriptQuotientRootError (d : ℕ) : ℝ :=
   normalizedProgram d - criticalRadius
 
-theorem tendsto_manuscriptQuotientRootError :
+lemma tendsto_manuscriptQuotientRootError :
     Tendsto manuscriptQuotientRootError atTop (nhds (0 : ℝ)) := by
   have hquotient :
       Tendsto normalizedProgram atTop (nhds criticalRadius) :=
@@ -47888,13 +47888,13 @@ theorem tendsto_manuscriptQuotientRootError :
   simpa [manuscriptQuotientRootError] using!
     hquotient.sub hconstant
 
-theorem manuscriptQuotientRootError_isLittleO :
+lemma manuscriptQuotientRootError_isLittleO :
     Asymptotics.IsLittleO atTop
       manuscriptQuotientRootError (fun _ : ℕ => (1 : ℝ)) :=
   (Asymptotics.isLittleO_one_iff ℝ).2
     tendsto_manuscriptQuotientRootError
 
-theorem manuscriptQuotientRootInf_eq_critical_add_error
+lemma manuscriptQuotientRootInf_eq_critical_add_error
     {d : ℕ} (hd : 0 < d) :
     sInf (manuscriptQuotientRootSet d) =
       ((Real.pi)⁻¹ + manuscriptQuotientRootError d) *
@@ -47912,7 +47912,7 @@ theorem manuscriptQuotientRootInf_eq_critical_add_error
           unfold manuscriptQuotientRootError criticalRadius
           ring
 
-theorem exists_manuscriptQuotientRootIsLittleO :
+lemma exists_manuscriptQuotientRootIsLittleO :
     ∃ e : ℕ → ℝ,
       Asymptotics.IsLittleO atTop e (fun _ : ℕ => (1 : ℝ)) ∧
       ∀ d : ℕ, 0 < d →
@@ -47923,23 +47923,23 @@ theorem exists_manuscriptQuotientRootIsLittleO :
   intro d hd
   exact manuscriptQuotientRootInf_eq_critical_add_error hd
 
-theorem manuscriptPackingRootError_tendsto :
+lemma manuscriptPackingRootError_tendsto :
     Tendsto manuscriptPackingRootError atTop (nhds (0 : ℝ)) :=
   tendsto_manuscriptPackingRootError sharpPackingRootAsymptotic
 
-theorem manuscriptPackingRootError_isLittleO :
+lemma manuscriptPackingRootError_isLittleO :
     Asymptotics.IsLittleO atTop
       manuscriptPackingRootError (fun _ : ℕ => (1 : ℝ)) :=
   (Asymptotics.isLittleO_one_iff ℝ).2
     manuscriptPackingRootError_tendsto
 
-theorem manuscriptLinearProgram_eq_canonicalPackingPow
+lemma manuscriptLinearProgram_eq_canonicalPackingPow
     {d : ℕ} (hd : 0 < d) :
     linearProgram d =
       (criticalPackingBase + manuscriptPackingRootError d) ^ d :=
   manuscriptLinearProgram_eq_packing_error_pow hd
 
-theorem exists_manuscriptPackingIsLittleO :
+lemma exists_manuscriptPackingIsLittleO :
     ∃ e : ℕ → ℝ,
       Asymptotics.IsLittleO atTop e (fun _ : ℕ => (1 : ℝ)) ∧
       ∀ d : ℕ, 0 < d →
@@ -47948,13 +47948,13 @@ theorem exists_manuscriptPackingIsLittleO :
     manuscriptPackingRootError_isLittleO,
     fun _ hd => manuscriptLinearProgram_eq_canonicalPackingPow hd⟩
 
-theorem manuscriptPackingDeficit_isLittleO :
+lemma manuscriptPackingDeficit_isLittleO :
     Asymptotics.IsLittleO atTop
       manuscriptPackingDeficit (fun _ : ℕ => (1 : ℝ)) :=
   (Asymptotics.isLittleO_one_iff ℝ).2
     (tendsto_manuscriptPackingDeficit sharpPackingRootAsymptotic)
 
-theorem exists_manuscriptUniversalPackingIsLittleO :
+lemma exists_manuscriptUniversalPackingIsLittleO :
     ∃ δ : ℕ → ℝ,
       Asymptotics.IsLittleO atTop δ (fun _ : ℕ => (1 : ℝ)) ∧
       (∀ d : ℕ, 0 ≤ δ d) ∧
@@ -47966,22 +47966,22 @@ theorem exists_manuscriptUniversalPackingIsLittleO :
     manuscriptPackingDeficit_nonneg,
     fun _ hd f => manuscriptUniversalQuotientBound hd f⟩
 
-theorem manuscriptBinaryExponentError_tendsto :
+lemma manuscriptBinaryExponentError_tendsto :
     Tendsto manuscriptBinaryExponentError atTop (nhds (0 : ℝ)) :=
   tendsto_manuscriptBinaryExponentError sharpBinaryLogAsymptotic
 
-theorem manuscriptBinaryExponentError_isLittleO :
+lemma manuscriptBinaryExponentError_isLittleO :
     Asymptotics.IsLittleO atTop
       manuscriptBinaryExponentError (fun _ : ℕ => (1 : ℝ)) :=
   (Asymptotics.isLittleO_one_iff ℝ).2
     manuscriptBinaryExponentError_tendsto
 
-theorem eventually_manuscriptLinearProgram_pos :
+lemma eventually_manuscriptLinearProgram_pos :
     ∀ᶠ d : ℕ in atTop, 0 < linearProgram d :=
   eventually_linearProgram_pos_of_sharpQuotient
     sharpQuotientAsymptotic
 
-theorem manuscriptLinearProgram_eq_canonicalBinaryRpow
+lemma manuscriptLinearProgram_eq_canonicalBinaryRpow
     {d : ℕ} (hd : 0 < d) (hpositive : 0 < linearProgram d) :
     linearProgram d =
       (2 : ℝ) ^
@@ -47989,7 +47989,7 @@ theorem manuscriptLinearProgram_eq_canonicalBinaryRpow
           (d : ℝ)) :=
   manuscriptLinearProgram_eq_binary_error_rpow hd hpositive
 
-theorem eventually_manuscriptLinearProgram_eq_canonicalBinaryRpow :
+lemma eventually_manuscriptLinearProgram_eq_canonicalBinaryRpow :
     ∀ᶠ d : ℕ in atTop,
       linearProgram d =
         (2 : ℝ) ^
@@ -48000,7 +48000,7 @@ theorem eventually_manuscriptLinearProgram_eq_canonicalBinaryRpow :
     with d hd hpositive
   exact manuscriptLinearProgram_eq_canonicalBinaryRpow hd hpositive
 
-theorem exists_manuscriptBinaryIsLittleO :
+lemma exists_manuscriptBinaryIsLittleO :
     ∃ e : ℕ → ℝ,
       Asymptotics.IsLittleO atTop e (fun _ : ℕ => (1 : ℝ)) ∧
       ∀ᶠ d : ℕ in atTop,
@@ -48027,13 +48027,13 @@ open Metric MeasureTheory
 
 variable {r : ℝ} {ι : Type*} [Fintype ι]
 
-theorem EuclideanSpace.euclidean_ball_volume_positive [Nonempty ι] (x : EuclideanSpace ℝ ι) (hr : 0 < r) :
+lemma EuclideanSpace.euclidean_ball_volume_positive [Nonempty ι] (x : EuclideanSpace ℝ ι) (hr : 0 < r) :
     0 < volume (ball x r) := by
   simpa using! measure_ball_pos (μ := volume) x hr
 
 open Classical in
 
-theorem EuclideanSpace.euclidean_ball_volume_finite
+lemma EuclideanSpace.euclidean_ball_volume_finite
     [NullSingletonClass (volume : Measure (EuclideanSpace ℝ ι))]
     (x : EuclideanSpace ℝ ι) :
     volume (ball x r) < ⊤ := by
@@ -48077,7 +48077,7 @@ variable {d : ℕ}
 attribute [instance] PeriodicSpherePacking.lattice_discrete
 attribute [instance] PeriodicSpherePacking.lattice_isZLattice
 
-theorem SpherePacking.distinct_centers_separation_bound (S : SpherePacking d) (x y : EuclideanSpace ℝ (Fin d))
+lemma SpherePacking.distinct_centers_separation_bound (S : SpherePacking d) (x y : EuclideanSpace ℝ (Fin d))
     (hx : x ∈ S.centers) (hy : y ∈ S.centers) (hxy : x ≠ y) :
     S.separation ≤ dist x y := by
   simpa using!
@@ -48120,12 +48120,12 @@ noncomputable def SpherePacking.densityInsideRadius (S : SpherePacking d) (R : �
 noncomputable def SpherePacking.upperPackingDensity (S : SpherePacking d) : ℝ≥0∞ :=
   limsup S.densityInsideRadius atTop
 
-theorem PeriodicSpherePacking.integral_basis_spans_packing_lattice
+lemma PeriodicSpherePacking.integral_basis_spans_packing_lattice
     (S : PeriodicSpherePacking d) {ι : Type*} (b : Basis ι ℤ S.lattice) :
     Submodule.span ℤ (Set.range (b.ofZLatticeBasis ℝ _)) = S.lattice :=
   Basis.ofZLatticeBasis_span ℝ S.lattice b
 
-theorem PeriodicSpherePacking.mem_integral_basis_span_iff
+lemma PeriodicSpherePacking.mem_integral_basis_span_iff
     (S : PeriodicSpherePacking d) {ι : Type*} (b : Basis ι ℤ S.lattice) (v) :
     v ∈ Submodule.span ℤ (Set.range (b.ofZLatticeBasis ℝ _)) ↔ v ∈ S.lattice :=
   SetLike.ext_iff.mp (S.integral_basis_spans_packing_lattice b) v
@@ -48287,7 +48287,7 @@ lemma rescale_upper_packing_density {d : ℕ} (S : SpherePacking d) {c : ℝ} (h
     (limsup_congr (Eventually.of_forall fun R => rescale_local_packing_density_radius (S := S) hc R)).trans
       (Filter.limsup_comp (u := S.densityInsideRadius) (v := fun R => R / c) (f := atTop))
 
-theorem packing_supremum_eq_unit_separation {d : ℕ} :
+lemma packing_supremum_eq_unit_separation {d : ℕ} :
     SpherePackingConstant d = ⨆ (S : SpherePacking d) (_ : S.separation = 1), S.upperPackingDensity := by
   rw [iSup_subtype', SpherePackingConstant]
   refine le_antisymm (iSup_le ?_) (iSup_le ?_)
@@ -48325,7 +48325,7 @@ lemma clipped_ball_union_subset_nearby_union
   rw [← sub_add_cancel R r]
   exact add_lt_add hx (by simpa [dist_eq_norm, norm_sub_rev] using! hy₂)
 
-theorem SpherePacking.volume_center_ball_union_eq_tsum
+lemma SpherePacking.volume_center_ball_union_eq_tsum
     (R : ℝ) {r' : ℝ} (hr' : r' ≤ S.separation / 2) :
     volume (⋃ x : ↑(S.centers ∩ ball 0 R), ball (x : EuclideanSpace ℝ (Fin d)) r')
       = ∑' x : ↑(S.centers ∩ ball 0 R), volume (ball (x : EuclideanSpace ℝ (Fin d)) r') := by
@@ -48337,7 +48337,7 @@ theorem SpherePacking.volume_center_ball_union_eq_tsum
   simp_rw [ne_eq, Subtype.mk.injEq] at h ⊢
   linarith [S.distinct_centers_separation_bound x y hx.left hy.left h]
 
-theorem SpherePacking.center_count_in_ball_upper_bound (hd : 0 < d) (R : ℝ) :
+lemma SpherePacking.center_count_in_ball_upper_bound (hd : 0 < d) (R : ℝ) :
     (S.centers ∩ ball 0 R).encard ≤
       volume (S.occupiedBallRegion ∩ ball 0 (R + S.separation / 2))
         / volume (ball (0 : EuclideanSpace ℝ (Fin d)) (S.separation / 2)) := by
@@ -48351,7 +48351,7 @@ theorem SpherePacking.center_count_in_ball_upper_bound (hd : 0 < d) (R : ℝ) :
   · exact (euclidean_ball_volume_positive _ (by linarith [S.separation_pos])).ne.symm
   · exact (euclidean_ball_volume_finite _).ne
 
-theorem SpherePacking.center_count_in_ball_lower_bound (R : ℝ) :
+lemma SpherePacking.center_count_in_ball_lower_bound (R : ℝ) :
     (S.centers ∩ ball 0 R).encard ≥
       volume (S.occupiedBallRegion ∩ ball 0 (R - S.separation / 2))
         / volume (ball (0 : EuclideanSpace ℝ (Fin d)) (S.separation / 2)) := by
@@ -48362,7 +48362,7 @@ theorem SpherePacking.center_count_in_ball_lower_bound (R : ℝ) :
     Measure.addHaar_ball_center, ENNReal.tsum_set_const] at h
   exact ENNReal.div_le_of_le_mul h
 
-theorem SpherePacking.finite_centers_inside_ball (R : ℝ) :
+lemma SpherePacking.finite_centers_inside_ball (R : ℝ) :
     Finite ↑(S.centers ∩ ball 0 R) := by
   apply Set.encard_lt_top_iff.mp
   rcases eq_or_ne d 0 with rfl | hd
@@ -48376,7 +48376,7 @@ theorem SpherePacking.finite_centers_inside_ball (R : ℝ) :
         lt_of_le_of_lt (volume.mono Set.inter_subset_right) (EuclideanSpace.euclidean_ball_volume_finite _))
       (euclidean_ball_volume_positive _ (by linarith [S.separation_pos])).ne.symm
 
-theorem SpherePacking.local_density_lower_bound (hd : 0 < d) (R : ℝ) :
+lemma SpherePacking.local_density_lower_bound (hd : 0 < d) (R : ℝ) :
     S.densityInsideRadius R
       ≥ (S.centers ∩ ball 0 (R - S.separation / 2)).encard
         * volume (ball (0 : EuclideanSpace ℝ (Fin d)) (S.separation / 2))
@@ -48389,7 +48389,7 @@ theorem SpherePacking.local_density_lower_bound (hd : 0 < d) (R : ℝ) :
     (Or.inl (euclidean_ball_volume_finite _).ne)).1 <|
       (by simpa [sub_add_cancel] using! (S.center_count_in_ball_upper_bound hd (R - S.separation / 2)))
 
-theorem SpherePacking.local_density_upper_bound (hd : 0 < d) (R : ℝ) :
+lemma SpherePacking.local_density_upper_bound (hd : 0 < d) (R : ℝ) :
     S.densityInsideRadius R
       ≤ (S.centers ∩ ball 0 (R + S.separation / 2)).encard
         * volume (ball (0 : EuclideanSpace ℝ (Fin d)) (S.separation / 2))
@@ -48408,7 +48408,7 @@ end
 
 section
 
-theorem ENNReal.cancel_common_numerator_in_division_ratio {a b c : ENNReal} (ha : a ≠ 0) (ha' : a ≠ ⊤)
+lemma ENNReal.cancel_common_numerator_in_division_ratio {a b c : ENNReal} (ha : a ≠ 0) (ha' : a ≠ ⊤)
     (hc : c ≠ ⊤) :
     (a / b) / (a / c) = c / b := by
   simp only [div_eq_mul_inv]
@@ -48417,7 +48417,7 @@ theorem ENNReal.cancel_common_numerator_in_division_ratio {a b c : ENNReal} (ha 
     a * b⁻¹ * (a⁻¹ * c) = (a * a⁻¹) * (c * b⁻¹) := by ac_rfl
     _ = c * b⁻¹ := by rw [ENNReal.mul_inv_cancel ha ha', one_mul]
 
-theorem ENat.tsum_constant_eq_card_mul {α : Type*} (c : ENat) :
+lemma ENat.tsum_constant_eq_card_mul {α : Type*} (c : ENat) :
     ∑' (_ : α), c = ENat.card α * c := by
   classical
   by_cases hα : Finite α
@@ -48453,14 +48453,14 @@ theorem ENat.tsum_constant_eq_card_mul {α : Type*} (c : ENat) :
       · intro b hb
         exact (not_lt_of_ge le_top hb).elim
 
-theorem ENat.tsum_subtype_constant_eq_encard_mul {α : Type*} (s : Set α) (c : ENat) :
+lemma ENat.tsum_subtype_constant_eq_encard_mul {α : Type*} (s : Set α) (c : ENat) :
     ∑' (_ : s), c = s.encard * c := by
   rw [ENat.tsum_constant_eq_card_mul, Set.encard]
 
-theorem ENat.tsum_unit_eq_cardinality {α : Type*} : ∑' (_ : α), 1 = ENat.card α := by
+lemma ENat.tsum_unit_eq_cardinality {α : Type*} : ∑' (_ : α), 1 = ENat.card α := by
   simp [ENat.tsum_constant_eq_card_mul]
 
-theorem ENat.tsum_subtype_unit_eq_encard {α : Type*} (s : Set α) : ∑' (_ : s), 1 = s.encard := by
+lemma ENat.tsum_subtype_unit_eq_encard {α : Type*} (s : Set α) : ∑' (_ : s), 1 = s.encard := by
   rw [ENat.tsum_unit_eq_cardinality, Set.encard]
 
 end
@@ -48475,35 +48475,35 @@ section tsum
 
 variable {ι : Sort*} {α β : Type*} {f g : α → ℕ∞} {s t : Set α}
 
-protected theorem hasSum : HasSum f (⨆ s : Finset α, ∑ a ∈ s, f a) :=
+protected lemma hasSum : HasSum f (⨆ s : Finset α, ∑ a ∈ s, f a) :=
   tendsto_atTop_iSup fun _ _ ↦ Finset.sum_le_sum_of_subset
 
-@[simp] protected theorem summable : Summable f :=
+@[simp] protected lemma summable : Summable f :=
   ENat.hasSum.summable
 
-protected theorem tsum_reindex_injective_le {φ : α → β} (hφ : Injective φ) (g : β → ℕ∞) :
+protected lemma tsum_reindex_injective_le {φ : α → β} (hφ : Injective φ) (g : β → ℕ∞) :
     ∑' x, g (φ x) ≤ ∑' y, g y :=
   (ENat.summable (f := fun x => g (φ x))).tsum_le_tsum_of_inj φ hφ (fun _ _ ↦ bot_le)
     (fun _ ↦ le_rfl) (ENat.summable (f := g))
 
-protected theorem tsum_le_reindex_surjection {φ : α → β} (hφ : Surjective φ) (g : β → ℕ∞) :
+protected lemma tsum_le_reindex_surjection {φ : α → β} (hφ : Surjective φ) (g : β → ℕ∞) :
     ∑' y, g y ≤ ∑' x, g (φ x) :=
   calc ∑' y, g y = ∑' y, g (φ (surjInv hφ y)) := by simp [surjInv_eq hφ]
     _ ≤ ∑' x, g (φ x) :=
       ENat.tsum_reindex_injective_le (injective_surjInv hφ) _
 
-protected theorem tsum_reindex_bijection {φ : α → β} (hφ : φ.Bijective) (g : β → ℕ∞) :
+protected lemma tsum_reindex_bijection {φ : α → β} (hφ : φ.Bijective) (g : β → ℕ∞) :
     ∑' x, g (φ x) = ∑' y, g y :=
   (ENat.tsum_reindex_injective_le hφ.injective g).antisymm
     (ENat.tsum_le_reindex_surjection hφ.surjective g)
 
-protected theorem tsum_dependent_subtype_reindex {β : α → Type*} (f : (Σ a, β a) → ℕ∞) :
+protected lemma tsum_dependent_subtype_reindex {β : α → Type*} (f : (Σ a, β a) → ℕ∞) :
     ∑' p : Σ a, β a, f p = ∑' (a) (b), f ⟨a, b⟩ :=
   Summable.tsum_sigma' (fun _ ↦ ENat.summable) ENat.summable
 
 variable {ι : Type*}
 
-theorem tsum_disjoint_subtype_union (f : α → ℕ∞) (t : ι → Set α) (ht : Pairwise (Disjoint on t)) :
+lemma tsum_disjoint_subtype_union (f : α → ℕ∞) (t : ι → Set α) (ht : Pairwise (Disjoint on t)) :
     ∑' x : ⋃ i, t i, f x = ∑' i, ∑' x : t i, f x :=
   calc ∑' x : ⋃ i, t i, f x = ∑' x : Σ i, t i, f x.2 :=
     (ENat.tsum_reindex_bijection
@@ -48513,7 +48513,7 @@ theorem tsum_disjoint_subtype_union (f : α → ℕ∞) (t : ι → Set α) (ht 
 end ENat.tsum
 open Function
 
-theorem Set.encard_disjoint_union_eq_tsum {ι α : Type*} {s : ι → Set α}
+lemma Set.encard_disjoint_union_eq_tsum {ι α : Type*} {s : ι → Set α}
     (hs : Set.PairwiseDisjoint Set.univ s) : (⋃ i, s i).encard = ∑' i, (s i).encard := by
   simpa [ENat.tsum_subtype_unit_eq_encard] using!
     (ENat.tsum_disjoint_subtype_union (f := fun _ : α => (1 : ℕ∞)) (t := s) (by
@@ -48528,7 +48528,7 @@ open ZSpan
 variable {E ι K : Type*} [NormedField K] [LinearOrder K] [IsStrictOrderedRing K]
   [NormedAddCommGroup E] [NormedSpace K E] (b : Module.Basis ι K E) [FloorRing K] [Fintype ι]
 
-theorem ZSpan.fundamental_region_iff_coordinate_floor_zero (v : E) : v ∈ fundamentalDomain b ↔ floor b v = 0 := by
+lemma ZSpan.fundamental_region_iff_coordinate_floor_zero (v : E) : v ∈ fundamentalDomain b ↔ floor b v = 0 := by
   simp_rw [mem_fundamentalDomain, ← Int.floor_eq_zero_iff]
   constructor <;> intro h
   · simp [floor, h]
@@ -48603,7 +48603,7 @@ private lemma pairwise_disjoint_center_balls (D : Set (EuclideanSpace ℝ (Fin d
   intro x hx y hy hxy
   exact ball_disjoint_ball (by simpa [add_halves] using! S.distinct_centers_separation_bound _ _ hx.left hy.left hxy)
 
-private theorem finite_of_bounded_union_with_uniform_volume
+private lemma finite_of_bounded_union_with_uniform_volume
     {ι τ : Type*} {s : Set ι} {f : ι → Set (EuclideanSpace ℝ τ)} {c : ℝ≥0∞} (hc : 0 < c)
     [Fintype τ] [NullSingletonClass (volume : Measure (EuclideanSpace ℝ τ))]
     (h_measurable : ∀ x ∈ s, MeasurableSet (f x))
@@ -48808,7 +48808,7 @@ variable {d : ℕ} (S : PeriodicSpherePacking d) (D : Set (EuclideanSpace ℝ (F
 noncomputable def PeriodicSpherePacking.centerOrbitCardinality : ℕ :=
   Fintype.card (Quotient S.latticeCenterTranslationAction.orbitRel)
 
-theorem PeriodicSpherePacking.card_centers_in_fundamental_region
+lemma PeriodicSpherePacking.card_centers_in_fundamental_region
     (hD_isBounded : IsBounded D)
     (hD_unique_covers : ∀ x, ∃! g : S.lattice, g +ᵥ x ∈ D)
     (hd : 0 < d) :
@@ -48818,7 +48818,7 @@ theorem PeriodicSpherePacking.card_centers_in_fundamental_region
   convert! Finset.card_eq_of_equiv_fintype ?_
   simpa [Set.mem_toFinset] using! (S.centerOrbitEquivFundamentalRegion D hD_unique_covers).symm
 
-theorem PeriodicSpherePacking.encard_centers_in_fundamental_region
+lemma PeriodicSpherePacking.encard_centers_in_fundamental_region
     (hD_isBounded : IsBounded D)
     (hD_unique_covers : ∀ x, ∃! g : S.lattice, g +ᵥ x ∈ D)
     (hd : 0 < d) :
@@ -48826,14 +48826,14 @@ theorem PeriodicSpherePacking.encard_centers_in_fundamental_region
   rw [← S.card_centers_in_fundamental_region D hD_isBounded hD_unique_covers hd]
   convert! Set.encard_eq_coe_toFinset_card _
 
-theorem PeriodicSpherePacking.card_centers_in_translated_region (hd : 0 < d)
+lemma PeriodicSpherePacking.card_centers_in_translated_region (hd : 0 < d)
     {ι : Type*} [Finite ι] (b : Basis ι ℤ S.lattice) (v : EuclideanSpace ℝ (Fin d)) :
     haveI := @Fintype.ofFinite _ <| finite_centers_in_translated_fundamental_region S b hd v
     (S.centers ∩ (v +ᵥ fundamentalDomain (b.ofZLatticeBasis ℝ _))).toFinset.card = S.centerOrbitCardinality := by
   rw [centerOrbitCardinality]
   exact card_eq_of_equiv_fintype (by simpa using! (S.centerOrbitEquivTranslatedBasisRegion b v).symm)
 
-theorem PeriodicSpherePacking.encard_centers_in_translated_region (hd : 0 < d)
+lemma PeriodicSpherePacking.encard_centers_in_translated_region (hd : 0 < d)
     {ι : Type*} [Finite ι] (b : Basis ι ℤ S.lattice) (v : EuclideanSpace ℝ (Fin d)) :
     (S.centers ∩ (v +ᵥ fundamentalDomain (b.ofZLatticeBasis ℝ _))).encard = S.centerOrbitCardinality := by
   rw [← S.card_centers_in_translated_region hd b]
@@ -48857,7 +48857,7 @@ noncomputable def PeriodicSpherePacking.boundedCenterRepresentativeCount
   letI := S.instFintypeBoundedCenterRepresentatives hd hD_isBounded
   Fintype.card ↑(S.centers ∩ D)
 
-theorem PeriodicSpherePacking.orbit_cardinality_eq_bounded_representatives (S : PeriodicSpherePacking d) (hd : 0 < d)
+lemma PeriodicSpherePacking.orbit_cardinality_eq_bounded_representatives (S : PeriodicSpherePacking d) (hd : 0 < d)
   {D : Set (EuclideanSpace ℝ (Fin d))} (hD_isBounded : IsBounded D)
   (hD_unique_covers : ∀ x, ∃! g : S.lattice, g +ᵥ x ∈ D) :
   S.centerOrbitCardinality = S.boundedCenterRepresentativeCount hd hD_isBounded := by
@@ -48872,7 +48872,7 @@ variable {d : ℕ} (S : PeriodicSpherePacking d) (D : Set (EuclideanSpace ℝ (F
 
 open scoped Pointwise
 
-private theorem iUnion_lattice_inter_ball_sub_vadd_fundamentalDomain_subset_ball
+private lemma iUnion_lattice_inter_ball_sub_vadd_fundamentalDomain_subset_ball
     {ι : Type*} (b : Basis ι ℝ (EuclideanSpace ℝ (Fin d)))
     {L : ℝ} (hL : ∀ x ∈ fundamentalDomain b, ‖x‖ ≤ L) (R : ℝ) :
     ⋃ x ∈ ↑S.lattice ∩ ball (0 : EuclideanSpace ℝ (Fin d)) (R - L),
@@ -48890,7 +48890,7 @@ private theorem iUnion_lattice_inter_ball_sub_vadd_fundamentalDomain_subset_ball
     lt_of_le_of_lt (norm_add_le x y) (by linarith)
   simpa [mem_ball, dist_zero_right, vadd_eq_add] using hsum
 
-private theorem fundamental_region_translates_disjoint
+private lemma fundamental_region_translates_disjoint
     {ι : Type*} [Finite ι] (b : Basis ι ℤ S.lattice)
     {x y : EuclideanSpace ℝ (Fin d)} (hx : x ∈ S.lattice) (hy : y ∈ S.lattice) (hxy : x ≠ y) :
     Disjoint (x +ᵥ fundamentalDomain (b.ofZLatticeBasis ℝ _))
@@ -48906,7 +48906,7 @@ private theorem fundamental_region_translates_disjoint
       (by intro u; simpa using!
         exist_unique_vadd_mem_fundamentalDomain (b.ofZLatticeBasis ℝ _) u) hxy')
 
-theorem PeriodicSpherePacking.encard_centers_inter_ball_ge_numReps_nsmul_encard_lattice_inter_ball
+lemma PeriodicSpherePacking.encard_centers_inter_ball_ge_numReps_nsmul_encard_lattice_inter_ball
     (hd : 0 < d) {ι : Type*} [Finite ι] (b : Basis ι ℤ S.lattice)
     {L : ℝ} (hL : ∀ x ∈ fundamentalDomain (b.ofZLatticeBasis ℝ _), ‖x‖ ≤ L) (R : ℝ) :
     (↑S.centers ∩ ball 0 R).encard ≥
@@ -48926,7 +48926,7 @@ theorem PeriodicSpherePacking.encard_centers_inter_ball_ge_numReps_nsmul_encard_
       (Set.disjoint_left.1 (fundamental_region_translates_disjoint (S := S) b hx.left hy.left hxy'))
         hux.right huy.right
 
-private theorem ball_subset_iUnion_lattice_inter_ball_add_vadd_fundamentalDomain
+private lemma ball_subset_iUnion_lattice_inter_ball_add_vadd_fundamentalDomain
     {ι : Type*} [Finite ι] (b : Basis ι ℤ S.lattice)
     {L : ℝ} (hL : ∀ x ∈ fundamentalDomain (b.ofZLatticeBasis ℝ _), ‖x‖ ≤ L) (R : ℝ) :
     ball 0 R
@@ -48946,7 +48946,7 @@ private theorem ball_subset_iUnion_lattice_inter_ball_add_vadd_fundamentalDomain
   · rw [Set.mem_vadd_set_iff_neg_vadd_mem, vadd_eq_add, neg_add_eq_sub]
     exact fract_mem_fundamentalDomain (b.ofZLatticeBasis ℝ _) x
 
-theorem PeriodicSpherePacking.encard_centers_inter_ball_le_numReps_nsmul_encard_lattice_inter_ball
+lemma PeriodicSpherePacking.encard_centers_inter_ball_le_numReps_nsmul_encard_lattice_inter_ball
     (hd : 0 < d) {ι : Type*} [Finite ι] (b : Basis ι ℤ S.lattice)
     {L : ℝ} (hL : ∀ x ∈ fundamentalDomain (b.ofZLatticeBasis ℝ _), ‖x‖ ≤ L) (R : ℝ) :
     (↑S.centers ∩ ball 0 R).encard
@@ -48974,13 +48974,13 @@ variable {d : ℕ} (S : PeriodicSpherePacking d)
   {ι : Type*} [Finite ι]
   (D : Set (EuclideanSpace ℝ (Fin d))) {L : ℝ} (R : ℝ)
 
-theorem lattice_region_is_additive_fundamental_domain
+lemma lattice_region_is_additive_fundamental_domain
     (hD_unique_covers : ∀ x, ∃! g : S.lattice, g +ᵥ x ∈ D) (hD_measurable : MeasurableSet D) :
     IsAddFundamentalDomain S.lattice D :=
   MeasureTheory.IsAddFundamentalDomain.mk' (μ := volume) hD_measurable.nullMeasurableSet
     hD_unique_covers
 
-private theorem ball_covered_by_nearby_lattice_translates
+private lemma ball_covered_by_nearby_lattice_translates
     (hD_unique_covers : ∀ x, ∃! g : S.lattice, g +ᵥ x ∈ D) (hL : ∀ x ∈ D, ‖x‖ ≤ L) :
     ball 0 (R - L) ⊆ ⋃ x ∈ ↑S.lattice ∩ ball (0 : EuclideanSpace ℝ (Fin d)) R, (x +ᵥ D) := by
   intro x hx
@@ -49004,7 +49004,7 @@ instance (E : Type*) [AddCommGroup E] [MeasurableSpace E] [MeasurableAdd E] [Mod
   measure_preimage_vadd c t ht := by
     simp only [Submodule.vadd_def, vadd_eq_add, measure_preimage_add]
 
-theorem PeriodicSpherePacking.encard_lattice_inter_ball_ge_volume_ball_sub_div_volume
+lemma PeriodicSpherePacking.encard_lattice_inter_ball_ge_volume_ball_sub_div_volume
     (hD_unique_covers : ∀ x, ∃! g : S.lattice, g +ᵥ x ∈ D)
     (hL : ∀ x ∈ D, ‖x‖ ≤ L) :
     (↑S.lattice ∩ ball (0 : EuclideanSpace ℝ (Fin d)) R).encard
@@ -49030,7 +49030,7 @@ theorem PeriodicSpherePacking.encard_lattice_inter_ball_ge_volume_ball_sub_div_v
       volume D := by simp_rw [measure_vadd]
     _ = _ := ENNReal.tsum_set_const _ _
 
-private theorem nearby_lattice_translates_subset_expanded_ball (hL : ∀ x ∈ D, ‖x‖ ≤ L) :
+private lemma nearby_lattice_translates_subset_expanded_ball (hL : ∀ x ∈ D, ‖x‖ ≤ L) :
     ⋃ x ∈ ↑S.lattice ∩ ball (0 : EuclideanSpace ℝ (Fin d)) R, (x +ᵥ D) ⊆ ball 0 (R + L) := by
   intro x hx
   rw [mem_ball_zero_iff]
@@ -49043,7 +49043,7 @@ private theorem nearby_lattice_translates_subset_expanded_ball (hL : ∀ x ∈ D
     _ ≤ ‖i‖ + ‖-i + x‖ := norm_add_le _ _
     _ < R + L := add_lt_add_of_lt_of_le hi_ball' hi_mem'
 
-theorem PeriodicSpherePacking.encard_lattice_inter_ball_le_volume_ball_add_div_volume
+lemma PeriodicSpherePacking.encard_lattice_inter_ball_le_volume_ball_add_div_volume
     (hD_unique_covers : ∀ x, ∃! g : S.lattice, g +ᵥ x ∈ D) (hD_measurable : MeasurableSet D)
     (hL : ∀ x ∈ D, ‖x‖ ≤ L) (hd : 0 < d) :
     (↑S.lattice ∩ ball (0 : EuclideanSpace ℝ (Fin d)) R).encard
@@ -49095,7 +49095,7 @@ open ZSpan
 
 variable (b : Basis ι ℤ S.lattice)
 
-theorem
+lemma
     PeriodicSpherePacking.encard_lattice_inter_ball_ge_volume_ball_sub_div_volume_fundamentalDomain
     (hL : ∀ x ∈ fundamentalDomain (b.ofZLatticeBasis ℝ _), ‖x‖ ≤ L) :
     (↑S.lattice ∩ ball (0 : EuclideanSpace ℝ (Fin d)) R).encard
@@ -49111,7 +49111,7 @@ theorem
   have := hvuniq ⟨y, by simpa [S.integral_basis_spans_packing_lattice] using! hy⟩ hyD
   exact Subtype.ext (by simpa using! congrArg Subtype.val this)
 
-theorem
+lemma
     PeriodicSpherePacking.encard_lattice_inter_ball_le_volume_ball_add_div_volume_fundamentalDomain
     (hL : ∀ x ∈ fundamentalDomain (b.ofZLatticeBasis ℝ _), ‖x‖ ≤ L) (hd : 0 < d) :
     (↑S.lattice ∩ ball (0 : EuclideanSpace ℝ (Fin d)) R).encard
@@ -49135,7 +49135,7 @@ variable
   {d : ℕ} {S : PeriodicSpherePacking d}
   {ι : Type*} [Finite ι] (b : Basis ι ℤ S.lattice) {L : ℝ} (R : ℝ)
 
-theorem finiteDensity_le_numReps_mul_volume_ball_ratio
+lemma finiteDensity_le_numReps_mul_volume_ball_ratio
     (hL : ∀ x ∈ fundamentalDomain (b.ofZLatticeBasis ℝ _), ‖x‖ ≤ L) (hd : 0 < d) :
     S.densityInsideRadius R ≤
       S.centerOrbitCardinality
@@ -49172,7 +49172,7 @@ theorem finiteDensity_le_numReps_mul_volume_ball_ratio
     congr 3
     rw [mul_comm]
 
-theorem finiteDensity_ge_numReps_mul_volume_ball_ratio
+lemma finiteDensity_ge_numReps_mul_volume_ball_ratio
     (hL : ∀ x ∈ fundamentalDomain (b.ofZLatticeBasis ℝ _), ‖x‖ ≤ L) (hd : 0 < d) :
     S.densityInsideRadius R ≥
       S.centerOrbitCardinality
@@ -49254,7 +49254,7 @@ lemma eventually_ofReal_div_add_one_pow_mem_Icc {ε : ℝ≥0∞} (hε : 0 < ε)
     ∃ k : ℝ, k ≥ 0 ∧ ∀ k' ≥ k, ENNReal.ofReal ((k' / (k' + 1)) ^ d) ∈ Set.Icc (1 - ε) (1 + ε) := by
   simpa using! eventually_ofReal_div_add_one_rpow_mem_Icc (d := d) (Nat.cast_nonneg _) hε
 
-theorem volume_ball_div_volume_ball_add_tendsto_one {C : ℝ} (hd : 0 < d) (hC : 0 ≤ C) :
+lemma volume_ball_div_volume_ball_add_tendsto_one {C : ℝ} (hd : 0 < d) (hC : 0 ≤ C) :
     Tendsto (fun R ↦ volume (ball (0 : EuclideanSpace ℝ (Fin d)) R)
       / volume (ball (0 : EuclideanSpace ℝ (Fin d)) (R + C))) atTop (𝓝 1) := by
   letI : Nonempty (Fin d) := Fin.pos_iff_nonempty.mp hd
@@ -49298,7 +49298,7 @@ theorem volume_ball_div_volume_ball_add_tendsto_one {C : ℝ} (hd : 0 < d) (hC :
     ← ENNReal.ofReal_pow hR.le d, ← ENNReal.ofReal_pow hRC.le d,
     ← ENNReal.ofReal_div_of_pos (pow_pos hRC d), ← div_pow]
 
-theorem volume_ball_add_div_volume_ball_add_tendsto_one_of_nonneg
+lemma volume_ball_add_div_volume_ball_add_tendsto_one_of_nonneg
     {d : ℕ} {C C' : ℝ} (hd : 0 < d) (hC : 0 ≤ C) (hC' : 0 ≤ C') :
       Tendsto (fun R ↦ volume (ball (0 : EuclideanSpace ℝ (Fin d)) (R + C))
         / volume (ball (0 : EuclideanSpace ℝ (Fin d)) (R + C'))) atTop (𝓝 1) := by
@@ -49329,7 +49329,7 @@ theorem volume_ball_add_div_volume_ball_add_tendsto_one_of_nonneg
     ← ENNReal.ofReal_div_of_pos, mul_div_mul_right, ← div_pow]
   <;> positivity
 
-theorem Filter.atTop_invariant_under_translation {β : Type*} {f : ℝ → β} (C : ℝ) (α : Filter β) :
+lemma Filter.atTop_invariant_under_translation {β : Type*} {f : ℝ → β} (C : ℝ) (α : Filter β) :
     Tendsto f atTop α ↔ Tendsto (fun x ↦ f (x + C)) atTop α := by
   have hmap : Filter.map (fun x : ℝ => x + C) atTop = atTop := by
     simpa using! (Filter.map_add_atTop_eq (α := ℝ) (k := C))
@@ -49338,7 +49338,7 @@ theorem Filter.atTop_invariant_under_translation {β : Type*} {f : ℝ → β} (
   · have : Tendsto f (Filter.map (fun x : ℝ => x + C) atTop) α := tendsto_map'_iff.mpr hf
     simpa [hmap] using! this
 
-theorem volume_ball_add_div_volume_ball_add_tendsto_one {d : ℕ} {C C' : ℝ} (hd : 0 < d) :
+lemma volume_ball_add_div_volume_ball_add_tendsto_one {d : ℕ} {C C' : ℝ} (hd : 0 < d) :
     Tendsto (fun R ↦ volume (ball (0 : EuclideanSpace ℝ (Fin d)) (R + C))
       / volume (ball (0 : EuclideanSpace ℝ (Fin d)) (R + C'))) atTop (𝓝 1) := by
   have hC₀ : 0 ≤ max (-C) (-C') + C := by linarith [le_max_left (-C) (-C')]
@@ -49395,7 +49395,7 @@ lemma PeriodicSpherePacking.local_packing_density_tends_to_formula
     · left
       exact one_ne_zero
 
-theorem PeriodicSpherePacking.density_eq_numReps_mul_volume_ball_div_volume_fundamentalDomain
+lemma PeriodicSpherePacking.density_eq_numReps_mul_volume_ball_div_volume_fundamentalDomain
     (hL : ∀ x ∈ fundamentalDomain (b.ofZLatticeBasis ℝ _), ‖x‖ ≤ L) (hd : 0 < d) :
     S.upperPackingDensity
       = S.centerOrbitCardinality * volume (ball (0 : EuclideanSpace ℝ (Fin d)) (S.separation / 2))
@@ -49406,7 +49406,7 @@ end DensityEqFdDensity
 
 section ConstantEqNormalizedConstant
 
-theorem periodic_packing_supremum_eq_unit_separation :
+lemma periodic_packing_supremum_eq_unit_separation :
     PeriodicSpherePackingConstant d = ⨆ (S : PeriodicSpherePacking d) (_ : S.separation = 1),
     S.upperPackingDensity := by
   rw [iSup_subtype', PeriodicSpherePackingConstant]
@@ -49428,7 +49428,7 @@ end ConstantEqNormalizedConstant
 
 section Disjoint_Covering_of_Centers
 
-theorem PeriodicSpherePacking.center_representatives_cover_uniquely (S : PeriodicSpherePacking d)
+lemma PeriodicSpherePacking.center_representatives_cover_uniquely (S : PeriodicSpherePacking d)
     {D : Set (EuclideanSpace ℝ (Fin d))}
     (hD_unique_covers : ∀ x, ∃! g : S.lattice, g +ᵥ x ∈ D) :
     ∀ x : S.centers, ∃! g : S.lattice,
@@ -49448,11 +49448,11 @@ open Submodule
 
 variable (S : PeriodicSpherePacking d) (b : Basis (Fin d) ℤ S.lattice)
 
-theorem PeriodicSpherePacking.fundamental_region_admits_norm_bound :
+lemma PeriodicSpherePacking.fundamental_region_admits_norm_bound :
   ∃ L : ℝ, ∀ x ∈ fundamentalDomain (b.ofZLatticeBasis ℝ _), ‖x‖ ≤ L :=
   isBounded_iff_forall_norm_le.1 (fundamentalDomain_isBounded (Basis.ofZLatticeBasis ℝ S.lattice b))
 
-theorem PeriodicSpherePacking.basis_region_translates_cover_uniquely :
+lemma PeriodicSpherePacking.basis_region_translates_cover_uniquely :
    ∀ x, ∃! g : S.lattice, g +ᵥ x ∈ fundamentalDomain (b.ofZLatticeBasis ℝ _) := by
   intro x
   obtain ⟨g, hg, h_unique⟩ :=
@@ -49479,7 +49479,7 @@ noncomputable def PeriodicSpherePacking.canonicalPackingLatticeBasis (S : Period
     Basis (Fin d) ℤ ↥S.lattice :=
   ((ZLattice.module_free ℝ S.lattice).chooseBasis).reindex S.coordinateIndexEquiv
 
-@[simp] theorem PeriodicSpherePacking.density_eq_numReps_mul_volume_ball_div_covolume
+@[simp] lemma PeriodicSpherePacking.density_eq_numReps_mul_volume_ball_div_covolume
   (S : PeriodicSpherePacking d) (hd : 0 < d) : S.upperPackingDensity =
   (ENat.toENNReal (S.centerOrbitCardinality : ENat)) *
   volume (ball (0 : EuclideanSpace ℝ (Fin d)) (S.separation / 2)) /
@@ -49515,7 +49515,7 @@ end Periodic_Density_Formula
 
 section Empty_Centers
 
-theorem PeriodicSpherePacking.packing_density_zero_of_empty_centers (S : PeriodicSpherePacking d)
+lemma PeriodicSpherePacking.packing_density_zero_of_empty_centers (S : PeriodicSpherePacking d)
     (hd : 0 < d) [instEmpty : IsEmpty S.centers] : S.upperPackingDensity = 0 := by
   rw [S.density_eq_numReps_mul_volume_ball_div_covolume hd]
   let b := S.canonicalPackingLatticeBasis
@@ -50398,7 +50398,7 @@ lemma cancel_common_denominator_in_product_ratio {a b c : ℝ≥0∞} (hb0 : b �
     _ = a / c := by
       simp [div_eq_mul_inv, ENNReal.mul_inv_cancel hb0 hb]
 
-theorem exists_periodic_unit_packing_above_density_threshold (hd : 0 < d)
+lemma exists_periodic_unit_packing_above_density_threshold (hd : 0 < d)
     (S : SpherePacking d) (hSsep : S.separation = 1) {b : ℝ≥0∞} (hb : b < S.upperPackingDensity) :
     ∃ P : PeriodicSpherePacking d, P.separation = 1 ∧ b < P.upperPackingDensity := by
   classical
@@ -50598,7 +50598,7 @@ theorem exists_periodic_unit_packing_above_density_threshold (hd : 0 < d)
 
 end SpherePacking
 
-theorem periodic_packing_supremum_eq_unrestricted (hd : 0 < d) :
+lemma periodic_packing_supremum_eq_unrestricted (hd : 0 < d) :
     PeriodicSpherePackingConstant d = SpherePackingConstant d := by
   rw [periodic_packing_supremum_eq_unit_separation (d := d),
     SpherePacking.packing_supremum_eq_unit_separation (d := d)]
@@ -50637,7 +50637,7 @@ def coordinateTorusProjection (n : ℕ) : (Fin n → ℝ) → UnitAddTorus (Fin 
   fun x i => (x i : UnitAddCircle)
 
 @[continuity]
-theorem continuous_coordinate_torus_projection {n : ℕ} : Continuous (coordinateTorusProjection n) := by
+lemma continuous_coordinate_torus_projection {n : ℕ} : Continuous (coordinateTorusProjection n) := by
   simpa [coordinateTorusProjection, UnitAddCircle] using!
     (continuous_pi fun i => (AddCircle.continuous_mk' (p := (1 : ℝ))).comp (continuous_apply i))
 
@@ -50648,7 +50648,7 @@ def successorCoordinateHomeomorphism (α : Type*) [TopologicalSpace α] (n : ℕ
     simpa [Fin.consEquiv] using! Continuous.finCons (by fun_prop) (by fun_prop)
   continuous_invFun := by fun_prop
 
-theorem coordinate_torus_projection_is_open_quotient (n : ℕ) : IsOpenQuotientMap (coordinateTorusProjection n) := by
+lemma coordinate_torus_projection_is_open_quotient (n : ℕ) : IsOpenQuotientMap (coordinateTorusProjection n) := by
   induction n with
   | zero =>
       have h : coordinateTorusProjection 0 =
@@ -50682,7 +50682,7 @@ theorem coordinate_torus_projection_is_open_quotient (n : ℕ) : IsOpenQuotientM
       exact IsOpenQuotientMap.comp hhomeoY
         (IsOpenQuotientMap.comp hprod heX)
 
-theorem coordinate_torus_projection_measure_preserving (n : ℕ) (t : ℝ) :
+lemma coordinate_torus_projection_measure_preserving (n : ℕ) (t : ℝ) :
     MeasurePreserving (coordinateTorusProjection n)
       (Measure.pi fun _ : Fin n => (volume : Measure ℝ).restrict (Set.Ioc t (t + 1)))
       (volume : Measure (UnitAddTorus (Fin n))) := by
@@ -50692,13 +50692,13 @@ theorem coordinate_torus_projection_measure_preserving (n : ℕ) (t : ℝ) :
       (ν := fun _ : Fin n => (volume : Measure UnitAddCircle))
       (hf := fun _ => UnitAddCircle.measurePreserving_mk t))
 
-theorem restricted_product_volume_eq_product_restriction (n : ℕ) (t : ℝ) :
+lemma restricted_product_volume_eq_product_restriction (n : ℕ) (t : ℝ) :
     (volume : Measure (Fin n → ℝ)).restrict (Set.univ.pi fun _ : Fin n => Set.Ioc t (t + 1)) =
       Measure.pi fun _ : Fin n => (volume : Measure ℝ).restrict (Set.Ioc t (t + 1)) := by
   simpa using! (Measure.restrict_pi_pi
     (μ := fun _ : Fin n => (volume : Measure ℝ)) (s := fun _ : Fin n => Set.Ioc t (t + 1)))
 
-theorem fourier_character_coordinate_projection (n : ℕ) (k : Fin n → ℤ) (x : Fin n → ℝ) :
+lemma fourier_character_coordinate_projection (n : ℕ) (k : Fin n → ℤ) (x : Fin n → ℝ) :
     UnitAddTorus.mFourier k (coordinateTorusProjection n x) =
       Complex.exp
         (2 * π * Complex.I *
@@ -50708,14 +50708,14 @@ theorem fourier_character_coordinate_projection (n : ℕ) (k : Fin n → ℤ) (x
     (Complex.exp_sum (s := (Finset.univ : Finset (Fin n)))
         (f := fun i : Fin n => 2 * π * Complex.I * ((k i : ℝ) * x i))).symm
 
-theorem fourier_character_coordinate_projection_ofLp (n : ℕ) (k : Fin n → ℤ) (x : EuclideanSpace ℝ (Fin n)) :
+lemma fourier_character_coordinate_projection_ofLp (n : ℕ) (k : Fin n → ℤ) (x : EuclideanSpace ℝ (Fin n)) :
     UnitAddTorus.mFourier k (coordinateTorusProjection n (WithLp.ofLp x)) =
       Complex.exp
         (2 * π * Complex.I *
           (∑ i : Fin n, (k i : ℝ) * x i)) := by
   simpa using! (fourier_character_coordinate_projection (n := n) (k := k) (x := WithLp.ofLp x))
 
-theorem torus_integral_eq_coordinate_cell_integral (n : ℕ) (t : ℝ) (g : UnitAddTorus (Fin n) → ℂ)
+lemma torus_integral_eq_coordinate_cell_integral (n : ℕ) (t : ℝ) (g : UnitAddTorus (Fin n) → ℂ)
     (hg : AEStronglyMeasurable g (volume : Measure (UnitAddTorus (Fin n)))) :
     (∫ y : UnitAddTorus (Fin n), g y) =
       ∫ x, g (coordinateTorusProjection n x) ∂(volume : Measure (Fin n → ℝ)).restrict
@@ -50744,7 +50744,7 @@ open MeasureTheory
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
   [MeasurableSpace V] [BorelSpace V]
 
-theorem fourier_precompose_linear_equivalence (A : V ≃ₗ[ℝ] V) (f : V → ℂ) (w : V) :
+lemma fourier_precompose_linear_equivalence (A : V ≃ₗ[ℝ] V) (f : V → ℂ) (w : V) :
     𝓕 (fun x ↦ f (A x)) w =
       (abs (LinearMap.det (A : V →ₗ[ℝ] V)))⁻¹ •
         𝓕 f (((A.symm : V ≃ₗ[ℝ] V).toLinearMap).adjoint w) := by
@@ -50973,23 +50973,23 @@ def euclideanTorusProjection : (EuclideanSpace ℝ (Fin d)) → UnitAddTorus (Fi
   fun x => UnitAddTorus.coordinateTorusProjection d ((WithLp.ofLp : (EuclideanSpace ℝ (Fin d)) → (Fin d → ℝ)) x)
 
 @[continuity]
-theorem continuous_euclidean_torus_projection : Continuous (euclideanTorusProjection (d := d)) := by
+lemma continuous_euclidean_torus_projection : Continuous (euclideanTorusProjection (d := d)) := by
   simpa [euclideanTorusProjection] using! (UnitAddTorus.continuous_coordinate_torus_projection (n := d)).comp
     (PiLp.continuous_ofLp (p := (2 : ENNReal)) (β := fun _ : Fin d => ℝ))
 
-theorem euclidean_torus_projection_is_open_quotient : IsOpenQuotientMap (euclideanTorusProjection (d := d)) := by
+lemma euclidean_torus_projection_is_open_quotient : IsOpenQuotientMap (euclideanTorusProjection (d := d)) := by
   unfold euclideanTorusProjection
   exact IsOpenQuotientMap.comp (UnitAddTorus.coordinate_torus_projection_is_open_quotient d)
     (PiLp.homeomorph (p := (2 : ENNReal)) (β := fun _ : Fin d => ℝ)).isOpenQuotientMap
 
 @[simp]
-theorem torus_projection_add_integer_vector (x : (EuclideanSpace ℝ (Fin d))) (n : Fin d → ℤ) :
+lemma torus_projection_add_integer_vector (x : (EuclideanSpace ℝ (Fin d))) (n : Fin d → ℤ) :
     euclideanTorusProjection (d := d) (x + SchwartzMap.PoissonSummation.Standard.embeddedIntegerVector (d := d) n) =
       euclideanTorusProjection (d := d) x := by
   ext i
   simp [euclideanTorusProjection, UnitAddTorus.coordinateTorusProjection]
 
-theorem equal_torus_projections_differ_by_integer_vector {x y : (EuclideanSpace ℝ (Fin d))}
+lemma equal_torus_projections_differ_by_integer_vector {x y : (EuclideanSpace ℝ (Fin d))}
     (h : euclideanTorusProjection (d := d) x = euclideanTorusProjection (d := d) y) :
     ∃ n : Fin d → ℤ, x - y = SchwartzMap.PoissonSummation.Standard.embeddedIntegerVector (d := d) n := by
   have hcoord : ∀ i : Fin d, ∃ n : ℤ, (n : ℝ) = (x i - y i : ℝ) := by
@@ -51004,7 +51004,7 @@ theorem equal_torus_projections_differ_by_integer_vector {x y : (EuclideanSpace 
   ext i
   simp [SchwartzMap.PoissonSummation.Standard.embeddedIntegerVector, hn i]
 
-theorem half_open_cell_is_fundamental_region :
+lemma half_open_cell_is_fundamental_region :
     MeasureTheory.IsAddFundamentalDomain (SchwartzMap.referenceIntegerLattice d)
       (SchwartzMap.PoissonSummation.Standard.halfOpenUnitCell (d := d)) (volume : Measure (EuclideanSpace ℝ (Fin d))) := by
   refine MeasureTheory.IsAddFundamentalDomain.mk'
@@ -51028,7 +51028,7 @@ theorem half_open_cell_is_fundamental_region :
     apply Subtype.ext
     simp [hn', this]
 
-theorem torus_integral_eq_euclidean_cell_integral (g : UnitAddTorus (Fin d) → ℂ)
+lemma torus_integral_eq_euclidean_cell_integral (g : UnitAddTorus (Fin d) → ℂ)
     (hg : AEStronglyMeasurable g (volume : Measure (UnitAddTorus (Fin d)))) :
     (∫ y : UnitAddTorus (Fin d), g y) =
       ∫ x, g (euclideanTorusProjection (d := d) x) ∂(volume : Measure (EuclideanSpace ℝ (Fin d))).restrict
@@ -51620,7 +51620,7 @@ lemma summable_fourier_coefficients_torus_periodization :
   refine (Summable.of_norm ?_)
   simpa [fourier_coefficient_torus_periodization (d := d) (f := f)] using! hsum_norm
 
-theorem reference_lattice_poisson_formula (v : (EuclideanSpace ℝ (Fin d))) :
+lemma reference_lattice_poisson_formula (v : (EuclideanSpace ℝ (Fin d))) :
     (∑' ℓ : (SchwartzMap.referenceIntegerLattice d), f (v + (ℓ : (EuclideanSpace ℝ (Fin d))))) =
       ∑' n : Fin d → ℤ,
         (𝓕 (fun x : (EuclideanSpace ℝ (Fin d)) => f x) (SchwartzMap.PoissonSummation.Standard.embeddedIntegerVector (d := d) n)) *
@@ -51873,7 +51873,7 @@ lemma integer_vector_polar_equiv_coe (n : Fin d → ℤ) :
       (dualCoordinateTransport (d := d) L) (SchwartzMap.PoissonSummation.Standard.embeddedIntegerVector (d := d) n) := by
   simp [integerVectorPolarLatticeEquiv, PoissonSummation.Standard.integerVectorLatticeEquiv]
 
-theorem integer_lattice_poisson_identity (f : SchwartzMap (EuclideanSpace ℝ (Fin d)) ℂ) (v : (EuclideanSpace ℝ (Fin d))) :
+lemma integer_lattice_poisson_identity (f : SchwartzMap (EuclideanSpace ℝ (Fin d)) ℂ) (v : (EuclideanSpace ℝ (Fin d))) :
     (∑' ℓ : L, f (v + (ℓ : (EuclideanSpace ℝ (Fin d))))) =
       (1 / ZLattice.covolume L) *
         ∑' m : polarIntegerLattice (d := d) L,
@@ -51972,7 +51972,7 @@ namespace SchwartzMap
 
 omit [Fact (0 < d)] in
 
-theorem latticePoissonSummationFormula (f : SchwartzMap (EuclideanSpace ℝ (Fin d)) ℂ)
+lemma latticePoissonSummationFormula (f : SchwartzMap (EuclideanSpace ℝ (Fin d)) ℂ)
   (v : EuclideanSpace ℝ (Fin d)) : ∑' ℓ : Λ, f (v + ℓ) = (1 / ZLattice.covolume Λ) *
   ∑' m : polarIntegerLattice (d := d) Λ, (𝓕 ⇑f m) *
     Complex.exp (2 * Real.pi * Complex.I * ⟪v, m⟫_[ℝ]) := by
@@ -51986,7 +51986,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E
   (f : 𝓢(V, E))
 
 @[simp]
-theorem schwartz_fourier_inverse_identity : 𝓕⁻ (𝓕 ⇑f) = f := by
+lemma schwartz_fourier_inverse_identity : 𝓕⁻ (𝓕 ⇑f) = f := by
   simpa only [SchwartzMap.fourierInv_coe, SchwartzMap.fourier_coe] using
     congrArg (fun g : 𝓢(V, E) => (g : V → E))
       (show (𝓕⁻ (𝓕 f : 𝓢(V, E)) : 𝓢(V, E)) = f from
@@ -51999,7 +51999,7 @@ section Positivity_on_Nhd
 
 variable {E : Type*} [TopologicalSpace E]
 
-theorem Continuous.positive_iff_positive_on_neighborhood {f : E → ℝ} (hf₁ : Continuous f) (x : E) :
+lemma Continuous.positive_iff_positive_on_neighborhood {f : E → ℝ} (hf₁ : Continuous f) (x : E) :
   0 < f x ↔ ∃ U ∈ (nhds x), ∀ y ∈ U, 0 < f y := by
   constructor
   · intro hx
@@ -52025,7 +52025,7 @@ variable [(volume : Measure E).IsAddLeftInvariant] [(volume : Measure E).Regular
 
 instance : (volume : Measure E).IsOpenPosMeasure := isOpenPosMeasure_of_addLeftInvariant_of_regular
 
-theorem Continuous.nonnegative_integral_vanishes_iff_function_vanishes {f : E → ℝ} (hf₁ : Continuous f)
+lemma Continuous.nonnegative_integral_vanishes_iff_function_vanishes {f : E → ℝ} (hf₁ : Continuous f)
   (hf₂ : Integrable f) (hnn : ∀ x, 0 ≤ f x) : ∫ (v : E), f v = 0 ↔ f = 0 := by
   constructor
   · intro hzero
@@ -52050,7 +52050,7 @@ instance : DecidableEq (EuclideanSpace ℝ (Fin d)) := inferInstance
 
 omit [Fact (0 < d)]
 
-theorem Complex.negative_imaginary_exponential_eq_conjugate (x m : EuclideanSpace ℝ (Fin d)) :
+lemma Complex.negative_imaginary_exponential_eq_conjugate (x m : EuclideanSpace ℝ (Fin d)) :
   Complex.exp (-(2 * (Real.pi : ℂ) * Complex.I * (⟪x, m⟫_[ℝ] : ℂ))) =
     (starRingEnd ℂ) (Complex.exp (2 * (Real.pi : ℂ) * Complex.I * (⟪x, m⟫_[ℝ] : ℂ))) :=
   calc
@@ -52460,11 +52460,11 @@ section ZLattice
 variable (Λ : Submodule ℤ (EuclideanSpace ℝ (Fin d))) [DiscreteTopology Λ]
 variable (f : 𝓢(EuclideanSpace ℝ (Fin d), ℂ)) (a : EuclideanSpace ℝ (Fin d))
 
-theorem summable_lattice_shift_values :
+lemma summable_lattice_shift_values :
     Summable (fun ℓ : Λ => f (a + (ℓ : EuclideanSpace ℝ (Fin d)))) :=
   Summable.of_norm (summable_norm_on_translated_integral_lattice (Λ := Λ) f a)
 
-theorem summable_lattice_shift_real_parts :
+lemma summable_lattice_shift_real_parts :
     Summable (fun ℓ : Λ => (f (a + (ℓ : EuclideanSpace ℝ (Fin d)))).re) :=
   Complex.reCLM.summable (summable_lattice_shift_values (Λ := Λ) f a)
 
@@ -52784,7 +52784,7 @@ variable (hCohnElkies₂ : ∀ x : EuclideanSpace ℝ (Fin d), (𝓕 f x).re ≥
 
 section Complex_Function_Helpers
 
-theorem imaginary_part_vanishes_of_real_valued (g : EuclideanSpace ℝ (Fin d) → ℂ) :
+lemma imaginary_part_vanishes_of_real_valued (g : EuclideanSpace ℝ (Fin d) → ℂ) :
   (∀ x : EuclideanSpace ℝ (Fin d), ↑(g x).re = (g x)) →
   (∀ x : EuclideanSpace ℝ (Fin d), (g x).im = 0) := by
   intro hIsReal x
@@ -52792,24 +52792,24 @@ theorem imaginary_part_vanishes_of_real_valued (g : EuclideanSpace ℝ (Fin d) �
 
 include hRealFourier in
 @[simp]
-theorem fourier_imaginary_component_vanishes : ∀ x : EuclideanSpace ℝ (Fin d), (𝓕 f x).im = 0 :=
+lemma fourier_imaginary_component_vanishes : ∀ x : EuclideanSpace ℝ (Fin d), (𝓕 f x).im = 0 :=
   imaginary_part_vanishes_of_real_valued (𝓕 ⇑f) hRealFourier
 
 end Complex_Function_Helpers
 
 section Nonnegativity
 
-theorem fourier_transform_is_integrable : MeasureTheory.Integrable (𝓕 ⇑f) := ((FourierTransform.fourierCLE ℝ (SchwartzMap (EuclideanSpace ℝ (Fin d)) ℂ)) f).integrable
+lemma fourier_transform_is_integrable : MeasureTheory.Integrable (𝓕 ⇑f) := ((FourierTransform.fourierCLE ℝ (SchwartzMap (EuclideanSpace ℝ (Fin d)) ℂ)) f).integrable
 
 include hne_zero in
-theorem fourier_transform_nonzero : 𝓕 f ≠ 0 := by
+lemma fourier_transform_nonzero : 𝓕 f ≠ 0 := by
   intro hFourierZero
   apply hne_zero
   rw [← ContinuousLinearEquiv.map_eq_zero_iff (FourierTransform.fourierCLE ℝ _)]
   exact hFourierZero
 
 include hCohnElkies₂ in
-theorem test_function_nonnegative_at_origin : 0 ≤ (f 0).re := by
+lemma test_function_nonnegative_at_origin : 0 ≤ (f 0).re := by
   rw [← f.schwartz_fourier_inverse_identity, fourierInv_eq]
   simp only [inner_zero_right, AddChar.map_zero_eq_one, one_smul]
   rw [← RCLike.re_eq_complex_re, ← integral_re fourier_transform_is_integrable]
@@ -52818,7 +52818,7 @@ theorem test_function_nonnegative_at_origin : 0 ≤ (f 0).re := by
   simpa [RCLike.re_eq_complex_re] using! hCohnElkies₂ v
 
 include hReal hRealFourier hCohnElkies₂ hne_zero in
-theorem test_function_positive_at_origin : 0 < (f 0).re := by
+lemma test_function_positive_at_origin : 0 < (f 0).re := by
   have h0 : 0 ≤ (f 0).re := test_function_nonnegative_at_origin (f := f) hCohnElkies₂
   refine lt_of_le_of_ne h0 ?_
   intro hf0re
@@ -52864,7 +52864,7 @@ variable (hD_unique_covers : ∀ x, ∃! g : P.lattice, g +ᵥ x ∈ D) (hD_meas
 
 include hP hCohnElkies₁ in
 open Classical in
-theorem packing_bound_auxiliary_estimate (hd : 0 < d)
+lemma packing_bound_auxiliary_estimate (hd : 0 < d)
     (hD_unique_covers : ∀ x, ∃! g : P.lattice, g +ᵥ x ∈ D) :
     ∑' x : P.centers, ∑' y : ↑(P.centers ∩ D), (f (x - (y : EuclideanSpace ℝ (Fin d)))).re
       ≤ ↑(P.boundedCenterRepresentativeCount hd hD_isBounded) * (f 0).re := by
@@ -52905,7 +52905,7 @@ lemma packing_bound_complete_estimate_refined (hd : 0 < d) :
 
 include d f hP hne_zero hReal hRealFourier hCohnElkies₁ hCohnElkies₂ hD_unique_covers in
 omit hne_zero hReal hCohnElkies₂ in
-theorem packing_bound_geometric_estimate (hd : 0 < d) :
+lemma packing_bound_geometric_estimate (hd : 0 < d) :
     ↑(P.boundedCenterRepresentativeCount hd hD_isBounded) * (f 0).re ≥
       (1 / ZLattice.covolume P.lattice volume) *
         ∑' m : SchwartzMap.polarIntegerLattice (d := d) P.lattice,
@@ -53067,7 +53067,7 @@ theorem packing_bound_geometric_estimate (hd : 0 < d) :
 
 include d f hP hne_zero hReal hRealFourier hCohnElkies₁ hCohnElkies₂ in
 omit hne_zero hReal hRealFourier hCohnElkies₁ hP [Nonempty ↑P.centers] in
-theorem packing_bound_spectral_estimate (hd : 0 < d) :
+lemma packing_bound_spectral_estimate (hd : 0 < d) :
     (1 / ZLattice.covolume P.lattice volume) *
         ∑' m : SchwartzMap.polarIntegerLattice (d := d) P.lattice,
           (𝓕 ⇑f m).re *
@@ -53157,7 +53157,7 @@ theorem packing_bound_spectral_estimate (hd : 0 < d) :
 
 include d f hP hne_zero hReal hRealFourier hCohnElkies₁ hCohnElkies₂ hD_unique_covers in
 omit hne_zero hReal in
-theorem packing_bound_complete_estimate (hd : 0 < d) :
+lemma packing_bound_complete_estimate (hd : 0 < d) :
     ↑(P.boundedCenterRepresentativeCount hd hD_isBounded) * (f 0).re ≥ ↑(P.boundedCenterRepresentativeCount hd hD_isBounded) ^ 2 *
       (𝓕 f 0).re / ZLattice.covolume P.lattice volume := by
   exact
@@ -53176,7 +53176,7 @@ variable (hD_unique_covers : ∀ x, ∃! g : P.lattice, g +ᵥ x ∈ D)
 include d f hne_zero hReal hRealFourier hCohnElkies₁ hCohnElkies₂ P hP D hD_isBounded
   hD_unique_covers
 
-theorem LinearProgrammingBound' (hd : 0 < d) :
+lemma LinearProgrammingBound' (hd : 0 < d) :
   P.upperPackingDensity ≤ (f 0).re.toNNReal / (𝓕 f 0).re.toNNReal *
   volume (Metric.ball (0 : EuclideanSpace ℝ (Fin d)) (1 / 2)) := by
   classical
@@ -53258,7 +53258,7 @@ section Main_Theorem
 
 include d f hne_zero hReal hRealFourier hCohnElkies₁ hCohnElkies₂
 
-theorem LinearProgrammingBound (hd : 0 < d) : SpherePackingConstant d ≤
+lemma LinearProgrammingBound (hd : 0 < d) : SpherePackingConstant d ≤
   (f 0).re.toNNReal / (𝓕 ⇑f 0).re.toNNReal *
     volume (Metric.ball (0 : EuclideanSpace ℝ (Fin d)) (1 / 2))
   := by
@@ -53294,7 +53294,7 @@ open scoped FourierTransform SchwartzMap Topology
 
 namespace PackingBounds.RadialMain
 
-theorem exact_limit :
+lemma exact_limit :
     Tendsto
       (fun d : ℕ =>
         CohnElkies.linearProgram d ^ ((d : ℝ)⁻¹))
@@ -53304,7 +53304,7 @@ theorem exact_limit :
     CohnElkies.criticalPackingBase] using!
     CohnElkies.sharpPackingRootAsymptotic
 
-theorem exact_binary_exponent :
+lemma exact_binary_exponent :
     Tendsto
       (fun d : ℕ =>
         Real.logb 2 (CohnElkies.linearProgram d) / (d : ℝ))
@@ -53330,7 +53330,7 @@ open scoped ENNReal FourierTransform SchwartzMap Topology
 
 namespace PackingBounds.PackingBridge
 
-theorem volume_half_ball {d : ℕ} (hd : 0 < d) :
+lemma volume_half_ball {d : ℕ} (hd : 0 < d) :
     volume (ball (0 : CohnElkies.Euclidean d) (1 / 2 : ℝ)) =
       ENNReal.ofReal (CohnElkies.unitBallVolume d / (2 : ℝ) ^ d) := by
   letI : Nonempty (Fin d) := Fin.pos_iff_nonempty.mp hd
@@ -53341,7 +53341,7 @@ theorem volume_half_ball {d : ℕ} (hd : 0 < d) :
   simp [CohnElkies.unitBallVolume]
   ring
 
-theorem sphere_packing_le_admissible
+lemma sphere_packing_le_admissible
     {d : ℕ} (hd : 0 < d) (f : CohnElkies.Admissible d) :
     SpherePackingConstant d ≤
       ENNReal.ofReal
@@ -53392,7 +53392,7 @@ theorem sphere_packing_le_admissible
           rw [ENNReal.ofReal_mul (CohnElkies.geometricFactor_pos d).le]
           exact mul_comm _ _
 
-theorem sphere_packing_le_radial_linear_program
+lemma sphere_packing_le_radial_linear_program
     {d : ℕ} (hd : 0 < d) :
     (SpherePackingConstant d).toReal ≤ CohnElkies.linearProgram d := by
   have hfactor := CohnElkies.geometricFactor_pos d
@@ -53412,7 +53412,7 @@ theorem sphere_packing_le_radial_linear_program
   unfold CohnElkies.linearProgram
   simpa [mul_comm] using! (div_le_iff₀ hfactor).1 hbound
 
-theorem sphere_packing_le_radial_linear_program_ennreal
+lemma sphere_packing_le_radial_linear_program_ennreal
     {d : ℕ} (hd : 0 < d) :
     SpherePackingConstant d ≤ ENNReal.ofReal (CohnElkies.linearProgram d) := by
   have hfinite : SpherePackingConstant d ≠ ⊤ := by
@@ -53486,12 +53486,12 @@ def radialToFull {d : ℕ}
   fourier_zero_pos := f.fourier_zero_pos
   outside_nonpos := f.outside_nonpos
 
-theorem fullQuotient_radialToFull {d : ℕ}
+lemma fullQuotient_radialToFull {d : ℕ}
     (f : CohnElkies.Admissible d) :
     fullQuotient (radialToFull f) = CohnElkies.quotient f := by
   rfl
 
-theorem fullQuotientSet_eq_radial_iff (d : ℕ) :
+lemma fullQuotientSet_eq_radial_iff (d : ℕ) :
     fullQuotientSet d = CohnElkies.quotientSet d ↔
       ∀ f : FullAdmissible d,
         ∃ g : CohnElkies.Admissible d,
@@ -53556,7 +53556,7 @@ namespace SpherePacking.Alternative
 
 abbrev OrthogonalGroup (d : ℕ) := Matrix.orthogonalGroup (Fin d) ℝ
 
-theorem orthogonal_entry_abs_le_one {d : ℕ}
+lemma orthogonal_entry_abs_le_one {d : ℕ}
     {A : Matrix (Fin d) (Fin d) ℝ}
     (hA : A ∈ Matrix.orthogonalGroup (Fin d) ℝ) (i j : Fin d) :
     |A i j| ≤ (1 : ℝ) := by
@@ -53569,7 +53569,7 @@ theorem orthogonal_entry_abs_le_one {d : ℕ}
       (Finset.mem_univ j)
   exact (abs_le_one_iff_mul_self_le_one).2 (hterm.trans_eq hsum)
 
-theorem orthogonal_isCompact (d : ℕ) :
+lemma orthogonal_isCompact (d : ℕ) :
     IsCompact (Matrix.orthogonalGroup (Fin d) ℝ :
       Set (Matrix (Fin d) (Fin d) ℝ)) := by
   refine ((isCompact_Icc (a := (-1 : ℝ)) (b := (1 : ℝ))).matrix).of_isClosed_subset
@@ -53594,13 +53594,13 @@ instance orthogonalGroupBorelSpace (d : ℕ) :
 def orthogonalAction {d : ℕ} (U : OrthogonalGroup d) (x : Ambient d) : Ambient d :=
   Matrix.toLpLin 2 2 (U : Matrix (Fin d) (Fin d) ℝ) x
 
-@[simp] theorem orthogonalAction_one {d : ℕ} (x : Ambient d) :
+@[simp] lemma orthogonalAction_one {d : ℕ} (x : Ambient d) :
     orthogonalAction (1 : OrthogonalGroup d) x = x := by
   change Matrix.toLpLin 2 2 (1 : Matrix (Fin d) (Fin d) ℝ) x = x
   rw [Matrix.toLpLin_one]
   rfl
 
-@[simp] theorem orthogonalAction_mul {d : ℕ}
+@[simp] lemma orthogonalAction_mul {d : ℕ}
     (U V : OrthogonalGroup d) (x : Ambient d) :
     orthogonalAction (U * V) x = orthogonalAction U (orthogonalAction V x) := by
   change Matrix.toLpLin 2 2
@@ -53610,7 +53610,7 @@ def orthogonalAction {d : ℕ} (U : OrthogonalGroup d) (x : Ambient d) : Ambient
   rw [Matrix.toLpLin_mul_same]
   rfl
 
-@[simp] theorem orthogonalAction_zero {d : ℕ} (U : OrthogonalGroup d) :
+@[simp] lemma orthogonalAction_zero {d : ℕ} (U : OrthogonalGroup d) :
     orthogonalAction U (0 : Ambient d) = 0 := by
   exact map_zero (Matrix.toLpLin 2 2 (U : Matrix (Fin d) (Fin d) ℝ))
 
@@ -53624,23 +53624,23 @@ def orthogonalLinearIsometry {d : ℕ} (U : OrthogonalGroup d) :
     Ambient d ≃ₗᵢ[ℝ] Ambient d :=
   orthogonalIsometryEquiv d U
 
-@[simp] theorem orthogonalLinearIsometry_apply {d : ℕ}
+@[simp] lemma orthogonalLinearIsometry_apply {d : ℕ}
     (U : OrthogonalGroup d) (x : Ambient d) :
     orthogonalLinearIsometry U x = orthogonalAction U x := by
   rfl
 
-theorem orthogonalAction_continuous {d : ℕ} (x : Ambient d) :
+lemma orthogonalAction_continuous {d : ℕ} (x : Ambient d) :
     Continuous (fun U : OrthogonalGroup d => orthogonalAction U x) := by
   change Continuous (fun U : OrthogonalGroup d =>
     WithLp.toLp 2 ((U : Matrix (Fin d) (Fin d) ℝ) *ᵥ WithLp.ofLp x))
   exact (EuclideanSpace.equiv (Fin d) ℝ).symm.continuous.comp
     (continuous_subtype_val.matrix_mulVec continuous_const)
 
-theorem continuous_orthogonalAction_apply {d : ℕ} (x : Ambient d) :
+lemma continuous_orthogonalAction_apply {d : ℕ} (x : Ambient d) :
     Continuous (fun U : OrthogonalGroup d => orthogonalAction U x) :=
   orthogonalAction_continuous x
 
-theorem orthogonalAction_joint_continuous (d : ℕ) :
+lemma orthogonalAction_joint_continuous (d : ℕ) :
     Continuous (fun p : OrthogonalGroup d × Ambient d =>
       orthogonalAction p.1 p.2) := by
   change Continuous (fun p : OrthogonalGroup d × Ambient d =>
@@ -53657,7 +53657,7 @@ def orthogonalMatrixOfIsometry {d : ℕ}
     A.toMatrix_mem_unitaryGroup (EuclideanSpace.basisFun (Fin d) ℝ)
       (EuclideanSpace.basisFun (Fin d) ℝ)⟩
 
-@[simp] theorem orthogonalMatrixOfIsometry_action {d : ℕ}
+@[simp] lemma orthogonalMatrixOfIsometry_action {d : ℕ}
     (A : Ambient d ≃ₗᵢ[ℝ] Ambient d) (x : Ambient d) :
     orthogonalAction (orthogonalMatrixOfIsometry A) x = A x := by
   change (Matrix.toLpLin 2 2)
@@ -53673,7 +53673,7 @@ def orthogonalMatrixOfIsometry {d : ℕ}
   rw [Matrix.toLin_toMatrix]
   rfl
 
-theorem orthogonal_transitive {d : ℕ} {x y : Ambient d}
+lemma orthogonal_transitive {d : ℕ} {x y : Ambient d}
     (hxy : ‖x‖ = ‖y‖) :
     ∃ U : OrthogonalGroup d, orthogonalAction U x = y := by
   let A : Ambient d ≃ₗᵢ[ℝ] Ambient d :=
@@ -53689,7 +53689,7 @@ def orthogonalPositiveCompacts (d : ℕ) :
 def radialOrthogonalHaar (d : ℕ) : Measure (OrthogonalGroup d) :=
   Measure.haarMeasure (orthogonalPositiveCompacts d)
 
-@[simp] theorem radialOrthogonalHaar_univ (d : ℕ) :
+@[simp] lemma radialOrthogonalHaar_univ (d : ℕ) :
     radialOrthogonalHaar d Set.univ = 1 := by
   simpa [radialOrthogonalHaar, orthogonalPositiveCompacts] using
     (Measure.haarMeasure_self (K₀ := orthogonalPositiveCompacts d))
@@ -53729,21 +53729,21 @@ noncomputable def radialIsometrySchwartzOrbit {d : ℕ}
     U.toContinuousLinearEquiv f
 
 @[simp]
-theorem radialIsometrySchwartzOrbit_apply {d : ℕ}
+lemma radialIsometrySchwartzOrbit_apply {d : ℕ}
     (U : Ambient d ≃ₗᵢ[ℝ] Ambient d) (f : Schwartz d)
     (x : Ambient d) :
     radialIsometrySchwartzOrbit U f x = f (U x) := by
   rfl
 
 @[simp]
-theorem radialIsometrySchwartzOrbit_symm_apply {d : ℕ}
+lemma radialIsometrySchwartzOrbit_symm_apply {d : ℕ}
     (U : Ambient d ≃ₗᵢ[ℝ] Ambient d) (f : Schwartz d) :
     radialIsometrySchwartzOrbit U.symm
       (radialIsometrySchwartzOrbit U f) = f := by
   ext x
   simp
 
-theorem radialIsometrySchwartzOrbit_iteratedFDeriv_norm {d : ℕ}
+lemma radialIsometrySchwartzOrbit_iteratedFDeriv_norm {d : ℕ}
     (U : Ambient d ≃ₗᵢ[ℝ] Ambient d) (f : Schwartz d)
     (n : ℕ) (x : Ambient d) :
     ‖iteratedFDeriv ℝ n
@@ -53754,7 +53754,7 @@ theorem radialIsometrySchwartzOrbit_iteratedFDeriv_norm {d : ℕ}
       ((f : Ambient d → ℂ) ∘ (U : Ambient d → Ambient d)) x‖ = _
   exact U.norm_iteratedFDeriv_comp_right (f : Ambient d → ℂ) x n
 
-theorem radialIsometrySchwartzOrbit_iteratedFDeriv {d : ℕ}
+lemma radialIsometrySchwartzOrbit_iteratedFDeriv {d : ℕ}
     (U : Ambient d ≃ₗᵢ[ℝ] Ambient d) (f : Schwartz d)
     (n : ℕ) (x : Ambient d) :
     iteratedFDeriv ℝ n
@@ -53767,7 +53767,7 @@ theorem radialIsometrySchwartzOrbit_iteratedFDeriv {d : ℕ}
   exact U.toContinuousLinearMap.iteratedFDeriv_comp_right
     (f.smooth ⊤) x (mod_cast le_top)
 
-theorem radialIsometrySchwartzOrbit_weighted_iteratedFDeriv_le
+lemma radialIsometrySchwartzOrbit_weighted_iteratedFDeriv_le
     {d : ℕ} (U : Ambient d ≃ₗᵢ[ℝ] Ambient d)
     (f : Schwartz d) (k n : ℕ) (x : Ambient d) :
     ‖x‖ ^ k *
@@ -53778,7 +53778,7 @@ theorem radialIsometrySchwartzOrbit_weighted_iteratedFDeriv_le
     ← U.norm_map x]
   exact SchwartzMap.le_seminorm ℂ k n f (U x)
 
-theorem radialIsometrySchwartzOrbit_seminorm_le {d : ℕ}
+lemma radialIsometrySchwartzOrbit_seminorm_le {d : ℕ}
     (U : Ambient d ≃ₗᵢ[ℝ] Ambient d) (f : Schwartz d)
     (k n : ℕ) :
     SchwartzMap.seminorm ℂ k n (radialIsometrySchwartzOrbit U f) ≤
@@ -53788,7 +53788,7 @@ theorem radialIsometrySchwartzOrbit_seminorm_le {d : ℕ}
     (apply_nonneg (SchwartzMap.seminorm ℂ k n) f)
   exact radialIsometrySchwartzOrbit_weighted_iteratedFDeriv_le U f k n
 
-theorem radialIsometrySchwartzOrbit_seminorm_eq {d : ℕ}
+lemma radialIsometrySchwartzOrbit_seminorm_eq {d : ℕ}
     (U : Ambient d ≃ₗᵢ[ℝ] Ambient d) (f : Schwartz d)
     (k n : ℕ) :
     SchwartzMap.seminorm ℂ k n (radialIsometrySchwartzOrbit U f) =
@@ -53809,7 +53809,7 @@ open scoped ContDiff Real Topology
 
 namespace SpherePacking.Alternative
 
-theorem orthogonalLinearIsometry_continuousLinearMap_continuous
+lemma orthogonalLinearIsometry_continuousLinearMap_continuous
     (d : ℕ) :
     Continuous (fun U : OrthogonalGroup d =>
       (orthogonalLinearIsometry U).toContinuousLinearMap) := by
@@ -53821,7 +53821,7 @@ theorem orthogonalLinearIsometry_continuousLinearMap_continuous
       |>.continuous_of_finiteDimensional
       |>.comp continuous_subtype_val
 
-theorem orthogonalSchwartzIteratedFDeriv_continuous
+lemma orthogonalSchwartzIteratedFDeriv_continuous
     {d : ℕ} (f : Schwartz d) (n : ℕ) (x : Ambient d) :
     Continuous (fun U : OrthogonalGroup d =>
       iteratedFDeriv ℝ n
@@ -53853,7 +53853,7 @@ theorem orthogonalSchwartzIteratedFDeriv_continuous
   simpa [Function.comp_def, radialIsometrySchwartzOrbit_iteratedFDeriv,
     orthogonalLinearIsometry_apply] using h
 
-theorem orthogonalSchwartzInverseIteratedFDeriv_continuous
+lemma orthogonalSchwartzInverseIteratedFDeriv_continuous
     {d : ℕ} (f : Schwartz d) (n : ℕ) (x : Ambient d) :
     Continuous (fun U : OrthogonalGroup d =>
       iteratedFDeriv ℝ n
@@ -53861,7 +53861,7 @@ theorem orthogonalSchwartzInverseIteratedFDeriv_continuous
           (orthogonalLinearIsometry U⁻¹) f : Ambient d → ℂ) x) :=
   (orthogonalSchwartzIteratedFDeriv_continuous f n x).comp continuous_inv
 
-theorem orthogonalSchwartzInverseIteratedFDeriv_aestronglyMeasurable
+lemma orthogonalSchwartzInverseIteratedFDeriv_aestronglyMeasurable
     {d : ℕ} (f : Schwartz d) (n : ℕ) (x : Ambient d) :
     AEStronglyMeasurable
       (fun U : OrthogonalGroup d =>
@@ -53882,7 +53882,7 @@ variable {α : Type*} [MeasurableSpace α]
 variable (μ : Measure α) [IsProbabilityMeasure μ]
 variable {d : ℕ} (g : α → Schwartz d) (C : ℕ → ℕ → ℝ)
 
-theorem radialSchwartzParametricDerivativeIntegrable
+lemma radialSchwartzParametricDerivativeIntegrable
     (hmeas : ∀ (n : ℕ) (x : Ambient d),
       AEStronglyMeasurable
         (fun a : α ↦ iteratedFDeriv ℝ n
@@ -53899,7 +53899,7 @@ theorem radialSchwartzParametricDerivativeIntegrable
     (SchwartzMap.norm_iteratedFDeriv_le_seminorm ℂ (g a) n x).trans
       (hbound a 0 n)
 
-theorem radialSchwartzParametric_hasFDerivAt_iteratedIntegral
+lemma radialSchwartzParametric_hasFDerivAt_iteratedIntegral
     (hmeas : ∀ (n : ℕ) (x : Ambient d),
       AEStronglyMeasurable
         (fun a : α ↦ iteratedFDeriv ℝ n
@@ -53956,7 +53956,7 @@ theorem radialSchwartzParametric_hasFDerivAt_iteratedIntegral
       (ENat.natCast_lt_of_coe_top_le_withTop
         (le_refl _) n)).differentiableAt.hasFDerivAt
 
-theorem radialSchwartzParametric_iteratedFDeriv_integral
+lemma radialSchwartzParametric_iteratedFDeriv_integral
     (hmeas : ∀ (n : ℕ) (x : Ambient d),
       AEStronglyMeasurable
         (fun a : α ↦ iteratedFDeriv ℝ n
@@ -54033,7 +54033,7 @@ def radialSymmetrizationAverage {d : ℕ}
   ∫ U : OrthogonalGroup d,
     f (orthogonalAction U⁻¹ x) ∂radialOrthogonalHaar d
 
-theorem radialSymmetrizationAverage_integrable {d : ℕ}
+lemma radialSymmetrizationAverage_integrable {d : ℕ}
     (f : Schwartz d) (x : Ambient d) :
     Integrable (fun U : OrthogonalGroup d ↦
       f (orthogonalAction U⁻¹ x)) (radialOrthogonalHaar d) := by
@@ -54042,7 +54042,7 @@ theorem radialSymmetrizationAverage_integrable {d : ℕ}
     f.continuous.comp ((continuous_orthogonalAction_apply x).comp continuous_inv)
   simpa using hcontinuous.continuousOn.integrableOn_compact isCompact_univ
 
-theorem radialSymmetrizationAverage_comp_orthogonal {d : ℕ}
+lemma radialSymmetrizationAverage_comp_orthogonal {d : ℕ}
     (f : Schwartz d) (A : OrthogonalGroup d) (x : Ambient d) :
     radialSymmetrizationAverage f (orthogonalAction A x) =
       radialSymmetrizationAverage f x := by
@@ -54066,14 +54066,14 @@ theorem radialSymmetrizationAverage_comp_orthogonal {d : ℕ}
       rw [← orthogonalAction_mul A⁻¹ A x]
       simp
 
-theorem radialSymmetrizationAverage_eq_of_norm_eq {d : ℕ}
+lemma radialSymmetrizationAverage_eq_of_norm_eq {d : ℕ}
     (f : Schwartz d) {x y : Ambient d} (hxy : ‖x‖ = ‖y‖) :
     radialSymmetrizationAverage f x = radialSymmetrizationAverage f y := by
   obtain ⟨A, hA⟩ := orthogonal_transitive hxy
   rw [← hA]
   exact (radialSymmetrizationAverage_comp_orthogonal f A x).symm
 
-@[simp] theorem radialSymmetrizationAverage_zero {d : ℕ}
+@[simp] lemma radialSymmetrizationAverage_zero {d : ℕ}
     (f : Schwartz d) :
     radialSymmetrizationAverage f 0 = f 0 := by
   simp [radialSymmetrizationAverage]
@@ -54089,7 +54089,7 @@ open scoped Topology ContDiff
 
 namespace SpherePacking.Alternative
 
-theorem scalarProbabilityAverage_weighted_iteratedFDeriv_le
+lemma scalarProbabilityAverage_weighted_iteratedFDeriv_le
     {ι : Type*} [MeasurableSpace ι]
     (μ : Measure ι) [IsProbabilityMeasure μ]
     {d : ℕ} (F : ι → Schwartz d) (C : ℕ → ℕ → ℝ)
@@ -54196,7 +54196,7 @@ noncomputable def radialSymmetrization {d : ℕ}
     (radialOrthogonalHaar d) F C hsmooth hderiv hweighted
 
 @[simp]
-theorem radialSymmetrization_apply {d : ℕ}
+lemma radialSymmetrization_apply {d : ℕ}
     (f : Schwartz d) (x : Ambient d) :
     radialSymmetrization f x = radialSymmetrizationAverage f x := by
   rfl
@@ -54219,7 +54219,7 @@ def orthogonalScalarAverage
     (f : Schwartz d) (x : Ambient d) : ℂ :=
   ∫ U : G, f (A U x) ∂μ
 
-theorem orthogonalScalarAverage_im_eq_zero
+lemma orthogonalScalarAverage_im_eq_zero
     {d : ℕ} {G : Type*} [MeasurableSpace G]
     {μ : Measure G}
     (A : G → (Ambient d ≃ₗᵢ[ℝ] Ambient d))
@@ -54236,7 +54236,7 @@ theorem orthogonalScalarAverage_im_eq_zero
       filter_upwards with U
       exact hf (A U x)
 
-theorem orthogonalScalarAverage_re
+lemma orthogonalScalarAverage_re
     {d : ℕ} {G : Type*} [MeasurableSpace G]
     {μ : Measure G}
     (A : G → (Ambient d ≃ₗᵢ[ℝ] Ambient d))
@@ -54247,7 +54247,7 @@ theorem orthogonalScalarAverage_re
   unfold orthogonalScalarAverage
   exact (integral_re hint).symm
 
-theorem orthogonalScalarAverage_nonneg_of_nonneg
+lemma orthogonalScalarAverage_nonneg_of_nonneg
     {d : ℕ} {G : Type*} [MeasurableSpace G]
     {μ : Measure G}
     (A : G → (Ambient d ≃ₗᵢ[ℝ] Ambient d))
@@ -54259,7 +54259,7 @@ theorem orthogonalScalarAverage_nonneg_of_nonneg
   rw [orthogonalScalarAverage_re A f x hint]
   exact integral_nonneg (fun U ↦ hf (A U x))
 
-theorem orthogonalScalarAverage_nonpos_of_norm_ge
+lemma orthogonalScalarAverage_nonpos_of_norm_ge
     {d : ℕ} {G : Type*} [MeasurableSpace G]
     {μ : Measure G}
     (A : G → (Ambient d ≃ₗᵢ[ℝ] Ambient d))
@@ -54274,14 +54274,14 @@ theorem orthogonalScalarAverage_nonpos_of_norm_ge
   apply hf (A U x)
   simpa only [(A U).norm_map] using hx
 
-theorem radialSymmetrizationAverage_eq_orthogonalScalarAverage
+lemma radialSymmetrizationAverage_eq_orthogonalScalarAverage
     {d : ℕ} (f : Schwartz d) (x : Ambient d) :
     radialSymmetrizationAverage f x =
       orthogonalScalarAverage (radialOrthogonalHaar d)
         (fun U : OrthogonalGroup d ↦ orthogonalLinearIsometry U⁻¹) f x := by
   rfl
 
-theorem radialSymmetrizationAverage_im_eq_zero
+lemma radialSymmetrizationAverage_im_eq_zero
     {d : ℕ} {f : Schwartz d} (hf : IsRealValued f)
     (x : Ambient d) :
     (radialSymmetrizationAverage f x).im = 0 := by
@@ -54290,7 +54290,7 @@ theorem radialSymmetrizationAverage_im_eq_zero
     (fun U : OrthogonalGroup d ↦ orthogonalLinearIsometry U⁻¹)
     hf x (radialSymmetrizationAverage_integrable f x)
 
-theorem radialSymmetrizationAverage_nonneg_of_nonneg
+lemma radialSymmetrizationAverage_nonneg_of_nonneg
     {d : ℕ} {f : Schwartz d}
     (hf : ∀ y : Ambient d, 0 ≤ (f y).re)
     (x : Ambient d) :
@@ -54300,7 +54300,7 @@ theorem radialSymmetrizationAverage_nonneg_of_nonneg
     (fun U : OrthogonalGroup d ↦ orthogonalLinearIsometry U⁻¹)
     hf x (radialSymmetrizationAverage_integrable f x)
 
-theorem radialSymmetrizationAverage_nonpos_of_norm_ge
+lemma radialSymmetrizationAverage_nonpos_of_norm_ge
     {d : ℕ} {f : Schwartz d} {R : ℝ}
     (hf : ∀ y : Ambient d, R ≤ ‖y‖ → (f y).re ≤ 0)
     {x : Ambient d} (hx : R ≤ ‖x‖) :
@@ -54310,7 +54310,7 @@ theorem radialSymmetrizationAverage_nonpos_of_norm_ge
     (fun U : OrthogonalGroup d ↦ orthogonalLinearIsometry U⁻¹)
     hf hx (radialSymmetrizationAverage_integrable f x)
 
-theorem radialSymmetrizationAverage_nonpos_of_one_le_norm
+lemma radialSymmetrizationAverage_nonpos_of_one_le_norm
     {d : ℕ} {f : Schwartz d}
     (hf : ∀ y : Ambient d, 1 ≤ ‖y‖ → (f y).re ≤ 0)
     {x : Ambient d} (hx : 1 ≤ ‖x‖) :
@@ -54328,11 +54328,11 @@ open scoped FourierTransform Real Topology
 
 namespace SpherePacking.Alternative
 
-theorem IsRadial.neg_apply {d : ℕ} {f : Schwartz d}
+lemma IsRadial.neg_apply {d : ℕ} {f : Schwartz d}
     (hf : IsRadial f) (x : Ambient d) : f (-x) = f x := by
   exact hf (-x) x (norm_neg x)
 
-theorem IsRealValued.fourier_conj {d : ℕ} {f : Schwartz d}
+lemma IsRealValued.fourier_conj {d : ℕ} {f : Schwartz d}
     (hf : IsRealValued f) (x : Ambient d) :
     (starRingEnd ℂ) ((𝓕 f : Schwartz d) x) =
       (𝓕 f : Schwartz d) (-x) := by
@@ -54345,7 +54345,7 @@ theorem IsRealValued.fourier_conj {d : ℕ} {f : Schwartz d}
     Complex.conj_eq_iff_im.mpr (hf y)
   simp [smul_eq_mul, ← Complex.exp_conj, hy, real_inner_comm, map_ofNat]
 
-theorem IsRadial.fourier_realValued {d : ℕ} {f : Schwartz d}
+lemma IsRadial.fourier_realValued {d : ℕ} {f : Schwartz d}
     (hradial : IsRadial f) (hreal : IsRealValued f) :
     IsRealValued (𝓕 f : Schwartz d) := by
   intro x
@@ -54386,12 +54386,12 @@ def radialFourierCharacter {d : ℕ}
   Complex.exp
     (((-2 * Real.pi * @inner ℝ _ _ x ξ : ℝ) : ℂ) * Complex.I)
 
-theorem radialFourierCharacter_continuous {d : ℕ} (ξ : Ambient d) :
+lemma radialFourierCharacter_continuous {d : ℕ} (ξ : Ambient d) :
     Continuous (radialFourierCharacter ξ) := by
   unfold radialFourierCharacter
   fun_prop
 
-theorem radialFourierCharacter_norm {d : ℕ}
+lemma radialFourierCharacter_norm {d : ℕ}
     (ξ x : Ambient d) :
     ‖radialFourierCharacter ξ x‖ = 1 := by
   unfold radialFourierCharacter
@@ -54411,7 +54411,7 @@ def radialFourierOrbitKernel
     (p : G × Ambient d) : ℂ :=
   radialFourierCharacter ξ p.2 * f (A p.1 p.2)
 
-theorem radialFourier_orthogonalOrbit_integrable
+lemma radialFourier_orthogonalOrbit_integrable
     {d : ℕ} (f : Schwartz d)
     (A : Ambient d ≃ₗᵢ[ℝ] Ambient d) :
     Integrable (fun x : Ambient d ↦ f (A x)) := by
@@ -54419,7 +54419,7 @@ theorem radialFourier_orthogonalOrbit_integrable
   exact (A.measurePreserving.integrable_comp_emb
     A.toHomeomorph.measurableEmbedding).2 f.integrable
 
-theorem radialFourier_orthogonalCharacterOrbit_integrable
+lemma radialFourier_orthogonalCharacterOrbit_integrable
     {d : ℕ} (f : Schwartz d) (ξ : Ambient d)
     (A : Ambient d ≃ₗᵢ[ℝ] Ambient d) :
     Integrable
@@ -54431,7 +54431,7 @@ theorem radialFourier_orthogonalCharacterOrbit_integrable
   filter_upwards [] with x
   rw [radialFourierCharacter_norm]
 
-theorem radialFourier_orthogonalCharacterOrbit_integral_norm
+lemma radialFourier_orthogonalCharacterOrbit_integral_norm
     {d : ℕ} (f : Schwartz d) (ξ : Ambient d)
     (A : Ambient d ≃ₗᵢ[ℝ] Ambient d) :
     (∫ x : Ambient d,
@@ -54449,7 +54449,7 @@ theorem radialFourier_orthogonalCharacterOrbit_integral_norm
         A.toHomeomorph.measurableEmbedding
         (fun x : Ambient d ↦ ‖f x‖)
 
-theorem radialFourier_orthogonalCharacterOrbit_integral
+lemma radialFourier_orthogonalCharacterOrbit_integral
     {d : ℕ} (f : Schwartz d) (ξ : Ambient d)
     (A : Ambient d ≃ₗᵢ[ℝ] Ambient d) :
     (∫ x : Ambient d,
@@ -54461,7 +54461,7 @@ theorem radialFourier_orthogonalCharacterOrbit_integral
   rw [Real.fourier_eq']
   rfl
 
-theorem radialFourierOrbitKernel_integrable
+lemma radialFourierOrbitKernel_integrable
     {d : ℕ} {G : Type*} [MeasurableSpace G]
     (μ : Measure G) [IsFiniteMeasure μ]
     (A : G → (Ambient d ≃ₗᵢ[ℝ] Ambient d))
@@ -54497,7 +54497,7 @@ theorem radialFourierOrbitKernel_integrable
     rw [hconstant]
     exact integrable_const _
 
-theorem radialFourierOrbitAverage_fourier
+lemma radialFourierOrbitAverage_fourier
     {d : ℕ} {G : Type*} [MeasurableSpace G]
     (μ : Measure G) [IsFiniteMeasure μ]
     (A : G → (Ambient d ≃ₗᵢ[ℝ] Ambient d))
@@ -54537,7 +54537,7 @@ theorem radialFourierOrbitAverage_fourier
       exact radialFourier_orthogonalCharacterOrbit_integral
         f ξ (A g)
 
-theorem radialOrthogonalHaarOrbit_measurable
+lemma radialOrthogonalHaarOrbit_measurable
     {d : ℕ} (f : Schwartz d) :
     Measurable
       (fun p : OrthogonalGroup d × Ambient d ↦
@@ -54572,7 +54572,7 @@ theorem radialOrthogonalHaarOrbit_measurable
   rw [← heq]
   exact hcomposed
 
-theorem radialOrthogonalHaar_radialFourierOrbitAverage_eq
+lemma radialOrthogonalHaar_radialFourierOrbitAverage_eq
     {d : ℕ} (f : Schwartz d) :
     radialFourierOrbitAverage
         (radialOrthogonalHaar d)
@@ -54586,7 +54586,7 @@ theorem radialOrthogonalHaar_radialFourierOrbitAverage_eq
   simp only [radialFourierOrbitAverage,
     orthogonalLinearIsometry_apply]
 
-theorem radialOrthogonalHaar_fourier_average
+lemma radialOrthogonalHaar_fourier_average
     {d : ℕ} (f : Schwartz d) (ξ : Ambient d) :
     (𝓕 (fun x : Ambient d ↦
       ∫ U : OrthogonalGroup d,
@@ -54602,7 +54602,7 @@ theorem radialOrthogonalHaar_fourier_average
   rw [radialOrthogonalHaar_radialFourierOrbitAverage_eq] at h
   simpa only [orthogonalLinearIsometry_apply] using h
 
-theorem fourier_radialSymmetrizationAverage
+lemma fourier_radialSymmetrizationAverage
     {d : ℕ} (f : Schwartz d) (ξ : Ambient d) :
     (𝓕 (radialSymmetrizationAverage f) : Ambient d → ℂ) ξ =
       radialSymmetrizationAverage (𝓕 f : Schwartz d) ξ := by
@@ -54626,7 +54626,7 @@ namespace CohnElkies
 
 open Real
 
-theorem manuscript_pi_gt_d40 :
+lemma manuscript_pi_gt_d40 :
     (3.1415926535897932384626433832795028841971 : ℝ) < Real.pi := by
   pi_lower_bound [
     735361475704189444449261582374705033264205603/519979086093778969111063874274015566558335798,
@@ -54699,7 +54699,7 @@ theorem manuscript_pi_gt_d40 :
     2 - 6373/225000547410727619635026282941701420922445946
   ]
 
-theorem manuscript_pi_lt_d40 :
+lemma manuscript_pi_lt_d40 :
     Real.pi < (3.1415926535897932384626433832795028841972 : ℝ) := by
   pi_upper_bound [
     1039958172187557938222127748548031133116671596/735361475704189444449261582374705033264205603,
@@ -54784,7 +54784,7 @@ open Finset
 
 namespace CohnElkies
 
-theorem criticalBinaryExponent_eq_log_div :
+lemma criticalBinaryExponent_eq_log_div :
     criticalBinaryExponent =
       Real.log (2 * Real.pi / Real.exp 1) /
         (2 * Real.log 2) := by
@@ -54793,7 +54793,7 @@ theorem criticalBinaryExponent_eq_log_div :
     (Real.log_pos (by norm_num : (1 : ℝ) < 2)).ne'
   field_simp
 
-theorem criticalBinaryExponent_eq_three_halves_sub_logFourDivPi :
+lemma criticalBinaryExponent_eq_three_halves_sub_logFourDivPi :
     criticalBinaryExponent =
       (3 / 2 : ℝ) -
         (Real.log (4 / Real.pi) + 1) / (2 * Real.log 2) := by
@@ -54818,14 +54818,14 @@ theorem criticalBinaryExponent_eq_three_halves_sub_logFourDivPi :
   field_simp
   ; ring
 
-theorem baseTwo_log_two_gt_d6 :
+lemma baseTwo_log_two_gt_d6 :
     (0.693147 : ℝ) < Real.log 2 := by
   have h := Real.sum_range_le_log_div
     (x := (1 / 3 : ℝ)) (by norm_num) (by norm_num) 6
   norm_num [Finset.sum_range_succ] at h
   nlinarith
 
-theorem baseTwo_log_four_div_pi_lt_d7 :
+lemma baseTwo_log_four_div_pi_lt_d7 :
     Real.log (4 / Real.pi) < (0.2415647 : ℝ) := by
   have hp : (3.141592 : ℝ) < Real.pi := Real.pi_gt_d6
   have harg : (4 : ℝ) / Real.pi < 4 / 3.141592 := by
@@ -54840,7 +54840,7 @@ theorem baseTwo_log_four_div_pi_lt_d7 :
   norm_num at hmono
   nlinarith
 
-theorem criticalBinaryExponent_gt_d4 :
+lemma criticalBinaryExponent_gt_d4 :
     (0.6044 : ℝ) < criticalBinaryExponent := by
   rw [criticalBinaryExponent_eq_three_halves_sub_logFourDivPi]
   have hlogpos : 0 < Real.log (2 : ℝ) :=
@@ -54853,14 +54853,14 @@ theorem criticalBinaryExponent_gt_d4 :
     nlinarith [baseTwo_log_two_gt_d6, baseTwo_log_four_div_pi_lt_d7]
   linarith
 
-theorem baseTwo_log_two_gt_d36 :
+lemma baseTwo_log_two_gt_d36 :
     (0.693147180559945309417232121458176568 : ℝ) < Real.log 2 := by
   have h := Real.sum_range_le_log_div
     (x := (1 / 3 : ℝ)) (by norm_num) (by norm_num) 42
   norm_num [Finset.sum_range_succ] at h
   nlinarith
 
-theorem baseTwo_log_two_lt_d36 :
+lemma baseTwo_log_two_lt_d36 :
     Real.log 2 <
       (0.693147180559945309417232121458176569 : ℝ) := by
   have h := Real.log_div_le_sum_range_add
@@ -54868,7 +54868,7 @@ theorem baseTwo_log_two_lt_d36 :
   norm_num [Finset.sum_range_succ] at h
   nlinarith
 
-theorem baseTwo_log_four_div_pi_gt_d36 :
+lemma baseTwo_log_four_div_pi_gt_d36 :
     (0.241564475270490444691036891563294424 : ℝ) <
       Real.log (4 / Real.pi) := by
   have hs :
@@ -54893,7 +54893,7 @@ theorem baseTwo_log_four_div_pi_gt_d36 :
         Real.pi_pos).2
       nlinarith [manuscript_pi_lt_d40]
 
-theorem baseTwo_log_four_div_pi_lt_d36 :
+lemma baseTwo_log_four_div_pi_lt_d36 :
     Real.log (4 / Real.pi) <
       (0.241564475270490444691036891563294425 : ℝ) := by
   have hs :
@@ -54917,7 +54917,7 @@ theorem baseTwo_log_four_div_pi_lt_d36 :
       nlinarith [manuscript_pi_gt_d40]
     _ < (0.241564475270490444691036891563294425 : ℝ) := hs
 
-theorem criticalBinaryExponent_gt_d33 :
+lemma criticalBinaryExponent_gt_d33 :
     (0.604400544291677695341677307053057 : ℝ) <
       criticalBinaryExponent := by
   rw [criticalBinaryExponent_eq_three_halves_sub_logFourDivPi]
@@ -54931,7 +54931,7 @@ theorem criticalBinaryExponent_gt_d33 :
       baseTwo_log_four_div_pi_lt_d36]
   linarith
 
-theorem criticalBinaryExponent_lt_d33 :
+lemma criticalBinaryExponent_lt_d33 :
     criticalBinaryExponent <
       (0.604400544291677695341677307053058 : ℝ) := by
   rw [criticalBinaryExponent_eq_three_halves_sub_logFourDivPi]
@@ -54944,17 +54944,17 @@ theorem criticalBinaryExponent_lt_d33 :
       baseTwo_log_four_div_pi_gt_d36]
   linarith
 
-theorem criticalBinaryExponent_gt_d30 :
+lemma criticalBinaryExponent_gt_d30 :
     (0.604400544291677695341677307053 : ℝ) <
       criticalBinaryExponent := by
   nlinarith [criticalBinaryExponent_gt_d33]
 
-theorem criticalBinaryExponent_lt_d30 :
+lemma criticalBinaryExponent_lt_d30 :
     criticalBinaryExponent <
       (0.604400544291677695341677307054 : ℝ) := by
   nlinarith [criticalBinaryExponent_lt_d33]
 
-theorem criticalBinaryExponent_mem_Ioo_d30 :
+lemma criticalBinaryExponent_mem_Ioo_d30 :
     criticalBinaryExponent ∈ Set.Ioo
       (0.604400544291677695341677307053 : ℝ)
       0.604400544291677695341677307054 :=
@@ -54971,7 +54971,7 @@ open scoped Topology
 
 namespace CohnElkies
 
-theorem manuscriptQuotientRootSet_eq_literal (d : ℕ) :
+lemma manuscriptQuotientRootSet_eq_literal (d : ℕ) :
     manuscriptQuotientRootSet d =
       {q : ℝ | ∃ f : Admissible d,
         quotient f ^ ((d : ℝ)⁻¹) = q} := by
@@ -55038,7 +55038,7 @@ structure SharpCohnElkiesManuscriptConclusions : Prop where
                 Real.logb 2 (2 * Real.pi / Real.exp 1) + err d) *
               (d : ℝ)))
 
-theorem sharpCohnElkiesManuscriptConclusions :
+lemma sharpCohnElkiesManuscriptConclusions :
     SharpCohnElkiesManuscriptConclusions := by
   refine
     { root_before_infimum := ?_
@@ -55104,14 +55104,14 @@ end SpherePacking.Alternative
 
 namespace SpherePacking.Alternative
 
-theorem quotient_eq_of_origin_and_fourier_origin
+lemma quotient_eq_of_origin_and_fourier_origin
     {d : ℕ} {f g : Schwartz d}
     (horigin : g 0 = f 0)
     (hfourier : fourierReal g 0 = fourierReal f 0) :
     quotient g = quotient f := by
   simp only [quotient, horigin, hfourier]
 
-theorem IsUnrestrictedAdmissible.radialAdmissible_of_average_data
+lemma IsUnrestrictedAdmissible.radialAdmissible_of_average_data
     {d : ℕ} {f g : Schwartz d}
     (hf : IsUnrestrictedAdmissible f)
     (hreal : IsRealValued g)
@@ -55127,7 +55127,7 @@ theorem IsUnrestrictedAdmissible.radialAdmissible_of_average_data
   fourier_nonneg := hfourier_nonneg
   eventually_nonpos := hexterior
 
-theorem radial_of_radialSymmetrizationAverage
+lemma radial_of_radialSymmetrizationAverage
     {d : ℕ} {f g : Schwartz d}
     (haverage : ∀ x : Ambient d,
       g x = radialSymmetrizationAverage f x) :
@@ -55136,14 +55136,14 @@ theorem radial_of_radialSymmetrizationAverage
   rw [haverage x, haverage y]
   exact radialSymmetrizationAverage_eq_of_norm_eq f hxy
 
-theorem radialSymmetrizationAverage_schwartz_zero
+lemma radialSymmetrizationAverage_schwartz_zero
     {d : ℕ} {f g : Schwartz d}
     (haverage : ∀ x : Ambient d,
       g x = radialSymmetrizationAverage f x) :
     g 0 = f 0 := by
   rw [haverage 0, radialSymmetrizationAverage_zero]
 
-theorem radialSymmetrizationAverage_fourier_zero
+lemma radialSymmetrizationAverage_fourier_zero
     {d : ℕ} {f g : Schwartz d}
     (hfourier : ∀ x : Ambient d,
       (𝓕 g : Schwartz d) x =
@@ -55152,7 +55152,7 @@ theorem radialSymmetrizationAverage_fourier_zero
   unfold fourierReal
   rw [hfourier 0, radialSymmetrizationAverage_zero]
 
-theorem IsUnrestrictedAdmissible.radialAdmissible_of_radialSymmetrizationAverage
+lemma IsUnrestrictedAdmissible.radialAdmissible_of_radialSymmetrizationAverage
     {d : ℕ} {f g : Schwartz d}
     (hf : IsUnrestrictedAdmissible f)
     (haverage : ∀ x : Ambient d,
@@ -55178,7 +55178,7 @@ theorem IsUnrestrictedAdmissible.radialAdmissible_of_radialSymmetrizationAverage
     exact radialSymmetrizationAverage_nonpos_of_one_le_norm
       hf.eventually_nonpos hx
 
-theorem quotient_eq_of_radialSymmetrizationAverage
+lemma quotient_eq_of_radialSymmetrizationAverage
     {d : ℕ} {f g : Schwartz d}
     (haverage : ∀ x : Ambient d,
       g x = radialSymmetrizationAverage f x)
@@ -55190,7 +55190,7 @@ theorem quotient_eq_of_radialSymmetrizationAverage
     (radialSymmetrizationAverage_schwartz_zero haverage)
     (radialSymmetrizationAverage_fourier_zero hfourier)
 
-theorem radialSymmetrization_fourier_average_apply_for_admissibility
+lemma radialSymmetrization_fourier_average_apply_for_admissibility
     {d : ℕ} (f : Schwartz d) (x : Ambient d) :
     (𝓕 (radialSymmetrization f) : Schwartz d) x =
       radialSymmetrizationAverage (𝓕 f : Schwartz d) x := by
@@ -55207,7 +55207,7 @@ theorem radialSymmetrization_fourier_average_apply_for_admissibility
     _ = radialSymmetrizationAverage (𝓕 f : Schwartz d) x :=
       fourier_radialSymmetrizationAverage f x
 
-theorem IsUnrestrictedAdmissible.radialSymmetrization_admissible
+lemma IsUnrestrictedAdmissible.radialSymmetrization_admissible
     {d : ℕ} {f : Schwartz d}
     (hf : IsUnrestrictedAdmissible f) :
     IsAdmissible (radialSymmetrization f) := by
@@ -55215,7 +55215,7 @@ theorem IsUnrestrictedAdmissible.radialSymmetrization_admissible
     (radialSymmetrization_apply f)
     (radialSymmetrization_fourier_average_apply_for_admissibility f)
 
-theorem IsUnrestrictedAdmissible.quotient_radialSymmetrization
+lemma IsUnrestrictedAdmissible.quotient_radialSymmetrization
     {d : ℕ} {f : Schwartz d}
     (_hf : IsUnrestrictedAdmissible f) :
     quotient (radialSymmetrization f) = quotient f := by
@@ -55232,17 +55232,17 @@ def schwartzDilation {d : ℕ} (a : ℝ) (ha : a ≠ 0)
   SchwartzMap.compCLMOfContinuousLinearEquiv ℂ
     (ContinuousLinearEquiv.smulLeft (Units.mk0 a ha)) f
 
-@[simp] theorem schwartzDilation_apply {d : ℕ} (a : ℝ) (ha : a ≠ 0)
+@[simp] lemma schwartzDilation_apply {d : ℕ} (a : ℝ) (ha : a ≠ 0)
     (f : Schwartz d) (x : Ambient d) :
     schwartzDilation a ha f x = f (a • x) := by
   rfl
 
-@[simp] theorem schwartzDilation_zero {d : ℕ} (a : ℝ) (ha : a ≠ 0)
+@[simp] lemma schwartzDilation_zero {d : ℕ} (a : ℝ) (ha : a ≠ 0)
     (f : Schwartz d) :
     schwartzDilation a ha f 0 = f 0 := by
   simp [schwartzDilation_apply]
 
-theorem fourier_schwartzDilation_apply {d : ℕ} (a : ℝ) (ha : 0 < a)
+lemma fourier_schwartzDilation_apply {d : ℕ} (a : ℝ) (ha : 0 < a)
     (f : Schwartz d) (ξ : Ambient d) :
     (𝓕 (schwartzDilation a ha.ne' f) : Schwartz d) ξ =
       (a ^ d)⁻¹ • (𝓕 f : Schwartz d) (a⁻¹ • ξ) := by
@@ -55275,7 +55275,7 @@ theorem fourier_schwartzDilation_apply {d : ℕ} (a : ℝ) (ha : 0 < a)
               Complex.I) • f y := by
           rfl
 
-theorem fourierReal_schwartzDilation_apply {d : ℕ} (a : ℝ) (ha : 0 < a)
+lemma fourierReal_schwartzDilation_apply {d : ℕ} (a : ℝ) (ha : 0 < a)
     (f : Schwartz d) (ξ : Ambient d) :
     fourierReal (schwartzDilation a ha.ne' f) ξ =
       (a ^ d)⁻¹ * fourierReal f (a⁻¹ • ξ) := by
@@ -55284,14 +55284,14 @@ theorem fourierReal_schwartzDilation_apply {d : ℕ} (a : ℝ) (ha : 0 < a)
   rw [Complex.smul_re]
   rfl
 
-theorem fourierReal_schwartzDilation_nonneg {d : ℕ}
+lemma fourierReal_schwartzDilation_nonneg {d : ℕ}
     {f : Schwartz d} (hf : ∀ ξ, 0 ≤ fourierReal f ξ)
     (a : ℝ) (ha : 0 < a) (ξ : Ambient d) :
     0 ≤ fourierReal (schwartzDilation a ha.ne' f) ξ := by
   rw [fourierReal_schwartzDilation_apply a ha f ξ]
   exact mul_nonneg (by positivity) (hf _)
 
-theorem fourierReal_schwartzDilation_zero_pos {d : ℕ}
+lemma fourierReal_schwartzDilation_zero_pos {d : ℕ}
     {f : Schwartz d} (hf : 0 < fourierReal f 0)
     (a : ℝ) (ha : 0 < a) :
     0 < fourierReal (schwartzDilation a ha.ne' f) 0 := by
@@ -55299,7 +55299,7 @@ theorem fourierReal_schwartzDilation_zero_pos {d : ℕ}
   simp only [smul_zero]
   exact mul_pos (by positivity) hf
 
-theorem quotient_schwartzDilation {d : ℕ} (a : ℝ) (ha : 0 < a)
+lemma quotient_schwartzDilation {d : ℕ} (a : ℝ) (ha : 0 < a)
     (f : Schwartz d) :
     quotient (schwartzDilation a ha.ne' f) =
       a ^ d * quotient f := by
@@ -55321,7 +55321,7 @@ open scoped FourierTransform SchwartzMap Topology
 
 namespace PackingBounds
 
-theorem FullAdmissible.toAlternative {d : ℕ} (f : FullAdmissible d) :
+lemma FullAdmissible.toAlternative {d : ℕ} (f : FullAdmissible d) :
     SpherePacking.Alternative.IsUnrestrictedAdmissible f.function where
   real_valued := f.real
   fourier_real_valued := f.fourier_real
@@ -55353,7 +55353,7 @@ def FullAdmissible.radialization {d : ℕ} (f : FullAdmissible d) :
     fourier_zero_pos := hg.fourier_zero_pos
     outside_nonpos := hg.eventually_nonpos }
 
-theorem FullAdmissible.quotient_radialization {d : ℕ}
+lemma FullAdmissible.quotient_radialization {d : ℕ}
     (f : FullAdmissible d) :
     CohnElkies.quotient f.radialization = fullQuotient f := by
   change
@@ -55362,18 +55362,18 @@ theorem FullAdmissible.quotient_radialization {d : ℕ}
       SpherePacking.Alternative.quotient f.function
   exact f.toAlternative.quotient_radialSymmetrization
 
-theorem exists_radial_admissible_of_full {d : ℕ}
+lemma exists_radial_admissible_of_full {d : ℕ}
     (f : FullAdmissible d) :
     ∃ g : CohnElkies.Admissible d,
       CohnElkies.quotient g = fullQuotient f := by
   exact ⟨f.radialization, f.quotient_radialization⟩
 
-theorem fullQuotientSet_eq_radial (d : ℕ) :
+lemma fullQuotientSet_eq_radial (d : ℕ) :
     fullQuotientSet d = CohnElkies.quotientSet d := by
   apply (fullQuotientSet_eq_radial_iff d).2
   exact exists_radial_admissible_of_full
 
-theorem fullLinearProgram_eq_radial (d : ℕ) :
+lemma fullLinearProgram_eq_radial (d : ℕ) :
     fullLinearProgram d = CohnElkies.linearProgram d := by
   simp only [fullLinearProgram, CohnElkies.linearProgram,
     fullQuotientSet_eq_radial]
@@ -55411,7 +55411,7 @@ open scoped Topology
 
 namespace PackingBounds
 
-theorem fullQuotientRootSet_eq_radial (d : ℕ) :
+lemma fullQuotientRootSet_eq_radial (d : ℕ) :
     {q : ℝ | ∃ f : FullAdmissible d,
       fullQuotient f ^ ((d : ℝ)⁻¹) = q} =
       {q : ℝ | ∃ f : CohnElkies.Admissible d,
@@ -55487,7 +55487,7 @@ structure SharpFullCohnElkiesManuscriptConclusions : Prop where
                 Real.logb 2 (2 * Real.pi / Real.exp 1) + err d) *
               (d : ℝ)))
 
-theorem SharpFullCohnElkiesManuscriptConclusions.ofRadial :
+lemma SharpFullCohnElkiesManuscriptConclusions.ofRadial :
     SharpFullCohnElkiesManuscriptConclusions := by
   have hradial := CohnElkies.sharpCohnElkiesManuscriptConclusions
   refine
@@ -55528,7 +55528,7 @@ theorem SharpFullCohnElkiesManuscriptConclusions.ofRadial :
       hradial.base_two_vanishing_exponential_error
     exact ⟨err, herr, by simpa only [fullLinearProgram_eq_radial] using hformula⟩
 
-theorem SharpFullCohnElkiesManuscriptConclusions.components :
+lemma SharpFullCohnElkiesManuscriptConclusions.components :
     Tendsto
         (fun d : ℕ =>
           sInf {q : ℝ | ∃ f : FullAdmissible d,

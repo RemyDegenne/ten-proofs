@@ -26,21 +26,21 @@ def marginalX (G : Game X Y A B) (x : X) : ℝ :=
 def marginalY (G : Game X Y A B) (y : Y) : ℝ :=
   ∑ x : X, G.questionWeight x y
 
-theorem marginalX_nonneg (G : Game X Y A B) (x : X) :
+lemma marginalX_nonneg (G : Game X Y A B) (x : X) :
     0 ≤ G.marginalX x := by
   unfold marginalX
   exact Finset.sum_nonneg fun y _ => G.weight_nonneg x y
 
-theorem marginalY_nonneg (G : Game X Y A B) (y : Y) :
+lemma marginalY_nonneg (G : Game X Y A B) (y : Y) :
     0 ≤ G.marginalY y := by
   unfold marginalY
   exact Finset.sum_nonneg fun x _ => G.weight_nonneg x y
 
-theorem marginalX_normalized (G : Game X Y A B) :
+lemma marginalX_normalized (G : Game X Y A B) :
     (∑ x : X, G.marginalX x) = 1 := by
   simpa [marginalX] using G.weight_normalized
 
-theorem marginalY_normalized (G : Game X Y A B) :
+lemma marginalY_normalized (G : Game X Y A B) :
     (∑ y : Y, G.marginalY y) = 1 := by
   unfold marginalY
   rw [Finset.sum_comm]
@@ -71,12 +71,12 @@ def «repeat» (G : Game X Y A B) (n : ℕ) :
   predicate xs ys as bs :=
     decide (∀ i : Fin n, G.predicate (xs i) (ys i) (as i) (bs i) = true)
 
-@[simp] theorem repeat_questionWeight (G : Game X Y A B) (n : ℕ)
+@[simp] lemma repeat_questionWeight (G : Game X Y A B) (n : ℕ)
     (xs : Fin n → X) (ys : Fin n → Y) :
     (G.repeat n).questionWeight xs ys =
       ∏ i : Fin n, G.questionWeight (xs i) (ys i) := rfl
 
-@[simp] theorem repeat_predicate_eq_true (G : Game X Y A B) (n : ℕ)
+@[simp] lemma repeat_predicate_eq_true (G : Game X Y A B) (n : ℕ)
     (xs : Fin n → X) (ys : Fin n → Y)
     (as : Fin n → A) (bs : Fin n → B) :
     (G.repeat n).predicate xs ys as bs = true ↔
@@ -110,7 +110,7 @@ structure Strategy [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 attribute [instance] Strategy.alice_fintype Strategy.bob_fintype
   Strategy.alice_decidableEq Strategy.bob_decidableEq
 
-theorem trace_mul_posSemidef_nonneg {d : Type*} [Fintype d] [DecidableEq d]
+lemma trace_mul_posSemidef_nonneg {d : Type*} [Fintype d] [DecidableEq d]
     {R E : Matrix d d ℂ} (hR : R.PosSemidef) (hE : E.PosSemidef) :
     0 ≤ (Matrix.trace (R * E)).re := by
   obtain ⟨K, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hR.nonneg
@@ -130,7 +130,7 @@ def jointEffect (S : Strategy G) (x : X) (y : Y) (a : A) (b : B) :
     Matrix (S.Alice × S.Bob) (S.Alice × S.Bob) ℂ :=
   (S.aliceMeasurement x).effect a ⊗ₖ (S.bobMeasurement y).effect b
 
-theorem jointEffect_positive (S : Strategy G) (x : X) (y : Y) (a : A) (b : B) :
+lemma jointEffect_positive (S : Strategy G) (x : X) (y : Y) (a : A) (b : B) :
     (S.jointEffect x y a b).PosSemidef := by
   exact ((S.aliceMeasurement x).positive a).kronecker
     ((S.bobMeasurement y).positive b)
@@ -138,13 +138,13 @@ theorem jointEffect_positive (S : Strategy G) (x : X) (y : Y) (a : A) (b : B) :
 def outcomeProbability (S : Strategy G) (x : X) (y : Y) (a : A) (b : B) : ℝ :=
   (Matrix.trace (S.state.matrix * S.jointEffect x y a b)).re
 
-theorem outcomeProbability_nonneg (S : Strategy G)
+lemma outcomeProbability_nonneg (S : Strategy G)
     (x : X) (y : Y) (a : A) (b : B) :
     0 ≤ S.outcomeProbability x y a b := by
   exact trace_mul_posSemidef_nonneg S.state.positive
     (S.jointEffect_positive x y a b)
 
-theorem jointEffect_complete (S : Strategy G) (x : X) (y : Y) :
+lemma jointEffect_complete (S : Strategy G) (x : X) (y : Y) :
     (∑ a : A, ∑ b : B, S.jointEffect x y a b) = 1 := by
   classical
   calc
@@ -159,7 +159,7 @@ theorem jointEffect_complete (S : Strategy G) (x : X) (y : Y) :
       rw [(S.aliceMeasurement x).complete, (S.bobMeasurement y).complete]
       exact Matrix.one_kronecker_one
 
-theorem outcomeProbability_normalized (S : Strategy G) (x : X) (y : Y) :
+lemma outcomeProbability_normalized (S : Strategy G) (x : X) (y : Y) :
     (∑ a : A, ∑ b : B, S.outcomeProbability x y a b) = 1 := by
   classical
   calc
@@ -177,14 +177,14 @@ def winProbability (S : Strategy G) : ℝ :=
     ∑ a : A, ∑ b : B,
       if G.predicate x y a b = true then S.outcomeProbability x y a b else 0
 
-theorem winProbability_nonneg (S : Strategy G) : 0 ≤ S.winProbability := by
+lemma winProbability_nonneg (S : Strategy G) : 0 ≤ S.winProbability := by
   unfold winProbability
   refine Finset.sum_nonneg fun x _ => Finset.sum_nonneg fun y _ => ?_
   apply mul_nonneg (G.weight_nonneg x y)
   exact Finset.sum_nonneg fun a _ => Finset.sum_nonneg fun b _ => by
     split <;> simp [S.outcomeProbability_nonneg]
 
-theorem winProbability_le_one (S : Strategy G) : S.winProbability ≤ 1 := by
+lemma winProbability_le_one (S : Strategy G) : S.winProbability ≤ 1 := by
   classical
   have hxy (x : X) (y : Y) :
       (∑ a : A, ∑ b : B,
@@ -220,14 +220,14 @@ def entangledValue [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) : ℝ :=
   sSup (Set.range (Strategy.winProbability (G := G)))
 
-theorem winProbabilities_bddAbove [Fintype X] [Fintype Y]
+lemma winProbabilities_bddAbove [Fintype X] [Fintype Y]
     [Fintype A] [Fintype B] (G : Game X Y A B) :
     BddAbove (Set.range (Strategy.winProbability (G := G))) := by
   refine ⟨1, ?_⟩
   rintro _ ⟨S, rfl⟩
   exact S.winProbability_le_one
 
-theorem entangledValue_le_one [Fintype X] [Fintype Y]
+lemma entangledValue_le_one [Fintype X] [Fintype Y]
     [Fintype A] [Fintype B] (G : Game X Y A B) :
     entangledValue G ≤ 1 := by
   unfold entangledValue
@@ -238,7 +238,7 @@ theorem entangledValue_le_one [Fintype X] [Fintype Y]
   · rw [Set.not_nonempty_iff_eq_empty.mp h, Real.sSup_empty]
     exact zero_le_one
 
-theorem entangledValue_nonneg [Fintype X] [Fintype Y]
+lemma entangledValue_nonneg [Fintype X] [Fintype Y]
     [Fintype A] [Fintype B] (G : Game X Y A B) :
     0 ≤ entangledValue G := by
   unfold entangledValue
@@ -263,12 +263,12 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
 def quadraticExpectation (W : H →L[ℂ] H) (z : H) : ℝ :=
   (⟪z, W z⟫_ℂ).re
 
-theorem positive_quadraticExpectation_nonneg
+lemma positive_quadraticExpectation_nonneg
     (W : H →L[ℂ] H) (hW : W.IsPositive) (z : H) :
     0 ≤ quadraticExpectation W z := by
   exact hW.re_inner_nonneg_right z
 
-theorem positive_complement_quadraticExpectation_le
+lemma positive_complement_quadraticExpectation_le
     (W : H →L[ℂ] H)
     (h_complement : (1 - W).IsPositive) (z : H) :
     quadraticExpectation W z ≤ ‖z‖ ^ 2 := by
@@ -281,7 +281,7 @@ theorem positive_complement_quadraticExpectation_le
   unfold quadraticExpectation
   exact sub_nonneg.mp h
 
-theorem norm_le_of_operator_contraction
+lemma norm_le_of_operator_contraction
     (W : H →L[ℂ] H) (hW : ‖W‖ ≤ 1) (z : H) :
     ‖W z‖ ≤ ‖z‖ := by
   calc
@@ -289,7 +289,7 @@ theorem norm_le_of_operator_contraction
     _ ≤ 1 * ‖z‖ := mul_le_mul_of_nonneg_right hW (norm_nonneg z)
     _ = ‖z‖ := one_mul _
 
-theorem quadraticExpectation_sub_le
+lemma quadraticExpectation_sub_le
     (W : H →L[ℂ] H) (hW : ‖W‖ ≤ 1) (z w : H) :
     |quadraticExpectation W z - quadraticExpectation W w| ≤
       (‖z‖ + ‖w‖) * ‖z - w‖ := by
@@ -316,7 +316,7 @@ theorem quadraticExpectation_sub_le
       gcongr
     _ = (‖z‖ + ‖w‖) * ‖z - w‖ := by ring
 
-theorem weighted_real_cauchy
+lemma weighted_real_cauchy
     {ι : Type*} [Fintype ι]
     (weight f g : ι → ℝ)
     (h_weight : ∀ i, 0 ≤ weight i) :
@@ -360,20 +360,20 @@ noncomputable section
 
 open scoped BigOperators ComplexOrder MatrixOrder Matrix.Norms.L2Operator
 
-theorem matrixEffectCLM_isPositive
+lemma matrixEffectCLM_isPositive
     {d : Type*} [Fintype d] [DecidableEq d]
     (E : Matrix d d ℂ) (hE : E.PosSemidef) :
     (Matrix.toEuclideanCLM (n := d) (𝕜 := ℂ) E).IsPositive := by
   apply (ContinuousLinearMap.isPositive_toLinearMap_iff _).mp
   exact Matrix.isPositive_toEuclideanLin_iff.mpr hE
 
-theorem matrixEffectCLM_complement_isPositive
+lemma matrixEffectCLM_complement_isPositive
     {d : Type*} [Fintype d] [DecidableEq d]
     (E : Matrix d d ℂ) (hE : (1 - E).PosSemidef) :
     (1 - Matrix.toEuclideanCLM (n := d) (𝕜 := ℂ) E).IsPositive := by
   simpa using matrixEffectCLM_isPositive (1 - E) hE
 
-theorem matrixEffectCLM_norm_le_one
+lemma matrixEffectCLM_norm_le_one
     {d : Type*} [Fintype d] [DecidableEq d]
     (E : Matrix d d ℂ) (hE : E.PosSemidef)
     (h_complement : (1 - E).PosSemidef) :
@@ -397,7 +397,7 @@ def winningEffect (S : Strategy G) (x : X) (y : Y) :
   ∑ a : A, ∑ b : B,
     if G.predicate x y a b = true then S.jointEffect x y a b else 0
 
-theorem winningEffect_born
+lemma winningEffect_born
     (S : Strategy G) (x : X) (y : Y) :
     (Matrix.trace (S.state.matrix * S.winningEffect x y)).re =
       ∑ a : A, ∑ b : B,
@@ -412,7 +412,7 @@ theorem winningEffect_born
   intro b _
   split <;> simp
 
-theorem winProbability_eq_winningEffect_born
+lemma winProbability_eq_winningEffect_born
     (S : Strategy G) :
     S.winProbability =
       ∑ x : X, ∑ y : Y,
@@ -435,7 +435,7 @@ variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 variable [Fintype J] [DecidableEq J]
 variable {G : Game X Y A B}
 
-theorem posSemidef_blockDiagonal'
+lemma posSemidef_blockDiagonal'
     {ι : Type*} [Fintype ι] [DecidableEq ι]
     {d : ι → Type*} [∀ j, Fintype (d j)]
     (M : ∀ j, Matrix (d j) (d j) ℂ)
@@ -469,7 +469,7 @@ def mixtureMatchedIndex (S : J → Strategy G) :
 
 omit [Fintype J] [DecidableEq J] in
 
-theorem mixtureMatchedIndex_injective (S : J → Strategy G) :
+lemma mixtureMatchedIndex_injective (S : J → Strategy G) :
     Function.Injective (mixtureMatchedIndex S) := by
   rintro ⟨i, a, b⟩ ⟨j, c, d⟩ h
   have hflag : i = j := congrArg (fun q => q.1.1) h
@@ -487,7 +487,7 @@ def mixtureEmbedding (S : J → Strategy G) :
   classical
   exact fun q r => if q = mixtureMatchedIndex S r then 1 else 0
 
-theorem mixtureEmbedding_isometry (S : J → Strategy G) :
+lemma mixtureEmbedding_isometry (S : J → Strategy G) :
     (mixtureEmbedding S)ᴴ * mixtureEmbedding S = 1 := by
   classical
   ext i j
@@ -500,7 +500,7 @@ theorem mixtureEmbedding_isometry (S : J → Strategy G) :
     simp [mixtureEmbedding, Matrix.mul_apply,
       Matrix.conjTranspose_apply, h, hindex.symm]
 
-theorem mixtureEmbedding_compress (S : J → Strategy G)
+lemma mixtureEmbedding_compress (S : J → Strategy G)
     (E : Matrix (mixtureAlice S × mixtureBob S)
       (mixtureAlice S × mixtureBob S) ℂ) :
     (mixtureEmbedding S)ᴴ * E * mixtureEmbedding S =
@@ -514,7 +514,7 @@ def mixtureBlockMatrix (p : J → ℝ) (S : J → Strategy G) :
     Matrix (mixtureMatched S) (mixtureMatched S) ℂ :=
   Matrix.blockDiagonal' fun j => p j • (S j).state.matrix
 
-theorem mixtureBlockMatrix_posSemidef
+lemma mixtureBlockMatrix_posSemidef
     (p : J → ℝ) (hp : ∀ j, 0 ≤ p j) (S : J → Strategy G) :
     (mixtureBlockMatrix p S).PosSemidef := by
   unfold mixtureBlockMatrix
@@ -522,7 +522,7 @@ theorem mixtureBlockMatrix_posSemidef
   intro j
   exact (S j).state.positive.smul (hp j)
 
-theorem mixtureBlockMatrix_trace
+lemma mixtureBlockMatrix_trace
     (p : J → ℝ) (S : J → Strategy G) :
     Matrix.trace (mixtureBlockMatrix p S) =
       (↑(∑ j : J, p j) : ℂ) := by
@@ -599,7 +599,7 @@ def convexMixtureStrategy (p : J → ℝ)
   aliceMeasurement := mixtureAlicePOVM S
   bobMeasurement := mixtureBobPOVM S
 
-theorem mixtureJointEffect_compress (S : J → Strategy G)
+lemma mixtureJointEffect_compress (S : J → Strategy G)
     (x : X) (y : Y) (a : A) (b : B) :
     (((mixtureAlicePOVM S x).effect a ⊗ₖ
       (mixtureBobPOVM S y).effect b).submatrix
@@ -617,7 +617,7 @@ theorem mixtureJointEffect_compress (S : J → Strategy G)
       mixtureMatchedIndex, mixtureAlicePOVM, mixtureBobPOVM,
       Matrix.blockDiagonal'_apply, Strategy.jointEffect, h]
 
-theorem mixtureEmbedding_trace_mul (S : J → Strategy G)
+lemma mixtureEmbedding_trace_mul (S : J → Strategy G)
     (R : Matrix (mixtureMatched S) (mixtureMatched S) ℂ)
     (E : Matrix (mixtureAlice S × mixtureBob S)
       (mixtureAlice S × mixtureBob S) ℂ) :
@@ -648,7 +648,7 @@ theorem mixtureEmbedding_trace_mul (S : J → Strategy G)
             (mixtureMatchedIndex S)) := by
           rw [mixtureEmbedding_compress]
 
-theorem mixtureBlockMatrix_trace_mul
+lemma mixtureBlockMatrix_trace_mul
     (p : J → ℝ) (S : J → Strategy G)
     (E : ∀ j : J,
       Matrix ((S j).Alice × (S j).Bob)
@@ -659,7 +659,7 @@ theorem mixtureBlockMatrix_trace_mul
   rw [← Matrix.blockDiagonal'_mul, Matrix.trace_blockDiagonal']
   simp [Matrix.trace_smul]
 
-theorem convexMixtureStrategy_outcomeProbability
+lemma convexMixtureStrategy_outcomeProbability
     (p : J → ℝ) (hp : ∀ j, 0 ≤ p j)
     (h_normalized : (∑ j : J, p j) = 1)
     (S : J → Strategy G) (x : X) (y : Y) (a : A) (b : B) :
@@ -676,7 +676,7 @@ theorem convexMixtureStrategy_outcomeProbability
     mixtureBlockMatrix_trace_mul]
   simp [Strategy.outcomeProbability]
 
-theorem convexMixtureStrategy_winProbability
+lemma convexMixtureStrategy_winProbability
     (p : J → ℝ) (hp : ∀ j, 0 ≤ p j)
     (h_normalized : (∑ j : J, p j) = 1)
     (S : J → Strategy G) :
@@ -761,7 +761,7 @@ def pureDensityMatrix
       inner_self_eq_norm_sq_to_K, hz]
     norm_num
 
-theorem pureDensityMatrix_trace_mul
+lemma pureDensityMatrix_trace_mul
     {d : Type*} [Fintype d] [DecidableEq d]
     (z : EuclideanSpace ℂ d) (hz : ‖z‖ = 1)
     (E : Matrix d d ℂ) :
@@ -800,7 +800,7 @@ def pureVectorStrategy
   aliceMeasurement := PA
   bobMeasurement := PB
 
-theorem pureVectorStrategy_outcomeProbability
+lemma pureVectorStrategy_outcomeProbability
     {X Y A B : Type*} {dA dB : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype dA] [Fintype dB] [DecidableEq dA] [DecidableEq dB]
@@ -834,7 +834,7 @@ def pureFlaggedStrategy
   convexMixtureStrategy p hp h_normalized
     (fun j => pureVectorStrategy G (z j) (hz j) (PA j) (PB j))
 
-theorem pureFlaggedStrategy_winProbability
+lemma pureFlaggedStrategy_winProbability
     {X Y A B : Type*} {dA dB J : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype dA] [Fintype dB] [DecidableEq dA] [DecidableEq dB]
@@ -870,11 +870,11 @@ variable {Ω ι : Type*} [Fintype Ω]
 def eventMass (law : FiniteEventLaw Ω) (event : Finset Ω) : ℝ :=
   ∑ ω ∈ event, law.weight ω
 
-theorem eventMass_univ (law : FiniteEventLaw Ω) :
+lemma eventMass_univ (law : FiniteEventLaw Ω) :
     law.eventMass Finset.univ = 1 := by
   simpa [eventMass] using law.weight_sum
 
-theorem eventMass_mono
+lemma eventMass_mono
     (law : FiniteEventLaw Ω) {s t : Finset Ω} (h : s ⊆ t) :
     law.eventMass s ≤ law.eventMass t := by
   unfold eventMass
@@ -885,12 +885,12 @@ def winEvent [Fintype ι]
     (wins : ι → Ω → Bool) (D : Finset ι) : Finset Ω :=
   Finset.univ.filter (fun ω => ∀ i ∈ D, wins i ω = true)
 
-theorem winEvent_empty [Fintype ι] (wins : ι → Ω → Bool) :
+lemma winEvent_empty [Fintype ι] (wins : ι → Ω → Bool) :
     winEvent wins ∅ = Finset.univ := by
   classical
   simp [winEvent]
 
-theorem winEvent_antitone [Fintype ι]
+lemma winEvent_antitone [Fintype ι]
     (wins : ι → Ω → Bool) {D E : Finset ι} (h : D ⊆ E) :
     winEvent wins E ⊆ winEvent wins D := by
   classical
@@ -900,7 +900,7 @@ theorem winEvent_antitone [Fintype ι]
   simp only [winEvent, Finset.mem_filter, Finset.mem_univ, true_and]
   exact fun i hi => h_all i (h hi)
 
-theorem allWinMass_le_partial [Fintype ι]
+lemma allWinMass_le_partial [Fintype ι]
     (law : FiniteEventLaw Ω) (wins : ι → Ω → Bool)
     (D : Finset ι) :
     law.eventMass (winEvent wins Finset.univ) ≤
@@ -914,7 +914,7 @@ def failureMass [Fintype ι] [DecidableEq ι]
   law.eventMass (winEvent wins D) -
     law.eventMass (winEvent wins (insert i D))
 
-theorem exists_greedy_stopping [Fintype ι] [DecidableEq ι]
+lemma exists_greedy_stopping [Fintype ι] [DecidableEq ι]
     (mass : Finset ι → ℝ) {θ η : ℝ} {T : ℕ}
     (_hθ : 0 < θ)
     (_hη : 0 < η)
@@ -991,7 +991,7 @@ theorem exists_greedy_stopping [Fintype ι] [DecidableEq ι]
   rw [Finset.card_insert_of_notMem hi_not] at h_impossible
   omega
 
-theorem exists_conditioned_win_set [Fintype ι] [DecidableEq ι]
+lemma exists_conditioned_win_set [Fintype ι] [DecidableEq ι]
     (law : FiniteEventLaw Ω) (wins : ι → Ω → Bool)
     {θ η : ℝ} {T : ℕ}
     (hθ : 0 < θ)
@@ -1077,7 +1077,7 @@ def strategyWinEvent (G : Game X Y A B) :
     (fun ω =>
       G.predicate ω.1 ω.2.1 ω.2.2.1 ω.2.2.2 = true)
 
-theorem strategyEventLaw_winEvent
+lemma strategyEventLaw_winEvent
     (G : Game X Y A B) (S : Strategy G) :
     (strategyEventLaw G S).eventMass (strategyWinEvent G) =
       S.winProbability := by
@@ -1112,7 +1112,7 @@ def repeatedCoordinateWin (G : Game X Y A B) (n : ℕ)
   G.predicate (ω.1 i) (ω.2.1 i)
     (ω.2.2.1 i) (ω.2.2.2 i)
 
-theorem repeated_allWinEvent_eq
+lemma repeated_allWinEvent_eq
     (G : Game X Y A B) (n : ℕ) :
     FiniteEventLaw.winEvent (repeatedCoordinateWin G n)
       (Finset.univ : Finset (Fin n)) =
@@ -1122,7 +1122,7 @@ theorem repeated_allWinEvent_eq
   simp [FiniteEventLaw.winEvent, strategyWinEvent,
     repeatedCoordinateWin, Game.repeat_predicate_eq_true]
 
-theorem repeated_allWinMass_eq
+lemma repeated_allWinMass_eq
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n)) :
     (strategyEventLaw (G.repeat n) S).eventMass
@@ -1132,7 +1132,7 @@ theorem repeated_allWinMass_eq
   rw [repeated_allWinEvent_eq]
   exact strategyEventLaw_winEvent (G.repeat n) S
 
-theorem repeatedStrategy_exists_greedy_conditioning
+lemma repeatedStrategy_exists_greedy_conditioning
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     {θ η : ℝ} {T : ℕ}
@@ -1180,7 +1180,7 @@ open scoped BigOperators
 
 variable {ι : Type*}
 
-theorem negMulLog_rescale
+lemma negMulLog_rescale
     {W p : ℝ} (hW : 0 < W) (hp : 0 < p) :
     W * Real.negMulLog (p / W) = p * Real.log (W / p) := by
   unfold Real.negMulLog
@@ -1188,7 +1188,7 @@ theorem negMulLog_rescale
   field_simp
   ring
 
-theorem finite_weighted_entropy_le
+lemma finite_weighted_entropy_le
     (s : Finset ι) (w h : ι → ℝ) {W p : ℝ}
     (hw : ∀ i ∈ s, 0 ≤ w i)
     (hh : ∀ i ∈ s, 0 ≤ h i)
@@ -1238,7 +1238,7 @@ theorem finite_weighted_entropy_le
     _ = W * Real.negMulLog (p / W) := by rw [h_mean]
     _ = p * Real.log (W / p) := negMulLog_rescale hW hp
 
-theorem finite_weighted_entropy_le_of_weight_bound
+lemma finite_weighted_entropy_le_of_weight_bound
     (s : Finset ι) (w h : ι → ℝ) {W N p : ℝ}
     (hw : ∀ i ∈ s, 0 ≤ w i)
     (hh : ∀ i ∈ s, 0 ≤ h i)
@@ -1263,7 +1263,7 @@ noncomputable section
 
 open scoped BigOperators
 
-theorem noncommutative_resolvent_identity
+lemma noncommutative_resolvent_identity
     {R : Type*} [Ring R]
     (F M S RF RM : R)
     (hF : RF * (F + S) = 1)
@@ -1276,7 +1276,7 @@ theorem noncommutative_resolvent_identity
     _ = RF * (M - F) * RM := by
       noncomm_ring
 
-theorem noncommutative_filtered_resolvent_identity
+lemma noncommutative_filtered_resolvent_identity
     {R : Type*} [Ring R]
     (F M S RF RM : R)
     (hF_left : (F + S) * RF = 1)
@@ -1303,7 +1303,7 @@ theorem noncommutative_filtered_resolvent_identity
       noncomm_ring
     _ = S * (RF * (F - M) * RM) := by rw [hdiff]
 
-theorem noncommutative_resolvent_second_order
+lemma noncommutative_resolvent_second_order
     {R : Type*} [Ring R]
     (F M S RF RM : R)
     (hF_left : (F + S) * RF = 1)
@@ -1332,7 +1332,7 @@ theorem noncommutative_resolvent_second_order
     _ = RM - RM * (F - M) * RM +
       RM * (F - M) * RF * (F - M) * RM := by noncomm_ring
 
-theorem noncommutative_weighted_resolvent_second_order
+lemma noncommutative_weighted_resolvent_second_order
     {ι R : Type*} [Fintype ι] [Ring R]
     (weight : ι → R) (F : ι → R) (M S : R)
     (RF : ι → R) (RM : R)
@@ -1392,14 +1392,14 @@ noncomputable section
 
 open scoped BigOperators ComplexOrder MatrixOrder
 
-theorem posSemidef_hermitian_sandwich
+lemma posSemidef_hermitian_sandwich
     {d : Type*} [Fintype d] [DecidableEq d]
     {A D : Matrix d d ℂ}
     (hA : A.PosSemidef) (hD : D.IsHermitian) :
     (D * A * D).PosSemidef := by
   simpa [hD.eq] using hA.mul_mul_conjTranspose_same D
 
-theorem shifted_posSemidef_matrix_posDef
+lemma shifted_posSemidef_matrix_posDef
     {d : Type*} [Fintype d] [DecidableEq d]
     {F : Matrix d d ℂ} (hF : F.PosSemidef)
     {s : ℝ} (hs : 0 < s) :
@@ -1408,14 +1408,14 @@ theorem shifted_posSemidef_matrix_posDef
     Matrix.PosDef.one.smul hs
   exact Matrix.PosDef.posSemidef_add hF hshift
 
-theorem shifted_posSemidef_matrix_inverse_posSemidef
+lemma shifted_posSemidef_matrix_inverse_posSemidef
     {d : Type*} [Fintype d] [DecidableEq d]
     {F : Matrix d d ℂ} (hF : F.PosSemidef)
     {s : ℝ} (hs : 0 < s) :
     ((F + s • (1 : Matrix d d ℂ))⁻¹).PosSemidef :=
   (shifted_posSemidef_matrix_posDef hF hs).posSemidef.inv
 
-theorem matrix_weighted_centered
+lemma matrix_weighted_centered
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (weight : ι → ℝ) (F : ι → Matrix d d ℂ)
     (M : Matrix d d ℂ)
@@ -1426,7 +1426,7 @@ theorem matrix_weighted_centered
   rw [Finset.sum_sub_distrib, mean, ← Finset.sum_smul, normalized]
   simp
 
-theorem weighted_positive_matrix_mean
+lemma weighted_positive_matrix_mean
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (weight : ι → ℝ) (F : ι → Matrix d d ℂ)
     (nonnegative : ∀ i, 0 ≤ weight i)
@@ -1442,7 +1442,7 @@ noncomputable section
 open MeasureTheory Filter Set
 open scoped BigOperators Topology
 
-theorem scalar_resolvent_purification_integrable_of_pos
+lemma scalar_resolvent_purification_integrable_of_pos
     {z : ℝ} (hz : 0 < z) :
     IntegrableOn (fun s : ℝ => (z / (z + s)) ^ 2) (Ioi 0) := by
   have hpower :
@@ -1464,14 +1464,14 @@ theorem scalar_resolvent_purification_integrable_of_pos
   rw [div_pow]
   simp [div_eq_mul_inv, add_comm]
 
-theorem scalar_resolvent_purification_integrable
+lemma scalar_resolvent_purification_integrable
     {z : ℝ} (hz : 0 ≤ z) :
     IntegrableOn (fun s : ℝ => (z / (z + s)) ^ 2) (Ioi 0) := by
   rcases hz.eq_or_lt with rfl | hzpos
   · simp
   · exact scalar_resolvent_purification_integrable_of_pos hzpos
 
-theorem scalar_resolvent_purification_integral
+lemma scalar_resolvent_purification_integral
     {z : ℝ} (hz : 0 ≤ z) :
     (∫ s in Ioi (0 : ℝ), (z / (z + s)) ^ 2) = z := by
   rcases hz.eq_or_lt with rfl | hzpos
@@ -1529,7 +1529,7 @@ def diagonalPurificationGram
   Matrix.diagonal fun i =>
     (((eigenvalue i / (eigenvalue i + s)) ^ 2 : ℝ) : ℂ)
 
-theorem diagonalPurificationGram_integrable
+lemma diagonalPurificationGram_integrable
     {d : Type*} [Fintype d] [DecidableEq d]
     (eigenvalue : d → ℝ)
     (h_nonneg : ∀ i, 0 ≤ eigenvalue i) :
@@ -1552,7 +1552,7 @@ theorem diagonalPurificationGram_integrable
       hcomplex
   · simp [diagonalPurificationGram, h]
 
-theorem integral_diagonalPurificationGram
+lemma integral_diagonalPurificationGram
     {d : Type*} [Fintype d] [DecidableEq d]
     (eigenvalue : d → ℝ)
     (h_nonneg : ∀ i, 0 ≤ eigenvalue i) :
@@ -1595,7 +1595,7 @@ def spectralConjugationCLM
   LinearMap.toContinuousLinearMap
     (Unitary.conjStarAlgAut ℝ (Matrix d d ℂ) U).toAlgEquiv.toLinearEquiv.toLinearMap
 
-@[simp] theorem spectralConjugationCLM_apply
+@[simp] lemma spectralConjugationCLM_apply
     {d : Type*} [Fintype d] [DecidableEq d]
     (U : Matrix.unitaryGroup d ℂ) (A : Matrix d d ℂ) :
     spectralConjugationCLM U A =
@@ -1609,7 +1609,7 @@ def spectralPurificationGram
   spectralConjugationCLM hF.isHermitian.eigenvectorUnitary
     (diagonalPurificationGram hF.isHermitian.eigenvalues s)
 
-theorem spectralPurificationGram_integrable
+lemma spectralPurificationGram_integrable
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) :
     IntegrableOn (spectralPurificationGram F hF) (Ioi 0) := by
@@ -1618,7 +1618,7 @@ theorem spectralPurificationGram_integrable
   exact (spectralConjugationCLM hF.isHermitian.eigenvectorUnitary).integrable_comp
     hdiag
 
-theorem integral_spectralPurificationGram
+lemma integral_spectralPurificationGram
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) :
     (∫ s in Ioi (0 : ℝ), spectralPurificationGram F hF s) = F := by
@@ -1660,7 +1660,7 @@ def spectralPurificationFilter
       ((hF.isHermitian.eigenvalues i /
         (hF.isHermitian.eigenvalues i + s) : ℝ) : ℂ))
 
-theorem spectralPurificationFilter_gram
+lemma spectralPurificationFilter_gram
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) (s : ℝ) :
     star (spectralPurificationFilter F hF s) *
@@ -1694,7 +1694,7 @@ theorem spectralPurificationFilter_gram
     _ = e (diagonalPurificationGram eigenvalue s) := by
       rw [hDstar, hDsquare]
 
-theorem integral_spectralPurificationFilter_gram
+lemma integral_spectralPurificationFilter_gram
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) :
     (∫ s in Ioi (0 : ℝ),
@@ -1703,7 +1703,7 @@ theorem integral_spectralPurificationFilter_gram
   simp_rw [spectralPurificationFilter_gram]
   exact integral_spectralPurificationGram F hF
 
-theorem spectralPurificationFilter_gram_integrable
+lemma spectralPurificationFilter_gram_integrable
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) :
     IntegrableOn
@@ -1744,7 +1744,7 @@ namespace Game
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem questionWeight_le_marginalX
+lemma questionWeight_le_marginalX
     (G : Game X Y A B) (x : X) (y : Y) :
     G.questionWeight x y ≤ G.marginalX x := by
   unfold marginalX
@@ -1752,7 +1752,7 @@ theorem questionWeight_le_marginalX
     (fun y _ => G.weight_nonneg x y)
     (Finset.mem_univ y)
 
-theorem questionWeight_le_marginalY
+lemma questionWeight_le_marginalY
     (G : Game X Y A B) (x : X) (y : Y) :
     G.questionWeight x y ≤ G.marginalY y := by
   unfold marginalY
@@ -1766,19 +1766,19 @@ def conditionalYGivenX (G : Game X Y A B) (x : X) (y : Y) : ℝ :=
 def conditionalXGivenY (G : Game X Y A B) (y : Y) (x : X) : ℝ :=
   G.questionWeight x y / G.marginalY y
 
-theorem conditionalYGivenX_nonneg
+lemma conditionalYGivenX_nonneg
     (G : Game X Y A B) (x : X) (y : Y) :
     0 ≤ G.conditionalYGivenX x y := by
   exact div_nonneg (G.weight_nonneg x y)
     (G.marginalX_nonneg x)
 
-theorem conditionalXGivenY_nonneg
+lemma conditionalXGivenY_nonneg
     (G : Game X Y A B) (y : Y) (x : X) :
     0 ≤ G.conditionalXGivenY y x := by
   exact div_nonneg (G.weight_nonneg x y)
     (G.marginalY_nonneg y)
 
-theorem marginalX_mul_conditionalYGivenX
+lemma marginalX_mul_conditionalYGivenX
     (G : Game X Y A B) (x : X) (y : Y) :
     G.marginalX x * G.conditionalYGivenX x y =
       G.questionWeight x y := by
@@ -1792,7 +1792,7 @@ theorem marginalX_mul_conditionalYGivenX
     simp [hx, hzero]
   · field_simp
 
-theorem marginalY_mul_conditionalXGivenY
+lemma marginalY_mul_conditionalXGivenY
     (G : Game X Y A B) (x : X) (y : Y) :
     G.marginalY y * G.conditionalXGivenY y x =
       G.questionWeight x y := by
@@ -1806,7 +1806,7 @@ theorem marginalY_mul_conditionalXGivenY
     simp [hy, hzero]
   · field_simp
 
-theorem conditionalYGivenX_sum
+lemma conditionalYGivenX_sum
     (G : Game X Y A B) (x : X)
     (hx : 0 < G.marginalX x) :
     (∑ y : Y, G.conditionalYGivenX x y) = 1 := by
@@ -1815,7 +1815,7 @@ theorem conditionalYGivenX_sum
   change G.marginalX x / G.marginalX x = 1
   exact div_self hx.ne'
 
-theorem conditionalXGivenY_sum
+lemma conditionalXGivenY_sum
     (G : Game X Y A B) (y : Y)
     (hy : 0 < G.marginalY y) :
     (∑ x : X, G.conditionalXGivenY y x) = 1 := by
@@ -1841,7 +1841,7 @@ def conditionalAliceAverage
     (G : Game X Y A B) (H : X → U) (y : Y) : U :=
   ∑ x : X, G.conditionalXGivenY y x • H x
 
-theorem alice_mixed_history_pairing
+lemma alice_mixed_history_pairing
     (G : Game X Y A B)
     (pair : U →ₗ[ℝ] V →ₗ[ℝ] ℝ)
     (H : X → U) (K : Y → V) :
@@ -1862,7 +1862,7 @@ theorem alice_mixed_history_pairing
   simp only [smul_eq_mul]
   rw [← mul_assoc, G.marginalX_mul_conditionalYGivenX x y]
 
-theorem bob_mixed_history_pairing
+lemma bob_mixed_history_pairing
     (G : Game X Y A B)
     (pair : U →ₗ[ℝ] V →ₗ[ℝ] ℝ)
     (H : X → U) (K : Y → V) :
@@ -1895,7 +1895,7 @@ theorem bob_mixed_history_pairing
         G.questionWeight x y * pair (H x) (K y) := by
           rw [Finset.sum_comm]
 
-theorem alice_reveal_increment
+lemma alice_reveal_increment
     (G : Game X Y A B)
     (pair : U →ₗ[ℝ] V →ₗ[ℝ] ℝ)
     (H : X → U) (M : Y → U) (K : Y → V)
@@ -1963,7 +1963,7 @@ def conditionedBobEffect
       then (S.bobMeasurement ys).effect answers
       else 0
 
-theorem conditionedAliceEffect_positive
+lemma conditionedAliceEffect_positive
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
@@ -1978,7 +1978,7 @@ theorem conditionedAliceEffect_positive
   · exact (S.aliceMeasurement xs).positive answers
   · exact Matrix.PosSemidef.zero
 
-theorem conditionedBobEffect_positive
+lemma conditionedBobEffect_positive
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
@@ -1993,7 +1993,7 @@ theorem conditionedBobEffect_positive
   · exact (S.bobMeasurement ys).positive answers
   · exact Matrix.PosSemidef.zero
 
-theorem conditionedAliceEffect_complement_positive
+lemma conditionedAliceEffect_complement_positive
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
@@ -2021,7 +2021,7 @@ theorem conditionedAliceEffect_complement_positive
   · exact Matrix.PosSemidef.zero
   · exact (S.aliceMeasurement xs).positive answers
 
-theorem conditionedBobEffect_complement_positive
+lemma conditionedBobEffect_complement_positive
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
@@ -2051,7 +2051,7 @@ theorem conditionedBobEffect_complement_positive
 
 end RepeatedQuantumFilters
 
-theorem history_forward_telescope (E : ℕ → ℝ) (m : ℕ) :
+lemma history_forward_telescope (E : ℕ → ℝ) (m : ℕ) :
     (∑ k ∈ Finset.range m, (E (k + 1) - E k))
       = E m - E 0 := by
   simpa [Nat.succ_eq_add_one] using Finset.sum_range_sub E m
@@ -2070,7 +2070,7 @@ def spectralSupportFunctional
     hF.isHermitian.eigenvectorUnitary)
       (Matrix.diagonal fun i => (f (hF.isHermitian.eigenvalues i) : ℂ))
 
-theorem spectralSupportFunctional_mul
+lemma spectralSupportFunctional_mul
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
     (f g : ℝ → ℝ) :
@@ -2087,14 +2087,14 @@ theorem spectralSupportFunctional_mul
   push_cast
   rfl
 
-theorem spectralSupportFunctional_id
+lemma spectralSupportFunctional_id
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) :
     spectralSupportFunctional F hF (fun x => x) = F := by
   simpa [spectralSupportFunctional, Function.comp_def] using
     hF.isHermitian.spectral_theorem.symm
 
-theorem spectralSupportFunctional_congr
+lemma spectralSupportFunctional_congr
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
     {f g : ℝ → ℝ}
@@ -2108,7 +2108,7 @@ theorem spectralSupportFunctional_congr
   funext i
   exact_mod_cast h i
 
-theorem spectralSupportFunctional_isHermitian
+lemma spectralSupportFunctional_isHermitian
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
     (f : ℝ → ℝ) :
@@ -2144,19 +2144,19 @@ def spectralSupportSqrt
     (F : Matrix d d ℂ) (hF : F.PosSemidef) : Matrix d d ℂ :=
   spectralSupportFunctional F hF Real.sqrt
 
-theorem spectralSupportInverse_isHermitian
+lemma spectralSupportInverse_isHermitian
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) :
     (spectralSupportInverse F hF).IsHermitian :=
   spectralSupportFunctional_isHermitian F hF _
 
-theorem spectralSupportProjection_isHermitian
+lemma spectralSupportProjection_isHermitian
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) :
     (spectralSupportProjection F hF).IsHermitian :=
   spectralSupportFunctional_isHermitian F hF _
 
-theorem spectralSupportInverse_mul
+lemma spectralSupportInverse_mul
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) :
     spectralSupportInverse F hF * F =
@@ -2176,7 +2176,7 @@ theorem spectralSupportInverse_mul
       · simp [hi]
       · simp [hi])
 
-theorem mul_spectralSupportInverse
+lemma mul_spectralSupportInverse
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) :
     F * spectralSupportInverse F hF =
@@ -2196,7 +2196,7 @@ theorem mul_spectralSupportInverse
       · simp [hi]
       · simp [hi])
 
-theorem spectralSupportProjection_mul
+lemma spectralSupportProjection_mul
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) :
     spectralSupportProjection F hF * F = F := by
@@ -2218,7 +2218,7 @@ theorem spectralSupportProjection_mul
         by_cases hi : hF.isHermitian.eigenvalues i = 0 <;> simp [hi])
     _ = F := spectralSupportFunctional_id F hF
 
-theorem spectralSupportInverse_penrose
+lemma spectralSupportInverse_penrose
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) :
     spectralSupportInverse F hF * F *
@@ -2244,7 +2244,7 @@ theorem spectralSupportInverse_penrose
       · simp [hi]
       · simp [hi])
 
-theorem spectralSupportSqrt_sq
+lemma spectralSupportSqrt_sq
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) :
     spectralSupportSqrt F hF * spectralSupportSqrt F hF = F := by
@@ -2269,7 +2269,7 @@ noncomputable section
 open Matrix
 open scoped BigOperators ComplexOrder MatrixOrder
 
-theorem mul_spectralSupportProjection
+lemma mul_spectralSupportProjection
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) :
     F * spectralSupportProjection F hF = F := by
@@ -2279,7 +2279,7 @@ theorem mul_spectralSupportProjection
     (spectralSupportProjection_isHermitian F hF).eq,
     hF.isHermitian.eq] using h
 
-theorem posSemidef_kernel_of_sub_posSemidef
+lemma posSemidef_kernel_of_sub_posSemidef
     {d : Type*} [Fintype d] [DecidableEq d]
     {F A : Matrix d d ℂ}
     (hA : A.PosSemidef) (hsub : (F - A).PosSemidef)
@@ -2304,7 +2304,7 @@ theorem posSemidef_kernel_of_sub_posSemidef
       _ = 0 := by rw [hx]; simp
   exact (add_eq_zero_iff_of_nonneg hA_nonneg hsub_nonneg).mp hzero |>.1
 
-theorem posSemidef_mul_spectralSupportProjection
+lemma posSemidef_mul_spectralSupportProjection
     {d : Type*} [Fintype d] [DecidableEq d]
     {F A : Matrix d d ℂ}
     (hF : F.PosSemidef) (hA : A.PosSemidef)
@@ -2327,7 +2327,7 @@ theorem posSemidef_mul_spectralSupportProjection
     simpa [mul_sub] using hAzero
   exact (sub_eq_zero.mp hdiff).symm
 
-theorem spectralSupportProjection_mul_posSemidef
+lemma spectralSupportProjection_mul_posSemidef
     {d : Type*} [Fintype d] [DecidableEq d]
     {F A : Matrix d d ℂ}
     (hF : F.PosSemidef) (hA : A.PosSemidef)
@@ -2339,7 +2339,7 @@ theorem spectralSupportProjection_mul_posSemidef
     (spectralSupportProjection_isHermitian F hF).eq,
     hA.isHermitian.eq] using h
 
-theorem refinement_complement_posSemidef
+lemma refinement_complement_posSemidef
     {ι d : Type*} [Fintype ι] [DecidableEq ι]
     [Fintype d] [DecidableEq d]
     (effect : ι → Matrix d d ℂ)
@@ -2373,7 +2373,7 @@ def purificationRangeProjection
     (Γ : Matrix e d ℂ) : Matrix e e ℂ :=
   Γ * spectralSupportInverse F hF * Matrix.conjTranspose Γ
 
-theorem purificationRangeProjection_isHermitian
+lemma purificationRangeProjection_isHermitian
     {d e : Type*} [Fintype d] [DecidableEq d]
     [Fintype e] [DecidableEq e]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
@@ -2385,7 +2385,7 @@ theorem purificationRangeProjection_isHermitian
   simp [Matrix.conjTranspose_mul,
     (spectralSupportInverse_isHermitian F hF).eq, Matrix.mul_assoc]
 
-theorem purificationRangeProjection_idempotent
+lemma purificationRangeProjection_idempotent
     {d e : Type*} [Fintype d] [DecidableEq d]
     [Fintype e] [DecidableEq e]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
@@ -2409,7 +2409,7 @@ theorem purificationRangeProjection_idempotent
           Matrix.conjTranspose Γ := by
             rw [spectralSupportInverse_penrose]
 
-theorem purificationRangeProjection_complement_posSemidef
+lemma purificationRangeProjection_complement_posSemidef
     {d e : Type*} [Fintype d] [DecidableEq d]
     [Fintype e] [DecidableEq e]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
@@ -2444,7 +2444,7 @@ def purifiedRefinementCore
   Γ * spectralSupportInverse F hF * effect a *
     spectralSupportInverse F hF * Matrix.conjTranspose Γ
 
-theorem purifiedRefinementCore_posSemidef
+lemma purifiedRefinementCore_posSemidef
     {ι d e : Type*} [Fintype ι]
     [Fintype d] [DecidableEq d]
     [Fintype e] [DecidableEq e]
@@ -2460,7 +2460,7 @@ theorem purifiedRefinementCore_posSemidef
     (spectralSupportInverse_isHermitian F hF).eq,
     Matrix.mul_assoc] using h
 
-theorem purifiedRefinementCore_sum
+lemma purifiedRefinementCore_sum
     {ι d e : Type*} [Fintype ι]
     [Fintype d] [DecidableEq d]
     [Fintype e] [DecidableEq e]
@@ -2500,7 +2500,7 @@ def purifiedRefinedEffect
   purifiedRefinementCore F hF Γ effect a +
     if a = a₀ then 1 - purificationRangeProjection F hF Γ else 0
 
-theorem purifiedRefinedEffect_posSemidef
+lemma purifiedRefinedEffect_posSemidef
     {ι d e : Type*} [Fintype ι] [DecidableEq ι]
     [Fintype d] [DecidableEq d]
     [Fintype e] [DecidableEq e]
@@ -2519,7 +2519,7 @@ theorem purifiedRefinedEffect_posSemidef
   · exact purificationRangeProjection_complement_posSemidef F hF Γ hΓ
   · exact Matrix.PosSemidef.zero
 
-theorem purifiedRefinedEffect_complete
+lemma purifiedRefinedEffect_complete
     {ι d e : Type*} [Fintype ι] [DecidableEq ι]
     [Fintype d] [DecidableEq d]
     [Fintype e] [DecidableEq e]
@@ -2535,7 +2535,7 @@ theorem purifiedRefinedEffect_complete
   rw [purifiedRefinementCore_sum F hF Γ effect hsum]
   simp
 
-theorem purificationRangeProjection_compression
+lemma purificationRangeProjection_compression
     {d e : Type*} [Fintype d] [DecidableEq d]
     [Fintype e] [DecidableEq e]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
@@ -2554,7 +2554,7 @@ theorem purificationRangeProjection_compression
       rw [mul_spectralSupportInverse]
     _ = F := spectralSupportProjection_mul F hF
 
-theorem purificationRangeProjection_complement_compression
+lemma purificationRangeProjection_complement_compression
     {d e : Type*} [Fintype d] [DecidableEq d]
     [Fintype e] [DecidableEq e]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
@@ -2573,7 +2573,7 @@ theorem purificationRangeProjection_complement_compression
       rw [hΓ, purificationRangeProjection_compression F hF Γ hΓ]
     _ = 0 := sub_self F
 
-theorem purifiedRefinementCore_compression
+lemma purifiedRefinementCore_compression
     {ι d e : Type*} [Fintype ι] [DecidableEq ι]
     [Fintype d] [DecidableEq d]
     [Fintype e] [DecidableEq e]
@@ -2613,7 +2613,7 @@ theorem purifiedRefinementCore_compression
       exact posSemidef_mul_spectralSupportProjection hF
         (hpositive a) hsub
 
-theorem purifiedRefinedEffect_compression
+lemma purifiedRefinedEffect_compression
     {ι d e : Type*} [Fintype ι] [DecidableEq ι]
     [Fintype d] [DecidableEq d]
     [Fintype e] [DecidableEq e]
@@ -2656,7 +2656,7 @@ def purifiedRefinedPOVM
     effect hpositive a₀ a
   complete := purifiedRefinedEffect_complete F hF Γ effect hsum a₀
 
-theorem purifiedRefinedPOVM_compression
+lemma purifiedRefinedPOVM_compression
     {ι d e : Type*} [Fintype ι] [DecidableEq ι]
     [Fintype d] [DecidableEq d]
     [Fintype e] [DecidableEq e]
@@ -2815,7 +2815,7 @@ def fullHistoryHiddenBobWeight
   ∏ i : {i : Fin n // i ∈ L},
     G.conditionalYGivenX (h.aliceRevealed i) (hidden i)
 
-theorem fullHistoryWeight_nonneg
+lemma fullHistoryWeight_nonneg
     (G : Game X Y A B) {n : ℕ}
     {D L : Finset (Fin n)}
     (h : FullSubsetHistory X Y n D L) :
@@ -2830,7 +2830,7 @@ theorem fullHistoryWeight_nonneg
   · exact Finset.prod_nonneg fun i _ =>
       G.marginalY_nonneg (h.bobRemaining i)
 
-theorem fullHistoryHiddenAliceWeight_nonneg
+lemma fullHistoryHiddenAliceWeight_nonneg
     (G : Game X Y A B) {n : ℕ}
     {D L : Finset (Fin n)}
     (h : FullSubsetHistory X Y n D L)
@@ -2840,7 +2840,7 @@ theorem fullHistoryHiddenAliceWeight_nonneg
   exact Finset.prod_nonneg fun i _ =>
     G.conditionalXGivenY_nonneg (h.bobRemaining i) (hidden i)
 
-theorem fullHistoryHiddenBobWeight_nonneg
+lemma fullHistoryHiddenBobWeight_nonneg
     (G : Game X Y A B) {n : ℕ}
     {D L : Finset (Fin n)}
     (h : FullSubsetHistory X Y n D L)
@@ -2850,7 +2850,7 @@ theorem fullHistoryHiddenBobWeight_nonneg
   exact Finset.prod_nonneg fun i _ =>
     G.conditionalYGivenX_nonneg (h.aliceRevealed i) (hidden i)
 
-theorem fullHistoryWeight_mul_hidden
+lemma fullHistoryWeight_mul_hidden
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n))
     (hL : L ⊆ Finset.univ \ D)
@@ -3015,7 +3015,7 @@ def fullHistoryBobFilter
       conditionedBobEffect G n S D β
         (fullHistoryBobQuestion h hidden)
 
-theorem fullHistoryAliceFilter_posSemidef
+lemma fullHistoryAliceFilter_posSemidef
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     (D L : Finset (Fin n))
@@ -3029,7 +3029,7 @@ theorem fullHistoryAliceFilter_posSemidef
     (fullHistoryAliceQuestion h hidden)).smul
       (fullHistoryHiddenAliceWeight_nonneg G h hidden)
 
-theorem fullHistoryBobFilter_posSemidef
+lemma fullHistoryBobFilter_posSemidef
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     (D L : Finset (Fin n))
@@ -3054,7 +3054,7 @@ def fullHistoryWinIndicator
     G.predicate (h.aliceConditioned i) (h.bobConditioned i)
       (α i) (β i) = true then 1 else 0
 
-theorem fullHistoryWinIndicator_nonneg
+lemma fullHistoryWinIndicator_nonneg
     (G : Game X Y A B) {n : ℕ}
     {D L : Finset (Fin n)}
     (h : FullSubsetHistory X Y n D L)
@@ -3065,7 +3065,7 @@ theorem fullHistoryWinIndicator_nonneg
   unfold fullHistoryWinIndicator
   split <;> norm_num
 
-theorem conditionedAnswerMatches_iff
+lemma conditionedAnswerMatches_iff
     {T : Type*} {n : ℕ}
     (D : Finset (Fin n))
     (answer : Fin n → T)
@@ -3080,7 +3080,7 @@ theorem conditionedAnswerMatches_iff
     subst α
     rfl
 
-theorem conditionedEffects_born_expansion
+lemma conditionedEffects_born_expansion
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
@@ -3111,7 +3111,7 @@ theorem conditionedEffects_born_expansion
     · exact map_zero _
   · simp
 
-theorem finite_sum_four_swap
+lemma finite_sum_four_swap
     {I J K T : Type*}
     [Fintype I] [Fintype J] [Fintype K] [Fintype T]
     (f : I → J → K → T → ℝ) :
@@ -3148,7 +3148,7 @@ def fullQuestionWinIndicator
     G.predicate (xs i) (ys i) (α i) (β i) = true
     then 1 else 0
 
-theorem fullHistoryWinIndicator_eq_question
+lemma fullHistoryWinIndicator_eq_question
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n))
     (h : FullSubsetHistory X Y n D L)
@@ -3172,7 +3172,7 @@ theorem fullHistoryWinIndicator_eq_question
     simpa [fullHistoryAliceQuestion,
       fullHistoryBobQuestion, i.property] using hw i
 
-theorem conditionedEffects_postselection_sum
+lemma conditionedEffects_postselection_sum
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
@@ -3227,7 +3227,7 @@ theorem conditionedEffects_postselection_sum
       simp [conditionedAnswerMatches_iff,
         fullQuestionWinIndicator, mul_ite]
 
-theorem repeated_partialWinMass_expansion
+lemma repeated_partialWinMass_expansion
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) :
@@ -3276,7 +3276,7 @@ theorem repeated_partialWinMass_expansion
   · rw [if_pos (hiff.mpr hw), if_pos hw]
   · rw [if_neg (mt hiff.mp hw), if_neg hw, mul_zero]
 
-theorem fullQuestionConditionedBornMass_eq
+lemma fullQuestionConditionedBornMass_eq
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
@@ -3329,7 +3329,7 @@ theorem fullQuestionConditionedBornMass_eq
         simp only [Finset.mul_sum]
     _ = _ := (repeated_partialWinMass_expansion G n S D).symm
 
-theorem fullHistoryFilters_born_expansion
+lemma fullHistoryFilters_born_expansion
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     (D L : Finset (Fin n))
@@ -3359,7 +3359,7 @@ theorem fullHistoryFilters_born_expansion
   intro hy _
   ring
 
-theorem fullSubsetHistory_mass_eq_postselection
+lemma fullSubsetHistory_mass_eq_postselection
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
@@ -3485,7 +3485,7 @@ set_option backward.isDefEq.respectTransparency false
 
 attribute [local instance] Matrix.normedAddCommGroup Matrix.normedSpace
 
-theorem spectralPurificationFilter_mul_shift
+lemma spectralPurificationFilter_mul_shift
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
     {s : ℝ} (hs : 0 < s) :
@@ -3539,7 +3539,7 @@ theorem spectralPurificationFilter_mul_shift
   change e T * (F + s • (1 : Matrix d d ℂ)) = F
   rw [hFspec, ← hscalar, ← map_add, ← map_mul, hproduct]
 
-theorem spectralPurificationFilter_eq_resolvent
+lemma spectralPurificationFilter_eq_resolvent
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
     {s : ℝ} (hs : 0 < s) :
@@ -3572,7 +3572,7 @@ set_option backward.isDefEq.respectTransparency false
 
 attribute [local instance] Matrix.normedAddCommGroup Matrix.normedSpace
 
-theorem spectralPurificationFilter_square_contraction
+lemma spectralPurificationFilter_square_contraction
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
     {s : ℝ} (hs : 0 < s) :
@@ -3681,7 +3681,7 @@ def matrixAdjointCLM
         intro r A
         simp }
 
-theorem bochner_integral_posSemidef
+lemma bochner_integral_posSemidef
     {α d : Type*} [MeasurableSpace α]
     [Fintype d] [DecidableEq d]
     {μ : Measure α} {f : α → Matrix d d ℂ}
@@ -3726,7 +3726,7 @@ set_option backward.isDefEq.respectTransparency false
 
 attribute [local instance] Matrix.normedAddCommGroup Matrix.normedSpace
 
-theorem spectralPurificationFilter_eq_one_sub_shifted_inverse
+lemma spectralPurificationFilter_eq_one_sub_shifted_inverse
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
     {s : ℝ} (hs : 0 < s) :
@@ -3741,7 +3741,7 @@ theorem spectralPurificationFilter_eq_one_sub_shifted_inverse
     Matrix.mul_nonsing_inv
       (F + s • (1 : Matrix d d ℂ)) hdet
 
-theorem shifted_inverse_square_contraction
+lemma shifted_inverse_square_contraction
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
     {s : ℝ} (hs : 0 < s) :
@@ -3775,7 +3775,7 @@ set_option backward.isDefEq.respectTransparency false
 
 attribute [local instance] Matrix.normedAddCommGroup Matrix.normedSpace
 
-theorem spectralPurificationFilter_sub_resolvent
+lemma spectralPurificationFilter_sub_resolvent
     {d : Type*} [Fintype d] [DecidableEq d]
     (F M : Matrix d d ℂ)
     (hF : F.PosSemidef) (hM : M.PosSemidef)
@@ -3801,7 +3801,7 @@ theorem spectralPurificationFilter_sub_resolvent
       (Matrix.nonsing_inv_mul _ hdetF)
       (Matrix.mul_nonsing_inv _ hdetM)
 
-theorem spectralPurificationFilter_sub_gram
+lemma spectralPurificationFilter_sub_gram
     {d : Type*} [Fintype d] [DecidableEq d]
     (F M : Matrix d d ℂ)
     (hF : F.PosSemidef) (hM : M.PosSemidef)
@@ -3846,7 +3846,7 @@ set_option backward.isDefEq.respectTransparency false
 
 attribute [local instance] Matrix.normedAddCommGroup Matrix.normedSpace
 
-theorem weighted_shifted_inverse_second_order
+lemma weighted_shifted_inverse_second_order
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (weight : ι → ℝ) (F : ι → Matrix d d ℂ)
     (M : Matrix d d ℂ)
@@ -3896,7 +3896,7 @@ theorem weighted_shifted_inverse_second_order
     (Matrix.nonsing_inv_mul _ hdetM)
   simpa [W, RF, RM, smul_mul_assoc] using hidentity
 
-theorem weighted_spectralPurificationFilter_variance_le_inverse_jensen
+lemma weighted_spectralPurificationFilter_variance_le_inverse_jensen
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (weight : ι → ℝ) (F : ι → Matrix d d ℂ)
     (M : Matrix d d ℂ)
@@ -3986,7 +3986,7 @@ set_option backward.isDefEq.respectTransparency false
 
 attribute [local instance] Matrix.normedAddCommGroup Matrix.normedSpace
 
-theorem scalarResolventFilter_memLp_two
+lemma scalarResolventFilter_memLp_two
     {z : ℝ} (hz : 0 ≤ z) :
     MemLp (fun s : ℝ => z / (z + s)) 2
       (volume.restrict (Ioi 0)) := by
@@ -3998,7 +3998,7 @@ theorem scalarResolventFilter_memLp_two
   exact (memLp_two_iff_integrable_sq hmeas).mpr
     (scalar_resolvent_purification_integrable hz)
 
-theorem spectralPurificationFilter_memLp_two
+lemma spectralPurificationFilter_memLp_two
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) :
     MemLp (spectralPurificationFilter F hF) 2
@@ -4031,7 +4031,7 @@ theorem spectralPurificationFilter_memLp_two
       ((U : Matrix d d ℂ) i k)).mul_const
         (star (U : Matrix d d ℂ) k j)
 
-theorem matrix_memLp_two_mul_integrable
+lemma matrix_memLp_two_mul_integrable
     {α d : Type*} [MeasurableSpace α]
     [Fintype d] {μ : Measure α}
     {f g : α → Matrix d d ℂ}
@@ -4047,7 +4047,7 @@ theorem matrix_memLp_two_mul_integrable
   intro k _
   exact ((hf.eval i).eval k).integrable_mul ((hg.eval k).eval j)
 
-theorem spectralPurificationFilter_difference_gram_integrable
+lemma spectralPurificationFilter_difference_gram_integrable
     {d : Type*} [Fintype d] [DecidableEq d]
     (F M : Matrix d d ℂ)
     (hF : F.PosSemidef) (hM : M.PosSemidef) :
@@ -4078,7 +4078,7 @@ set_option backward.isDefEq.respectTransparency false
 
 attribute [local instance] Matrix.normedAddCommGroup Matrix.normedSpace
 
-theorem scalar_entropy_resolvent_integrable
+lemma scalar_entropy_resolvent_integrable
     {z : ℝ} (hz : 0 ≤ z) :
     IntegrableOn
       (fun s : ℝ => z / (1 + s) - z / (z + s))
@@ -4116,7 +4116,7 @@ def spectralEntropyKernel
         hF.isHermitian.eigenvalues i /
           (hF.isHermitian.eigenvalues i + s) : ℝ) : ℂ))
 
-theorem spectralEntropyKernel_integrable
+lemma spectralEntropyKernel_integrable
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) :
     IntegrableOn (spectralEntropyKernel F hF) (Ioi 0) := by
@@ -4161,7 +4161,7 @@ set_option backward.isDefEq.respectTransparency false
 
 attribute [local instance] Matrix.normedAddCommGroup Matrix.normedSpace
 
-theorem spectralEntropyKernel_eq_scalar_sub_filter
+lemma spectralEntropyKernel_eq_scalar_sub_filter
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) (s : ℝ) :
     spectralEntropyKernel F hF s =
@@ -4212,7 +4212,7 @@ def weightedSpectralEntropyJensen
   (∑ i : ι, weight i • spectralEntropyKernel (F i) (positive i) s) -
     spectralEntropyKernel M hM s
 
-theorem weightedSpectralFilterVariance_integrable
+lemma weightedSpectralFilterVariance_integrable
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (weight : ι → ℝ) (F : ι → Matrix d d ℂ)
     (M : Matrix d d ℂ)
@@ -4227,7 +4227,7 @@ theorem weightedSpectralFilterVariance_integrable
   exact (spectralPurificationFilter_difference_gram_integrable
     (F i) M (positive i) hM).smul (weight i)
 
-theorem weightedSpectralEntropyJensen_integrable
+lemma weightedSpectralEntropyJensen_integrable
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (weight : ι → ℝ) (F : ι → Matrix d d ℂ)
     (M : Matrix d d ℂ)
@@ -4244,7 +4244,7 @@ theorem weightedSpectralEntropyJensen_integrable
       (F i) (positive i)).smul (weight i)
   · exact spectralEntropyKernel_integrable M hM
 
-theorem weightedSpectralEntropyJensen_eq_shifted_inverse
+lemma weightedSpectralEntropyJensen_eq_shifted_inverse
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (weight : ι → ℝ) (F : ι → Matrix d d ℂ)
     (M : Matrix d d ℂ)
@@ -4315,7 +4315,7 @@ theorem weightedSpectralEntropyJensen_eq_shifted_inverse
     spectralPurificationFilter_eq_one_sub_shifted_inverse M hM hs]
   module
 
-theorem integrated_weighted_spectralPurificationFilter_jensen
+lemma integrated_weighted_spectralPurificationFilter_jensen
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (weight : ι → ℝ) (F : ι → Matrix d d ℂ)
     (M : Matrix d d ℂ)
@@ -4371,7 +4371,7 @@ set_option backward.isDefEq.respectTransparency false
 
 attribute [local instance] Matrix.normedAddCommGroup Matrix.normedSpace
 
-theorem scalar_entropy_resolvent_integral
+lemma scalar_entropy_resolvent_integral
     {z : ℝ} (hz : 0 ≤ z) :
     (∫ s in Ioi (0 : ℝ),
       (z / (1 + s) - z / (z + s))) = z * Real.log z := by
@@ -4468,7 +4468,7 @@ def diagonalEntropyKernel
     ((eigenvalue i / (1 + s) -
       eigenvalue i / (eigenvalue i + s) : ℝ) : ℂ)
 
-theorem diagonalEntropyKernel_integrable
+lemma diagonalEntropyKernel_integrable
     {d : Type*} [Fintype d] [DecidableEq d]
     (eigenvalue : d → ℝ)
     (nonnegative : ∀ i, 0 ≤ eigenvalue i) :
@@ -4492,7 +4492,7 @@ theorem diagonalEntropyKernel_integrable
       Matrix.diagonal_apply_eq] using hcomplex
   · simp [diagonalEntropyKernel, hij]
 
-theorem integral_diagonalEntropyKernel
+lemma integral_diagonalEntropyKernel
     {d : Type*} [Fintype d] [DecidableEq d]
     (eigenvalue : d → ℝ)
     (nonnegative : ∀ i, 0 ≤ eigenvalue i) :
@@ -4532,7 +4532,7 @@ theorem integral_diagonalEntropyKernel
             rw [scalar_entropy_resolvent_integral (nonnegative i)]
   · simp [diagonalEntropyKernel, hij]
 
-theorem integral_spectralEntropyKernel_eq_cfc
+lemma integral_spectralEntropyKernel_eq_cfc
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) :
     (∫ s in Ioi (0 : ℝ), spectralEntropyKernel F hF s) =
@@ -4567,7 +4567,7 @@ set_option backward.isDefEq.respectTransparency false
 
 attribute [local instance] Matrix.normedAddCommGroup Matrix.normedSpace
 
-theorem integral_weightedSpectralEntropyJensen_eq_cfc
+lemma integral_weightedSpectralEntropyJensen_eq_cfc
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (weight : ι → ℝ) (F : ι → Matrix d d ℂ)
     (M : Matrix d d ℂ)
@@ -4597,7 +4597,7 @@ theorem integral_weightedSpectralEntropyJensen_eq_cfc
   rw [integral_finsetSum Finset.univ (fun i _ => hterm i)]
   simp_rw [integral_smul, integral_spectralEntropyKernel_eq_cfc]
 
-theorem exact_matrix_log_entropy_filter_jensen
+lemma exact_matrix_log_entropy_filter_jensen
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (weight : ι → ℝ) (F : ι → Matrix d d ℂ)
     (M : Matrix d d ℂ)
@@ -4643,7 +4643,7 @@ section HistoryContractions
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem Game.conditionalYGivenX_sum_le_one
+lemma Game.conditionalYGivenX_sum_le_one
     (G : Game X Y A B) (x : X) :
     (∑ y : Y, G.conditionalYGivenX x y) ≤ 1 := by
   by_cases hx : G.marginalX x = 0
@@ -4652,7 +4652,7 @@ theorem Game.conditionalYGivenX_sum_le_one
       lt_of_le_of_ne (G.marginalX_nonneg x) (Ne.symm hx)
     rw [G.conditionalYGivenX_sum x hpos]
 
-theorem Game.conditionalXGivenY_sum_le_one
+lemma Game.conditionalXGivenY_sum_le_one
     (G : Game X Y A B) (y : Y) :
     (∑ x : X, G.conditionalXGivenY y x) ≤ 1 := by
   by_cases hy : G.marginalY y = 0
@@ -4661,7 +4661,7 @@ theorem Game.conditionalXGivenY_sum_le_one
       lt_of_le_of_ne (G.marginalY_nonneg y) (Ne.symm hy)
     rw [G.conditionalXGivenY_sum y hpos]
 
-theorem fullHistoryHiddenAliceWeight_sum_le_one
+lemma fullHistoryHiddenAliceWeight_sum_le_one
     (G : Game X Y A B) {n : ℕ}
     {D L : Finset (Fin n)}
     (h : FullSubsetHistory X Y n D L) :
@@ -4676,7 +4676,7 @@ theorem fullHistoryHiddenAliceWeight_sum_le_one
   · intro i _
     exact G.conditionalXGivenY_sum_le_one (h.bobRemaining i)
 
-theorem fullHistoryHiddenBobWeight_sum_le_one
+lemma fullHistoryHiddenBobWeight_sum_le_one
     (G : Game X Y A B) {n : ℕ}
     {D L : Finset (Fin n)}
     (h : FullSubsetHistory X Y n D L) :
@@ -4691,7 +4691,7 @@ theorem fullHistoryHiddenBobWeight_sum_le_one
   · intro i _
     exact G.conditionalYGivenX_sum_le_one (h.aliceRevealed i)
 
-theorem fullHistoryAliceFilter_complement_posSemidef
+lemma fullHistoryAliceFilter_complement_posSemidef
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     (D L : Finset (Fin n))
@@ -4723,7 +4723,7 @@ theorem fullHistoryAliceFilter_complement_posSemidef
       (fullHistoryAliceQuestion h x)).smul
         (fullHistoryHiddenAliceWeight_nonneg G h x)
 
-theorem fullHistoryBobFilter_complement_posSemidef
+lemma fullHistoryBobFilter_complement_posSemidef
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     (D L : Finset (Fin n))
@@ -4754,7 +4754,7 @@ theorem fullHistoryBobFilter_complement_posSemidef
       (fullHistoryBobQuestion h y)).smul
         (fullHistoryHiddenBobWeight_nonneg G h y)
 
-theorem matrixLogEntropy_nonpos_of_contraction
+lemma matrixLogEntropy_nonpos_of_contraction
     {d : Type*} [Fintype d] [DecidableEq d]
     {F : Matrix d d ℂ}
     (hF : F.PosSemidef)
@@ -4776,7 +4776,7 @@ theorem matrixLogEntropy_nonpos_of_contraction
     exact Real.mul_log_nonpos (hlower z hz) (hupper z hz)
   simpa using Matrix.le_iff.mp hnonpos
 
-theorem matrixLogEntropy_born_nonpos_left
+lemma matrixLogEntropy_born_nonpos_left
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -4800,7 +4800,7 @@ theorem matrixLogEntropy_born_nonpos_left
   rw [hrewrite] at hpair
   exact neg_nonneg.mp hpair
 
-theorem matrixLogEntropy_born_nonpos_right
+lemma matrixLogEntropy_born_nonpos_right
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -4837,7 +4837,7 @@ def fullHistoryAliceEntropyPotential
             (fullHistoryAliceFilter G n S D L h α))
           (fullHistoryBobFilter G n S D L h β)
 
-theorem fullHistoryAliceEntropyPotential_nonpos
+lemma fullHistoryAliceEntropyPotential_nonpos
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     (D L : Finset (Fin n)) :
@@ -4868,7 +4868,7 @@ def positiveMatrixSpectralAtom
   spectralConjugationCLM hF.isHermitian.eigenvectorUnitary
     (Matrix.diagonal (Pi.single i (1 : ℂ)))
 
-theorem positiveMatrixSpectralAtom_posSemidef
+lemma positiveMatrixSpectralAtom_posSemidef
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) (i : d) :
     (positiveMatrixSpectralAtom F hF i).PosSemidef := by
@@ -4887,7 +4887,7 @@ theorem positiveMatrixSpectralAtom_posSemidef
     hdiag.mul_mul_conjTranspose_same
       (hF.isHermitian.eigenvectorUnitary : Matrix d d ℂ)
 
-theorem positiveMatrixSpectralAtom_sum
+lemma positiveMatrixSpectralAtom_sum
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) :
     (∑ i : d, positiveMatrixSpectralAtom F hF i) = 1 := by
@@ -4908,7 +4908,7 @@ theorem positiveMatrixSpectralAtom_sum
   rw [← map_sum, hdiag]
   simp [spectralConjugationCLM_apply]
 
-theorem positiveMatrix_cfc_spectral_sum
+lemma positiveMatrix_cfc_spectral_sum
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
     (f : ℝ → ℝ) :
@@ -4956,7 +4956,7 @@ def leftSpectralBornWeight
   bornTracePairing ρ.matrix
     (positiveMatrixSpectralAtom F hF i) G
 
-theorem leftSpectralBornWeight_nonneg
+lemma leftSpectralBornWeight_nonneg
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -4968,7 +4968,7 @@ theorem leftSpectralBornWeight_nonneg
   exact trace_mul_posSemidef_nonneg ρ.positive
     ((positiveMatrixSpectralAtom_posSemidef F hF i).kronecker hG)
 
-theorem leftSpectralBornWeight_sum
+lemma leftSpectralBornWeight_sum
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -4988,7 +4988,7 @@ theorem leftSpectralBornWeight_sum
     _ = bornTracePairing ρ.matrix (1 : Matrix dA dA ℂ) G := by
       rw [positiveMatrixSpectralAtom_sum]
 
-theorem leftSpectralBornWeight_moment
+lemma leftSpectralBornWeight_moment
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -5026,7 +5026,7 @@ theorem leftSpectralBornWeight_moment
         ring
     _ = bornTracePairing ρ.matrix F G := h.symm
 
-theorem leftSpectralBornWeight_entropy
+lemma leftSpectralBornWeight_entropy
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -5063,7 +5063,7 @@ theorem leftSpectralBornWeight_entropy
       unfold leftSpectralBornWeight
       ring
 
-theorem bornTracePairing_one_one
+lemma bornTracePairing_one_one
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -5072,7 +5072,7 @@ theorem bornTracePairing_one_one
       (1 : Matrix dA dA ℂ) (1 : Matrix dB dB ℂ) = 1 := by
   simp [bornTracePairing, ρ.trace_one]
 
-theorem bornTracePairing_one_le_one
+lemma bornTracePairing_one_le_one
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -5093,7 +5093,7 @@ theorem bornTracePairing_one_le_one
   rw [hdiff, bornTracePairing_one_one] at hpositive
   linarith
 
-theorem positiveContraction_eigenvalue_le_one
+lemma positiveContraction_eigenvalue_le_one
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
     (hcomplement : (1 - F).PosSemidef)
@@ -5105,7 +5105,7 @@ theorem positiveContraction_eigenvalue_le_one
     (CFC.le_one_iff (R := ℝ) F hF.isHermitian).mp hFle
   exact hspectrum _ (hF.isHermitian.eigenvalues_mem_spectrum_real i)
 
-theorem leftSpectralBornWeight_negEntropy
+lemma leftSpectralBornWeight_negEntropy
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -5123,7 +5123,7 @@ theorem leftSpectralBornWeight_negEntropy
   intro i _
   simp [Real.negMulLog]
 
-theorem matrixLogEntropy_born_lower_bound_left
+lemma matrixLogEntropy_born_lower_bound_left
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -5234,7 +5234,7 @@ def rawEmbezzlementState (n : ℕ) :
     else
       0
 
-theorem rawEmbezzlementState_ne_zero
+lemma rawEmbezzlementState_ne_zero
     (n : ℕ) (hn : 0 < n) :
     rawEmbezzlementState n ≠ 0 := by
   intro h
@@ -5246,7 +5246,7 @@ theorem rawEmbezzlementState_ne_zero
 def harmonicNumber (n : ℕ) : ℝ :=
   ∑ j : Fin n, ((j.val : ℝ) + 1)⁻¹
 
-theorem rawEmbezzlementState_norm_sq (n : ℕ) :
+lemma rawEmbezzlementState_norm_sq (n : ℕ) :
     ‖rawEmbezzlementState n‖ ^ 2 =
       harmonicNumber n := by
   classical
@@ -5292,7 +5292,7 @@ def embezzlementState (n : ℕ) :
   (‖rawEmbezzlementState n‖⁻¹ : ℝ) •
     rawEmbezzlementState n
 
-theorem embezzlementState_norm
+lemma embezzlementState_norm
     (n : ℕ) (hn : 0 < n) :
     ‖embezzlementState n‖ = 1 := by
   have hraw : ‖rawEmbezzlementState n‖ ≠ 0 :=
@@ -5300,7 +5300,7 @@ theorem embezzlementState_norm
   rw [embezzlementState, norm_smul, Real.norm_eq_abs,
     abs_of_nonneg (inv_nonneg.mpr (norm_nonneg _)), inv_mul_cancel₀ hraw]
 
-theorem embezzlementState_apply
+lemma embezzlementState_apply
     (n : ℕ) (i j : Fin n) :
     embezzlementState n (i, j) =
       (‖rawEmbezzlementState n‖⁻¹ : ℝ) •
@@ -5322,7 +5322,7 @@ def spectralAtomOverlap
     (positiveMatrixSpectralAtom F hF i *
       positiveMatrixSpectralAtom G hG j)).re
 
-theorem spectralAtomOverlap_nonneg
+lemma spectralAtomOverlap_nonneg
     {d : Type*} [Fintype d] [DecidableEq d]
     (F G : Matrix d d ℂ)
     (hF : F.PosSemidef) (hG : G.PosSemidef)
@@ -5332,7 +5332,7 @@ theorem spectralAtomOverlap_nonneg
     (positiveMatrixSpectralAtom_posSemidef F hF i)
     (positiveMatrixSpectralAtom_posSemidef G hG j)
 
-theorem spectralAtom_trace
+lemma spectralAtom_trace
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
     (i : d) :
@@ -5344,7 +5344,7 @@ theorem spectralAtom_trace
     Matrix.trace_diagonal]
   simp [Pi.single_apply]
 
-theorem spectralAtom_mul
+lemma spectralAtom_mul
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
     (i j : d) :
@@ -5378,7 +5378,7 @@ theorem spectralAtom_mul
       simp [Matrix.diagonal_apply, Pi.single_apply, hij]
     · simp [Matrix.diagonal_apply, Pi.single_apply, hik]
 
-theorem spectralAtomSum_mul_self
+lemma spectralAtomSum_mul_self
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
     (s : Finset d) :
@@ -5399,7 +5399,7 @@ theorem spectralAtomSum_mul_self
       intro i hi
       simp [spectralAtom_mul, hi]
 
-theorem rectangularMatrix_norm_sq
+lemma rectangularMatrix_norm_sq
     {d e : Type*}
     [Fintype d] [Fintype e] [DecidableEq d]
     (K : Matrix e d ℂ) (z : EuclideanSpace ℂ d) :
@@ -5445,7 +5445,7 @@ def coherentBinaryJointOutcome
   toLp 2
     (((P.effect a ⊗ₖ Q.effect b)).mulVec (ofLp z))
 
-theorem coherentBinaryJointOutcome_norm_sq
+lemma coherentBinaryJointOutcome_norm_sq
     {d e : Type*}
     [Fintype d] [Fintype e] [DecidableEq d] [DecidableEq e]
     (P : POVM Bool d) (Q : POVM Bool e)
@@ -5484,7 +5484,7 @@ def finiteTensorVector
     EuclideanSpace ℂ (ι → d) :=
   toLp 2 fun q : ι → d => ∏ i : ι, v i (q i)
 
-theorem finiteTensorVector_norm_sq
+lemma finiteTensorVector_norm_sq
     {ι d : Type*} [Fintype ι] [DecidableEq ι] [Fintype d]
     (v : ι → EuclideanSpace ℂ d) :
     ‖finiteTensorVector v‖ ^ 2 =
@@ -5508,7 +5508,7 @@ theorem finiteTensorVector_norm_sq
       intro i _
       exact (EuclideanSpace.norm_sq_eq (v i)).symm
 
-theorem finiteTensorVector_norm
+lemma finiteTensorVector_norm
     {ι d : Type*} [Fintype ι] [DecidableEq ι] [Fintype d]
     (v : ι → EuclideanSpace ℂ d)
     (hv : ∀ i, ‖v i‖ = 1) :
@@ -5517,7 +5517,7 @@ theorem finiteTensorVector_norm
   simp_rw [hv, one_pow, Finset.prod_const_one] at hsquare
   nlinarith [norm_nonneg (finiteTensorVector v)]
 
-theorem spectralAtomOverlap_sum_right
+lemma spectralAtomOverlap_sum_right
     {d : Type*} [Fintype d] [DecidableEq d]
     (F G : Matrix d d ℂ)
     (hF : F.PosSemidef) (hG : G.PosSemidef)
@@ -5538,7 +5538,7 @@ theorem spectralAtomOverlap_sum_right
       rw [spectralAtom_trace]
       rfl
 
-theorem spectralAtomOverlap_sum_left
+lemma spectralAtomOverlap_sum_left
     {d : Type*} [Fintype d] [DecidableEq d]
     (F G : Matrix d d ℂ)
     (hF : F.PosSemidef) (hG : G.PosSemidef)
@@ -5559,7 +5559,7 @@ theorem spectralAtomOverlap_sum_left
       rw [spectralAtom_trace]
       rfl
 
-theorem positiveDensity_eigenvalues_sum
+lemma positiveDensity_eigenvalues_sum
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
     (htrace : Matrix.trace F = 1) :
@@ -5568,7 +5568,7 @@ theorem positiveDensity_eigenvalues_sum
     hF.isHermitian.trace_eq_sum_eigenvalues
   simpa [htrace, Complex.re_sum] using hspectral.symm
 
-theorem spectralAtomOverlap_schmidtMass_le_one
+lemma spectralAtomOverlap_schmidtMass_le_one
     {d : Type*} [Fintype d] [DecidableEq d]
     (F G : Matrix d d ℂ)
     (hF : F.PosSemidef) (hG : G.PosSemidef)
@@ -5660,7 +5660,7 @@ def binaryBornProbability
   (Matrix.trace
     (ρ.matrix * (P.effect a ⊗ₖ Q.effect b))).re
 
-theorem binaryBornProbability_normalized
+lemma binaryBornProbability_normalized
     {d e : Type*}
     [Fintype d] [Fintype e] [DecidableEq d] [DecidableEq e]
     (ρ : DensityMatrix (d × e))
@@ -5722,7 +5722,7 @@ def binaryMismatchProbability
   binaryBornProbability ρ P Q true false +
     binaryBornProbability ρ P Q false true
 
-theorem binaryStoppingPartition
+lemma binaryStoppingPartition
     {d e : Type*}
     [Fintype d] [Fintype e] [DecidableEq d] [DecidableEq e]
     (ρ : DensityMatrix (d × e))
@@ -5737,7 +5737,7 @@ theorem binaryStoppingPartition
     binaryMismatchProbability
   linarith
 
-theorem unitVector_distance_of_real_overlap
+lemma unitVector_distance_of_real_overlap
     {ι : Type*} [Fintype ι]
     (z w : EuclideanSpace ℂ ι)
     (hz : ‖z‖ = 1) (hw : ‖w‖ = 1)
@@ -5764,7 +5764,7 @@ def sharedThresholdResourceRaw
     else
       0
 
-theorem sharedThresholdResourceRaw_norm_sq
+lemma sharedThresholdResourceRaw_norm_sq
     {κ d : Type*} [Fintype κ] [Fintype d]
     [DecidableEq κ] [DecidableEq d]
     (τ : κ → ℝ) :
@@ -5785,7 +5785,7 @@ theorem sharedThresholdResourceRaw_norm_sq
   simp_rw [hterm]
   simp [Finset.mul_sum]
 
-theorem sharedThresholdResourceRaw_ne_zero
+lemma sharedThresholdResourceRaw_ne_zero
     {κ d : Type*} [Fintype κ] [Fintype d]
     [DecidableEq κ] [DecidableEq d]
     (τ : κ → ℝ) (k : κ) (i : d) (hk : τ k ≠ 0) :
@@ -5807,7 +5807,7 @@ def sharedThresholdResource
   (‖sharedThresholdResourceRaw (d := d) τ‖⁻¹ : ℝ) •
     sharedThresholdResourceRaw (d := d) τ
 
-theorem sharedThresholdResource_norm
+lemma sharedThresholdResource_norm
     {κ d : Type*} [Fintype κ] [Fintype d]
     [DecidableEq κ] [DecidableEq d]
     (τ : κ → ℝ) (k : κ) (i : d) (hk : τ k ≠ 0) :
@@ -5832,7 +5832,7 @@ def transposePOVM
     simpa [Matrix.sum_apply, Matrix.transpose_apply,
       Matrix.one_apply, eq_comm] using hc
 
-theorem transposePOVM_projective
+lemma transposePOVM_projective
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (P : POVM ι d)
     (hP : ∀ b : ι, P.effect b * P.effect b = P.effect b)
@@ -5845,7 +5845,7 @@ theorem transposePOVM_projective
       (P.effect b).transpose
   rw [← Matrix.transpose_mul, hP b]
 
-theorem sharedThresholdResourceRaw_eq_vec
+lemma sharedThresholdResourceRaw_eq_vec
     {κ d : Type*} [Fintype κ] [Fintype d]
     [DecidableEq κ] [DecidableEq d]
     (τ : κ → ℝ) :
@@ -5863,7 +5863,7 @@ theorem sharedThresholdResourceRaw_eq_vec
   · simp [sharedThresholdResourceRaw,
       Matrix.vec, h, Ne.symm h]
 
-theorem sharedThresholdResourceRaw_local_action
+lemma sharedThresholdResourceRaw_local_action
     {κ d : Type*} [Fintype κ] [Fintype d]
     [DecidableEq κ] [DecidableEq d]
     (τ : κ → ℝ)
@@ -5893,7 +5893,7 @@ theorem sharedThresholdResourceRaw_local_action
       (fun q : Σ _ : κ, d => (τ q.1 : ℂ)))
     A
 
-theorem matrixVectorization_norm_sq
+lemma matrixVectorization_norm_sq
     {d e : Type*} [Fintype d] [Fintype e]
     (K : Matrix d e ℂ) :
     ‖toLp 2 (Matrix.vec K)‖ ^ 2 =
@@ -5913,7 +5913,7 @@ theorem matrixVectorization_norm_sq
     _ = (Matrix.trace (K.conjTranspose * K)).re := by
       rw [Matrix.star_vec_dotProduct_vec]
 
-theorem sharedThresholdDiagonal_eq_block
+lemma sharedThresholdDiagonal_eq_block
     {κ d : Type*} [Fintype κ] [Fintype d]
     [DecidableEq κ] [DecidableEq d]
     (τ : κ → ℝ) :
@@ -5931,7 +5931,7 @@ theorem sharedThresholdDiagonal_eq_block
     · simp [Matrix.blockDiagonal'_apply, hij]
   · simp [Matrix.blockDiagonal'_apply, h]
 
-theorem sharedThresholdResourceRaw_block_action
+lemma sharedThresholdResourceRaw_block_action
     {κ d : Type*} [Fintype κ] [Fintype d]
     [DecidableEq κ] [DecidableEq d]
     (τ : κ → ℝ) (A B : κ → Matrix d d ℂ) :
@@ -5953,7 +5953,7 @@ theorem sharedThresholdResourceRaw_block_action
   funext k
   simp [Matrix.transpose_mul]
 
-theorem projectorProduct_hilbertSchmidt_trace
+lemma projectorProduct_hilbertSchmidt_trace
     {d : Type*} [Fintype d] [DecidableEq d]
     (A B : Matrix d d ℂ)
     (hA : A.PosSemidef) (hB : B.PosSemidef)
@@ -5973,7 +5973,7 @@ theorem projectorProduct_hilbertSchmidt_trace
     _ = Matrix.trace (B * A) := by rw [hBB]
     _ = Matrix.trace (A * B) := Matrix.trace_mul_comm B A
 
-theorem weightedProjectorProduct_hilbertSchmidt_trace
+lemma weightedProjectorProduct_hilbertSchmidt_trace
     {d : Type*} [Fintype d] [DecidableEq d]
     (t : ℝ) (A B : Matrix d d ℂ)
     (hA : A.PosSemidef) (hB : B.PosSemidef)
@@ -5989,7 +5989,7 @@ theorem weightedProjectorProduct_hilbertSchmidt_trace
     Matrix.trace_smul, Matrix.trace_smul, hgram]
   simp [Complex.mul_re, pow_two, mul_assoc]
 
-theorem sharedThresholdResourceRaw_block_action_norm_sq
+lemma sharedThresholdResourceRaw_block_action_norm_sq
     {κ d : Type*} [Fintype κ] [Fintype d]
     [DecidableEq κ] [DecidableEq d]
     (τ : κ → ℝ)
@@ -6030,7 +6030,7 @@ theorem sharedThresholdResourceRaw_block_action_norm_sq
   exact weightedProjectorProduct_hilbertSchmidt_trace
     (τ k) (A k) (B k) (hA k) (hB k) (hAA k) (hBB k)
 
-theorem sharedThresholdResource_block_action_norm_sq
+lemma sharedThresholdResource_block_action_norm_sq
     {κ d : Type*} [Fintype κ] [Fintype d]
     [DecidableEq κ] [DecidableEq d]
     (τ : κ → ℝ)
@@ -6070,7 +6070,7 @@ theorem sharedThresholdResource_block_action_norm_sq
       τ A B hA hB hAA hBB]
   simp [div_eq_mul_inv, mul_comm]
 
-theorem doublyStochasticSchmidtMass_le_one
+lemma doublyStochasticSchmidtMass_le_one
     {ι κ : Type*} [Fintype ι] [Fintype κ]
     (σ : ι → ℝ) (μ : κ → ℝ) (w : ι → κ → ℝ)
     (hσunit : (∑ i : ι, σ i ^ 2) = 1)
@@ -6129,7 +6129,7 @@ theorem doublyStochasticSchmidtMass_le_one
           exact hw q.1 q.2
     _ = 1 := by rw [hf, hg]; norm_num
 
-theorem doublyStochasticSchmidtEnergy_eq
+lemma doublyStochasticSchmidtEnergy_eq
     {ι κ : Type*} [Fintype ι] [Fintype κ]
     (σ : ι → ℝ) (μ : κ → ℝ) (w : ι → κ → ℝ)
     (hσunit : (∑ i : ι, σ i ^ 2) = 1)
@@ -6177,7 +6177,7 @@ def weightedComplexOverlapVector
   toLp 2 fun q : ι × κ =>
     (Real.sqrt (σ q.1 * μ q.2) : ℂ) * L q.1 q.2
 
-theorem weightedComplexOverlapVector_norm_sq
+lemma weightedComplexOverlapVector_norm_sq
     {ι κ : Type*} [Fintype ι] [Fintype κ]
     (σ : ι → ℝ) (μ : κ → ℝ)
     (hσ : ∀ i, 0 ≤ σ i) (hμ : ∀ j, 0 ≤ μ j)
@@ -6197,7 +6197,7 @@ theorem weightedComplexOverlapVector_norm_sq
     Real.norm_eq_abs, abs_of_nonneg (Real.sqrt_nonneg _),
     Real.sq_sqrt (mul_nonneg (hσ i) (hμ j))]
 
-theorem complexInner_norm_sq_le
+lemma complexInner_norm_sq_le
     {ι : Type*} [Fintype ι]
     (z w : EuclideanSpace ℂ ι) :
     ‖inner ℂ z w‖ ^ 2 ≤ ‖z‖ ^ 2 * ‖w‖ ^ 2 := by
@@ -6205,7 +6205,7 @@ theorem complexInner_norm_sq_le
   nlinarith [norm_nonneg (inner ℂ z w), norm_nonneg z,
     norm_nonneg w, mul_nonneg (norm_nonneg z) (norm_nonneg w)]
 
-theorem twoSidedSchmidtSpectralEnergy_le
+lemma twoSidedSchmidtSpectralEnergy_le
     {ι κ ν : Type*} [Fintype ι] [Fintype κ] [Fintype ν]
     (ψ φ : EuclideanSpace ℂ ν)
     (hψ : ‖ψ‖ = 1) (hφ : ‖φ‖ = 1)
@@ -6294,7 +6294,7 @@ def tensorEmbezzlementTarget
     let b : Fin d × Fin n := finProdFinEquiv.symm q.2
     ξ.val (a.1, b.1) * embezzlementState n (a.2, b.2)
 
-theorem tensorEmbezzlementTarget_norm
+lemma tensorEmbezzlementTarget_norm
     {d n : ℕ} (hn : 0 < n)
     (ξ : BipartiteUnitVector d) :
     ‖tensorEmbezzlementTarget (n := n) ξ‖ = 1 := by
@@ -6362,14 +6362,14 @@ def localUnitaryAction {n : ℕ}
     (((U : Matrix (Fin n) (Fin n) ℂ) ⊗ₖ
       (V : Matrix (Fin n) (Fin n) ℂ)).mulVec (ofLp ψ))
 
-theorem localUnitaryAction_matrix_mem_unitary {n : ℕ}
+lemma localUnitaryAction_matrix_mem_unitary {n : ℕ}
     (U V : Matrix.unitaryGroup (Fin n) ℂ) :
     ((U : Matrix (Fin n) (Fin n) ℂ) ⊗ₖ
       (V : Matrix (Fin n) (Fin n) ℂ)) ∈
         Matrix.unitaryGroup (Fin n × Fin n) ℂ := by
   exact Matrix.kronecker_mem_unitary U.property V.property
 
-theorem localUnitaryAction_norm {n : ℕ}
+lemma localUnitaryAction_norm {n : ℕ}
     (U V : Matrix.unitaryGroup (Fin n) ℂ)
     (ψ : EuclideanSpace ℂ (Fin n × Fin n)) :
     ‖localUnitaryAction U V ψ‖ = ‖ψ‖ := by
@@ -6387,7 +6387,7 @@ theorem localUnitaryAction_norm {n : ℕ}
       (Matrix.toEuclideanCLM (n := Fin n × Fin n) (𝕜 := ℂ)) hM
   exact ContinuousLinearMap.norm_map_of_mem_unitary hclm ψ
 
-theorem unitary_row_norm_sq_sum
+lemma unitary_row_norm_sq_sum
     {d : Type*} [Fintype d] [DecidableEq d]
     (U : Matrix.unitaryGroup d ℂ) (i : d) :
     (∑ j : d, ‖U i j‖ ^ 2) = 1 := by
@@ -6400,7 +6400,7 @@ theorem unitary_row_norm_sq_sum
     Matrix.conjTranspose_apply, Complex.re_sum,
     Complex.mul_re, hnorm, Matrix.one_apply] using h
 
-theorem unitary_col_norm_sq_sum
+lemma unitary_col_norm_sq_sum
     {d : Type*} [Fintype d] [DecidableEq d]
     (U : Matrix.unitaryGroup d ℂ) (j : d) :
     (∑ i : d, ‖U i j‖ ^ 2) = 1 := by
@@ -6424,7 +6424,7 @@ def diagonalSchmidtState
   toLp 2 fun q : d × d =>
     if q.1 = q.2 then (σ q.1 : ℂ) else 0
 
-theorem diagonalSchmidtState_norm_sq
+lemma diagonalSchmidtState_norm_sq
     {d : Type*} [Fintype d] [DecidableEq d]
     (σ : d → ℝ) :
     ‖diagonalSchmidtState σ‖ ^ 2 =
@@ -6450,7 +6450,7 @@ def schmidtVector
   localUnitaryAction U V
     (diagonalSchmidtState σ)
 
-theorem schmidtVector_norm_sq
+lemma schmidtVector_norm_sq
     {d : ℕ}
     (σ : Fin d → ℝ)
     (U V : Matrix.unitaryGroup (Fin d) ℂ) :
@@ -6460,7 +6460,7 @@ theorem schmidtVector_norm_sq
     localUnitaryAction_norm,
     diagonalSchmidtState_norm_sq]
 
-theorem schmidtVector_apply
+lemma schmidtVector_apply
     {d : ℕ}
     (σ : Fin d → ℝ)
     (U V : Matrix.unitaryGroup (Fin d) ℂ)
@@ -6473,7 +6473,7 @@ theorem schmidtVector_apply
     diagonalSchmidtState, Fintype.sum_prod_type,
     mul_assoc, mul_comm]
 
-theorem weightedComplexOverlapVector_inner
+lemma weightedComplexOverlapVector_inner
     {ι κ : Type*} [Fintype ι] [Fintype κ]
     (σ : ι → ℝ) (μ : κ → ℝ)
     (hσ : ∀ i, 0 ≤ σ i) (hμ : ∀ j, 0 ≤ μ j)
@@ -6514,7 +6514,7 @@ theorem weightedComplexOverlapVector_inner
     _ = (σ i : ℂ) * (μ j : ℂ) * L i j * R i j := by
       rw [hsqrt]
 
-theorem matrixVectorization_inner
+lemma matrixVectorization_inner
     {d e : Type*} [Fintype d] [Fintype e]
     (X Y : Matrix d e ℂ) :
     inner ℂ (toLp 2 (Matrix.vec X))
@@ -6526,7 +6526,7 @@ theorem matrixVectorization_inner
       Matrix.trace (X.conjTranspose * Y)
   rw [dotProduct_comm, Matrix.star_vec_dotProduct_vec]
 
-theorem diagonalSchmidtState_eq_vec
+lemma diagonalSchmidtState_eq_vec
     {d : Type*} [Fintype d] [DecidableEq d]
     (σ : d → ℝ) :
     diagonalSchmidtState σ =
@@ -6537,7 +6537,7 @@ theorem diagonalSchmidtState_eq_vec
     simp [diagonalSchmidtState, Matrix.vec]
   · simp [diagonalSchmidtState, Matrix.vec, h, Ne.symm h]
 
-theorem schmidtVector_eq_vec
+lemma schmidtVector_eq_vec
     {d : ℕ}
     (σ : Fin d → ℝ)
     (U V : Matrix.unitaryGroup (Fin d) ℂ) :
@@ -6555,7 +6555,7 @@ theorem schmidtVector_eq_vec
     (Matrix.diagonal (fun i => (σ i : ℂ)))
     (U : Matrix (Fin d) (Fin d) ℂ)
 
-theorem weightedSchmidtMatrixTrace
+lemma weightedSchmidtMatrixTrace
     {d : Type*} [Fintype d] [DecidableEq d]
     (σ μ : d → ℝ) (L R : Matrix d d ℂ) :
     Matrix.trace
@@ -6570,7 +6570,7 @@ theorem weightedSchmidtMatrixTrace
     mul_assoc, mul_left_comm, mul_comm]
   rw [Finset.sum_comm]
 
-theorem schmidtVector_inner
+lemma schmidtVector_inner
     {d : ℕ}
     (σ μ : Fin d → ℝ)
     (U V X Y : Matrix.unitaryGroup (Fin d) ℂ) :
@@ -6623,7 +6623,7 @@ theorem schmidtVector_inner
     _ = _ := weightedSchmidtMatrixTrace
       σ μ (A.conjTranspose * C) (B.conjTranspose * D)
 
-@[simp] theorem unitaryBasisOverlap_apply
+@[simp] lemma unitaryBasisOverlap_apply
     {d : Type*} [Fintype d] [DecidableEq d]
     (U V : Matrix.unitaryGroup d ℂ) (i j : d) :
     unitaryBasisOverlap U V i j =
@@ -6631,7 +6631,7 @@ theorem schmidtVector_inner
         (V : Matrix d d ℂ)) i j) := by
   rfl
 
-theorem schmidtVector_spectralEnergy_le
+lemma schmidtVector_spectralEnergy_le
     {d : ℕ}
     (σ μ : Fin d → ℝ)
     (hσ : ∀ i, 0 ≤ σ i) (hμ : ∀ j, 0 ≤ μ j)
@@ -6699,7 +6699,7 @@ noncomputable section
 open scoped ComplexOrder Matrix BigOperators InnerProductSpace
 open Complex Matrix Finset
 
-theorem linearMap_exists_singularBases
+lemma linearMap_exists_singularBases
     {d : ℕ}
     (T : EuclideanSpace ℂ (Fin d) →ₗ[ℂ]
       EuclideanSpace ℂ (Fin d)) :
@@ -6810,7 +6810,7 @@ def orthonormalBasisUnitary
   ⟨(EuclideanSpace.basisFun (Fin d) ℂ).toBasis.toMatrix b.toBasis,
     (EuclideanSpace.basisFun (Fin d) ℂ).toMatrix_orthonormalBasis_mem_unitary b⟩
 
-@[simp] theorem orthonormalBasisUnitary_apply
+@[simp] lemma orthonormalBasisUnitary_apply
     {d : ℕ}
     (b : OrthonormalBasis (Fin d) ℂ
       (EuclideanSpace ℂ (Fin d)))
@@ -6836,14 +6836,14 @@ def conjugateUnitary
   have h := congrArg Matrix.transpose U.property.1
   simpa [Matrix.star_eq_conjTranspose, Matrix.transpose_mul] using h
 
-@[simp] theorem conjugateUnitary_apply
+@[simp] lemma conjugateUnitary_apply
     {d : ℕ}
     (U : Matrix.unitaryGroup (Fin d) ℂ)
     (i j : Fin d) :
     conjugateUnitary U i j = star (U i j) := by
   rfl
 
-theorem exists_proofSchmidtDecomposition
+lemma exists_proofSchmidtDecomposition
     {d : ℕ}
     (ξ : EuclideanSpace ℂ (Fin d × Fin d)) :
     ∃ (σ : Fin d → ℝ)
@@ -6883,7 +6883,7 @@ theorem exists_proofSchmidtDecomposition
     orthonormalBasisUnitary_apply, hsing,
     mul_assoc, mul_left_comm, mul_comm] using hcoord
 
-theorem exists_proofUnitSchmidtDecomposition
+lemma exists_proofUnitSchmidtDecomposition
     {d : ℕ}
     (ξ : BipartiteUnitVector d) :
     ∃ (σ : Fin d → ℝ)
@@ -6905,7 +6905,7 @@ noncomputable section
 
 open scoped BigOperators
 
-theorem harmonicNumber_eq_harmonic (n : ℕ) :
+lemma harmonicNumber_eq_harmonic (n : ℕ) :
     harmonicNumber n = (harmonic n : ℝ) := by
   unfold harmonicNumber harmonic
   rw [Finset.sum_fin_eq_sum_range]
@@ -6914,23 +6914,23 @@ theorem harmonicNumber_eq_harmonic (n : ℕ) :
   intro i hi
   simp [Finset.mem_range.mp hi]
 
-theorem harmonicNumber_log_lower (n : ℕ) :
+lemma harmonicNumber_log_lower (n : ℕ) :
     Real.log ((n : ℝ) + 1) ≤ harmonicNumber n := by
   rw [harmonicNumber_eq_harmonic]
   simpa [Nat.cast_add, Nat.cast_one] using log_add_one_le_harmonic n
 
-theorem harmonicNumber_log_upper (n : ℕ) :
+lemma harmonicNumber_log_upper (n : ℕ) :
     harmonicNumber n ≤ 1 + Real.log (n : ℝ) := by
   rw [harmonicNumber_eq_harmonic]
   exact harmonic_le_one_add_log n
 
-theorem harmonicNumber_pos {n : ℕ} (hn : 0 < n) :
+lemma harmonicNumber_pos {n : ℕ} (hn : 0 < n) :
     0 < harmonicNumber n := by
   have hnreal : 0 < (n : ℝ) := by exact_mod_cast hn
   exact (Real.log_pos (by linarith : (1 : ℝ) < (n : ℝ) + 1)).trans_le
     (harmonicNumber_log_lower n)
 
-theorem harmonicNumber_mul_le_add
+lemma harmonicNumber_mul_le_add
     {d n : ℕ} (hd : 0 < d) (hn : 0 < n) :
     harmonicNumber (d * n) ≤
       harmonicNumber n + (1 + Real.log (d : ℝ)) := by
@@ -6949,7 +6949,7 @@ theorem harmonicNumber_mul_le_add
     _ ≤ harmonicNumber n + (1 + Real.log (d : ℝ)) := by
       linarith
 
-theorem exists_proofHarmonicNumber_gt (bound : ℝ) :
+lemma exists_proofHarmonicNumber_gt (bound : ℝ) :
     ∃ n : ℕ, bound < harmonicNumber n := by
   obtain ⟨n, hn⟩ := exists_nat_gt (Real.exp bound)
   have hpositive : 0 < (n : ℝ) + 1 := by positivity
@@ -6958,7 +6958,7 @@ theorem exists_proofHarmonicNumber_gt (bound : ℝ) :
     exact lt_trans hn (by linarith)
   exact ⟨n, hlog.trans_le (harmonicNumber_log_lower n)⟩
 
-theorem exists_proofHarmonicNumber_ratio_ge
+lemma exists_proofHarmonicNumber_ratio_ge
     (d : ℕ) (hd : 0 < d)
     {ε : ℝ} (hε : 0 < ε) (hεone : ε ≤ 1) :
     ∃ n : ℕ, 0 < n ∧
@@ -7016,7 +7016,7 @@ def ePRState (m : ℕ) :
     else
       0
 
-theorem ePRState_norm (m : ℕ) (hm : 0 < m) :
+lemma ePRState_norm (m : ℕ) (hm : 0 < m) :
     ‖ePRState m‖ = 1 := by
   have hmreal : 0 < (m : ℝ) := by exact_mod_cast hm
   have hamp :
@@ -7046,7 +7046,7 @@ theorem ePRState_norm (m : ℕ) (hm : 0 < m) :
     simp [hmreal.ne']
   nlinarith [norm_nonneg (ePRState m)]
 
-theorem permutationMatrix_mem_unitary
+lemma permutationMatrix_mem_unitary
     {ι : Type*} [Fintype ι] [DecidableEq ι]
     (σ : Equiv.Perm ι) :
     σ.permMatrix ℂ ∈ Matrix.unitaryGroup ι ℂ := by
@@ -7059,13 +7059,13 @@ def permutationUnitary
     (σ : Equiv.Perm ι) : Matrix.unitaryGroup ι ℂ :=
   ⟨σ.permMatrix ℂ, permutationMatrix_mem_unitary σ⟩
 
-@[simp] theorem permutationUnitary_val
+@[simp] lemma permutationUnitary_val
     {ι : Type*} [Fintype ι] [DecidableEq ι]
     (σ : Equiv.Perm ι) :
     (permutationUnitary σ : Matrix ι ι ℂ) =
       σ.permMatrix ℂ := rfl
 
-theorem localPermutationUnitaryAction_apply
+lemma localPermutationUnitaryAction_apply
     {n : ℕ} (σ : Equiv.Perm (Fin n))
     (ψ : EuclideanSpace ℂ (Fin n × Fin n))
     (i j : Fin n) :
@@ -7091,7 +7091,7 @@ theorem localPermutationUnitaryAction_apply
     PEquiv.mul_toMatrix_toPEquiv]
   rfl
 
-theorem diagonalInner_real_eq_sum
+lemma diagonalInner_real_eq_sum
     {N : ℕ}
     (z w : EuclideanSpace ℂ (Fin N × Fin N))
     (hz : ∀ i j : Fin N, i ≠ j → z (i, j) = 0) :
@@ -7114,7 +7114,7 @@ noncomputable section
 open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
-theorem harmonicSchmidtFiber_count_sq_le
+lemma harmonicSchmidtFiber_count_sq_le
     {n : ℕ} (a x : ℝ) (ha : 0 ≤ a) (hx : 0 ≤ x) :
     (((Finset.univ.filter fun j : Fin n =>
       x ≤ a * (Real.sqrt ((j.val : ℝ) + 1))⁻¹).card : ℕ) : ℝ) * x ^ 2 ≤
@@ -7171,7 +7171,7 @@ def descendingHarmonicSchmidtPermutation
   Tuple.sort (fun q : Fin (d * n) =>
     -harmonicTensorSchmidtAmplitude (n := n) σ q)
 
-theorem descendingHarmonicSchmidtPermutation_antitone
+lemma descendingHarmonicSchmidtPermutation_antitone
     {d n : ℕ} (σ : Fin d → ℝ) :
     Antitone (fun q : Fin (d * n) =>
       harmonicTensorSchmidtAmplitude (n := n) σ
@@ -7184,7 +7184,7 @@ theorem descendingHarmonicSchmidtPermutation_antitone
     hij
   exact neg_le_neg_iff.mp h
 
-theorem harmonicSchmidtThreshold_card_eq
+lemma harmonicSchmidtThreshold_card_eq
     {d n : ℕ} (σ : Fin d → ℝ) (x : ℝ) :
     (((Finset.univ.filter fun q : Fin (d * n) =>
       x ≤ harmonicTensorSchmidtAmplitude (n := n) σ q).card : ℕ) : ℝ) =
@@ -7215,7 +7215,7 @@ theorem harmonicSchmidtThreshold_card_eq
           intro i _
           simp [harmonicTensorSchmidtAmplitude]
 
-theorem harmonicSchmidtThreshold_count_sq_le_one
+lemma harmonicSchmidtThreshold_count_sq_le_one
     {d n : ℕ} (σ : Fin d → ℝ)
     (hσ : ∀ i, 0 ≤ σ i)
     (hunit : (∑ i : Fin d, σ i ^ 2) = 1)
@@ -7240,7 +7240,7 @@ theorem harmonicSchmidtThreshold_count_sq_le_one
         (σ i) x (hσ i) hx
     _ = 1 := hunit
 
-theorem descendingHarmonicSchmidtAmplitude_rank_sq_le_one
+lemma descendingHarmonicSchmidtAmplitude_rank_sq_le_one
     {d n : ℕ} (σ : Fin d → ℝ)
     (hσ : ∀ i, 0 ≤ σ i)
     (hunit : (∑ i : Fin d, σ i ^ 2) = 1)
@@ -7284,7 +7284,7 @@ theorem descendingHarmonicSchmidtAmplitude_rank_sq_le_one
   exact (mul_le_mul_of_nonneg_right hcardreal
     (sq_nonneg x)).trans htotal
 
-theorem descendingHarmonicSchmidtAmplitude_le_harmonic
+lemma descendingHarmonicSchmidtAmplitude_le_harmonic
     {d n : ℕ} (σ : Fin d → ℝ)
     (hσ : ∀ i, 0 ≤ σ i)
     (hunit : (∑ i : Fin d, σ i ^ 2) = 1)
@@ -7328,7 +7328,7 @@ def diagonalSchmidtUnitVector
   rw [hunit] at hsquare
   nlinarith [norm_nonneg (diagonalSchmidtState σ)]
 
-theorem diagonalSchmidtTensorTarget_diagonal
+lemma diagonalSchmidtTensorTarget_diagonal
     {d n : ℕ} (σ : Fin d → ℝ)
     (hunit : (∑ i : Fin d, σ i ^ 2) = 1)
     (q : Fin (d * n)) :
@@ -7351,7 +7351,7 @@ def harmonicSchmidtPermutationUnitary
     (descendingHarmonicSchmidtPermutation
       (n := n) σ).symm
 
-theorem harmonicSchmidtPermutationAction_off_diagonal
+lemma harmonicSchmidtPermutationAction_off_diagonal
     {d n : ℕ} (σ : Fin d → ℝ)
     (i j : Fin (d * n)) (hij : i ≠ j) :
     localUnitaryAction
@@ -7370,7 +7370,7 @@ theorem harmonicSchmidtPermutationAction_off_diagonal
       (n := n) σ).symm.injective.ne hij
   simp [hperm]
 
-theorem harmonicSchmidtPermutationAction_diagonal
+lemma harmonicSchmidtPermutationAction_diagonal
     {d n : ℕ} (σ : Fin d → ℝ)
     (k : Fin (d * n)) :
     localUnitaryAction
@@ -7388,7 +7388,7 @@ theorem harmonicSchmidtPermutationAction_diagonal
     embezzlementState_apply]
   simp
 
-theorem harmonicTensorSchmidtAmplitude_sq_sum
+lemma harmonicTensorSchmidtAmplitude_sq_sum
     {d n : ℕ} (σ : Fin d → ℝ)
     (hunit : (∑ i : Fin d, σ i ^ 2) = 1) :
     (∑ q : Fin (d * n),
@@ -7425,7 +7425,7 @@ theorem harmonicTensorSchmidtAmplitude_sq_sum
         rw [Finset.sum_mul]
     _ = harmonicNumber n := by rw [hunit, one_mul]
 
-theorem descendingHarmonicSchmidtAmplitude_sq_sum
+lemma descendingHarmonicSchmidtAmplitude_sq_sum
     {d n : ℕ} (σ : Fin d → ℝ)
     (hunit : (∑ i : Fin d, σ i ^ 2) = 1) :
     (∑ k : Fin (d * n),
@@ -7464,7 +7464,7 @@ def universalCatalystOverlapTerm
         (descendingHarmonicSchmidtPermutation
           (n := n) σ k)
 
-theorem universalCatalystOverlap_eq_sum
+lemma universalCatalystOverlap_eq_sum
     {d n : ℕ} (σ : Fin d → ℝ)
     (hunit : (∑ i : Fin d, σ i ^ 2) = 1) :
     (inner ℂ
@@ -7530,7 +7530,7 @@ theorem universalCatalystOverlap_eq_sum
           simp [universalCatalystOverlapTerm,
             mul_assoc, mul_comm, mul_left_comm]
 
-theorem universalCatalystOverlapTerm_lower
+lemma universalCatalystOverlapTerm_lower
     {d n : ℕ} (σ : Fin d → ℝ)
     (hσ : ∀ i, 0 ≤ σ i)
     (hunit : (∑ i : Fin d, σ i ^ 2) = 1)
@@ -7570,7 +7570,7 @@ theorem universalCatalystOverlapTerm_lower
         dsimp [c, a, h, universalCatalystOverlapTerm]
         ring
 
-theorem universalDiagonalCatalystOverlap_lower
+lemma universalDiagonalCatalystOverlap_lower
     {d n : ℕ} (hd : 0 < d) (hn : 0 < n)
     (σ : Fin d → ℝ)
     (hσ : ∀ i, 0 ≤ σ i)
@@ -7658,7 +7658,7 @@ def harmonicTargetLiftUnitary
     (Matrix.mem_unitaryGroup_iff').mp hM]
   exact (Matrix.reindexRingEquiv ℂ e).map_one
 
-@[simp] theorem harmonicTargetLiftUnitary_apply
+@[simp] lemma harmonicTargetLiftUnitary_apply
     {d n : ℕ}
     (U : Matrix.unitaryGroup (Fin d) ℂ)
     (a b : Fin d) (i j : Fin n) :
@@ -7674,7 +7674,7 @@ def harmonicTargetLiftUnitary
   simp [Matrix.reindex_apply,
     Matrix.kroneckerMap_apply, Matrix.one_apply]
 
-theorem localUnitaryAction_comp
+lemma localUnitaryAction_comp
     {m : ℕ}
     (U₁ V₁ U₂ V₂ : Matrix.unitaryGroup (Fin m) ℂ)
     (ψ : EuclideanSpace ℂ (Fin m × Fin m)) :
@@ -7690,7 +7690,7 @@ theorem localUnitaryAction_comp
     ← Matrix.mul_kronecker_mul]
   rfl
 
-theorem targetCatalystDoubleSum_reindex
+lemma targetCatalystDoubleSum_reindex
     {d n : ℕ}
     (F : Fin (d * n) → Fin (d * n) → ℂ) :
     (∑ i : Fin (d * n), ∑ j : Fin (d * n), F i j) =
@@ -7713,7 +7713,7 @@ theorem targetCatalystDoubleSum_reindex
               (fun j : Fin (d * n) =>
                 F (finProdFinEquiv p) j)).symm
 
-theorem harmonicTargetLift_diagonal_action_apply
+lemma harmonicTargetLift_diagonal_action_apply
     {d n : ℕ}
     (σ : Fin d → ℝ)
     (hunit : (∑ i : Fin d, σ i ^ 2) = 1)
@@ -7782,7 +7782,7 @@ theorem harmonicTargetLift_diagonal_action_apply
         intro k _
         ring
 
-theorem harmonicTargetLift_diagonal_action
+lemma harmonicTargetLift_diagonal_action
     {d n : ℕ}
     (ξ : BipartiteUnitVector d)
     (σ : Fin d → ℝ)
@@ -7840,7 +7840,7 @@ theorem harmonicTargetLift_diagonal_action
     _ = tensorEmbezzlementTarget (n := n) ξ (r, s) := by
       simp [hr, hs]
 
-theorem localUnitaryAction_sub
+lemma localUnitaryAction_sub
     {m : ℕ}
     (U V : Matrix.unitaryGroup (Fin m) ℂ)
     (z w : EuclideanSpace ℂ (Fin m × Fin m)) :
@@ -7855,7 +7855,7 @@ theorem localUnitaryAction_sub
           ((U.val ⊗ₖ V.val).mulVec (ofLp w))
   exact Matrix.mulVec_sub _ _ _
 
-theorem universalDiagonalCatalystOverlap_of_harmonic_ratio
+lemma universalDiagonalCatalystOverlap_of_harmonic_ratio
     {d n : ℕ} (hd : 0 < d) (hn : 0 < n)
     (σ : Fin d → ℝ)
     (hσ : ∀ i, 0 ≤ σ i)
@@ -7897,7 +7897,7 @@ theorem universalDiagonalCatalystOverlap_of_harmonic_ratio
     (universalDiagonalCatalystOverlap_lower
       hd hn σ hσ hunit)
 
-theorem universalDiagonalCatalyst_distance
+lemma universalDiagonalCatalyst_distance
     {d n : ℕ} (hd : 0 < d) (hn : 0 < n)
     (σ : Fin d → ℝ)
     (hσ : ∀ i, 0 ≤ σ i)
@@ -7933,7 +7933,7 @@ theorem universalDiagonalCatalyst_distance
   exact universalDiagonalCatalystOverlap_of_harmonic_ratio
     hd hn σ hσ hunit δ hδ hδone hratio
 
-theorem exists_proofUniversalHarmonicCatalyst
+lemma exists_proofUniversalHarmonicCatalyst
     (d : ℕ) (hd : 0 < d)
     (ε : ℝ) (hε : 0 < ε) :
     ∃ n : ℕ, 0 < n ∧
@@ -8035,7 +8035,7 @@ def spectralPartitionPOVM
           simp [Finset.sum_filter, Finset.sum_comm]
       _ = 1 := positiveMatrixSpectralAtom_sum F hF
 
-theorem spectralPartitionPOVM_projective
+lemma spectralPartitionPOVM_projective
     {κ d : Type*}
     [Fintype κ] [Fintype d] [DecidableEq κ] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
@@ -8069,7 +8069,7 @@ set_option backward.isDefEq.respectTransparency false
 set_option maxHeartbeats 3000000
 set_option maxRecDepth 2048
 
-theorem spectralPartitionPOVM_trace_eq_atom_count
+lemma spectralPartitionPOVM_trace_eq_atom_count
     {κ d : Type*}
     [Fintype κ] [Fintype d] [DecidableEq κ] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
@@ -8081,7 +8081,7 @@ theorem spectralPartitionPOVM_trace_eq_atom_count
   simp [spectralPartitionPOVM,
     Matrix.trace_sum, spectralAtom_trace]
 
-theorem spectralPartitionPOVM_trace_mul_eq_atom_overlap
+lemma spectralPartitionPOVM_trace_mul_eq_atom_overlap
     {κ d : Type*}
     [Fintype κ] [Fintype d] [DecidableEq κ] [DecidableEq d]
     (F G : Matrix d d ℂ)
@@ -8100,7 +8100,7 @@ theorem spectralPartitionPOVM_trace_mul_eq_atom_overlap
     Matrix.trace_sum]
   rw [Finset.sum_comm]
 
-theorem spectralPartitionPOVM_weighted_trace_deficit_eq_mismatch
+lemma spectralPartitionPOVM_weighted_trace_deficit_eq_mismatch
     {κ d : Type*}
     [Fintype κ] [Fintype d] [DecidableEq κ] [DecidableEq d]
     (F G : Matrix d d ℂ)
@@ -8254,7 +8254,7 @@ def finiteUniformThresholdCrossing
         finiteUniformThresholdGrid lower upper N k ≤ max a b).card : ℝ) /
     (N : ℝ)
 
-theorem finiteUniformGrid_interval_card_le
+lemma finiteUniformGrid_interval_card_le
     (N : ℕ) (offset step lo hi : ℝ)
     (positive : 0 < step)
     (ordered : lo ≤ hi) :
@@ -8312,7 +8312,7 @@ theorem finiteUniformGrid_interval_card_le
     exact add_nonneg (div_nonneg difference positive.le)
       (by norm_num)
 
-theorem finiteUniformThresholdCrossing_le
+lemma finiteUniformThresholdCrossing_le
     {lower upper : ℝ}
     (window : lower < upper)
     (a b : ℝ)
@@ -8360,7 +8360,7 @@ noncomputable section
 open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
-theorem localUnitaryPureResidual_targetLocalInverse_reset
+lemma localUnitaryPureResidual_targetLocalInverse_reset
     {n : ℕ}
     (U V : Matrix.unitaryGroup (Fin n) ℂ)
     (x : EuclideanSpace ℂ (Fin n × Fin n)) :
@@ -8375,7 +8375,7 @@ def targetCoefficientMatrix
     Matrix (Fin d) (Fin d) ℂ :=
   fun b a => ξ.val (a, b)
 
-theorem targetCoefficientMatrix_vec
+lemma targetCoefficientMatrix_vec
     {d : ℕ} (ξ : BipartiteUnitVector d) :
     toLp 2 (Matrix.vec (targetCoefficientMatrix ξ)) = ξ.val := by
   ext ⟨a, b⟩
@@ -8387,13 +8387,13 @@ def targetReducedDensity
   (targetCoefficientMatrix ξ).conjTranspose *
     targetCoefficientMatrix ξ
 
-theorem targetReducedDensity_posSemidef
+lemma targetReducedDensity_posSemidef
     {d : ℕ} (ξ : BipartiteUnitVector d) :
     (targetReducedDensity ξ).PosSemidef := by
   exact Matrix.posSemidef_conjTranspose_mul_self
     (targetCoefficientMatrix ξ)
 
-theorem targetReducedDensity_trace
+lemma targetReducedDensity_trace
     {d : ℕ} (ξ : BipartiteUnitVector d) :
     Matrix.trace (targetReducedDensity ξ) = 1 := by
   have vectorized := matrixVectorization_inner
@@ -8403,7 +8403,7 @@ theorem targetReducedDensity_trace
     inner_self_eq_one_of_norm_eq_one ξ.property] at vectorized
   exact vectorized.symm
 
-theorem targetSpectralAtom_apply
+lemma targetSpectralAtom_apply
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
     (i a b : d) :
@@ -8415,7 +8415,7 @@ theorem targetSpectralAtom_apply
     Matrix.mul_apply, Matrix.diagonal_apply,
     Pi.single_apply]
 
-theorem targetSpectralAtomOverlap_eq_basis_norm_sq
+lemma targetSpectralAtomOverlap_eq_basis_norm_sq
     {d : Type*} [Fintype d] [DecidableEq d]
     (F G : Matrix d d ℂ)
     (hF : F.PosSemidef) (hG : G.PosSemidef)
@@ -8480,12 +8480,12 @@ def targetCanonicalSchmidtCoefficient
   Real.sqrt
     ((targetReducedDensity_posSemidef ξ).isHermitian.eigenvalues i)
 
-theorem targetCanonicalSchmidtCoefficient_nonneg
+lemma targetCanonicalSchmidtCoefficient_nonneg
     {d : ℕ} (ξ : BipartiteUnitVector d) (i : Fin d) :
     0 ≤ targetCanonicalSchmidtCoefficient ξ i :=
   Real.sqrt_nonneg _
 
-theorem targetCanonicalSchmidtCoefficient_sq_sum
+lemma targetCanonicalSchmidtCoefficient_sq_sum
     {d : ℕ} (ξ : BipartiteUnitVector d) :
     (∑ i : Fin d, targetCanonicalSchmidtCoefficient ξ i ^ 2) = 1 := by
   unfold targetCanonicalSchmidtCoefficient
@@ -8496,7 +8496,7 @@ theorem targetCanonicalSchmidtCoefficient_sq_sum
     (targetReducedDensity_posSemidef ξ)
     (targetReducedDensity_trace ξ)
 
-theorem exists_proofTargetCanonicalSpectralSchmidtDecomposition
+lemma exists_proofTargetCanonicalSpectralSchmidtDecomposition
     {d : ℕ} (ξ : BipartiteUnitVector d) :
     ∃ (V : Matrix.unitaryGroup (Fin d) ℂ),
       ξ.val = schmidtVector
@@ -8635,7 +8635,7 @@ noncomputable section
 open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
-theorem conjugateUnitaryBasisOverlap_norm_sq
+lemma conjugateUnitaryBasisOverlap_norm_sq
     {d : ℕ} (U V : Matrix.unitaryGroup (Fin d) ℂ)
     (i j : Fin d) :
     ‖unitaryBasisOverlap
@@ -8663,7 +8663,7 @@ def targetCanonicalSpectralEnergy
       Real.sqrt (hG.isHermitian.eigenvalues j)) ^ 2 *
       spectralAtomOverlap F G hF hG i j
 
-theorem targetCanonicalSpectralEnergy_le_of_canonicalSchmidt
+lemma targetCanonicalSpectralEnergy_le_of_canonicalSchmidt
     {d : ℕ} (ξ ζ : BipartiteUnitVector d)
     (V W : Matrix.unitaryGroup (Fin d) ℂ)
     (hξ :
@@ -8713,7 +8713,7 @@ theorem targetCanonicalSpectralEnergy_le_of_canonicalSchmidt
   simpa [targetCanonicalSpectralEnergy, F, G, hF, hG, hξ, hζ]
     using henergy
 
-theorem targetCanonicalSpectralEnergy_le
+lemma targetCanonicalSpectralEnergy_le
     {d : ℕ} (ξ ζ : BipartiteUnitVector d) :
     targetCanonicalSpectralEnergy ξ ζ ≤
       2 * ‖ξ.val - ζ.val‖ ^ 2 := by
@@ -8737,7 +8737,7 @@ set_option backward.isDefEq.respectTransparency false
 set_option maxHeartbeats 1600000
 set_option maxRecDepth 2048
 
-theorem harmonicCoherentSharedResource_inverseAbsorption_distance
+lemma harmonicCoherentSharedResource_inverseAbsorption_distance
     {d n : ℕ}
     (U V : Matrix.unitaryGroup (Fin (d * n)) ℂ)
     (resource : BipartiteUnitVector d) :
@@ -8779,7 +8779,7 @@ set_option backward.isDefEq.respectTransparency false
 set_option maxHeartbeats 5000000
 set_option maxRecDepth 3072
 
-theorem dSVProjectorSquaredDifference_trace
+lemma dSVProjectorSquaredDifference_trace
     {d : Type*} [Fintype d] [DecidableEq d]
     (P Q : Matrix d d ℂ)
     (hP : P * P = P) (hQ : Q * Q = Q) :
@@ -8808,7 +8808,7 @@ set_option backward.isDefEq.respectTransparency false
 set_option maxHeartbeats 1800000
 set_option maxRecDepth 2048
 
-theorem dSVCanonicalFailurePrefix_card
+lemma dSVCanonicalFailurePrefix_card
     {d : ℕ} (r : Fin (d + 1)) :
     (Finset.univ.filter
       (fun i : Fin d => i.val < r.val)).card = r.val := by
@@ -8838,7 +8838,7 @@ def dSVCanonicalFailurePrefix
   toLp 2 fun q : Fin d × Fin d =>
     if q.1 = q.2 ∧ q.1.val < r.val then 1 else 0
 
-theorem dSVCanonicalFailurePrefix_norm_sq
+lemma dSVCanonicalFailurePrefix_norm_sq
     {d : ℕ} (r : Fin (d + 1)) :
     ‖dSVCanonicalFailurePrefix r‖ ^ 2 = (r.val : ℝ) := by
   classical
@@ -8871,7 +8871,7 @@ set_option backward.isDefEq.respectTransparency false
 set_option maxHeartbeats 7000000
 set_option maxRecDepth 3072
 
-theorem dSVProjectorComplement_posSemidef
+lemma dSVProjectorComplement_posSemidef
     {d : Type*} [Fintype d] [DecidableEq d]
     (P : Matrix d d ℂ) (positive : P.PosSemidef)
     (projective : P * P = P) :
@@ -8895,7 +8895,7 @@ set_option backward.isDefEq.respectTransparency false
 set_option maxHeartbeats 5000000
 set_option maxRecDepth 3072
 
-theorem dSVCanonicalFailurePrefix_inner
+lemma dSVCanonicalFailurePrefix_inner
     {d : ℕ} (r s : Fin (d + 1)) :
     inner ℂ (dSVCanonicalFailurePrefix r)
         (dSVCanonicalFailurePrefix s) =
@@ -8939,7 +8939,7 @@ theorem dSVCanonicalFailurePrefix_inner
   have cast_counted := congrArg (fun n : ℕ => (n : ℂ)) counted
   simpa [t, Finset.sum_boole] using cast_counted
 
-theorem dSVCanonicalFailurePrefix_sub_norm_sq
+lemma dSVCanonicalFailurePrefix_sub_norm_sq
     {d : ℕ} (r s : Fin (d + 1)) :
     ‖dSVCanonicalFailurePrefix r -
         dSVCanonicalFailurePrefix s‖ ^ 2 =
@@ -8984,7 +8984,7 @@ noncomputable section
 
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
-theorem dSVMixedProjectorSuccessLoss_le_square
+lemma dSVMixedProjectorSuccessLoss_le_square
     {d : Type*} [Fintype d] [DecidableEq d]
     (P R : Matrix d d ℂ)
     (hcomplement : (1 - P).PosSemidef)
@@ -9008,7 +9008,7 @@ theorem dSVMixedProjectorSuccessLoss_le_square
   rw [square]
   linarith
 
-theorem dSVWeightedMixedProjectorSuccessLoss_le_square
+lemma dSVWeightedMixedProjectorSuccessLoss_le_square
     {κ d : Type*} [Fintype κ] [Fintype d]
     [DecidableEq d]
     (w : κ → ℝ) (nonnegative : ∀ k, 0 ≤ w k)
@@ -9062,7 +9062,7 @@ def dSVGlobalProjectorBinaryPOVM
         Matrix.sub_apply]
     · simp [Matrix.blockDiagonal'_apply, same]
 
-theorem dSVGlobalProjectorBinaryPOVM_projective
+lemma dSVGlobalProjectorBinaryPOVM_projective
     {κ d : Type*} [Fintype κ] [Fintype d]
     [DecidableEq κ] [DecidableEq d]
     (P : κ → Matrix d d ℂ)
@@ -9087,7 +9087,7 @@ theorem dSVGlobalProjectorBinaryPOVM_projective
   · simp [Matrix.mul_sub, Matrix.sub_mul, projective k]
   · exact projective k
 
-theorem dSVActualGlobalMixedBornSuccess_eq
+lemma dSVActualGlobalMixedBornSuccess_eq
     {κ d : Type*} [Fintype κ] [Fintype d]
     [DecidableEq κ] [DecidableEq d]
     (τ : κ → ℝ) (k₀ : κ) (i₀ : d) (nonzero : τ k₀ ≠ 0)
@@ -9144,7 +9144,7 @@ open scoped BigOperators
 def dSVRationalSoftPass (t x : ℝ) : ℝ :=
   x / (x + t)
 
-theorem dSVRationalSoftPass_mem_unit
+lemma dSVRationalSoftPass_mem_unit
     {t x : ℝ} (positive : 0 < t) (nonnegative : 0 ≤ x) :
     0 ≤ dSVRationalSoftPass t x ∧
       dSVRationalSoftPass t x ≤ 1 := by
@@ -9155,7 +9155,7 @@ theorem dSVRationalSoftPass_mem_unit
   · apply (div_le_iff₀ denominator).mpr
     linarith
 
-theorem dSVRationalSoftPass_sub
+lemma dSVRationalSoftPass_sub
     {t a b : ℝ} (positive : 0 < t)
     (ha : 0 ≤ a) (hb : 0 ≤ b) :
     dSVRationalSoftPass t a -
@@ -9167,7 +9167,7 @@ theorem dSVRationalSoftPass_sub
   field_simp
   ring
 
-theorem dSVRationalSoftPass_lipschitz
+lemma dSVRationalSoftPass_lipschitz
     {t a b : ℝ} (positive : 0 < t)
     (ha : 0 ≤ a) (hb : 0 ≤ b) :
     |dSVRationalSoftPass t a -
@@ -9193,7 +9193,7 @@ set_option backward.isDefEq.respectTransparency false
 set_option maxHeartbeats 7000000
 set_option maxRecDepth 3072
 
-theorem dSVAdaptiveSoft_sqrt_sub_sq_le_abs
+lemma dSVAdaptiveSoft_sqrt_sub_sq_le_abs
     (a b : ℝ) (ha : 0 ≤ a) (hb : 0 ≤ b) :
     (Real.sqrt a - Real.sqrt b) ^ 2 ≤ |a - b| := by
   have sa : 0 ≤ Real.sqrt a := Real.sqrt_nonneg a
@@ -9221,13 +9221,13 @@ def dSVSoftBobLeftReducedDensity
   targetCoefficientMatrix ζ *
     (targetCoefficientMatrix ζ).conjTranspose
 
-theorem dSVSoftBobLeftReducedDensity_posSemidef
+lemma dSVSoftBobLeftReducedDensity_posSemidef
     {d : ℕ} (ζ : BipartiteUnitVector d) :
     (dSVSoftBobLeftReducedDensity ζ).PosSemidef := by
   exact Matrix.posSemidef_self_mul_conjTranspose
     (targetCoefficientMatrix ζ)
 
-theorem dSVSoftBobLeftReducedDensity_trace
+lemma dSVSoftBobLeftReducedDensity_trace
     {d : ℕ} (ζ : BipartiteUnitVector d) :
     Matrix.trace (dSVSoftBobLeftReducedDensity ζ) = 1 := by
   unfold dSVSoftBobLeftReducedDensity
@@ -9273,7 +9273,7 @@ def dSVHeterogeneousRealPrefix
     (continuation : ℕ → ℝ) (k : ℕ) : ℝ :=
   ∏ i ∈ Finset.range k, continuation i
 
-theorem dSVHeterogeneousRealPrefix_succ
+lemma dSVHeterogeneousRealPrefix_succ
     (continuation : ℕ → ℝ) (k : ℕ) :
     dSVHeterogeneousRealPrefix continuation (k + 1) =
       dSVHeterogeneousRealPrefix continuation k *
@@ -9281,7 +9281,7 @@ theorem dSVHeterogeneousRealPrefix_succ
   simp [dSVHeterogeneousRealPrefix,
     Finset.prod_range_succ]
 
-theorem dSVHeterogeneousRealStopping_escape_identity
+lemma dSVHeterogeneousRealStopping_escape_identity
     (continuation : ℕ → ℝ) (N : ℕ) :
     (∑ k ∈ Finset.range N,
       dSVHeterogeneousRealPrefix continuation k *
@@ -9295,14 +9295,14 @@ theorem dSVHeterogeneousRealStopping_escape_identity
         dSVHeterogeneousRealPrefix_succ]
       linear_combination ih
 
-theorem dSVHeterogeneousRealPrefix_nonneg
+lemma dSVHeterogeneousRealPrefix_nonneg
     (continuation : ℕ → ℝ)
     (nonnegative : ∀ k, 0 ≤ continuation k) (k : ℕ) :
     0 ≤ dSVHeterogeneousRealPrefix continuation k := by
   unfold dSVHeterogeneousRealPrefix
   exact Finset.prod_nonneg (fun i _ => nonnegative i)
 
-theorem dSVHeterogeneousRealStopping_escape_budget
+lemma dSVHeterogeneousRealStopping_escape_budget
     (continuation escape : ℕ → ℝ)
     (continuation_nonnegative : ∀ k, 0 ≤ continuation k)
     (escape_bound : ∀ k, continuation k + escape k ≤ 1)
@@ -9352,7 +9352,7 @@ def dSVUniformDensityThresholdSharedState
   sharedThresholdResource (d := Fin d)
     (fun _ : Fin N => (1 : ℝ))
 
-theorem dSVUniformDensityThresholdRaw_norm_sq
+lemma dSVUniformDensityThresholdRaw_norm_sq
     (N d : ℕ) :
     ‖sharedThresholdResourceRaw (d := Fin d)
       (fun _ : Fin N => (1 : ℝ))‖ ^ 2 =
@@ -9360,14 +9360,14 @@ theorem dSVUniformDensityThresholdRaw_norm_sq
   simpa using sharedThresholdResourceRaw_norm_sq
     (d := Fin d) (fun _ : Fin N => (1 : ℝ))
 
-theorem dSVUniformDensityThresholdSharedState_norm
+lemma dSVUniformDensityThresholdSharedState_norm
     {N d : ℕ} (grid : 0 < N) (dimension : 0 < d) :
     ‖dSVUniformDensityThresholdSharedState N d‖ = 1 := by
   exact sharedThresholdResource_norm
     (fun _ : Fin N => (1 : ℝ))
     ⟨0, grid⟩ ⟨0, dimension⟩ (by norm_num)
 
-theorem dSVUniformDensityThresholdSharedState_mismatchedFlag
+lemma dSVUniformDensityThresholdSharedState_mismatchedFlag
     (N d : ℕ) (k l : Fin N) (i j : Fin d)
     (different : k ≠ l) :
     dSVUniformDensityThresholdSharedState N d
@@ -9376,7 +9376,7 @@ theorem dSVUniformDensityThresholdSharedState_mismatchedFlag
     sharedThresholdResource,
     sharedThresholdResourceRaw, different]
 
-theorem dSVUniformDensityThresholdSharedState_mismatchedWork
+lemma dSVUniformDensityThresholdSharedState_mismatchedWork
     (N d : ℕ) (k l : Fin N) (i j : Fin d)
     (different : i ≠ j) :
     dSVUniformDensityThresholdSharedState N d
@@ -9395,7 +9395,7 @@ def dSVUniformDensityThresholdSharedDensity
     (dSVUniformDensityThresholdSharedState_norm
       grid dimension)
 
-theorem dSVUniformDensityThresholdShared_mixedBorn_eq
+lemma dSVUniformDensityThresholdShared_mixedBorn_eq
     {N d : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (P R : Fin N → Matrix (Fin d) (Fin d) ℂ)
     (hP : ∀ k, (P k).PosSemidef)
@@ -9419,7 +9419,7 @@ theorem dSVUniformDensityThresholdShared_mixedBorn_eq
       ⟨0, grid⟩ ⟨0, dimension⟩ (by norm_num)
       P R hP hPc hR hRc hPP hRR
 
-theorem dSVUniformDensityThresholdShared_diagonalBorn_eq
+lemma dSVUniformDensityThresholdShared_diagonalBorn_eq
     {N d : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (P : Fin N → Matrix (Fin d) (Fin d) ℂ)
     (hP : ∀ k, (P k).PosSemidef)
@@ -9466,7 +9466,7 @@ def dSVUniformDensityIndependentSharedState
       (fun _ : Fin L =>
         dSVUniformDensityThresholdSharedState N d))
 
-theorem dSVUniformDensityIndependentSharedState_apply
+lemma dSVUniformDensityIndependentSharedState_apply
     (L N d : ℕ)
     (alice bob :
       DSVUniformDensityIndependentHistoryLocalIndex L N d) :
@@ -9481,7 +9481,7 @@ theorem dSVUniformDensityIndependentSharedState_apply
     finiteTensorVector,
     bilateralWorkPairEquiv]
 
-theorem dSVUniformDensityIndependentSharedState_norm
+lemma dSVUniformDensityIndependentSharedState_norm
     (L : ℕ) {N d : ℕ}
     (grid : 0 < N) (dimension : 0 < d) :
     ‖dSVUniformDensityIndependentSharedState L N d‖ = 1 := by
@@ -9526,7 +9526,7 @@ def dSVUniformDensitySchmidtSumMass
         (targetReducedDensity_posSemidef ξ)
         (targetReducedDensity_posSemidef ζ) i j
 
-theorem dSVUniformDensitySchmidtSumMass_le_four
+lemma dSVUniformDensitySchmidtSumMass_le_four
     {d : ℕ} (ξ ζ : BipartiteUnitVector d) :
     dSVUniformDensitySchmidtSumMass ξ ζ ≤ 4 := by
   let F := targetReducedDensity ξ
@@ -9589,7 +9589,7 @@ theorem dSVUniformDensitySchmidtSumMass_le_four
   rw [split, left, right]
   nlinarith
 
-theorem dSVUniformDensitySpectralAtomDiscrepancy_le
+lemma dSVUniformDensitySpectralAtomDiscrepancy_le
     {d : ℕ} (ξ ζ : BipartiteUnitVector d) :
     dSVUniformDensitySpectralAtomDiscrepancy ξ ζ ≤
       2 * Real.sqrt 2 * ‖ξ.val - ζ.val‖ := by
@@ -9697,7 +9697,7 @@ def markedFirst (rank : α ≃ Fin (Fintype.card α))
 
 omit [DecidableEq α] in
 
-theorem markedFirst_mem (rank : α ≃ Fin (Fintype.card α))
+lemma markedFirst_mem (rank : α ≃ Fin (Fintype.card α))
     (marked : Finset α) (nonempty : marked.Nonempty)
     (permutation : Equiv.Perm α) :
     markedFirst rank marked nonempty permutation ∈ marked := by
@@ -9708,7 +9708,7 @@ theorem markedFirst_mem (rank : α ≃ Fin (Fintype.card α))
 
 omit [DecidableEq α] in
 
-theorem markedFirst_rank (rank : α ≃ Fin (Fintype.card α))
+lemma markedFirst_rank (rank : α ≃ Fin (Fintype.card α))
     (marked : Finset α) (nonempty : marked.Nonempty)
     (permutation : Equiv.Perm α) :
     rank (permutation (markedFirst rank marked nonempty permutation)) =
@@ -9718,7 +9718,7 @@ theorem markedFirst_rank (rank : α ≃ Fin (Fintype.card α))
 
 omit [DecidableEq α] in
 
-theorem markedFirst_rank_le (rank : α ≃ Fin (Fintype.card α))
+lemma markedFirst_rank_le (rank : α ≃ Fin (Fintype.card α))
     (marked : Finset α) (nonempty : marked.Nonempty)
     (permutation : Equiv.Perm α) {a : α} (ha : a ∈ marked) :
     rank (permutation (markedFirst rank marked nonempty permutation)) ≤
@@ -9728,7 +9728,7 @@ theorem markedFirst_rank_le (rank : α ≃ Fin (Fintype.card α))
 
 omit [DecidableEq α] in
 
-theorem markedFirst_eq_of_mem_of_rank_le
+lemma markedFirst_eq_of_mem_of_rank_le
     (rank : α ≃ Fin (Fintype.card α))
     (marked : Finset α) (nonempty : marked.Nonempty)
     (permutation : Equiv.Perm α) {a : α} (ha : a ∈ marked)
@@ -9742,7 +9742,7 @@ theorem markedFirst_eq_of_mem_of_rank_le
 
 omit [DecidableEq α] in
 
-theorem markedFirst_subset_eq_of_mem
+lemma markedFirst_subset_eq_of_mem
     (rank : α ≃ Fin (Fintype.card α))
     {small large : Finset α}
     (hsmall : small.Nonempty) (hlarge : large.Nonempty)
@@ -9755,7 +9755,7 @@ theorem markedFirst_subset_eq_of_mem
   intro a ha
   exact markedFirst_rank_le rank large hlarge permutation (hsub ha)
 
-theorem markedFirst_eq_iff_union_first_mem_inter
+lemma markedFirst_eq_iff_union_first_mem_inter
     (rank : α ≃ Fin (Fintype.card α))
     (left right : Finset α)
     (hleft : left.Nonempty) (hright : right.Nonempty)
@@ -9795,7 +9795,7 @@ theorem markedFirst_eq_iff_union_first_mem_inter
       (Finset.mem_inter.mp hcommon).2
     exact hleft'.trans hright'.symm
 
-theorem markedFirst_ne_iff_union_first_mem_symmDiff
+lemma markedFirst_ne_iff_union_first_mem_symmDiff
     (rank : α ≃ Fin (Fintype.card α))
     (left right : Finset α)
     (hleft : left.Nonempty) (hright : right.Nonempty)
@@ -9834,7 +9834,7 @@ theorem markedFirst_ne_iff_union_first_mem_symmDiff
 
 omit [Fintype α] in
 
-theorem swap_mem_iff_of_mem {marked : Finset α} {x y : α}
+lemma swap_mem_iff_of_mem {marked : Finset α} {x y : α}
     (hx : x ∈ marked) (hy : y ∈ marked) (a : α) :
     Equiv.swap x y a ∈ marked ↔ a ∈ marked := by
   by_cases hax : a = x
@@ -9845,7 +9845,7 @@ theorem swap_mem_iff_of_mem {marked : Finset α} {x y : α}
       simp [hx, hy]
     · rw [Equiv.swap_apply_of_ne_of_ne hax hay]
 
-theorem markedFirst_swap_trans
+lemma markedFirst_swap_trans
     (rank : α ≃ Fin (Fintype.card α))
     (marked : Finset α) (nonempty : marked.Nonempty)
     {x y : α} (hx : x ∈ marked) (hy : y ∈ marked)
@@ -9867,7 +9867,7 @@ def firstFiber (rank : α ≃ Fin (Fintype.card α))
   Finset.univ.filter fun permutation =>
     markedFirst rank marked nonempty permutation = a
 
-theorem firstFiber_card_eq
+lemma firstFiber_card_eq
     (rank : α ≃ Fin (Fintype.card α))
     (marked : Finset α) (nonempty : marked.Nonempty)
     {x y : α} (hx : x ∈ marked) (hy : y ∈ marked) :
@@ -9899,7 +9899,7 @@ theorem firstFiber_card_eq
     ext a
     simp [Equiv.trans_apply]
 
-theorem markedFirst_event_card_mul
+lemma markedFirst_event_card_mul
     (rank : α ≃ Fin (Fintype.card α))
     (marked : Finset α) (nonempty : marked.Nonempty)
     (event : Finset α) (hevent : event ⊆ marked) :
@@ -9952,7 +9952,7 @@ theorem markedFirst_event_card_mul
   rw [hevent_card, htotal_card]
   ac_rfl
 
-theorem sharedPermutation_disagreement_card_mul
+lemma sharedPermutation_disagreement_card_mul
     (rank : α ≃ Fin (Fintype.card α))
     (left right : Finset α)
     (hleft : left.Nonempty) (hright : right.Nonempty) :
@@ -9990,7 +9990,7 @@ def uniformPermutationProbability (event : Equiv.Perm α → Prop) : ℝ := by
   exact ((Finset.univ.filter fun permutation : Equiv.Perm α =>
       event permutation).card : ℝ) / Fintype.card (Equiv.Perm α)
 
-theorem markedFirst_event_probability
+lemma markedFirst_event_probability
     (rank : α ≃ Fin (Fintype.card α))
     (marked : Finset α) (nonempty : marked.Nonempty)
     (event : Finset α) (hevent : event ⊆ marked) :
@@ -10017,7 +10017,7 @@ theorem markedFirst_event_probability
     exact_mod_cast hcount
   simpa only [] using hreal
 
-theorem sharedPermutation_disagreement_probability
+lemma sharedPermutation_disagreement_probability
     (rank : α ≃ Fin (Fintype.card α))
     (left right : Finset α)
     (hleft : left.Nonempty) (hright : right.Nonempty) :
@@ -10042,7 +10042,7 @@ theorem sharedPermutation_disagreement_probability
   exact_mod_cast
     sharedPermutation_disagreement_card_mul rank left right hleft hright
 
-theorem sharedPermutation_disagreement_probability_le
+lemma sharedPermutation_disagreement_probability_le
     (rank : α ≃ Fin (Fintype.card α))
     (left right : Finset α)
     (hleft : left.Nonempty) (hright : right.Nonempty) :
@@ -10063,7 +10063,7 @@ def markedTotalVariation (left right : Finset α) : ℝ :=
   (((left \ right) ∪ (right \ left)).card : ℝ) /
     (2 * (left.card : ℝ))
 
-theorem sharedPermutation_disagreement_probability_le_two_mul_tv
+lemma sharedPermutation_disagreement_probability_le_two_mul_tv
     (rank : α ≃ Fin (Fintype.card α))
     (left right : Finset α)
     (hleft : left.Nonempty) (hright : right.Nonempty)
@@ -10097,7 +10097,7 @@ def rationalMarked (denominator : ℕ) (numerator : β → ℕ) :
   exact Finset.univ.filter fun point =>
     point.2.val < numerator point.1
 
-theorem rationalMarked_fiber_card
+lemma rationalMarked_fiber_card
     (denominator : ℕ) (numerator : β → ℕ) (letter : β) :
     ((rationalMarked denominator numerator).filter
       fun point => point.1 = letter).card =
@@ -10137,7 +10137,7 @@ theorem rationalMarked_fiber_card
 
 omit [DecidableEq β] in
 
-theorem rationalNumerator_le_denominator
+lemma rationalNumerator_le_denominator
     (denominator : ℕ) (numerator : β → ℕ)
     (normalized : (∑ letter, numerator letter) = denominator)
     (letter : β) : numerator letter ≤ denominator := by
@@ -10145,7 +10145,7 @@ theorem rationalNumerator_le_denominator
   exact Finset.single_le_sum
     (fun a _ => Nat.zero_le (numerator a)) (Finset.mem_univ letter)
 
-theorem rationalMarked_card
+lemma rationalMarked_card
     (denominator : ℕ) (numerator : β → ℕ)
     (normalized : (∑ letter, numerator letter) = denominator) :
     (rationalMarked denominator numerator).card = denominator := by
@@ -10169,7 +10169,7 @@ theorem rationalMarked_card
         (rationalNumerator_le_denominator denominator numerator normalized letter)
     _ = denominator := normalized
 
-theorem rationalMarked_nonempty
+lemma rationalMarked_nonempty
     (denominator : ℕ) (numerator : β → ℕ)
     (normalized : (∑ letter, numerator letter) = denominator)
     (positive : 0 < denominator) :
@@ -10178,7 +10178,7 @@ theorem rationalMarked_nonempty
   rw [rationalMarked_card denominator numerator normalized]
   exact positive
 
-theorem rationalMarked_letter_probability
+lemma rationalMarked_letter_probability
     (denominator : ℕ) (numerator : β → ℕ)
     (normalized : (∑ letter, numerator letter) = denominator)
     (nonempty : (rationalMarked denominator numerator).Nonempty)
@@ -10225,7 +10225,7 @@ end ClassicalSampling
 
 namespace Pinsker
 
-theorem centered_log_lower_of_one_le {x : ℝ} (hx : 1 ≤ x) :
+lemma centered_log_lower_of_one_le {x : ℝ} (hx : 1 ≤ x) :
     2 * (x - 1) / (x + 1) ≤ Real.log x := by
   have hden : 0 < x + 1 := by linarith
   let t : ℝ := (x - 1) / (x + 1)
@@ -10247,7 +10247,7 @@ theorem centered_log_lower_of_one_le {x : ℝ} (hx : 1 ≤ x) :
     2 * (x - 1) / (x + 1) = 2 * ((x - 1) / (x + 1)) := by ring
     _ ≤ Real.log x := by linarith
 
-theorem centered_log_upper_of_le_one
+lemma centered_log_upper_of_le_one
     {x : ℝ} (hx0 : 0 < x) (hx1 : x ≤ 1) :
     Real.log x ≤ 2 * (x - 1) / (x + 1) := by
   have hinv : 1 ≤ (1 : ℝ) / x := by
@@ -10266,7 +10266,7 @@ theorem centered_log_upper_of_le_one
 def pinskerScalarGap (x : ℝ) : ℝ :=
   InformationTheory.klFun x - 3 * (x - 1) ^ 2 / (2 * (x + 2))
 
-theorem hasDerivAt_pinskerScalarGap {x : ℝ} (hx : 0 < x) :
+lemma hasDerivAt_pinskerScalarGap {x : ℝ} (hx : 0 < x) :
     HasDerivAt pinskerScalarGap
       (Real.log x - 3 * (x - 1) * (x + 5) / (2 * (x + 2) ^ 2)) x := by
   have hden : 2 * (x + 2) ≠ 0 := by positivity
@@ -10291,14 +10291,14 @@ theorem hasDerivAt_pinskerScalarGap {x : ℝ} (hx : 0 < x) :
   field_simp
   ring
 
-theorem pinsker_rational_coefficient_le {x : ℝ} (hx : 0 < x) :
+lemma pinsker_rational_coefficient_le {x : ℝ} (hx : 0 < x) :
     3 * (x + 5) / (2 * (x + 2) ^ 2) ≤ 2 / (x + 1) := by
   have hleft : 0 < 2 * (x + 2) ^ 2 := by positivity
   have hright : 0 < x + 1 := by linarith
   apply (div_le_div_iff₀ hleft hright).mpr
   nlinarith [sq_nonneg (x - 1)]
 
-theorem pinskerScalarGap_derivative_nonneg
+lemma pinskerScalarGap_derivative_nonneg
     {x : ℝ} (hx : 1 ≤ x) :
     0 ≤ Real.log x -
       3 * (x - 1) * (x + 5) / (2 * (x + 2) ^ 2) := by
@@ -10317,7 +10317,7 @@ theorem pinskerScalarGap_derivative_nonneg
   have hlog := centered_log_lower_of_one_le hx
   linarith
 
-theorem pinskerScalarGap_derivative_nonpos
+lemma pinskerScalarGap_derivative_nonpos
     {x : ℝ} (hx0 : 0 < x) (hx1 : x ≤ 1) :
     Real.log x -
       3 * (x - 1) * (x + 5) / (2 * (x + 2) ^ 2) ≤ 0 := by
@@ -10334,7 +10334,7 @@ theorem pinskerScalarGap_derivative_nonpos
   have hlog := centered_log_upper_of_le_one hx0 hx1
   linarith
 
-theorem pinskerScalarGap_nonneg {x : ℝ} (hx : 0 ≤ x) :
+lemma pinskerScalarGap_nonneg {x : ℝ} (hx : 0 ≤ x) :
     0 ≤ pinskerScalarGap x := by
   by_cases hzero : x = 0
   · subst x
@@ -10390,7 +10390,7 @@ theorem pinskerScalarGap_nonneg {x : ℝ} (hx : 0 ≤ x) :
       (show (1 : ℝ) ∈ Set.Icc x 1 from ⟨hxone, le_rfl⟩) hxone
     simpa [pinskerScalarGap, InformationTheory.klFun] using hbound
 
-theorem quadratic_le_klFun {x : ℝ} (hx : 0 ≤ x) :
+lemma quadratic_le_klFun {x : ℝ} (hx : 0 ≤ x) :
     3 * (x - 1) ^ 2 / (2 * (x + 2)) ≤ InformationTheory.klFun x := by
   have h := pinskerScalarGap_nonneg hx
   dsimp [pinskerScalarGap] at h
@@ -10404,7 +10404,7 @@ def finiteTotalVariation {ι : Type*} [Fintype ι]
     (p q : ι → ℝ) : ℝ :=
   (∑ i, |p i - q i|) / 2
 
-theorem quadratic_density_le_weighted_kl
+lemma quadratic_density_le_weighted_kl
     {p q : ℝ} (hp : 0 ≤ p) (hq : 0 < q) :
     3 * (p - q) ^ 2 / (2 * (p + 2 * q)) ≤
       q * InformationTheory.klFun (p / q) := by
@@ -10416,7 +10416,7 @@ theorem quadratic_density_le_weighted_kl
       field_simp [hq.ne']
     _ ≤ q * InformationTheory.klFun (p / q) := hweighted
 
-theorem finiteRelativeEntropy_eq_log_sum
+lemma finiteRelativeEntropy_eq_log_sum
     {ι : Type*} [Fintype ι]
     (p q : ι → ℝ)
     (hq : ∀ i, 0 < q i)
@@ -10437,7 +10437,7 @@ theorem finiteRelativeEntropy_eq_log_sum
         hp_normalized, hq_normalized]
       ring
 
-theorem finite_pinsker
+lemma finite_pinsker
     {ι : Type*} [Fintype ι]
     (p q : ι → ℝ)
     (hp : ∀ i, 0 ≤ p i)
@@ -10503,7 +10503,7 @@ theorem finite_pinsker
   unfold finiteTotalVariation
   nlinarith
 
-theorem sum_over_positive_reference_support
+lemma sum_over_positive_reference_support
     {ι : Type*} [Fintype ι]
     (q f : ι → ℝ)
     (hq : ∀ i, 0 ≤ q i)
@@ -10525,7 +10525,7 @@ theorem sum_over_positive_reference_support
         exact hfi (hzero i hqi)
       exact lt_of_le_of_ne (hq i) hqi.symm
 
-theorem finite_pinsker_of_absolute_continuity
+lemma finite_pinsker_of_absolute_continuity
     {ι : Type*} [Fintype ι]
     (p q : ι → ℝ)
     (hp : ∀ i, 0 ≤ p i)
@@ -10570,7 +10570,7 @@ theorem finite_pinsker_of_absolute_continuity
     hp'_nonnegative hq'_positive hp'_normalized hq'_normalized
   rwa [htv, hkl] at h
 
-theorem finiteRelativeEntropy_eq_log_sum_of_absolute_continuity
+lemma finiteRelativeEntropy_eq_log_sum_of_absolute_continuity
     {ι : Type*} [Fintype ι]
     (p q : ι → ℝ)
     (hq : ∀ i, 0 ≤ q i)
@@ -10595,7 +10595,7 @@ theorem finiteRelativeEntropy_eq_log_sum_of_absolute_continuity
         hp_normalized, hq_normalized]
       ring
 
-theorem finite_pinsker_sqrt_of_absolute_continuity
+lemma finite_pinsker_sqrt_of_absolute_continuity
     {ι : Type*} [Fintype ι]
     (p q : ι → ℝ)
     (hp : ∀ i, 0 ≤ p i)
@@ -10641,7 +10641,7 @@ def distributionRoundedProbability
 
 omit [Fintype ι] [DecidableEq ι] in
 
-theorem distributionFloorNumerator_cast_le
+lemma distributionFloorNumerator_cast_le
     (denominator : ℕ) (p : ι → ℝ)
     (hp : ∀ i, 0 ≤ p i) (i : ι) :
     (distributionFloorNumerator denominator p i : ℝ) ≤
@@ -10651,7 +10651,7 @@ theorem distributionFloorNumerator_cast_le
 
 omit [Fintype ι] [DecidableEq ι] in
 
-theorem distributionFloorProbability_le
+lemma distributionFloorProbability_le
     (denominator : ℕ) (positive : 0 < denominator)
     (p : ι → ℝ) (hp : ∀ i, 0 ≤ p i) (i : ι) :
     distributionFloorProbability denominator p i ≤ p i := by
@@ -10662,7 +10662,7 @@ theorem distributionFloorProbability_le
 
 omit [Fintype ι] [DecidableEq ι] in
 
-theorem distributionFloorProbability_error_lt
+lemma distributionFloorProbability_error_lt
     (denominator : ℕ) (positive : 0 < denominator)
     (p : ι → ℝ) (i : ι) :
     p i - distributionFloorProbability denominator p i <
@@ -10680,7 +10680,7 @@ theorem distributionFloorProbability_error_lt
 
 omit [DecidableEq ι] in
 
-theorem distributionFloorNumerator_sum_le
+lemma distributionFloorNumerator_sum_le
     (denominator : ℕ) (p : ι → ℝ)
     (hp : ∀ i, 0 ≤ p i)
     (normalized : (∑ i, p i) = 1) :
@@ -10700,7 +10700,7 @@ theorem distributionFloorNumerator_sum_le
         simp
   exact_mod_cast hreal
 
-theorem distributionRoundedNumerator_sum
+lemma distributionRoundedNumerator_sum
     (base : ι) (denominator : ℕ) (p : ι → ℝ)
     (hp : ∀ i, 0 ≤ p i)
     (normalized : (∑ i, p i) = 1) :
@@ -10716,7 +10716,7 @@ theorem distributionRoundedNumerator_sum
 
 omit [DecidableEq ι] in
 
-theorem distributionFloorResidual_probability_eq_sum
+lemma distributionFloorResidual_probability_eq_sum
     (denominator : ℕ) (positive : 0 < denominator)
     (p : ι → ℝ)
     (hp : ∀ i, 0 ≤ p i)
@@ -10732,7 +10732,7 @@ theorem distributionFloorResidual_probability_eq_sum
     normalized, ← Finset.sum_div]
   field_simp
 
-theorem distributionRoundedProbability_eq_floor_add
+lemma distributionRoundedProbability_eq_floor_add
     (base : ι) (denominator : ℕ) (p : ι → ℝ) (i : ι) :
     distributionRoundedProbability base denominator p i =
       distributionFloorProbability denominator p i +
@@ -10747,7 +10747,7 @@ theorem distributionRoundedProbability_eq_floor_add
   · simp [distributionRoundedProbability,
       distributionRoundedNumerator, distributionFloorProbability, hbase]
 
-theorem distributionRoundedProbability_totalVariation_le
+lemma distributionRoundedProbability_totalVariation_le
     (base : ι) (denominator : ℕ) (positive : 0 < denominator)
     (p : ι → ℝ)
     (hp : ∀ i, 0 ≤ p i)
@@ -10821,7 +10821,7 @@ theorem distributionRoundedProbability_totalVariation_le
 
 omit [Fintype ι] [DecidableEq ι] in
 
-theorem finite_log_sum_inequality
+lemma finite_log_sum_inequality
     (indices : Finset ι) (p q : ι → ℝ)
     (hp : ∀ i, 0 ≤ p i)
     (hq : ∀ i, 0 ≤ q i)
@@ -10890,7 +10890,7 @@ def groupedMass (map : ι → κ) (p : ι → ℝ) (j : κ) : ℝ :=
 
 omit [DecidableEq ι] in
 
-theorem finite_relative_entropy_data_processing
+lemma finite_relative_entropy_data_processing
     (map : ι → κ) (p q : ι → ℝ)
     (hp : ∀ i, 0 ≤ p i)
     (hq : ∀ i, 0 ≤ q i)
@@ -10950,7 +10950,7 @@ def jointConditional (joint : ι × κ → ℝ) (i : ι) : κ → ℝ :=
 
 omit [Fintype ι] [DecidableEq ι] in
 
-theorem jointFirstMarginal_nonneg
+lemma jointFirstMarginal_nonneg
     (joint : ι × κ → ℝ)
     (nonnegative : ∀ point, 0 ≤ joint point) (i : ι) :
     0 ≤ jointFirstMarginal joint i := by
@@ -10958,14 +10958,14 @@ theorem jointFirstMarginal_nonneg
 
 omit [DecidableEq ι] in
 
-theorem jointFirstMarginal_sum (joint : ι × κ → ℝ) :
+lemma jointFirstMarginal_sum (joint : ι × κ → ℝ) :
     (∑ i : ι, jointFirstMarginal joint i) =
       ∑ point : ι × κ, joint point := by
   exact (Fintype.sum_prod_type joint).symm
 
 omit [Fintype ι] [DecidableEq ι] in
 
-theorem jointFirstMarginal_absolute_continuity
+lemma jointFirstMarginal_absolute_continuity
     (p q : ι × κ → ℝ)
     (hq : ∀ point, 0 ≤ q point)
     (absolute_continuity : ∀ point, q point = 0 → p point = 0)
@@ -10983,7 +10983,7 @@ theorem jointFirstMarginal_absolute_continuity
 
 omit [Fintype ι] [DecidableEq ι] in
 
-theorem jointConditional_sum
+lemma jointConditional_sum
     (joint : ι × κ → ℝ) (i : ι)
     (nonzero : jointFirstMarginal joint i ≠ 0) :
     (∑ j : κ, jointConditional joint i j) = 1 := by
@@ -10993,7 +10993,7 @@ theorem jointConditional_sum
 
 omit [DecidableEq ι] in
 
-theorem finite_relative_entropy_joint_chain_rule
+lemma finite_relative_entropy_joint_chain_rule
     (p q : ι × κ → ℝ)
     (hp : ∀ point, 0 ≤ p point)
     (hq : ∀ point, 0 ≤ q point)
@@ -11159,7 +11159,7 @@ def rationalPermutationOutput
   (markedFirst (Fintype.equivFin (ι × Fin denominator))
     (rationalMarked denominator numerator) nonempty permutation).1
 
-theorem rationalPermutationOutput_probability
+lemma rationalPermutationOutput_probability
     (denominator : ℕ) (numerator : ι → ℕ)
     (normalized : (∑ i, numerator i) = denominator)
     (nonempty : (rationalMarked denominator numerator).Nonempty)
@@ -11172,14 +11172,14 @@ theorem rationalPermutationOutput_probability
   exact rationalMarked_letter_probability denominator numerator normalized
     nonempty (Fintype.equivFin (ι × Fin denominator)) letter
 
-theorem rationalMarked_inter
+lemma rationalMarked_inter
     (denominator : ℕ) (left right : ι → ℕ) :
     rationalMarked denominator left ∩ rationalMarked denominator right =
       rationalMarked denominator (fun i => min (left i) (right i)) := by
   ext point
   simp [rationalMarked]
 
-theorem rationalMarked_inter_card
+lemma rationalMarked_inter_card
     (denominator : ℕ) (left right : ι → ℕ)
     (hleft : (∑ i, left i) = denominator)
     (_hright : (∑ i, right i) = denominator) :
@@ -11209,7 +11209,7 @@ theorem rationalMarked_inter_card
         (rationalNumerator_le_denominator
           denominator left hleft i)
 
-theorem rationalMarked_markedTotalVariation_eq
+lemma rationalMarked_markedTotalVariation_eq
     (denominator : ℕ) (positive : 0 < denominator)
     (left right : ι → ℕ)
     (hleft : (∑ i, left i) = denominator)
@@ -11302,7 +11302,7 @@ theorem rationalMarked_markedTotalVariation_eq
     hleft_real, hright_real]
   field_simp [hdenominator]
 
-theorem uniformPermutationProbability_mono
+lemma uniformPermutationProbability_mono
     {α : Type*} [Fintype α] [DecidableEq α]
     (small large : Equiv.Perm α → Prop)
     (hinclusion : ∀ permutation, small permutation → large permutation) :
@@ -11322,7 +11322,7 @@ theorem uniformPermutationProbability_mono
             (Finset.mem_filter.mp hpermutation).2⟩)
   · exact_mod_cast (Nat.zero_le (Fintype.card (Equiv.Perm α)))
 
-theorem rationalPermutationOutput_disagreement_le_two_mul_tv
+lemma rationalPermutationOutput_disagreement_le_two_mul_tv
     (denominator : ℕ) (left right : ι → ℕ)
     (hleft : (∑ i, left i) = denominator)
     (hright : (∑ i, right i) = denominator)
@@ -11365,7 +11365,7 @@ theorem rationalPermutationOutput_disagreement_le_two_mul_tv
         _ = (rationalMarked denominator right).card :=
           (rationalMarked_card denominator right hright).symm
 
-theorem rationalPermutationOutput_disagreement_le_two_mul_finiteTotalVariation
+lemma rationalPermutationOutput_disagreement_le_two_mul_finiteTotalVariation
     (denominator : ℕ) (positive : 0 < denominator)
     (left right : ι → ℕ)
     (hleft : (∑ i, left i) = denominator)
@@ -11420,7 +11420,7 @@ def dSVUniformLeftDensityConjugateSwapVector
     EuclideanSpace ℂ (Fin d × Fin d) :=
   toLp 2 (fun ij : Fin d × Fin d => star (z (ij.2, ij.1)))
 
-theorem dSVUniformLeftDensityConjugateSwapVector_norm
+lemma dSVUniformLeftDensityConjugateSwapVector_norm
     {d : ℕ} (z : EuclideanSpace ℂ (Fin d × Fin d)) :
     ‖dSVUniformLeftDensityConjugateSwapVector z‖ = ‖z‖ := by
   have squares :
@@ -11438,7 +11438,7 @@ theorem dSVUniformLeftDensityConjugateSwapVector_norm
     (dSVUniformLeftDensityConjugateSwapVector z),
     norm_nonneg z]
 
-theorem dSVUniformLeftDensityConjugateSwapVector_distance
+lemma dSVUniformLeftDensityConjugateSwapVector_distance
     {d : ℕ} (z w : EuclideanSpace ℂ (Fin d × Fin d)) :
     ‖dSVUniformLeftDensityConjugateSwapVector z -
         dSVUniformLeftDensityConjugateSwapVector w‖ =
@@ -11461,7 +11461,7 @@ def dSVUniformLeftDensityConjugateSwap
     (dSVUniformLeftDensityConjugateSwapVector_norm ξ.val).trans
       ξ.property⟩
 
-theorem dSVUniformLeftDensityConjugateSwap_coefficient
+lemma dSVUniformLeftDensityConjugateSwap_coefficient
     {d : ℕ} (ξ : BipartiteUnitVector d) :
     targetCoefficientMatrix
         (dSVUniformLeftDensityConjugateSwap ξ) =
@@ -11469,7 +11469,7 @@ theorem dSVUniformLeftDensityConjugateSwap_coefficient
   ext b a
   rfl
 
-theorem dSVUniformLeftDensityConjugateSwap_density
+lemma dSVUniformLeftDensityConjugateSwap_density
     {d : ℕ} (ξ : BipartiteUnitVector d) :
     targetReducedDensity
         (dSVUniformLeftDensityConjugateSwap ξ) =
@@ -11479,7 +11479,7 @@ theorem dSVUniformLeftDensityConjugateSwap_density
   rw [dSVUniformLeftDensityConjugateSwap_coefficient,
     Matrix.conjTranspose_conjTranspose]
 
-theorem dSVUniformLeftDensityConjugateSwap_distance
+lemma dSVUniformLeftDensityConjugateSwap_distance
     {d : ℕ} (ξ ζ : BipartiteUnitVector d) :
     ‖(dSVUniformLeftDensityConjugateSwap ξ).val -
         (dSVUniformLeftDensityConjugateSwap ζ).val‖ =
@@ -11504,7 +11504,7 @@ def dSVUniformLeftDensitySpectralAtomDiscrepancy
         (dSVSoftBobLeftReducedDensity_posSemidef ξ)
         (dSVSoftBobLeftReducedDensity_posSemidef ζ) i j
 
-theorem dSVUniformLeftDensitySpectralAtomDiscrepancy_eq_swap
+lemma dSVUniformLeftDensitySpectralAtomDiscrepancy_eq_swap
     {d : ℕ} (ξ ζ : BipartiteUnitVector d) :
     dSVUniformLeftDensitySpectralAtomDiscrepancy ξ ζ =
       dSVUniformDensitySpectralAtomDiscrepancy
@@ -11516,7 +11516,7 @@ theorem dSVUniformLeftDensitySpectralAtomDiscrepancy_eq_swap
     targetCanonicalSchmidtCoefficient
   simp only [dSVUniformLeftDensityConjugateSwap_density]
 
-theorem dSVUniformLeftDensitySpectralAtomDiscrepancy_le
+lemma dSVUniformLeftDensitySpectralAtomDiscrepancy_le
     {d : ℕ} (ξ ζ : BipartiteUnitVector d) :
     dSVUniformLeftDensitySpectralAtomDiscrepancy ξ ζ ≤
       2 * Real.sqrt 2 * ‖ξ.val - ζ.val‖ := by
@@ -11540,7 +11540,7 @@ def dSVUniformDensityThresholdGrid
   finiteUniformThresholdGrid
     (1 / (N : ℝ)) (1 + 1 / (N : ℝ)) N k
 
-theorem dSVUniformDensityThresholdGrid_apply
+lemma dSVUniformDensityThresholdGrid_apply
     {N : ℕ} (positive : 0 < N) (k : Fin N) :
     dSVUniformDensityThresholdGrid N k =
       ((k.val : ℝ) + 1) / (N : ℝ) := by
@@ -11555,7 +11555,7 @@ def dSVUniformDensityThresholdWeight
     (N : ℕ) (_k : Fin N) : ℝ :=
   1 / (N : ℝ)
 
-theorem dSVUniformDensityThresholdWeight_nonneg
+lemma dSVUniformDensityThresholdWeight_nonneg
     (N : ℕ) (k : Fin N) :
     0 ≤ dSVUniformDensityThresholdWeight N k := by
   unfold dSVUniformDensityThresholdWeight
@@ -11568,7 +11568,7 @@ def dSVUniformDensityGridPrefix
       if dSVUniformDensityThresholdGrid N k ≤ density
       then 1 else 0
 
-theorem dSVUniformDensityGridPrefix_eq_count
+lemma dSVUniformDensityGridPrefix_eq_count
     (N : ℕ) (density : ℝ) :
     dSVUniformDensityGridPrefix N density =
       ((Finset.univ.filter fun k : Fin N =>
@@ -11589,7 +11589,7 @@ def dSVUniformDensityThresholdMismatch
         (dSVUniformDensityThresholdGrid N k ≤ bob))
       then 0 else 1
 
-theorem dSVUniformDensityThresholdMismatch_indicator_le_crossing
+lemma dSVUniformDensityThresholdMismatch_indicator_le_crossing
     {N : ℕ} (k : Fin N) (alice bob : ℝ) :
     (if ((dSVUniformDensityThresholdGrid N k ≤ alice) ↔
         (dSVUniformDensityThresholdGrid N k ≤ bob))
@@ -11621,7 +11621,7 @@ theorem dSVUniformDensityThresholdMismatch_indicator_le_crossing
       simp [left, right, interval]
     · simp [left, right]
 
-theorem dSVUniformDensityThresholdMismatch_le
+lemma dSVUniformDensityThresholdMismatch_le
     {N : ℕ} (positive : 0 < N) (alice bob : ℝ) :
     dSVUniformDensityThresholdMismatch N alice bob ≤
       |alice - bob| + 1 / (N : ℝ) := by
@@ -11666,7 +11666,7 @@ theorem dSVUniformDensityThresholdMismatch_le
     _ = |alice - bob| + 1 / (N : ℝ) := by
       ring
 
-theorem dSVUniformDensityThresholdGrid_count_eq_floor
+lemma dSVUniformDensityThresholdGrid_count_eq_floor
     {N : ℕ} (positive : 0 < N)
     (density : ℝ) (nonnegative : 0 ≤ density) (bounded : density ≤ 1) :
     (Finset.univ.filter fun k : Fin N =>
@@ -11714,7 +11714,7 @@ set_option backward.isDefEq.respectTransparency false
 set_option maxHeartbeats 12000000
 set_option maxRecDepth 4096
 
-theorem dSVUniformDensityBinarySpectral_false_eq_complement
+lemma dSVUniformDensityBinarySpectral_false_eq_complement
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef)
     (bin : d → Bool) :
@@ -11731,7 +11731,7 @@ noncomputable section
 
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
-theorem dSVUniformDensitySchmidtVector_sub
+lemma dSVUniformDensitySchmidtVector_sub
     {d : ℕ} (σ τ : Fin d → ℝ)
     (U V : Matrix.unitaryGroup (Fin d) ℂ) :
     schmidtVector σ U V -
@@ -11746,7 +11746,7 @@ theorem dSVUniformDensitySchmidtVector_sub
     simp [diagonalSchmidtState]
   · simp [diagonalSchmidtState, equal]
 
-theorem dSVUniformDensity_normalize_sub_self_norm
+lemma dSVUniformDensity_normalize_sub_self_norm
     {d : ℕ} (v : EuclideanSpace ℂ (Fin d × Fin d))
     (nonzero : v ≠ 0) :
     ‖NormedSpace.normalize v - v‖ = |1 - ‖v‖| := by
@@ -11776,7 +11776,7 @@ attribute [local instance] Classical.propDecidable
 def normalizeOrDefault (fallback z : E) : E :=
   if z = 0 then fallback else NormedSpace.normalize z
 
-theorem normalizeOrDefault_norm
+lemma normalizeOrDefault_norm
     (fallback z : E) (hfallback : ‖fallback‖ = 1) :
     ‖normalizeOrDefault fallback z‖ = 1 := by
   classical
@@ -11784,7 +11784,7 @@ theorem normalizeOrDefault_norm
   · simp [normalizeOrDefault, hz, hfallback]
   · simp [normalizeOrDefault, hz, NormedSpace.norm_normalize hz]
 
-theorem normalizeOrDefault_sub_le
+lemma normalizeOrDefault_sub_le
     (fallback u v : E)
     (hfallback : ‖fallback‖ = 1)
     (hu : u ≠ 0) :
@@ -11860,7 +11860,7 @@ def dSVCanonicalFailureUnitRankFamily
       (dSVCanonicalFailurePrefix rank)
       (embezzlementState_norm d positive)⟩
 
-theorem dSVCanonicalFailurePrefix_eq_zero_of_rank_zero
+lemma dSVCanonicalFailurePrefix_eq_zero_of_rank_zero
     {d : ℕ} (rank : Fin (d + 1))
     (zero : rank.val = 0) :
     dSVCanonicalFailurePrefix rank = 0 := by
@@ -11871,7 +11871,7 @@ theorem dSVCanonicalFailurePrefix_eq_zero_of_rank_zero
     nlinarith [norm_nonneg (dSVCanonicalFailurePrefix rank)]
   exact norm_eq_zero.mp normzero
 
-theorem dSVCanonicalFailurePrefix_norm_eq_sqrt
+lemma dSVCanonicalFailurePrefix_norm_eq_sqrt
     {d : ℕ} (rank : Fin (d + 1)) :
     ‖dSVCanonicalFailurePrefix rank‖ =
       Real.sqrt (rank.val : ℝ) := by
@@ -11904,7 +11904,7 @@ def dSVUniformDensityPolarConjugateSwap
     EuclideanSpace ℂ (Fin d × Fin d) :=
   toLp 2 (fun q : Fin d × Fin d => star (v (q.2, q.1)))
 
-theorem dSVUniformDensityPolarConjugateSwap_norm
+lemma dSVUniformDensityPolarConjugateSwap_norm
     {d : ℕ} (v : EuclideanSpace ℂ (Fin d × Fin d)) :
     ‖dSVUniformDensityPolarConjugateSwap v‖ = ‖v‖ := by
   have squares :
@@ -11925,7 +11925,7 @@ def dSVUniformDensityPolarConjugateSwapTarget
     rw [dSVUniformDensityPolarConjugateSwap_norm]
     exact ξ.property⟩
 
-theorem dSVUniformDensityPolarConjugateSwap_coefficient
+lemma dSVUniformDensityPolarConjugateSwap_coefficient
     {d : ℕ} (ξ : BipartiteUnitVector d) :
     targetCoefficientMatrix
         (dSVUniformDensityPolarConjugateSwapTarget ξ) =
@@ -11933,7 +11933,7 @@ theorem dSVUniformDensityPolarConjugateSwap_coefficient
   ext b a
   rfl
 
-theorem dSVUniformDensityPolarConjugateSwap_reducedDensity
+lemma dSVUniformDensityPolarConjugateSwap_reducedDensity
     {d : ℕ} (ξ : BipartiteUnitVector d) :
     targetReducedDensity
         (dSVUniformDensityPolarConjugateSwapTarget ξ) =
@@ -11949,7 +11949,7 @@ def dSVUniformDensityPolarLeftSchmidtCoefficient
   Real.sqrt
     ((dSVSoftBobLeftReducedDensity_posSemidef ξ).isHermitian.eigenvalues i)
 
-theorem exists_proofDSVUniformDensityPolarLeftCanonicalSchmidt
+lemma exists_proofDSVUniformDensityPolarLeftCanonicalSchmidt
     {d : ℕ} (ξ : BipartiteUnitVector d) :
     ∃ A : Matrix.unitaryGroup (Fin d) ℂ,
       ξ.val = schmidtVector
@@ -11999,7 +11999,7 @@ def finiteTensorLocalUnitaryMatrix
     Matrix (ι → β) (ι → β) ℂ :=
   fun q r => ∏ i : ι, (U i : Matrix β β ℂ) (q i) (r i)
 
-theorem finiteTensorLocalUnitaryMatrix_gram
+lemma finiteTensorLocalUnitaryMatrix_gram
     {ι β : Type*}
     [Fintype ι] [DecidableEq ι]
     [Fintype β] [DecidableEq β]
@@ -12086,7 +12086,7 @@ noncomputable section
 
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
-theorem controlledFiniteTensorLocalUnitary_apply
+lemma controlledFiniteTensorLocalUnitary_apply
     {Ω ι β : Type*}
     [Fintype Ω] [DecidableEq Ω]
     [Fintype ι] [DecidableEq ι]
@@ -12139,7 +12139,7 @@ def dSVUniformDensityThresholdWholeHistorySharedState
     (fun flag : Fin (L + 1) =>
       if flag.val = 0 then (1 : ℝ) else 0)
 
-theorem dSVUniformDensityThresholdWholeHistorySharedState_norm
+lemma dSVUniformDensityThresholdWholeHistorySharedState_norm
     {N d : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (L : ℕ) :
     ‖dSVUniformDensityThresholdWholeHistorySharedState
@@ -12196,7 +12196,7 @@ def dSVUniformDensityBobHistoryCopyBasis
       conjugateUnitary
         (dSVUniformDensityThresholdLeftBobBasis ζ))
 
-theorem dSVUniformDensityCompletePureHistory_raw_norm
+lemma dSVUniformDensityCompletePureHistory_raw_norm
     (N d L : ℕ) :
     ‖sharedThresholdResourceRaw
       (d := Fin (L + 1) →
@@ -12238,7 +12238,7 @@ theorem dSVUniformDensityCompletePureHistory_raw_norm
   nlinarith [norm_nonneg whole,
     pow_nonneg (norm_nonneg single) (L + 1)]
 
-theorem dSVUniformDensityCompletePureHistory_zeroFlag_apply
+lemma dSVUniformDensityCompletePureHistory_zeroFlag_apply
     (N d L : ℕ)
     (flag other : Fin (L + 1))
     (alice bob :
@@ -12352,7 +12352,7 @@ def scalarPurificationLp (z : ℝ) (hz : 0 ≤ z) :
   ((scalarResolventFilter_memLp_two hz).ofReal (K := ℂ)).toLp
     (fun s : ℝ => ((z / (z + s) : ℝ) : ℂ))
 
-theorem scalarPurificationLp_coeFn
+lemma scalarPurificationLp_coeFn
     (z : ℝ) (hz : 0 ≤ z) :
     (scalarPurificationLp z hz : ℝ → ℂ) =ᵐ[volume.restrict (Ioi 0)]
       (fun s : ℝ => ((z / (z + s) : ℝ) : ℂ)) :=
@@ -12383,7 +12383,7 @@ def commonPurificationSubspace
   Submodule.span ℂ
     (Set.range (commonPurificationGenerator F M positive hM))
 
-theorem commonPurificationSubspace_finiteDimensional
+lemma commonPurificationSubspace_finiteDimensional
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (F : ι → Matrix d d ℂ) (M : Matrix d d ℂ)
     (positive : ∀ i, (F i).PosSemidef)
@@ -12393,7 +12393,7 @@ theorem commonPurificationSubspace_finiteDimensional
   exact FiniteDimensional.span_of_finite ℂ
     (Set.finite_range (commonPurificationGenerator F M positive hM))
 
-theorem ensemble_scalarPurificationLp_mem_common
+lemma ensemble_scalarPurificationLp_mem_common
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (F : ι → Matrix d d ℂ) (M : Matrix d d ℂ)
     (positive : ∀ i, (F i).PosSemidef)
@@ -12405,7 +12405,7 @@ theorem ensemble_scalarPurificationLp_mem_common
   apply Submodule.subset_span
   exact ⟨Sum.inl (i, k), rfl⟩
 
-theorem mean_scalarPurificationLp_mem_common
+lemma mean_scalarPurificationLp_mem_common
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (F : ι → Matrix d d ℂ) (M : Matrix d d ℂ)
     (positive : ∀ i, (F i).PosSemidef)
@@ -12436,7 +12436,7 @@ def spectralPurificationFilterEntryLp
   (((spectralPurificationFilter_memLp_two F hF).eval i).eval j).toLp
     (fun s : ℝ => spectralPurificationFilter F hF s i j)
 
-theorem spectralPurificationFilterEntryLp_coeFn
+lemma spectralPurificationFilterEntryLp_coeFn
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) (i j : d) :
     (spectralPurificationFilterEntryLp F hF i j : ℝ → ℂ)
@@ -12444,7 +12444,7 @@ theorem spectralPurificationFilterEntryLp_coeFn
         (fun s : ℝ => spectralPurificationFilter F hF s i j) :=
   (((spectralPurificationFilter_memLp_two F hF).eval i).eval j).coeFn_toLp
 
-theorem spectralPurificationFilterEntryLp_eq_eigen_sum
+lemma spectralPurificationFilterEntryLp_eq_eigen_sum
     {d : Type*} [Fintype d] [DecidableEq d]
     (F : Matrix d d ℂ) (hF : F.PosSemidef) (i j : d) :
     spectralPurificationFilterEntryLp F hF i j =
@@ -12499,7 +12499,7 @@ theorem spectralPurificationFilterEntryLp_eq_eigen_sum
   simp [Matrix.mul_apply, Matrix.diagonal, coefficient,
     mul_assoc, mul_comm]
 
-theorem ensemble_spectralPurificationFilterEntryLp_mem_common
+lemma ensemble_spectralPurificationFilterEntryLp_mem_common
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (F : ι → Matrix d d ℂ) (M : Matrix d d ℂ)
     (positive : ∀ i, (F i).PosSemidef)
@@ -12514,7 +12514,7 @@ theorem ensemble_spectralPurificationFilterEntryLp_mem_common
   exact ensemble_scalarPurificationLp_mem_common
     F M positive hM a k
 
-theorem mean_spectralPurificationFilterEntryLp_mem_common
+lemma mean_spectralPurificationFilterEntryLp_mem_common
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (F : ι → Matrix d d ℂ) (M : Matrix d d ℂ)
     (positive : ∀ i, (F i).PosSemidef)
@@ -12604,7 +12604,7 @@ set_option backward.isDefEq.respectTransparency false
 
 attribute [local instance] Matrix.normedAddCommGroup Matrix.normedSpace
 
-theorem finitePurificationMatrix_gram_apply
+lemma finitePurificationMatrix_gram_apply
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (F : ι → Matrix d d ℂ) (M : Matrix d d ℂ)
     (positive : ∀ i, (F i).PosSemidef)
@@ -12631,7 +12631,7 @@ theorem finitePurificationMatrix_gram_apply
   rw [← hisometry, EuclideanSpace.inner_eq_star_dotProduct]
   simp [dotProduct, mul_comm]
 
-theorem ensemblePurificationSubspaceEntry_inner_eq_integral
+lemma ensemblePurificationSubspaceEntry_inner_eq_integral
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (F : ι → Matrix d d ℂ) (M : Matrix d d ℂ)
     (positive : ∀ i, (F i).PosSemidef)
@@ -12659,7 +12659,7 @@ theorem ensemblePurificationSubspaceEntry_inner_eq_integral
   rw [hs, ht]
   simp [RCLike.inner_apply, mul_comm]
 
-theorem finitePurificationMatrix_gram_eq_integral
+lemma finitePurificationMatrix_gram_eq_integral
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (F : ι → Matrix d d ℂ) (M : Matrix d d ℂ)
     (positive : ∀ i, (F i).PosSemidef)
@@ -12700,7 +12700,7 @@ theorem finitePurificationMatrix_gram_eq_integral
   filter_upwards with s
   simp [Matrix.mul_apply, Matrix.star_apply]
 
-theorem finitePurificationMatrix_gram
+lemma finitePurificationMatrix_gram
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (F : ι → Matrix d d ℂ) (M : Matrix d d ℂ)
     (positive : ∀ i, (F i).PosSemidef)
@@ -12722,7 +12722,7 @@ set_option backward.isDefEq.respectTransparency false
 
 attribute [local instance] Matrix.normedAddCommGroup Matrix.normedSpace
 
-theorem finitePurificationMatrix_difference_gram_apply
+lemma finitePurificationMatrix_difference_gram_apply
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (F : ι → Matrix d d ℂ) (M : Matrix d d ℂ)
     (positive : ∀ i, (F i).PosSemidef)
@@ -12760,7 +12760,7 @@ theorem finitePurificationMatrix_difference_gram_apply
   rw [← hisometry, EuclideanSpace.inner_eq_star_dotProduct]
   simp [dotProduct, map_sub, mul_comm]
 
-theorem purificationSubspaceEntry_difference_inner_eq_integral
+lemma purificationSubspaceEntry_difference_inner_eq_integral
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (F : ι → Matrix d d ℂ) (M : Matrix d d ℂ)
     (positive : ∀ i, (F i).PosSemidef)
@@ -12807,7 +12807,7 @@ theorem purificationSubspaceEntry_difference_inner_eq_integral
   rw [hfi', hmi', hfj', hmj']
   simp [RCLike.inner_apply, mul_comm]
 
-theorem finitePurificationMatrix_difference_gram_eq_integral
+lemma finitePurificationMatrix_difference_gram_eq_integral
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (F : ι → Matrix d d ℂ) (M : Matrix d d ℂ)
     (positive : ∀ i, (F i).PosSemidef)
@@ -12861,7 +12861,7 @@ theorem finitePurificationMatrix_difference_gram_eq_integral
   filter_upwards with s
   simp [Matrix.mul_apply, Matrix.star_apply]
 
-theorem weighted_finitePurificationMatrix_difference_gram
+lemma weighted_finitePurificationMatrix_difference_gram
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (weight : ι → ℝ)
     (F : ι → Matrix d d ℂ) (M : Matrix d d ℂ)
@@ -12902,7 +12902,7 @@ set_option backward.isDefEq.respectTransparency false
 
 attribute [local instance] Matrix.normedAddCommGroup Matrix.normedSpace
 
-theorem finite_purification_log_entropy_jensen
+lemma finite_purification_log_entropy_jensen
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (weight : ι → ℝ) (F : ι → Matrix d d ℂ)
     (M : Matrix d d ℂ)
@@ -12950,7 +12950,7 @@ def matrixPurificationVector
     (K : Matrix d d ℂ) : EuclideanSpace ℂ (d × d) :=
   toLp 2 (Matrix.vec K)
 
-theorem matrixPurificationVector_norm_sq
+lemma matrixPurificationVector_norm_sq
     {d : Type*} [Fintype d]
     (K : Matrix d d ℂ) :
     ‖matrixPurificationVector K‖ ^ 2 =
@@ -12991,7 +12991,7 @@ def strategyPurificationVector
       Matrix.vec (spectralSupportSqrt S.state.matrix S.state.positive)
         (strategyPurificationShuffle S.Alice S.Bob q))
 
-theorem strategyPurificationVector_norm_sq
+lemma strategyPurificationVector_norm_sq
     {X Y A B : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {G : Game X Y A B} (S : Strategy G) :
@@ -13005,7 +13005,7 @@ theorem strategyPurificationVector_norm_sq
         ‖Matrix.vec
           (spectralSupportSqrt S.state.matrix S.state.positive) q‖ ^ 2)
 
-theorem strategyPurificationVector_norm
+lemma strategyPurificationVector_norm
     {X Y A B : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {G : Game X Y A B} (S : Strategy G) :
@@ -13032,7 +13032,7 @@ theorem strategyPurificationVector_norm
       _ = 1 := by rw [S.state.trace_one]; norm_num
   nlinarith [norm_nonneg (strategyPurificationVector S)]
 
-theorem reindexedMatrixQuadratic
+lemma reindexedMatrixQuadratic
     {d e : Type*} [Fintype d] [Fintype e]
     [DecidableEq d] [DecidableEq e]
     (φ : e ≃ d) (M : Matrix d d ℂ) (v : d → ℂ) :
@@ -13074,7 +13074,7 @@ def purificationAlicePOVM
         rw [P.complete]
         exact Matrix.one_kronecker_one
 
-theorem purificationJointEffect_submatrix
+lemma purificationJointEffect_submatrix
     {dA dB : Type} [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
     (A : Matrix dA dA ℂ) (B : Matrix dB dB ℂ) :
@@ -13088,7 +13088,7 @@ theorem purificationJointEffect_submatrix
   simp [Matrix.kroneckerMap_apply, Matrix.submatrix_apply,
     strategyPurificationShuffle, Matrix.one_apply]
 
-theorem strategyPurificationVector_quadratic
+lemma strategyPurificationVector_quadratic
     {X Y A B : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {G : Game X Y A B} (S : Strategy G)
@@ -13151,7 +13151,7 @@ def purifiedStrategy
     (fun x => purificationAlicePOVM (S.aliceMeasurement x))
     S.bobMeasurement
 
-theorem purifiedStrategy_outcomeProbability
+lemma purifiedStrategy_outcomeProbability
     {X Y A B : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {G : Game X Y A B} (S : Strategy G)
@@ -13164,7 +13164,7 @@ theorem purifiedStrategy_outcomeProbability
     ((S.aliceMeasurement x).effect a)
     ((S.bobMeasurement y).effect b)
 
-theorem purifiedStrategy_winProbability
+lemma purifiedStrategy_winProbability
     {X Y A B : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {G : Game X Y A B} (S : Strategy G) :
@@ -13172,7 +13172,7 @@ theorem purifiedStrategy_winProbability
   unfold Strategy.winProbability
   simp_rw [purifiedStrategy_outcomeProbability]
 
-theorem rectangular_matrix_mulVec_norm_sq
+lemma rectangular_matrix_mulVec_norm_sq
     {d e : Type*} [Fintype d] [Fintype e] [DecidableEq d]
     (K : Matrix e d ℂ) (z : EuclideanSpace ℂ d) :
     ‖toLp 2 (K.mulVec (ofLp z))‖ ^ 2 =
@@ -13229,7 +13229,7 @@ def finiteLocalPurificationVector
     ((finiteLocalPurificationJointMatrix S KA KB).mulVec
       (ofLp (strategyPurificationVector S)))
 
-theorem finiteLocalPurificationJointMatrix_gram
+lemma finiteLocalPurificationJointMatrix_gram
     {X Y A B eA eB : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype eA] [Fintype eB]
@@ -13247,7 +13247,7 @@ theorem finiteLocalPurificationJointMatrix_gram
     ← Matrix.mul_kronecker_mul]
   simp
 
-theorem finiteLocalPurificationVector_norm_sq
+lemma finiteLocalPurificationVector_norm_sq
     {X Y A B eA eB : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype eA] [Fintype eB]
@@ -13271,7 +13271,7 @@ noncomputable section
 open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder InnerProductSpace
 
-theorem dSVUniformDensityMixedProtocolLocalAction_norm
+lemma dSVUniformDensityMixedProtocolLocalAction_norm
     {ι : Type*} [Fintype ι] [DecidableEq ι]
     (U V : Matrix.unitaryGroup ι ℂ)
     (z : EuclideanSpace ℂ (ι × ι)) :
@@ -13313,7 +13313,7 @@ def dSVUniformDensityPhysicalAsyncSigmaContinuation
   let B := coherentSharedRandomControlledUnitary V
   exact toLp 2 ((A.val ⊗ₖ B.val).mulVec (ofLp z))
 
-theorem dSVUniformDensityPhysicalAsyncSigmaContinuation_norm
+lemma dSVUniformDensityPhysicalAsyncSigmaContinuation_norm
     {ι κ : Type*} [Fintype ι] [DecidableEq ι]
     [Fintype κ] [DecidableEq κ]
     (U V : ι → Matrix.unitaryGroup κ ℂ)
@@ -13326,7 +13326,7 @@ theorem dSVUniformDensityPhysicalAsyncSigmaContinuation_norm
       (coherentSharedRandomControlledUnitary U)
       (coherentSharedRandomControlledUnitary V) z
 
-theorem dSVUniformDensityFirstAcceptFinitePrefix
+lemma dSVUniformDensityFirstAcceptFinitePrefix
     {L : ℕ} (s : Finset (Fin L)) (j : Fin L) :
     (if h : s.Nonempty then (s.min' h).succ else
       (0 : Fin (L + 1))) = j.succ ↔
@@ -13369,7 +13369,7 @@ set_option backward.isDefEq.respectTransparency false
 set_option maxHeartbeats 8000000
 set_option maxRecDepth 3072
 
-theorem dSVUniformDensityFirstAcceptControlledTensor_inv_apply
+lemma dSVUniformDensityFirstAcceptControlledTensor_inv_apply
     {Ω ι β : Type*}
     [Fintype Ω] [DecidableEq Ω]
     [Fintype ι] [DecidableEq ι]
@@ -13402,7 +13402,7 @@ noncomputable section
 open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
-theorem coherentSharedRandomControlledUnitary_inv
+lemma coherentSharedRandomControlledUnitary_inv
     {ι κ : Type*} [Fintype ι] [DecidableEq ι]
     [Fintype κ] [DecidableEq κ]
     (U : ι → Matrix.unitaryGroup κ ℂ) :
@@ -13435,7 +13435,7 @@ open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
 attribute [local instance] Classical.propDecidable
 
-theorem dSVUniformDensityPhysicalAsync_doubleProductSum
+lemma dSVUniformDensityPhysicalAsync_doubleProductSum
     {ι β γ : Type*} [Fintype ι] [DecidableEq ι]
     [Fintype β] [DecidableEq β] [Fintype γ] [DecidableEq γ]
     (f : ι → β → γ → ℝ) :
@@ -13463,7 +13463,7 @@ noncomputable section
 open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
-theorem spectralPartitionPOVM_effect_eq_spectralDiagonal
+lemma spectralPartitionPOVM_effect_eq_spectralDiagonal
     {κ ι : Type*}
     [Fintype κ] [DecidableEq κ]
     [Fintype ι] [DecidableEq ι]
@@ -13492,7 +13492,7 @@ theorem spectralPartitionPOVM_effect_eq_spectralDiagonal
         (Matrix.diagonal (Pi.single i (1 : ℂ)))) = _
   rw [← map_sum, diagonal]
 
-theorem dSVUniformDensityPhysicalSpectralAliceCopy_inv
+lemma dSVUniformDensityPhysicalSpectralAliceCopy_inv
     {N d : ℕ} (ξ : BipartiteUnitVector d) :
     (dSVUniformDensityAliceHistorySpectralCopy
       (N := N) ξ)⁻¹ =
@@ -13503,7 +13503,7 @@ theorem dSVUniformDensityPhysicalSpectralAliceCopy_inv
   rw [coherentSharedRandomControlledUnitary_inv]
   simp
 
-theorem dSVUniformDensityPhysicalSpectralAliceCopy_transpose
+lemma dSVUniformDensityPhysicalSpectralAliceCopy_transpose
     {N d : ℕ} (ξ : BipartiteUnitVector d) :
     (dSVUniformDensityAliceHistorySpectralCopy
       (N := N) ξ : Matrix
@@ -13530,7 +13530,7 @@ theorem dSVUniformDensityPhysicalSpectralAliceCopy_transpose
   ext i j
   rfl
 
-theorem dSVUniformDensityPhysicalSpectralAliceCopy_inv_transpose
+lemma dSVUniformDensityPhysicalSpectralAliceCopy_inv_transpose
     {N d : ℕ} (ξ : BipartiteUnitVector d) :
     ((((dSVUniformDensityAliceHistorySpectralCopy
       (N := N) ξ)⁻¹ : Matrix.unitaryGroup
@@ -13570,7 +13570,7 @@ set_option maxRecDepth 4096
 
 attribute [local instance] Classical.propDecidable
 
-theorem dSVUniformDensityPhysicalMatched_doubleTensorSourceFactor
+lemma dSVUniformDensityPhysicalMatched_doubleTensorSourceFactor
     {ι β : Type*} [Fintype ι] [DecidableEq ι]
     [Fintype β] [DecidableEq β]
     (A B : ι → Matrix β β ℂ)
@@ -13619,7 +13619,7 @@ def dSVUniformDensityCorrectedMatchedSigmaWeightedResidual
   toLp 2 fun q : (Σ _ : H, Fin n) × (Σ _ : H, Fin n) =>
     history (q.1.1, q.2.1) * work q.1.1 q.2.1 (q.1.2, q.2.2)
 
-theorem dSVUniformDensityCorrectedMatchedSigmaWeightedResidual_distance_sq
+lemma dSVUniformDensityCorrectedMatchedSigmaWeightedResidual_distance_sq
     {H : Type*} [Fintype H] {n : ℕ}
     (history : EuclideanSpace ℂ (H × H))
     (work target : H → H → EuclideanSpace ℂ (Fin n × Fin n)) :
@@ -13656,7 +13656,7 @@ theorem dSVUniformDensityCorrectedMatchedSigmaWeightedResidual_distance_sq
         ‖work a b (i, j) - target a b (i, j)‖ ^ 2
   rw [← mul_sub, norm_mul, mul_pow]
 
-theorem dSVUniformDensityCorrectedMatchedSigmaWeightedResidual_controlled
+lemma dSVUniformDensityCorrectedMatchedSigmaWeightedResidual_controlled
     {H : Type*} [Fintype H] [DecidableEq H] {n : ℕ}
     (history : EuclideanSpace ℂ (H × H))
     (work : H → H → EuclideanSpace ℂ (Fin n × Fin n))
@@ -13679,7 +13679,7 @@ theorem dSVUniformDensityCorrectedMatchedSigmaWeightedResidual_controlled
     mul_assoc, mul_comm]
   simp_rw [Finset.mul_sum]
 
-theorem
+lemma
     dSVUniformDensityCorrectedMatchedSigmaControlledReset_distance_sq
     {H : Type*} [Fintype H] [DecidableEq H] {n : ℕ}
     (history : EuclideanSpace ℂ (H × H))
@@ -13719,7 +13719,7 @@ def dSVDensityRationalProjectiveThresholdPOVM
     (fun i : ι => dSVDensityRationalProjectiveThresholdBin
       w N k (positive.isHermitian.eigenvalues i))
 
-theorem dSVDensityRationalProjectiveThresholdPOVM_projective
+lemma dSVDensityRationalProjectiveThresholdPOVM_projective
     {ι : Type*} [Fintype ι] [DecidableEq ι]
     (w : ℝ) (N : ℕ) (k : Fin N)
     (F : Matrix ι ι ℂ) (positive : F.PosSemidef) (outcome : Bool) :
@@ -13755,7 +13755,7 @@ def dSVDensityRationalLeftProjectiveThresholdAtomMismatch
         (dSVRationalSoftPass w
           (hG.isHermitian.eigenvalues j))
 
-theorem
+lemma
     dSVDensityRationalLeftProjectiveThresholdAtomMismatch_le_discrepancy
     {d N : ℕ} {w : ℝ} (width : 0 < w) (grid : 0 < N)
     (ξ ζ : BipartiteUnitVector d) :
@@ -13850,7 +13850,7 @@ theorem
       rw [discrepancy, overlap_mass]
       ring
 
-theorem dSVUniformDensityGridPrefix_le_density
+lemma dSVUniformDensityGridPrefix_le_density
     {N : ℕ} (positive : 0 < N)
     {a : ℝ} (nonnegative : 0 ≤ a) (bounded : a ≤ 1) :
     dSVUniformDensityGridPrefix N a ≤ a := by
@@ -13861,7 +13861,7 @@ theorem dSVUniformDensityGridPrefix_le_density
   apply (div_le_iff₀ cast).mpr
   exact Nat.floor_le (mul_nonneg nonnegative cast.le)
 
-theorem dSVUniformDensityGridPrefix_density_sub_lt
+lemma dSVUniformDensityGridPrefix_density_sub_lt
     {N : ℕ} (positive : 0 < N)
     {a : ℝ} (nonnegative : 0 ≤ a) (bounded : a ≤ 1) :
     a - dSVUniformDensityGridPrefix N a < 1 / (N : ℝ) := by
@@ -13878,7 +13878,7 @@ theorem dSVUniformDensityGridPrefix_density_sub_lt
         field_simp
     _ < 1 := by linarith
 
-theorem dSVUniformDensityGridPrefix_density_sub_le
+lemma dSVUniformDensityGridPrefix_density_sub_le
     {N : ℕ} (positive : 0 < N)
     {a : ℝ} (nonnegative : 0 ≤ a) (bounded : a ≤ 1) :
     a - 1 / (N : ℝ) ≤ dSVUniformDensityGridPrefix N a := by
@@ -13894,7 +13894,7 @@ def dSVDensityRationalLeftProjectiveDiagonalMass
       (dSVRationalSoftPass w
         (hF.isHermitian.eigenvalues i))
 
-theorem dSVSoftBobLeftReducedDensity_eigenvalue_le_one
+lemma dSVSoftBobLeftReducedDensity_eigenvalue_le_one
     {d : ℕ} (ξ : BipartiteUnitVector d) (i : Fin d) :
     (dSVSoftBobLeftReducedDensity_posSemidef ξ).isHermitian.eigenvalues i
       ≤ 1 := by
@@ -13910,7 +13910,7 @@ theorem dSVSoftBobLeftReducedDensity_eigenvalue_le_one
     _ = 1 := positiveDensity_eigenvalues_sum F hF
       (dSVSoftBobLeftReducedDensity_trace ξ)
 
-theorem dSVRationalSoftPass_ge_density_div_width_add_one
+lemma dSVRationalSoftPass_ge_density_div_width_add_one
     {w a : ℝ} (width : 0 < w)
     (nonnegative : 0 ≤ a) (bounded : a ≤ 1) :
     a / (w + 1) ≤ dSVRationalSoftPass w a := by
@@ -13920,7 +13920,7 @@ theorem dSVRationalSoftPass_ge_density_div_width_add_one
   apply (div_le_div_iff₀ wider denominator).mpr
   nlinarith
 
-theorem dSVDensityRationalLeftProjectiveDiagonalMass_lower
+lemma dSVDensityRationalLeftProjectiveDiagonalMass_lower
     {d N : ℕ} {w : ℝ} (width : 0 < w) (grid : 0 < N)
     (ξ : BipartiteUnitVector d) :
     1 / (w + 1) - (d : ℝ) / N ≤
@@ -13994,14 +13994,14 @@ def dSVDensityRationalPhysicalProjector
   (dSVDensityRationalLeftProjectiveThresholdPOVM
     w N k ξ).effect true
 
-theorem dSVDensityRationalPhysicalProjector_pos
+lemma dSVDensityRationalPhysicalProjector_pos
     {d N : ℕ} (w : ℝ)
     (ξ : BipartiteUnitVector d) (k : Fin N) :
     (dSVDensityRationalPhysicalProjector w ξ k).PosSemidef :=
   (dSVDensityRationalLeftProjectiveThresholdPOVM
     w N k ξ).positive true
 
-theorem dSVDensityRationalPhysicalProjector_projective
+lemma dSVDensityRationalPhysicalProjector_projective
     {d N : ℕ} (w : ℝ)
     (ξ : BipartiteUnitVector d) (k : Fin N) :
     dSVDensityRationalPhysicalProjector w ξ k *
@@ -14011,7 +14011,7 @@ theorem dSVDensityRationalPhysicalProjector_projective
     w N k (dSVSoftBobLeftReducedDensity ξ)
     (dSVSoftBobLeftReducedDensity_posSemidef ξ) true
 
-theorem dSVDensityRationalPhysicalProjector_complement_pos
+lemma dSVDensityRationalPhysicalProjector_complement_pos
     {d N : ℕ} (w : ℝ)
     (ξ : BipartiteUnitVector d) (k : Fin N) :
     (1 - dSVDensityRationalPhysicalProjector w ξ k).PosSemidef :=
@@ -14029,7 +14029,7 @@ def dSVDensityRationalPhysicalGlobalPOVM
     (dSVDensityRationalPhysicalProjector_pos w ξ)
     (dSVDensityRationalPhysicalProjector_complement_pos w ξ)
 
-theorem dSVDensityRationalPhysicalProjectorSquare_eq_atomMismatch
+lemma dSVDensityRationalPhysicalProjectorSquare_eq_atomMismatch
     {d N : ℕ} (w : ℝ)
     (ξ ζ : BipartiteUnitVector d) (k : Fin N) :
     (Matrix.trace
@@ -14097,7 +14097,7 @@ theorem dSVDensityRationalPhysicalProjectorSquare_eq_atomMismatch
   rw [Matrix.trace_mul_comm R P]
   ring
 
-theorem dSVDensityRationalPhysicalProjectorSquare_grid_eq
+lemma dSVDensityRationalPhysicalProjectorSquare_grid_eq
     {d N : ℕ} (w : ℝ)
     (ξ ζ : BipartiteUnitVector d) :
     (∑ k : Fin N,
@@ -14177,7 +14177,7 @@ theorem dSVDensityRationalPhysicalProjectorSquare_grid_eq
     · simp [left, right, div_eq_mul_inv]
     · simp [left, right]
 
-theorem dSVDensityRationalPhysicalProjector_weighted_rank_eq
+lemma dSVDensityRationalPhysicalProjector_weighted_rank_eq
     {d N : ℕ} (w : ℝ) (ξ : BipartiteUnitVector d) :
     (∑ k : Fin N, dSVUniformDensityThresholdWeight N k *
       (Matrix.trace
@@ -14220,7 +14220,7 @@ def dSVDensityRationalPhysicalDiagonalBornSuccess
     (transposePOVM
       (dSVDensityRationalPhysicalGlobalPOVM w ξ))
 
-theorem dSVDensityRationalPhysicalDiagonalBornSuccess_eq
+lemma dSVDensityRationalPhysicalDiagonalBornSuccess_eq
     {d N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (w : ℝ) (ξ : BipartiteUnitVector d) :
     dSVDensityRationalPhysicalDiagonalBornSuccess
@@ -14255,7 +14255,7 @@ def dSVDensityRationalPhysicalProjectorCrossHazard
         dSVDensityRationalPhysicalProjector w ζ k))).re) /
       ((d : ℝ) * (N : ℝ))
 
-theorem dSVDensityRationalPhysicalProjectorCrossHazard_eq
+lemma dSVDensityRationalPhysicalProjectorCrossHazard_eq
     {d N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (w : ℝ) (ξ ζ : BipartiteUnitVector d) :
     dSVDensityRationalPhysicalProjectorCrossHazard N w ξ ζ =
@@ -14300,7 +14300,7 @@ def dSVDensityRationalCompleteProjectiveThresholdProjector
   (dSVDensityRationalLeftProjectiveThresholdPOVM
     w N k ξ).effect true
 
-theorem dSVDensityRationalCompleteProjectiveThresholdProjector_pos
+lemma dSVDensityRationalCompleteProjectiveThresholdProjector_pos
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ : BipartiteUnitVector d) (k : Fin N) :
     (dSVDensityRationalCompleteProjectiveThresholdProjector
@@ -14308,7 +14308,7 @@ theorem dSVDensityRationalCompleteProjectiveThresholdProjector_pos
   (dSVDensityRationalLeftProjectiveThresholdPOVM
     w N k ξ).positive true
 
-theorem dSVDensityRationalCompleteProjectiveThresholdEffect_projective
+lemma dSVDensityRationalCompleteProjectiveThresholdEffect_projective
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ : BipartiteUnitVector d)
     (k : Fin N) (a : Bool) :
@@ -14323,7 +14323,7 @@ theorem dSVDensityRationalCompleteProjectiveThresholdEffect_projective
     (dSVSoftBobLeftReducedDensity ξ)
     (dSVSoftBobLeftReducedDensity_posSemidef ξ) a
 
-theorem dSVDensityRationalCompleteProjectiveThresholdEffect_false
+lemma dSVDensityRationalCompleteProjectiveThresholdEffect_false
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ : BipartiteUnitVector d) (k : Fin N) :
     (dSVDensityRationalLeftProjectiveThresholdPOVM
@@ -14336,7 +14336,7 @@ theorem dSVDensityRationalCompleteProjectiveThresholdEffect_false
   rw [Fintype.sum_bool, add_comm] at complete
   exact eq_sub_of_add_eq complete
 
-theorem
+lemma
     dSVDensityRationalCompleteProjectiveThresholdProjector_complement_pos
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ : BipartiteUnitVector d) (k : Fin N) :
@@ -14358,7 +14358,7 @@ def dSVDensityRationalCompleteProjectiveBinaryPOVM
     (dSVDensityRationalCompleteProjectiveThresholdProjector_complement_pos
       w N ξ)
 
-theorem dSVDensityRationalCompleteProjectiveBinaryPOVM_effect
+lemma dSVDensityRationalCompleteProjectiveBinaryPOVM_effect
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ : BipartiteUnitVector d) (a : Bool) :
     (dSVDensityRationalCompleteProjectiveBinaryPOVM
@@ -14378,7 +14378,7 @@ theorem dSVDensityRationalCompleteProjectiveBinaryPOVM_effect
         w N ξ k).symm
   · rfl
 
-theorem dSVDensityRationalCompleteProjectiveBinaryPOVM_projective
+lemma dSVDensityRationalCompleteProjectiveBinaryPOVM_projective
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ : BipartiteUnitVector d) (a : Bool) :
     (dSVDensityRationalCompleteProjectiveBinaryPOVM
@@ -14413,7 +14413,7 @@ def dSVDensityRationalCompleteProjectiveOutcome
         w N ζ))
     (dSVUniformDensityThresholdSharedState N d) a b
 
-theorem dSVDensityRationalCompleteProjectiveOutcome_eq_block_action
+lemma dSVDensityRationalCompleteProjectiveOutcome_eq_block_action
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ ζ : BipartiteUnitVector d) (a b : Bool) :
     dSVDensityRationalCompleteProjectiveOutcome
@@ -14441,7 +14441,7 @@ theorem dSVDensityRationalCompleteProjectiveOutcome_eq_block_action
   rw [dSVDensityRationalCompleteProjectiveBinaryPOVM_effect,
     dSVDensityRationalCompleteProjectiveBinaryPOVM_effect]
 
-theorem dSVDensityRationalCompleteProjectiveOutcome_eq_blockVector
+lemma dSVDensityRationalCompleteProjectiveOutcome_eq_blockVector
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ ζ : BipartiteUnitVector d) (a b : Bool) :
     dSVDensityRationalCompleteProjectiveOutcome
@@ -14487,7 +14487,7 @@ theorem dSVDensityRationalCompleteProjectiveOutcome_eq_blockVector
           ((Matrix.blockDiagonal' fun k : Fin N => P k * R k).transpose))
   simpa only [M, P, R, τ, Complex.ofReal_one, one_smul] using raw
 
-theorem dSVDensityRationalCompleteProjectiveOutcome_norm_sq_eq
+lemma dSVDensityRationalCompleteProjectiveOutcome_norm_sq_eq
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ ζ : BipartiteUnitVector d) (a b : Bool) :
     ‖dSVDensityRationalCompleteProjectiveOutcome
@@ -14537,7 +14537,7 @@ noncomputable section
 
 open scoped BigOperators ComplexOrder MatrixOrder
 
-theorem dSVDensityRationalGridPrefix_nonneg
+lemma dSVDensityRationalGridPrefix_nonneg
     (N : ℕ) (a : ℝ) :
     0 ≤ dSVUniformDensityGridPrefix N a := by
   unfold dSVUniformDensityGridPrefix
@@ -14547,7 +14547,7 @@ theorem dSVDensityRationalGridPrefix_nonneg
     (dSVUniformDensityThresholdWeight_nonneg N k)
     (by split <;> norm_num)
 
-theorem dSVDensityRationalSoftPass_rescaled_le_density
+lemma dSVDensityRationalSoftPass_rescaled_le_density
     {w a : ℝ} (width : 0 < w) (nonnegative : 0 ≤ a) :
     w * dSVRationalSoftPass w a ≤ a := by
   have denominator : 0 < a + w := by linarith
@@ -14557,7 +14557,7 @@ theorem dSVDensityRationalSoftPass_rescaled_le_density
     _ ≤ a := (div_le_iff₀ denominator).mpr (by
       nlinarith [sq_nonneg a])
 
-theorem dSVDensityRationalSoftPass_density_defect_le
+lemma dSVDensityRationalSoftPass_density_defect_le
     {w a : ℝ} (width : 0 < w)
     (nonnegative : 0 ≤ a) (bounded : a ≤ 1) :
     a - w * dSVRationalSoftPass w a ≤ a / w := by
@@ -14573,7 +14573,7 @@ theorem dSVDensityRationalSoftPass_density_defect_le
       nlinarith [mul_nonneg (mul_nonneg nonnegative width.le)
         (sub_nonneg.mpr bounded), sq_nonneg a]
 
-theorem dSVDensityRationalGrid_rescaled_le_density
+lemma dSVDensityRationalGrid_rescaled_le_density
     {N : ℕ} {w a : ℝ} (width : 0 < w) (grid : 0 < N)
     (nonnegative : 0 ≤ a) :
     w * dSVUniformDensityGridPrefix N
@@ -14591,7 +14591,7 @@ theorem dSVDensityRationalGrid_rescaled_le_density
       dSVDensityRationalSoftPass_rescaled_le_density
         width nonnegative
 
-theorem dSVDensityRationalGrid_density_defect_le
+lemma dSVDensityRationalGrid_density_defect_le
     {N : ℕ} {w a : ℝ} (width : 0 < w) (grid : 0 < N)
     (nonnegative : 0 ≤ a) (bounded : a ≤ 1) :
     a - w * dSVUniformDensityGridPrefix N
@@ -14626,13 +14626,13 @@ def dSVDensityRationalCanonicalAcceptedCoefficient
     (dSVRationalSoftPass w
       ((dSVSoftBobLeftReducedDensity_posSemidef ξ).isHermitian.eigenvalues i)))
 
-theorem dSVDensityRationalCanonicalAcceptedCoefficient_nonneg
+lemma dSVDensityRationalCanonicalAcceptedCoefficient_nonneg
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ : BipartiteUnitVector d) (i : Fin d) :
     0 ≤ dSVDensityRationalCanonicalAcceptedCoefficient
       w N ξ i := Real.sqrt_nonneg _
 
-theorem dSVDensityRationalCanonicalAcceptedCoefficient_sq
+lemma dSVDensityRationalCanonicalAcceptedCoefficient_sq
     {d : ℕ} {w : ℝ} (width : 0 < w) (N : ℕ)
     (ξ : BipartiteUnitVector d) (i : Fin d) :
     dSVDensityRationalCanonicalAcceptedCoefficient
@@ -14651,7 +14651,7 @@ def dSVDensityRationalCanonicalAliceBasis
   Classical.choose
     (exists_proofDSVUniformDensityPolarLeftCanonicalSchmidt ξ)
 
-theorem dSVDensityRationalCanonicalAliceBasis_target
+lemma dSVDensityRationalCanonicalAliceBasis_target
     {d : ℕ} (ξ : BipartiteUnitVector d) :
     ξ.val = schmidtVector
       (dSVUniformDensityPolarLeftSchmidtCoefficient ξ)
@@ -14669,7 +14669,7 @@ def dSVDensityRationalCanonicalAcceptedTarget
     (dSVDensityRationalCanonicalAliceBasis ξ)
     (dSVUniformDensityThresholdLeftBobBasis ξ)
 
-theorem dSVDensityRationalCanonicalAcceptedTarget_norm_sq
+lemma dSVDensityRationalCanonicalAcceptedTarget_norm_sq
     {d : ℕ} {w : ℝ} (width : 0 < w) (N : ℕ)
     (ξ : BipartiteUnitVector d) :
     ‖dSVDensityRationalCanonicalAcceptedTarget w N ξ‖ ^ 2 =
@@ -14680,7 +14680,7 @@ theorem dSVDensityRationalCanonicalAcceptedTarget_norm_sq
   unfold dSVDensityRationalLeftProjectiveDiagonalMass
   rw [Finset.mul_sum]
 
-theorem dSVDensityRationalCanonicalAcceptedTarget_distance_sq_eq
+lemma dSVDensityRationalCanonicalAcceptedTarget_distance_sq_eq
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ : BipartiteUnitVector d) :
     ‖ξ.val - dSVDensityRationalCanonicalAcceptedTarget
@@ -14694,7 +14694,7 @@ theorem dSVDensityRationalCanonicalAcceptedTarget_distance_sq_eq
   rw [dSVUniformDensitySchmidtVector_sub,
     schmidtVector_norm_sq]
 
-theorem dSVDensityRationalCanonicalAcceptedCoefficient_error_sq_le
+lemma dSVDensityRationalCanonicalAcceptedCoefficient_error_sq_le
     {d N : ℕ} {w : ℝ} (width : 0 < w) (grid : 0 < N)
     (ξ : BipartiteUnitVector d) (i : Fin d) :
     (dSVUniformDensityPolarLeftSchmidtCoefficient ξ i -
@@ -14721,7 +14721,7 @@ theorem dSVDensityRationalCanonicalAcceptedCoefficient_error_sq_le
   change (Real.sqrt a - Real.sqrt b) ^ 2 ≤ a / w + w / (N : ℝ)
   exact roots.trans defect
 
-theorem dSVDensityRationalCanonicalAcceptedTarget_distance_sq_le
+lemma dSVDensityRationalCanonicalAcceptedTarget_distance_sq_le
     {d N : ℕ} {w : ℝ} (width : 0 < w) (grid : 0 < N)
     (ξ : BipartiteUnitVector d) :
     ‖ξ.val - dSVDensityRationalCanonicalAcceptedTarget
@@ -14747,7 +14747,7 @@ theorem dSVDensityRationalCanonicalAcceptedTarget_distance_sq_le
       simp
       ring
 
-theorem dSVDensityRationalCanonicalAcceptedTarget_distance_le
+lemma dSVDensityRationalCanonicalAcceptedTarget_distance_le
     {d N : ℕ} {w : ℝ} (width : 0 < w) (grid : 0 < N)
     (ξ : BipartiteUnitVector d) :
     ‖ξ.val - dSVDensityRationalCanonicalAcceptedTarget
@@ -14763,7 +14763,7 @@ theorem dSVDensityRationalCanonicalAcceptedTarget_distance_le
     (ξ.val - dSVDensityRationalCanonicalAcceptedTarget w N ξ),
     Real.sqrt_nonneg (1 / w + (d : ℝ) * w / (N : ℝ))]
 
-theorem dSVDensityRationalCanonicalAcceptedTarget_ne_zero
+lemma dSVDensityRationalCanonicalAcceptedTarget_ne_zero
     {d N : ℕ} {w : ℝ} (width : 0 < w) (grid : 0 < N)
     (fine : (d : ℝ) / (N : ℝ) < 1 / (w + 1))
     (ξ : BipartiteUnitVector d) :
@@ -14785,7 +14785,7 @@ def dSVDensityRationalCanonicalNormalizedTarget
   NormedSpace.normalize
     (dSVDensityRationalCanonicalAcceptedTarget w N ξ)
 
-theorem dSVDensityRationalCanonicalNormalizedTarget_norm
+lemma dSVDensityRationalCanonicalNormalizedTarget_norm
     {d N : ℕ} {w : ℝ} (width : 0 < w) (grid : 0 < N)
     (fine : (d : ℝ) / (N : ℝ) < 1 / (w + 1))
     (ξ : BipartiteUnitVector d) :
@@ -14796,7 +14796,7 @@ theorem dSVDensityRationalCanonicalNormalizedTarget_norm
     (dSVDensityRationalCanonicalAcceptedTarget_ne_zero
       width grid fine ξ)
 
-theorem dSVDensityRationalCanonicalNormalizedTarget_distance_le
+lemma dSVDensityRationalCanonicalNormalizedTarget_distance_le
     {d N : ℕ} {w : ℝ} (width : 0 < w) (grid : 0 < N)
     (fine : (d : ℝ) / (N : ℝ) < 1 / (w + 1))
     (ξ : BipartiteUnitVector d) :
@@ -14839,7 +14839,7 @@ def dSVDensityRationalCanonicalAcceptedUnitTarget
     dSVDensityRationalCanonicalNormalizedTarget_norm
       width grid fine ξ⟩
 
-theorem dSVDensityRationalCanonicalAcceptedUnitTarget_distance_le
+lemma dSVDensityRationalCanonicalAcceptedUnitTarget_distance_le
     {d N : ℕ} {w : ℝ} (width : 0 < w) (grid : 0 < N)
     (fine : (d : ℝ) / (N : ℝ) < 1 / (w + 1))
     (ξ : BipartiteUnitVector d) :
@@ -14857,7 +14857,7 @@ noncomputable section
 open WithLp
 open scoped BigOperators ComplexOrder MatrixOrder
 
-theorem dSVDensityRationalLargeWidthDiagonalMass_half
+lemma dSVDensityRationalLargeWidthDiagonalMass_half
     {d N : ℕ} {w : ℝ} (width : 0 < w) (grid : 0 < N)
     (fine : (d : ℝ) / N ≤ 1 / (2 * (w + 1)))
     (ξ : BipartiteUnitVector d) :
@@ -14875,7 +14875,7 @@ theorem dSVDensityRationalLargeWidthDiagonalMass_half
     (dSVDensityRationalLeftProjectiveDiagonalMass_lower
       width grid ξ)
 
-theorem dSVDensityRationalLargeWidthDiagonalMass_pos
+lemma dSVDensityRationalLargeWidthDiagonalMass_pos
     {d N : ℕ} {w : ℝ} (width : 0 < w) (grid : 0 < N)
     (fine : (d : ℝ) / N ≤ 1 / (2 * (w + 1)))
     (ξ : BipartiteUnitVector d) :
@@ -14885,7 +14885,7 @@ theorem dSVDensityRationalLargeWidthDiagonalMass_pos
   have positive : 0 < 1 / (2 * (w + 1)) := by positivity
   exact positive.trans_le lower
 
-theorem
+lemma
     dSVDensityRationalLargeWidthRelativeMismatch_le_discrepancy
     {d N : ℕ} {w : ℝ} (width : 0 < w) (grid : 0 < N)
     (fine : (d : ℝ) / N ≤ 1 / (2 * (w + 1)))
@@ -14940,7 +14940,7 @@ theorem
         (show 0 ≤ 2 * (w + 1) * M - 1 by linarith)]
     _ = (2 * (w + 1) * D) * M := by ring
 
-theorem
+lemma
     dSVDensityRationalLargeWidthRelativeMismatch_le_targetDistance
     {d N : ℕ} {w : ℝ} (large : 1 ≤ w) (grid : 0 < N)
     (fine : (d : ℝ) / N ≤ 1 / (2 * (w + 1)))
@@ -14985,7 +14985,7 @@ theorem
           2 * (w + 1) * ((d : ℝ) / N) := by
       ring
 
-theorem dSVDensityRationalLargeWidth_exists_fine_grid
+lemma dSVDensityRationalLargeWidth_exists_fine_grid
     (d : ℕ) (dimension : 0 < d)
     (w : ℝ) (width : 0 < w)
     (ε : ℝ) (precision : 0 < ε) :
@@ -15007,7 +15007,7 @@ theorem dSVDensityRationalLargeWidth_exists_fine_grid
   have scaled := (lt_div_iff₀ positive).mp small
   linarith
 
-theorem dSVDensityRationalLargeWidth_exists_sourceUniformParameters
+lemma dSVDensityRationalLargeWidth_exists_sourceUniformParameters
     (d : ℕ) (dimension : 0 < d)
     (ε : ℝ) (precision : 0 < ε) (small : ε ≤ 1) :
     ∃ (w : ℝ) (N : ℕ),
@@ -15052,7 +15052,7 @@ theorem dSVDensityRationalLargeWidth_exists_sourceUniformParameters
       (dSVDensityRationalLargeWidthRelativeMismatch_le_targetDistance
         large grid fine ξ ζ).trans (by gcongr)
 
-theorem dSVDensityRationalLargeWidthPhysicalDiagonalBornSuccess_pos
+lemma dSVDensityRationalLargeWidthPhysicalDiagonalBornSuccess_pos
     {d N : ℕ} (dimension : 0 < d) {w : ℝ}
     (width : 0 < w) (grid : 0 < N)
     (fine : (d : ℝ) / N ≤ 1 / (2 * (w + 1)))
@@ -15066,7 +15066,7 @@ theorem dSVDensityRationalLargeWidthPhysicalDiagonalBornSuccess_pos
       width grid fine ξ)
     (by exact_mod_cast dimension)
 
-theorem dSVDensityRationalLargeWidthPhysicalRelativeHazard_eq
+lemma dSVDensityRationalLargeWidthPhysicalRelativeHazard_eq
     {d N : ℕ} (dimension : 0 < d) {w : ℝ}
     (width : 0 < w) (grid : 0 < N)
     (fine : (d : ℝ) / N ≤ 1 / (2 * (w + 1)))
@@ -15089,7 +15089,7 @@ theorem dSVDensityRationalLargeWidthPhysicalRelativeHazard_eq
       width grid fine ξ)
   field_simp
 
-theorem dSVDensityRationalLargeWidthPhysicalRelativeHazard_le
+lemma dSVDensityRationalLargeWidthPhysicalRelativeHazard_le
     {d N : ℕ} (dimension : 0 < d) {w : ℝ}
     (large : 1 ≤ w) (grid : 0 < N)
     (fine : (d : ℝ) / N ≤ 1 / (2 * (w + 1)))
@@ -15122,7 +15122,7 @@ def dSVDensityRationalPhysicalMixedBornSuccess
     (transposePOVM
       (dSVDensityRationalPhysicalGlobalPOVM w ζ))
 
-theorem dSVDensityRationalPhysicalMixedBornSuccess_eq
+lemma dSVDensityRationalPhysicalMixedBornSuccess_eq
     {d N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (w : ℝ) (ξ ζ : BipartiteUnitVector d) :
     dSVDensityRationalPhysicalMixedBornSuccess
@@ -15144,7 +15144,7 @@ theorem dSVDensityRationalPhysicalMixedBornSuccess_eq
     (dSVDensityRationalPhysicalProjector_projective w ξ)
     (dSVDensityRationalPhysicalProjector_projective w ζ)
 
-theorem dSVDensityRationalPhysicalMixedBornSuccess_loss_le
+lemma dSVDensityRationalPhysicalMixedBornSuccess_loss_le
     {d N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (w : ℝ) (ξ ζ : BipartiteUnitVector d) :
     dSVDensityRationalPhysicalDiagonalBornSuccess
@@ -15214,7 +15214,7 @@ def dSVDensityRationalActualMixedAsynchronousMass
     ‖dSVDensityRationalCompleteProjectiveOutcome
       w N ξ ζ false true‖ ^ 2
 
-theorem dSVDensityRationalActualMixedSuccessMass_eq
+lemma dSVDensityRationalActualMixedSuccessMass_eq
     {d N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (w : ℝ) (ξ ζ : BipartiteUnitVector d) :
     dSVDensityRationalActualMixedSuccessMass w N ξ ζ =
@@ -15226,7 +15226,7 @@ theorem dSVDensityRationalActualMixedSuccessMass_eq
       grid dimension w ξ ζ]
   rfl
 
-theorem dSVDensityRationalActualMixedOutcome_norm_sq_eq_born
+lemma dSVDensityRationalActualMixedOutcome_norm_sq_eq_born
     {d N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (w : ℝ) (ξ ζ : BipartiteUnitVector d)
     (a b : Bool) :
@@ -15265,7 +15265,7 @@ theorem dSVDensityRationalActualMixedOutcome_norm_sq_eq_born
     binaryBornProbability,
     ← alice_physical, ← bob_physical] using actual
 
-theorem dSVDensityRationalActualMixedContinueMass_eq_born
+lemma dSVDensityRationalActualMixedContinueMass_eq_born
     {d N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (w : ℝ) (ξ ζ : BipartiteUnitVector d) :
     dSVDensityRationalActualMixedContinueMass w N ξ ζ =
@@ -15280,7 +15280,7 @@ theorem dSVDensityRationalActualMixedContinueMass_eq_born
   exact dSVDensityRationalActualMixedOutcome_norm_sq_eq_born
     grid dimension w ξ ζ false false
 
-theorem dSVDensityRationalActualMixedAsynchronousMass_eq_born
+lemma dSVDensityRationalActualMixedAsynchronousMass_eq_born
     {d N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (w : ℝ) (ξ ζ : BipartiteUnitVector d) :
     dSVDensityRationalActualMixedAsynchronousMass w N ξ ζ =
@@ -15297,7 +15297,7 @@ theorem dSVDensityRationalActualMixedAsynchronousMass_eq_born
     dSVDensityRationalActualMixedOutcome_norm_sq_eq_born
       grid dimension w ξ ζ false true]
 
-theorem dSVDensityRationalActualMixed_mass_partition
+lemma dSVDensityRationalActualMixed_mass_partition
     {d N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (w : ℝ) (ξ ζ : BipartiteUnitVector d) :
     dSVDensityRationalActualMixedContinueMass w N ξ ζ +
@@ -15364,7 +15364,7 @@ def dSVDensityRationalPhysicalAcceptedRank
       simpa using Finset.card_le_univ selected
     omega⟩
 
-theorem dSVDensityRationalPhysicalAcceptedRank_gridPrefix
+lemma dSVDensityRationalPhysicalAcceptedRank_gridPrefix
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ : BipartiteUnitVector d) (i : Fin d) :
     dSVUniformDensityGridPrefix N
@@ -15378,7 +15378,7 @@ theorem dSVDensityRationalPhysicalAcceptedRank_gridPrefix
   simp [dSVDensityRationalPhysicalAcceptedRank,
     dSVDensityRationalProjectiveThresholdBin]
 
-theorem dSVDensityRationalPhysicalAcceptedRank_targetCoefficient_sq
+lemma dSVDensityRationalPhysicalAcceptedRank_targetCoefficient_sq
     {d : ℕ} {w : ℝ} (width : 0 < w) (N : ℕ)
     (ξ : BipartiteUnitVector d) (i : Fin d) :
     dSVDensityRationalCanonicalAcceptedCoefficient
@@ -15399,7 +15399,7 @@ open scoped BigOperators ComplexOrder MatrixOrder
 
 attribute [local instance] Classical.propDecidable
 
-theorem dSVUniformDensityGridPrefix_mono
+lemma dSVUniformDensityGridPrefix_mono
     (N : ℕ) {a b : ℝ} (ordered : a ≤ b) :
     dSVUniformDensityGridPrefix N a ≤
       dSVUniformDensityGridPrefix N b := by
@@ -15416,7 +15416,7 @@ theorem dSVUniformDensityGridPrefix_mono
     · simp [low, high]
     · simp [low, high]
 
-theorem dSVUniformDensityThresholdMismatch_eq_sub_of_le
+lemma dSVUniformDensityThresholdMismatch_eq_sub_of_le
     (N : ℕ) {a b : ℝ} (ordered : a ≤ b) :
     dSVUniformDensityThresholdMismatch N a b =
       dSVUniformDensityGridPrefix N b -
@@ -15434,7 +15434,7 @@ theorem dSVUniformDensityThresholdMismatch_eq_sub_of_le
     · simp [low, high]
     · simp [low, high]
 
-theorem dSVUniformDensityThresholdMismatch_eq_abs_gridPrefix
+lemma dSVUniformDensityThresholdMismatch_eq_abs_gridPrefix
     (N : ℕ) (a b : ℝ) :
     dSVUniformDensityThresholdMismatch N a b =
       |dSVUniformDensityGridPrefix N a -
@@ -15464,7 +15464,7 @@ theorem dSVUniformDensityThresholdMismatch_eq_abs_gridPrefix
       abs_of_nonneg (sub_nonneg.mpr
         (dSVUniformDensityGridPrefix_mono N ordered))]
 
-theorem
+lemma
     dSVDensityRationalPhysicalAcceptedRankMismatch_eq_thresholdMismatch
     {d N : ℕ} (w : ℝ)
     (ξ ζ : BipartiteUnitVector d) (i j : Fin d) :
@@ -15498,7 +15498,7 @@ def dSVDensityRationalPrefixRankMismatch
         ((dSVDensityRationalPhysicalAcceptedRank
             w N ζ j).val : ℝ)|) / (N : ℝ)
 
-theorem dSVDensityRationalPrefixRankMismatch_eq_atomMismatch
+lemma dSVDensityRationalPrefixRankMismatch_eq_atomMismatch
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ ζ : BipartiteUnitVector d) :
     dSVDensityRationalPrefixRankMismatch w N ξ ζ =
@@ -15514,7 +15514,7 @@ theorem dSVDensityRationalPrefixRankMismatch_eq_atomMismatch
   rw [mul_div_assoc,
     dSVDensityRationalPhysicalAcceptedRankMismatch_eq_thresholdMismatch]
 
-theorem dSVDensityRationalPrefixRankMismatch_physicalHazard
+lemma dSVDensityRationalPrefixRankMismatch_physicalHazard
     {d N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (w : ℝ) (ξ ζ : BipartiteUnitVector d) :
     dSVDensityRationalPrefixRankMismatch w N ξ ζ / (d : ℝ) =
@@ -15530,7 +15530,7 @@ noncomputable section
 
 open scoped BigOperators ComplexOrder MatrixOrder
 
-theorem dSVDensityRationalPhysicalAcceptedRank_eq_floor
+lemma dSVDensityRationalPhysicalAcceptedRank_eq_floor
     {d N : ℕ} {w : ℝ} (width : 0 < w) (grid : 0 < N)
     (ξ : BipartiteUnitVector d) (i : Fin d) :
     (dSVDensityRationalPhysicalAcceptedRank
@@ -15549,7 +15549,7 @@ theorem dSVDensityRationalPhysicalAcceptedRank_eq_floor
         ((dSVSoftBobLeftReducedDensity_posSemidef
           ξ).isHermitian.eigenvalues i)) unit.1 unit.2)
 
-theorem dSVDensityRationalProjectiveThresholdBin_eq_true_iff_prefix
+lemma dSVDensityRationalProjectiveThresholdBin_eq_true_iff_prefix
     {d N : ℕ} {w : ℝ} (width : 0 < w) (grid : 0 < N)
     (ξ : BipartiteUnitVector d)
     (i : Fin d) (k : Fin N) :
@@ -15621,7 +15621,7 @@ def dSVDensityRationalMixedSpectralAtomBlock
       positiveMatrixSpectralAtom G hG j
     else 0
 
-theorem dSVDensityRationalMixedSpectralAtomBlock_eq_projectorProduct
+lemma dSVDensityRationalMixedSpectralAtomBlock_eq_projectorProduct
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ ζ : BipartiteUnitVector d)
     (a b : Bool) (k : Fin N) :
@@ -15657,7 +15657,7 @@ theorem dSVDensityRationalMixedSpectralAtomBlock_eq_projectorProduct
     · simp [alice, bob]
     · simp [alice, bob]
 
-theorem dSVDensityRationalMixedSpectralAtomBlock_trace_eq
+lemma dSVDensityRationalMixedSpectralAtomBlock_trace_eq
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ ζ : BipartiteUnitVector d)
     (a b : Bool) (k : Fin N) :
@@ -15692,7 +15692,7 @@ noncomputable section
 open WithLp
 open scoped BigOperators ComplexOrder Kronecker MatrixOrder
 
-theorem dSVDensityRationalActualMixedAsynchronousMass_eq_crossHazard
+lemma dSVDensityRationalActualMixedAsynchronousMass_eq_crossHazard
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ ζ : BipartiteUnitVector d) :
     dSVDensityRationalActualMixedAsynchronousMass
@@ -15726,7 +15726,7 @@ theorem dSVDensityRationalActualMixedAsynchronousMass_eq_crossHazard
   simp [Matrix.mul_sub, Matrix.sub_mul, Matrix.trace_sub]
   ring
 
-theorem dSVDensityRationalActualMixed_escape_ge_diagonal
+lemma dSVDensityRationalActualMixed_escape_ge_diagonal
     {d N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (w : ℝ) (ξ ζ : BipartiteUnitVector d) :
     dSVDensityRationalPhysicalDiagonalBornSuccess
@@ -15765,7 +15765,7 @@ def dSVDensityRationalPhysicalMixedAcceptedIntersectionRank
         (dSVDensityRationalPhysicalAcceptedRank w N ζ j).isLt
       omega⟩
 
-theorem dSVDensityRationalPhysicalMixedAcceptedThreshold_iff
+lemma dSVDensityRationalPhysicalMixedAcceptedThreshold_iff
     {d N : ℕ} {w : ℝ} (width : 0 < w) (grid : 0 < N)
     (ξ ζ : BipartiteUnitVector d)
     (i j : Fin d) (k : Fin N) :
@@ -15787,7 +15787,7 @@ theorem dSVDensityRationalPhysicalMixedAcceptedThreshold_iff
     (dSVDensityRationalPhysicalAcceptedRank w N ζ j).val
   omega
 
-theorem dSVDensityRationalPhysicalMixedAcceptedThreshold_count
+lemma dSVDensityRationalPhysicalMixedAcceptedThreshold_count
     {d N : ℕ} {w : ℝ} (width : 0 < w) (grid : 0 < N)
     (ξ ζ : BipartiteUnitVector d)
     (i j : Fin d) :
@@ -15821,7 +15821,7 @@ theorem dSVDensityRationalPhysicalMixedAcceptedThreshold_count
       width grid ξ ζ i j k
   rw [same, Fin.card_filter_val_lt, min_eq_right bound]
 
-theorem dSVDensityRationalMixedAcceptedPrefix_norm_sq
+lemma dSVDensityRationalMixedAcceptedPrefix_norm_sq
     {d N : ℕ} {w : ℝ} (width : 0 < w) (grid : 0 < N)
     (ξ ζ : BipartiteUnitVector d) :
     ‖dSVDensityRationalCompleteProjectiveOutcome
@@ -15925,7 +15925,7 @@ def dSVDensityRationalPhysicalMixedAcceptedPrefixWork
     (dSVDensityRationalPhysicalMixedAcceptedIntersectionRank
       w N ξ ζ i j)
 
-theorem dSVDensityRationalPhysicalMixedAcceptedPrefixWork_norm_sq
+lemma dSVDensityRationalPhysicalMixedAcceptedPrefixWork_norm_sq
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ ζ : BipartiteUnitVector d) (i j : Fin d) :
     ‖dSVDensityRationalPhysicalMixedAcceptedPrefixWork
@@ -15955,7 +15955,7 @@ def dSVDensityRationalCanonicalPrefixMask
             ξ).isHermitian.eigenvalues i) = true
       then (1 : ℂ) else 0
 
-theorem dSVDensityRationalCanonicalPrefixMask_transpose
+lemma dSVDensityRationalCanonicalPrefixMask_transpose
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ : BipartiteUnitVector d) :
     (dSVDensityRationalCanonicalPrefixMask
@@ -15964,7 +15964,7 @@ theorem dSVDensityRationalCanonicalPrefixMask_transpose
   classical
   simp [dSVDensityRationalCanonicalPrefixMask]
 
-theorem dSVDensityRationalPhysicalAcceptedProjector_eq_spectralMask
+lemma dSVDensityRationalPhysicalAcceptedProjector_eq_spectralMask
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ : BipartiteUnitVector d) :
     Matrix.blockDiagonal'
@@ -16053,7 +16053,7 @@ def dSVDensityRationalCompleteStoppedOptionalOutcome
           w N ζ bob).transpose).mulVec
       (ofLp (dSVUniformDensityThresholdSharedState N d)))
 
-theorem dSVDensityRationalCompleteStoppedOptionalOutcome_some_some
+lemma dSVDensityRationalCompleteStoppedOptionalOutcome_some_some
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ ζ : BipartiteUnitVector d) (alice bob : Bool) :
     dSVDensityRationalCompleteStoppedOptionalOutcome
@@ -16065,7 +16065,7 @@ theorem dSVDensityRationalCompleteStoppedOptionalOutcome_some_some
     dSVDensityRationalCompleteStoppedOptionalLocalEffect,
     dSVDensityRationalCompleteProjectiveBinaryPOVM_effect]
 
-theorem dSVDensityRationalCompleteStoppedOptionalOutcome_none_none
+lemma dSVDensityRationalCompleteStoppedOptionalOutcome_none_none
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ ζ : BipartiteUnitVector d) :
     dSVDensityRationalCompleteStoppedOptionalOutcome
@@ -16083,14 +16083,14 @@ def dSVDensityRationalCompleteStoppedOptionalLocalSchedule
     else none
   else none
 
-theorem dSVDensityRationalCompleteStoppedOptionalLocalSchedule_zero
+lemma dSVDensityRationalCompleteStoppedOptionalLocalSchedule_zero
     (L : ℕ) (copy : Fin (L + 1)) :
     dSVDensityRationalCompleteStoppedOptionalLocalSchedule
       L 0 copy =
       if copy.val < L then some false else none := by
   simp [dSVDensityRationalCompleteStoppedOptionalLocalSchedule]
 
-theorem dSVDensityRationalCompleteStoppedOptionalLocalSchedule_hit
+lemma dSVDensityRationalCompleteStoppedOptionalLocalSchedule_hit
     {L : ℕ} (j : Fin L) :
     dSVDensityRationalCompleteStoppedOptionalLocalSchedule
       L j.succ j.castSucc = some true := by
@@ -16115,7 +16115,7 @@ def dSVDensityRationalFirstAcceptLocalSpectralMask
             ξ).isHermitian.eigenvalues i) = outcome
       then (1 : ℂ) else 0
 
-theorem dSVDensityRationalFirstAcceptPhysicalEffect_eq_spectralMask
+lemma dSVDensityRationalFirstAcceptPhysicalEffect_eq_spectralMask
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ : BipartiteUnitVector d) (outcome : Bool) :
     (dSVDensityRationalCompleteProjectiveBinaryPOVM
@@ -16163,7 +16163,7 @@ theorem dSVDensityRationalFirstAcceptPhysicalEffect_eq_spectralMask
   rw [spectralPartitionPOVM_effect_eq_spectralDiagonal]
   rfl
 
-theorem dSVDensityRationalFirstAcceptLocalSpectralMask_transpose
+lemma dSVDensityRationalFirstAcceptLocalSpectralMask_transpose
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ : BipartiteUnitVector d) (outcome : Bool) :
     (dSVDensityRationalFirstAcceptLocalSpectralMask
@@ -16173,7 +16173,7 @@ theorem dSVDensityRationalFirstAcceptLocalSpectralMask_transpose
   classical
   simp [dSVDensityRationalFirstAcceptLocalSpectralMask]
 
-theorem
+lemma
     dSVDensityRationalFirstAcceptPhysicalBobEffect_eq_spectralMask
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ζ : BipartiteUnitVector d) (outcome : Bool) :
@@ -16228,7 +16228,7 @@ set_option backward.isDefEq.respectTransparency false
 set_option maxHeartbeats 1600000
 set_option maxRecDepth 2048
 
-theorem tensorEmbezzlementTarget_sub_norm
+lemma tensorEmbezzlementTarget_sub_norm
     {d n : ℕ} (positive : 0 < n)
     (ξ ζ : BipartiteUnitVector d) :
     ‖tensorEmbezzlementTarget (n := n) ξ -
@@ -16316,7 +16316,7 @@ noncomputable section
 
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
-theorem dSVBobTargetLocalHarmonicCleanup_stable
+lemma dSVBobTargetLocalHarmonicCleanup_stable
     {d n : ℕ} (hn : 0 < n)
     (U V : Matrix.unitaryGroup (Fin (d * n)) ℂ)
     (ξ ζ : BipartiteUnitVector d)
@@ -16353,7 +16353,7 @@ theorem dSVBobTargetLocalHarmonicCleanup_stable
           simpa [reference, residual] using clean)
         ‖ξ.val - ζ.val‖
 
-theorem dSVBobTargetLocalUniformHarmonicWorkCleanup
+lemma dSVBobTargetLocalUniformHarmonicWorkCleanup
     {T : Type*}
     (d : ℕ) (dimension : 0 < d)
     (work : T → BipartiteUnitVector d)
@@ -16394,7 +16394,7 @@ theorem dSVBobTargetLocalUniformHarmonicWorkCleanup
     rw [harmonicCoherentSharedResource_inverseAbsorption_distance]
     exact prepared ζ
 
-theorem dSVDensityRationalCanonicalUnitPrefix_relative_distance_sq
+lemma dSVDensityRationalCanonicalUnitPrefix_relative_distance_sq
     {N : ℕ} (grid : 0 < N) (r s : Fin (N + 1)) :
     ‖(dSVCanonicalFailureUnitRankFamily N grid r).val -
         (dSVCanonicalFailureUnitRankFamily N grid s).val‖ ^ 2 ≤
@@ -16492,7 +16492,7 @@ theorem dSVDensityRationalCanonicalUnitPrefix_relative_distance_sq
             exact mul_le_mul_of_nonneg_left denominator_le
               (mul_nonneg (by norm_num) (abs_nonneg _))
 
-theorem dSVDensityRationalPublicBucketLocalHarmonicCleanup_sq
+lemma dSVDensityRationalPublicBucketLocalHarmonicCleanup_sq
     {Ω I : Type*} [DecidableEq I] {N D : ℕ} (dimension : 0 < N)
     (work : Fin D → BipartiteUnitVector N)
     (bucket : Ω → Fin D → I)
@@ -16583,7 +16583,7 @@ theorem dSVDensityRationalPublicBucketLocalHarmonicCleanup_sq
         ‖(work r).val -
           (work (representative phase (bucket phase r))).val‖]
 
-theorem dSVDensityRationalPublicBucketCanonicalPrefixCleanup_sq
+lemma dSVDensityRationalPublicBucketCanonicalPrefixCleanup_sq
     {Ω I : Type*} [DecidableEq I] {N : ℕ} (grid : 0 < N)
     (bucket : Ω → Fin (N + 1) → I)
     (representative : Ω → I → Fin (N + 1))
@@ -16648,7 +16648,7 @@ def dSVDensityRationalPublicBucketCoherentPhaseHistory
     ePRState B (q.1.1, q.2.1) *
       history (q.1.2, q.2.2)
 
-theorem dSVDensityRationalPublicBucketCoherentPhaseHistory_apply
+lemma dSVDensityRationalPublicBucketCoherentPhaseHistory_apply
     {H : Type*} [Fintype H] (B : ℕ)
     (history : EuclideanSpace ℂ (H × H))
     (φ ψ : Fin B) (a b : H) :
@@ -16657,7 +16657,7 @@ theorem dSVDensityRationalPublicBucketCoherentPhaseHistory_apply
       ePRState B (φ, ψ) * history (a, b) := by
   rfl
 
-theorem dSVDensityRationalPublicBucketCoherentPhaseHistory_apply_norm_sq
+lemma dSVDensityRationalPublicBucketCoherentPhaseHistory_apply_norm_sq
     {H : Type*} [Fintype H] {B : ℕ}
     (positive : 0 < B)
     (history : EuclideanSpace ℂ (H × H))
@@ -16699,7 +16699,7 @@ def dSVDensityRationalPublicBucketCoherentPhaseLocalUnitary
   coherentSharedRandomControlledUnitary
     (fun q : Fin B × H => A q.1 (bucket q.1 (rank q.2)))
 
-theorem dSVDensityRationalPublicBucketCoherentPhaseSigmaReset_distance_sq
+lemma dSVDensityRationalPublicBucketCoherentPhaseSigmaReset_distance_sq
     {H I : Type*} [Fintype H] [DecidableEq H]
     [DecidableEq I] {B D m : ℕ}
     (phase_positive : 0 < B)
@@ -16778,7 +16778,7 @@ noncomputable section
 
 open scoped BigOperators ComplexOrder MatrixOrder
 
-theorem dSVDensityRationalPublicLogRank_real_log_bound
+lemma dSVDensityRationalPublicLogRank_real_log_bound
     {r s : ℝ} (positive_r : 0 < r) (positive_s : 0 < s) :
     min r s * |Real.log r - Real.log s| ≤ |r - s| := by
   have in_order :
@@ -16812,7 +16812,7 @@ theorem dSVDensityRationalPublicLogRank_real_log_bound
   · simpa [min_comm, abs_sub_comm] using
       in_order positive_s positive_r ordered
 
-theorem dSVDensityRationalPublicLogRank_zeroSafe_nat_bound
+lemma dSVDensityRationalPublicLogRank_zeroSafe_nat_bound
     (r s : ℕ) :
     min (r : ℝ) (s : ℝ) *
         |Real.log ((max 1 r : ℕ) : ℝ) -
@@ -16831,7 +16831,7 @@ theorem dSVDensityRationalPublicLogRank_zeroSafe_nat_bound
       (by exact_mod_cast positive_r : (0 : ℝ) < r)
       (by exact_mod_cast positive_s : (0 : ℝ) < s))
 
-theorem dSVDensityRationalPublicLogRank_zeroSafe_fin_bound
+lemma dSVDensityRationalPublicLogRank_zeroSafe_fin_bound
     {N : ℕ} (r s : Fin (N + 1)) :
     min (r.val : ℝ) (s.val : ℝ) *
         |Real.log ((max 1 r.val : ℕ) : ℝ) -
@@ -16848,7 +16848,7 @@ def dSVDensityRationalPublicLogRankPhaseWeight
     (B : ℕ) (_ : Fin B) : ℝ :=
   1 / (B : ℝ)
 
-theorem dSVDensityRationalPublicLogRankPhaseWeight_sum
+lemma dSVDensityRationalPublicLogRankPhaseWeight_sum
     {B : ℕ} (positive : 0 < B) :
     (∑ phase : Fin B,
       dSVDensityRationalPublicLogRankPhaseWeight B phase) = 1 := by
@@ -16864,7 +16864,7 @@ def dSVDensityRationalPublicLogRankBucket
   else some
     ((dSVDensityRationalPublicLogRankFineLabel Q r + phase.val) / B)
 
-theorem dSVDensityRationalPublicLogRankBucket_fineLabel_sub_lt
+lemma dSVDensityRationalPublicLogRankBucket_fineLabel_sub_lt
     {N B : ℕ} (Q : ℕ) (phase : Fin B)
     (r s : Fin (N + 1))
     (nonzero_r : r.val ≠ 0) (nonzero_s : s.val ≠ 0)
@@ -16924,14 +16924,14 @@ theorem dSVDensityRationalPublicLogRankBucket_fineLabel_sub_lt
       (sub_nonneg.mpr (by exact_mod_cast ordered))]
     exact real_difference
 
-theorem dSVDensityRationalPublicLogRank_logCoordinate_nonneg
+lemma dSVDensityRationalPublicLogRank_logCoordinate_nonneg
     {N : ℕ} (Q : ℕ) (r : Fin (N + 1)) :
     0 ≤ (Q : ℝ) * Real.log ((max 1 r.val : ℕ) : ℝ) := by
   apply mul_nonneg (Nat.cast_nonneg Q)
   apply Real.log_nonneg
   exact_mod_cast (le_max_left 1 r.val)
 
-theorem dSVDensityRationalPublicLogRankFineLabel_bounds
+lemma dSVDensityRationalPublicLogRankFineLabel_bounds
     {N : ℕ} (Q : ℕ) (r : Fin (N + 1)) :
     (dSVDensityRationalPublicLogRankFineLabel Q r : ℝ) ≤
         (Q : ℝ) * Real.log ((max 1 r.val : ℕ) : ℝ) ∧
@@ -16942,7 +16942,7 @@ theorem dSVDensityRationalPublicLogRankFineLabel_bounds
       (dSVDensityRationalPublicLogRank_logCoordinate_nonneg Q r)
   · exact Nat.lt_floor_add_one _
 
-theorem dSVDensityRationalPublicLogRankBucket_log_sub_lt
+lemma dSVDensityRationalPublicLogRankBucket_log_sub_lt
     {N B : ℕ} {Q : ℕ} (positive_Q : 0 < Q)
     (phase : Fin B) (r s : Fin (N + 1))
     (nonzero_r : r.val ≠ 0) (nonzero_s : s.val ≠ 0)
@@ -16979,7 +16979,7 @@ def dSVDensityRationalPublicLogRankBucketFiber
     r.val ≠ 0 ∧
       dSVDensityRationalPublicLogRankBucket Q phase r = label
 
-theorem dSVDensityRationalPublicLogRankBucketFiber_mem
+lemma dSVDensityRationalPublicLogRankBucketFiber_mem
     {N B : ℕ} (Q : ℕ) (phase : Fin B) (label : Option ℕ)
     (r : Fin (N + 1)) :
     r ∈ dSVDensityRationalPublicLogRankBucketFiber
@@ -16998,7 +16998,7 @@ def dSVDensityRationalPublicLogRankBucketRepresentative
       Q phase label).min' present
   else 0
 
-theorem dSVDensityRationalPublicLogRankBucketRepresentative_mem
+lemma dSVDensityRationalPublicLogRankBucketRepresentative_mem
     {N B : ℕ} (Q : ℕ) (phase : Fin B) (label : Option ℕ)
     (present :
       (dSVDensityRationalPublicLogRankBucketFiber
@@ -17013,7 +17013,7 @@ theorem dSVDensityRationalPublicLogRankBucketRepresentative_mem
       (dSVDensityRationalPublicLogRankBucketFiber
         (N := N) Q phase label) present)
 
-theorem dSVDensityRationalPublicLogRankBucketRepresentative_same
+lemma dSVDensityRationalPublicLogRankBucketRepresentative_same
     {N B : ℕ} (Q : ℕ) (phase : Fin B)
     (r : Fin (N + 1)) (nonzero : r.val ≠ 0) :
     (dSVDensityRationalPublicLogRankBucketRepresentative
@@ -17044,7 +17044,7 @@ theorem dSVDensityRationalPublicLogRankBucketRepresentative_same
       (dSVDensityRationalPublicLogRankBucketRepresentative_mem
         (N := N) Q phase _ present)
 
-theorem dSVDensityRationalPublicLogRankBucketRepresentative_le
+lemma dSVDensityRationalPublicLogRankBucketRepresentative_le
     {N B : ℕ} (Q : ℕ) (phase : Fin B)
     (r : Fin (N + 1)) (nonzero : r.val ≠ 0) :
     dSVDensityRationalPublicLogRankBucketRepresentative
@@ -17068,7 +17068,7 @@ theorem dSVDensityRationalPublicLogRankBucketRepresentative_le
       dif_pos present]
   exact Finset.min'_le _ r member
 
-theorem dSVDensityRationalPublicLogRankBucketRepresentative_log_sub_lt
+lemma dSVDensityRationalPublicLogRankBucketRepresentative_log_sub_lt
     {N B : ℕ} {Q : ℕ} (positive_Q : 0 < Q)
     (phase : Fin B) (r : Fin (N + 1)) (nonzero : r.val ≠ 0) :
     |Real.log ((max 1 r.val : ℕ) : ℝ) -
@@ -17101,14 +17101,14 @@ abbrev DSVDensityRationalPublicMultiscalePhaseIndex
   Fin (Fintype.card
     (DSVDensityRationalPublicMultiscalePhase S B))
 
-theorem dSVDensityRationalPublicMultiscalePhase_card
+lemma dSVDensityRationalPublicMultiscalePhase_card
     (S B : ℕ) :
     Fintype.card
         (DSVDensityRationalPublicMultiscalePhase S B) =
       B ^ S := by
   simp [DSVDensityRationalPublicMultiscalePhase]
 
-theorem dSVDensityRationalPublicMultiscalePhase_card_pos
+lemma dSVDensityRationalPublicMultiscalePhase_card_pos
     {S B : ℕ} (positive : 0 < B) :
     0 < Fintype.card
       (DSVDensityRationalPublicMultiscalePhase S B) := by
@@ -17124,7 +17124,7 @@ def dSVDensityRationalPrefixHarmonicSpectralOverlap
     (dSVSoftBobLeftReducedDensity_posSemidef ξ)
     (dSVSoftBobLeftReducedDensity_posSemidef ζ) i j
 
-theorem dSVDensityRationalPrefixHarmonicSpectralOverlap_nonneg
+lemma dSVDensityRationalPrefixHarmonicSpectralOverlap_nonneg
     {d : ℕ} (ξ ζ : BipartiteUnitVector d)
     (i j : Fin d) :
     0 ≤ dSVDensityRationalPrefixHarmonicSpectralOverlap
@@ -17140,7 +17140,7 @@ def dSVDensityRationalLocalSpectralPairBasisOverlap
     (dSVSoftBobLeftReducedDensity_posSemidef
       ζ).isHermitian.eigenvectorUnitary i j
 
-theorem dSVDensityRationalLocalSpectralPairBasisOverlap_norm_sq
+lemma dSVDensityRationalLocalSpectralPairBasisOverlap_norm_sq
     {d : ℕ} (ξ ζ : BipartiteUnitVector d)
     (i j : Fin d) :
     ‖dSVDensityRationalLocalSpectralPairBasisOverlap
@@ -17165,7 +17165,7 @@ def dSVDensityRationalLocalSpectralPairHistory
       dSVDensityRationalLocalSpectralPairBasisOverlap
         ξ ζ q.1 q.2
 
-theorem dSVDensityRationalLocalSpectralPairHistory_apply_norm_sq
+lemma dSVDensityRationalLocalSpectralPairHistory_apply_norm_sq
     {d : ℕ} (N : ℕ)
     (ξ ζ : BipartiteUnitVector d)
     (i j : Fin d) :
@@ -17198,7 +17198,7 @@ def dSVDensityRationalMixedCanonicalCrossMatrix
         ζ).isHermitian.eigenvectorUnitary :
       Matrix (Fin d) (Fin d) ℂ)).transpose
 
-theorem dSVDensityRationalMixedCanonicalCrossGauge_eq
+lemma dSVDensityRationalMixedCanonicalCrossGauge_eq
     {d : ℕ} (N : ℕ)
     (ξ ζ : BipartiteUnitVector d) :
     (((dSVUniformDensityBobHistoryCopyBasis
@@ -17234,7 +17234,7 @@ theorem dSVDensityRationalMixedCanonicalCrossGauge_eq
   rw [← Matrix.blockDiagonal'_mul]
   rfl
 
-theorem dSVDensityRationalCanonicalPrefixMask_eq_diagonal
+lemma dSVDensityRationalCanonicalPrefixMask_eq_diagonal
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ : BipartiteUnitVector d) :
     dSVDensityRationalCanonicalPrefixMask w N ξ =
@@ -17259,7 +17259,7 @@ def dSVDensityRationalMixedCanonicalRawSource
         dSVDensityRationalMixedCanonicalCrossMatrix N ξ ζ *
         dSVDensityRationalCanonicalPrefixMask w N ξ))
 
-theorem dSVDensityRationalMixedCanonicalRawSource_apply
+lemma dSVDensityRationalMixedCanonicalRawSource_apply
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ ζ : BipartiteUnitVector d)
     (k l : Fin N) (i j : Fin d) :
@@ -17312,7 +17312,7 @@ theorem dSVDensityRationalMixedCanonicalRawSource_apply
   · simp [dSVDensityRationalMixedCanonicalCrossMatrix,
       Matrix.blockDiagonal'_apply, flags]
 
-theorem dSVDensityRationalMixedCanonicalProjectorMatrix_eq
+lemma dSVDensityRationalMixedCanonicalProjectorMatrix_eq
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ ζ : BipartiteUnitVector d) :
     (((dSVUniformDensityBobHistoryCopyBasis
@@ -17481,7 +17481,7 @@ theorem dSVDensityRationalMixedCanonicalProjectorMatrix_eq
       dsimp only [ZI]
       rw [dSVDensityRationalMixedCanonicalCrossGauge_eq N ξ ζ]
 
-theorem dSVDensityRationalMixedCanonicalSpectralOutcome_eq
+lemma dSVDensityRationalMixedCanonicalSpectralOutcome_eq
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ ζ : BipartiteUnitVector d) :
     dSVDensityRationalCanonicalPrefixSpectralOutcome
@@ -17555,7 +17555,7 @@ def dSVDensityRationalPublicLogBilateralPureTensor
   toLp 2 fun q : (ι × κ) × (ι × κ) =>
     v (q.1.1, q.2.1) * u (q.1.2, q.2.2)
 
-theorem dSVDensityRationalPublicLogBilateralPureTensor_norm_sq
+lemma dSVDensityRationalPublicLogBilateralPureTensor_norm_sq
     {ι κ : Type*} [Fintype ι] [Fintype κ]
     (v : EuclideanSpace ℂ (ι × ι))
     (u : EuclideanSpace ℂ (κ × κ)) :
@@ -17605,7 +17605,7 @@ def dSVDensityRationalPublicLogPhasePureSource
     (ePRState B)
     (dSVUniformDensityThresholdWholeHistorySharedState N d L)
 
-theorem dSVDensityRationalPublicLogPhasePureSource_apply
+lemma dSVDensityRationalPublicLogPhasePureSource_apply
     (B N d L : ℕ)
     (φ ψ : Fin B)
     (a b : DSVUniformDensityThresholdWholeHistoryLocalIndex
@@ -17620,7 +17620,7 @@ theorem dSVDensityRationalPublicLogPhasePureSource_apply
   simp [dSVDensityRationalPublicLogPhasePureSource,
     dSVDensityRationalPublicLogBilateralPureTensor, ePRState]
 
-theorem dSVDensityRationalPublicLogPhasePureSource_norm
+lemma dSVDensityRationalPublicLogPhasePureSource_norm
     {B N d L : ℕ}
     (phases : 0 < B) (grid : 0 < N) (dimension : 0 < d) :
     ‖dSVDensityRationalPublicLogPhasePureSource
@@ -17648,7 +17648,7 @@ def dSVDensityRationalPublicLogPhaseHarmonicPureSource
     (dSVDensityRationalPublicLogPhasePureSource B N d L)
     (embezzlementState m)
 
-theorem dSVDensityRationalPublicLogPhaseHarmonicPureSource_apply
+lemma dSVDensityRationalPublicLogPhaseHarmonicPureSource_apply
     (B N d L m : ℕ)
     (φ ψ : Fin B)
     (a b : DSVUniformDensityThresholdWholeHistoryLocalIndex
@@ -17667,7 +17667,7 @@ theorem dSVDensityRationalPublicLogPhaseHarmonicPureSource_apply
       embezzlementState m (i, j) = _
   rw [dSVDensityRationalPublicLogPhasePureSource_apply]
 
-theorem dSVDensityRationalPublicLogPhaseHarmonicPureSource_norm
+lemma dSVDensityRationalPublicLogPhaseHarmonicPureSource_norm
     {B N d L m : ℕ}
     (phases : 0 < B) (grid : 0 < N)
     (dimension : 0 < d) (harmonic : 0 < m) :
@@ -17746,7 +17746,7 @@ def dSVDensityRationalPublicLogPhaseTargetFirstPreparedSource
     (dSVDensityRationalPublicLogPhaseHarmonicPureSource
       B N d L m)
 
-theorem dSVDensityRationalPublicLogPhaseTargetFirstPreparedSource_apply
+lemma dSVDensityRationalPublicLogPhaseTargetFirstPreparedSource_apply
     (B N d L m : ℕ)
     (φ ψ : Fin B)
     (a b : DSVUniformDensityThresholdWholeHistoryLocalIndex
@@ -17769,7 +17769,7 @@ theorem dSVDensityRationalPublicLogPhaseTargetFirstPreparedSource_apply
     (dSVDensityRationalPublicLogPhaseHarmonicPureSource_apply
       B N d L m φ ψ a b i j)
 
-theorem dSVDensityRationalPublicLogPhaseTargetFirstPreparedSource_norm
+lemma dSVDensityRationalPublicLogPhaseTargetFirstPreparedSource_norm
     {B N d L m : ℕ}
     (phases : 0 < B) (grid : 0 < N)
     (dimension : 0 < d) (harmonic : 0 < m) :
@@ -17815,7 +17815,7 @@ def dSVDensityRationalPublicMultiscalePhaseTargetFirstPreparedSource
     (Fintype.card (DSVDensityRationalPublicMultiscalePhase S B))
     N d L m
 
-theorem
+lemma
     dSVDensityRationalPublicMultiscalePhaseTargetFirstPreparedSource_norm
     {S B N d L m : ℕ}
     (phases : 0 < B) (grid : 0 < N)
@@ -17856,7 +17856,7 @@ def dSVDensityRationalPublicLogPhaseActualTargetFirstLocalLift
     (dSVDensityRationalPublicLogPhaseTargetFirstIndexEquiv
       B N d L m) whole
 
-theorem
+lemma
     dSVDensityRationalPublicLogPhaseActualTargetFirstLocalLift_apply
     (B N d L m : ℕ)
     (U : Matrix.unitaryGroup
@@ -17899,7 +17899,7 @@ def dSVDensityRationalPublicLogPhasePhysicalHistoryUnitary
     Matrix.kronecker_mem_unitary
       (Matrix.unitaryGroup (Fin B) ℂ).one_mem U.property⟩
 
-theorem dSVDensityRationalPublicLogPhasePhysicalHistoryUnitary_apply
+lemma dSVDensityRationalPublicLogPhasePhysicalHistoryUnitary_apply
     (B : ℕ) {N d L : ℕ}
     (U : Matrix.unitaryGroup
       (DSVUniformDensityThresholdWholeHistoryLocalIndex
@@ -17944,7 +17944,7 @@ def dSVDensityRationalHeterogeneousActualFirstAccepted
     (hits.min' nonempty).succ
   else 0
 
-theorem dSVDensityRationalHeterogeneousActualFirstAccepted_prefix_iff
+lemma dSVDensityRationalHeterogeneousActualFirstAccepted_prefix_iff
     {β : Type*} {L : ℕ}
     (accepted : Fin L → β → Prop)
     (history : Fin (L + 1) → β) (j : Fin L) :
@@ -17960,7 +17960,7 @@ theorem dSVDensityRationalHeterogeneousActualFirstAccepted_prefix_iff
       (dSVDensityRationalHeterogeneousActualAcceptSet
         accepted history) j
 
-theorem dSVDensityRationalHeterogeneousActualFirstAccepted_zero_iff
+lemma dSVDensityRationalHeterogeneousActualFirstAccepted_zero_iff
     {β : Type*} {L : ℕ}
     (accepted : Fin L → β → Prop)
     (history : Fin (L + 1) → β) :
@@ -18019,7 +18019,7 @@ def dSVDensityRationalHeterogeneousActualFirstAcceptUnitary
     (dSVDensityRationalHeterogeneousActualFirstAcceptEquiv
       accepted)
 
-theorem dSVDensityRationalHeterogeneousActualFirstAcceptUnitary_mulVec
+lemma dSVDensityRationalHeterogeneousActualFirstAcceptUnitary_mulVec
     {β : Type*} [Fintype β] [DecidableEq β]
     {L : ℕ} (accepted : Fin L → β → Prop)
     (v : (Σ _ : Fin (L + 1), Fin (L + 1) → β) → ℂ)
@@ -18036,7 +18036,7 @@ theorem dSVDensityRationalHeterogeneousActualFirstAcceptUnitary_mulVec
     permutationUnitary_val, Matrix.permMatrix_mulVec]
   rfl
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualFirstAcceptUnitary_zeroFlag
     {β : Type*} [Fintype β] [DecidableEq β]
     {L : ℕ} (accepted : Fin L → β → Prop)
@@ -18095,7 +18095,7 @@ def dSVDensityRationalHeterogeneousActualCopyCondition
     else True
   else True
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualFirstAccepted_allFlags_iff
     {β : Type*} {L : ℕ}
     (accepted : Fin L → β → Prop)
@@ -18149,7 +18149,7 @@ theorem
           simpa [dSVDensityRationalHeterogeneousActualCopyCondition,
             i.isLt, Fin.succ_ne_zero, before] using actual
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualFirstAccepted_sourceProduct
     {β : Type*} [Fintype β] {L : ℕ}
     (accepted : Fin L → β → Prop)
@@ -18285,7 +18285,7 @@ def dSVDensityRationalHeterogeneousActualPhysicalState
         (dSVUniformDensityThresholdWholeHistorySharedState
           N d L))))
 
-theorem dSVDensityRationalHeterogeneousActualPhysicalState_norm
+lemma dSVDensityRationalHeterogeneousActualPhysicalState_norm
     {S N d L : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ ζ : BipartiteUnitVector d) :
@@ -18335,7 +18335,7 @@ def dSVDensityRationalHeterogeneousPhysicalStageAsynchronous
     dSVDensityRationalHeterogeneousPhysicalStageOutcome
       N width schedule ξ ζ k false true
 
-theorem dSVDensityRationalHeterogeneousPhysicalStageOutcome_nonneg
+lemma dSVDensityRationalHeterogeneousPhysicalStageOutcome_nonneg
     {d S L : ℕ} (N : ℕ)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ ζ : BipartiteUnitVector d)
@@ -18345,7 +18345,7 @@ theorem dSVDensityRationalHeterogeneousPhysicalStageOutcome_nonneg
   unfold dSVDensityRationalHeterogeneousPhysicalStageOutcome
   split_ifs <;> positivity
 
-theorem dSVDensityRationalHeterogeneousPhysicalStage_partition
+lemma dSVDensityRationalHeterogeneousPhysicalStage_partition
     {d S L N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ ζ : BipartiteUnitVector d) (k : ℕ) :
@@ -18374,7 +18374,7 @@ theorem dSVDensityRationalHeterogeneousPhysicalStage_partition
       dSVDensityRationalHeterogeneousPhysicalStageOutcome,
       active]
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalStageAsynchronous_eq_hazard
     {d S L : ℕ} (N : ℕ)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -18399,7 +18399,7 @@ def dSVDensityRationalHeterogeneousPhysicalSurvival
     (dSVDensityRationalHeterogeneousPhysicalStageContinue
       N width schedule ξ ζ) k
 
-theorem dSVDensityRationalHeterogeneousPhysicalSurvival_nonneg
+lemma dSVDensityRationalHeterogeneousPhysicalSurvival_nonneg
     {d S L : ℕ} (N : ℕ)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ ζ : BipartiteUnitVector d) (k : ℕ) :
@@ -18438,7 +18438,7 @@ def dSVDensityRationalHeterogeneousPhysicalTerminalMass
   dSVDensityRationalHeterogeneousPhysicalSurvival
     N width schedule ξ ζ L
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalStopped_mass_partition
     {d S L N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -18490,7 +18490,7 @@ theorem
   rw [combined, escape]
   ring
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalStoppedAsynchronousMass_eq_hazard
     {d S L : ℕ} (N : ℕ)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -18530,7 +18530,7 @@ theorem
         dSVDensityRationalHeterogeneousPhysicalStageAsynchronous_eq_hazard
           N width schedule ξ ζ k]
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalStoppedAsynchronousMass_nonneg
     {d S L : ℕ} (N : ℕ)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -18551,7 +18551,7 @@ theorem
     (dSVDensityRationalHeterogeneousPhysicalStageOutcome_nonneg
       N width schedule ξ ζ k false true)
 
-theorem dSVDensityRationalHeterogeneousPhysicalTerminalMass_nonneg
+lemma dSVDensityRationalHeterogeneousPhysicalTerminalMass_nonneg
     {d S L : ℕ} (N : ℕ)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ ζ : BipartiteUnitVector d) :
@@ -18571,7 +18571,7 @@ def dSVDensityRationalHeterogeneousPhysicalStageHazardRatio
       dSVDensityRationalHeterogeneousPhysicalStageAsynchronous
         N width schedule ξ ζ k)
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalStageAsynchronous_eq_escape_mul_ratio
     {d S L : ℕ} (N : ℕ)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -18602,7 +18602,7 @@ theorem
     simp [h_zero]
   · field_simp
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalStoppedAsynchronousMass_eq_ratioLedger
     {d S L : ℕ} (N : ℕ)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -18643,7 +18643,7 @@ theorem
           N width schedule ξ ζ k)
     _ = _ := by ring
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalStageDiagonalSuccess_lower
     {d S L N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (large : ∀ s, 1 ≤ width s)
@@ -18671,7 +18671,7 @@ theorem
         grid dimension (width (schedule k)) ξ := by
       rw [dSVDensityRationalPhysicalDiagonalBornSuccess_eq]
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalStage_escape_ge_diagonal
     {d S L N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -18692,7 +18692,7 @@ theorem
     using dSVDensityRationalActualMixed_escape_ge_diagonal
       grid dimension (width (schedule k)) ξ ζ
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalStageAsynchronous_relative_diagonal_le
     {d S L N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (large : ∀ s, 1 ≤ width s)
@@ -18712,7 +18712,7 @@ theorem
   exact dSVDensityRationalLargeWidthPhysicalRelativeHazard_le
     dimension (large (schedule k)) grid (fine (schedule k)) ξ ζ
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalStageHazardRatio_le_relative_diagonal
     {d S L N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (large : ∀ s, 1 ≤ width s)
@@ -18746,7 +18746,7 @@ theorem
   exact div_le_div_of_nonneg_left
     asynchronous_nonnegative self_positive self_lower
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalStageHazardRatio_le_targetDistance
     {d S L N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (large : ∀ s, 1 ≤ width s)
@@ -18776,7 +18776,7 @@ theorem
       have grid_cost : 0 ≤ (d : ℝ) / N := by positivity
       nlinarith [mul_nonneg grid_cost (sub_nonneg.mpr scale)]
 
-theorem dSVDensityRationalHeterogeneousPhysicalStoppedEscape_budget
+lemma dSVDensityRationalHeterogeneousPhysicalStoppedEscape_budget
     {d S L N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ ζ : BipartiteUnitVector d) :
@@ -18812,7 +18812,7 @@ theorem dSVDensityRationalHeterogeneousPhysicalStoppedEscape_budget
     using dSVHeterogeneousRealStopping_escape_budget
       continuation escape continuation_nonnegative stage L
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalStoppedAsynchronousMass_le_targetDistance
     {d S L N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (large : ∀ s, 1 ≤ width s)
@@ -18905,7 +18905,7 @@ def dSVDensityRationalHeterogeneousPhysicalUniformEscapeRate
     (d : ℕ) (W : ℝ) : ℝ :=
   1 / (2 * (W + 1) * (d : ℝ))
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalUniformEscapeRate_pos
     {d : ℕ} (dimension : 0 < d)
     {W : ℝ} (W_nonnegative : 0 ≤ W) :
@@ -18914,7 +18914,7 @@ theorem
   unfold dSVDensityRationalHeterogeneousPhysicalUniformEscapeRate
   positivity
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalUniformEscapeRate_le_half
     {d : ℕ} (dimension : 0 < d)
     {W : ℝ} (W_nonnegative : 0 ≤ W) :
@@ -18930,7 +18930,7 @@ theorem
   apply (div_le_div_iff₀ denominator (by norm_num : (0 : ℝ) < 2)).mpr
   nlinarith [mul_nonneg W_nonnegative real_dimension.le]
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalStageDiagonalSuccess_ge_uniform
     {d S L N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (large : ∀ s, 1 ≤ width s)
@@ -18966,7 +18966,7 @@ theorem
       dSVDensityRationalHeterogeneousPhysicalStageDiagonalSuccess_lower
         grid dimension width large fine schedule ξ k
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalStageContinue_le_uniform
     {d S L N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (large : ∀ s, 1 ≤ width s)
@@ -18992,7 +18992,7 @@ theorem
       grid dimension width schedule ξ ζ k.val
   linarith
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalTerminalMass_le_pow
     {d S L N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (large : ∀ s, 1 ≤ width s)
@@ -19047,7 +19047,7 @@ theorem
   change dSVHeterogeneousRealPrefix continuation L ≤ c ^ L
   exact prefix_bound L (le_refl L)
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysical_exists_positive_horizon
     {d : ℕ} (dimension : 0 < d)
     {W ε : ℝ} (W_nonnegative : 0 ≤ W) (precision : 0 < ε) :
@@ -19084,7 +19084,7 @@ theorem
       nlinarith [pow_nonneg continuation k]
     _ ≤ ε ^ 2 := tail.le
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalTerminalMass_le_horizon
     {d S L N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (large : ∀ s, 1 ≤ width s)
@@ -19126,23 +19126,23 @@ def reverseMarkedPartitionWeight (s : Finset α) (i : α) : ℝ :=
   if i ∈ s then reversePartitionWeight s / (s.card : ℝ) else 0
 
 omit [DecidableEq α] in
-theorem fairPartitionWeight_pos : 0 < fairPartitionWeight α := by
+lemma fairPartitionWeight_pos : 0 < fairPartitionWeight α := by
   unfold fairPartitionWeight
   positivity
 
 omit [DecidableEq α] in
-theorem fairPartitionWeight_nonneg : 0 ≤ fairPartitionWeight α :=
+lemma fairPartitionWeight_nonneg : 0 ≤ fairPartitionWeight α :=
   fairPartitionWeight_pos.le
 
 omit [DecidableEq α] in
 
-theorem fairPartitionWeight_sum :
+lemma fairPartitionWeight_sum :
     (∑ _s : Finset α, fairPartitionWeight α) = 1 := by
   simp [fairPartitionWeight, Fintype.card_finset]
 
 omit [DecidableEq α] in
 
-theorem reversePartitionWeight_nonneg (s : Finset α) :
+lemma reversePartitionWeight_nonneg (s : Finset α) :
     0 ≤ reversePartitionWeight s := by
   unfold reversePartitionWeight
   exact mul_nonneg fairPartitionWeight_nonneg
@@ -19152,13 +19152,13 @@ theorem reversePartitionWeight_nonneg (s : Finset α) :
 
 omit [DecidableEq α] in
 
-@[simp] theorem reversePartitionWeight_empty :
+@[simp] lemma reversePartitionWeight_empty :
     reversePartitionWeight (α := α) ∅ = 0 := by
   simp [reversePartitionWeight]
 
 omit [DecidableEq α] in
 
-theorem reversePartitionWeight_pos_iff
+lemma reversePartitionWeight_pos_iff
     (hα : 0 < Fintype.card α) (s : Finset α) :
     0 < reversePartitionWeight s ↔ s.Nonempty := by
   constructor
@@ -19175,7 +19175,7 @@ theorem reversePartitionWeight_pos_iff
         (mul_pos (by norm_num) (by exact_mod_cast hcard))
         (by exact_mod_cast hα))
 
-theorem reverseMarkedPartitionWeight_eq_forward
+lemma reverseMarkedPartitionWeight_eq_forward
     {s : Finset α} {i : α} (hi : i ∈ s) :
     reverseMarkedPartitionWeight s i =
       forwardMarkedPartitionWeight α := by
@@ -19206,7 +19206,7 @@ def rightSpectralBornWeight
   bornTracePairing ρ.matrix F
     (positiveMatrixSpectralAtom G hG i)
 
-theorem rightSpectralBornWeight_nonneg
+lemma rightSpectralBornWeight_nonneg
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -19218,7 +19218,7 @@ theorem rightSpectralBornWeight_nonneg
   exact trace_mul_posSemidef_nonneg ρ.positive
     (hF.kronecker (positiveMatrixSpectralAtom_posSemidef G hG i))
 
-theorem rightSpectralBornWeight_sum
+lemma rightSpectralBornWeight_sum
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -19238,7 +19238,7 @@ theorem rightSpectralBornWeight_sum
     _ = bornTracePairing ρ.matrix F (1 : Matrix dB dB ℂ) := by
       rw [positiveMatrixSpectralAtom_sum]
 
-theorem rightSpectralBornWeight_moment
+lemma rightSpectralBornWeight_moment
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -19273,7 +19273,7 @@ theorem rightSpectralBornWeight_moment
         ring
     _ = bornTracePairing ρ.matrix F G := h.symm
 
-theorem rightSpectralBornWeight_entropy
+lemma rightSpectralBornWeight_entropy
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -19304,7 +19304,7 @@ theorem rightSpectralBornWeight_entropy
       unfold rightSpectralBornWeight
       ring
 
-theorem rightSpectralBornWeight_negEntropy
+lemma rightSpectralBornWeight_negEntropy
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -19322,7 +19322,7 @@ theorem rightSpectralBornWeight_negEntropy
   intro i _
   simp [Real.negMulLog]
 
-theorem bornTracePairing_le_one_one
+lemma bornTracePairing_le_one_one
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -19343,7 +19343,7 @@ theorem bornTracePairing_le_one_one
   rw [hdiff, bornTracePairing_one_one] at hpositive
   linarith
 
-theorem matrixLogEntropy_born_lower_bound_right
+lemma matrixLogEntropy_born_lower_bound_right
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -19463,7 +19463,7 @@ def fullSubsetHistoryFieldEquiv
     rcases t with ⟨q, x, y⟩
     simp
 
-theorem fullHistoryWeight_sum
+lemma fullHistoryWeight_sum
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n)) :
     (∑ h : FullSubsetHistory X Y n D L,
@@ -19540,7 +19540,7 @@ theorem fullHistoryWeight_sum
       rw [← Finset.sum_mul]
     _ = 1 := by rw [hD, hL, hR]; norm_num
 
-theorem fullHistoryWinIndicator_le_one
+lemma fullHistoryWinIndicator_le_one
     (G : Game X Y A B) {n : ℕ}
     {D L : Finset (Fin n)}
     (h : FullSubsetHistory X Y n D L)
@@ -19572,7 +19572,7 @@ def fullHistoryAnswerCount
   (Fintype.card ({i : Fin n // i ∈ D} → A) : ℝ) *
     (Fintype.card ({i : Fin n // i ∈ D} → B) : ℝ)
 
-theorem fullHistoryAnswerCount_eq
+lemma fullHistoryAnswerCount_eq
     {A B : Type*} [Fintype A] [Fintype B]
     {n : ℕ} (D : Finset (Fin n)) :
     fullHistoryAnswerCount (A := A) (B := B) D =
@@ -19605,7 +19605,7 @@ def fullHistoryAtomBornMass
     (fullHistoryAliceFilter G n S D L t.1 t.2.1)
     (fullHistoryBobFilter G n S D L t.1 t.2.2)
 
-theorem fullHistoryAtomCountingWeight_nonneg
+lemma fullHistoryAtomCountingWeight_nonneg
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n))
     (t : FullHistoryEntropyAtom X Y A B n D L) :
@@ -19613,7 +19613,7 @@ theorem fullHistoryAtomCountingWeight_nonneg
   exact mul_nonneg (fullHistoryWeight_nonneg G t.1)
     (fullHistoryWinIndicator_nonneg G t.1 t.2.1 t.2.2)
 
-theorem fullHistoryAtomBornMass_nonneg
+lemma fullHistoryAtomBornMass_nonneg
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     (D L : Finset (Fin n))
@@ -19623,7 +19623,7 @@ theorem fullHistoryAtomBornMass_nonneg
     ((fullHistoryAliceFilter_posSemidef G n S D L t.1 t.2.1).kronecker
       (fullHistoryBobFilter_posSemidef G n S D L t.1 t.2.2))
 
-theorem bornTracePairing_contractions_le_one
+lemma bornTracePairing_contractions_le_one
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -19645,7 +19645,7 @@ theorem bornTracePairing_contractions_le_one
   have hone := bornTracePairing_one_le_one ρ G hGcomplement
   linarith
 
-theorem fullHistoryAtomBornMass_le_one
+lemma fullHistoryAtomBornMass_le_one
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     (D L : Finset (Fin n))
@@ -19658,7 +19658,7 @@ theorem fullHistoryAtomBornMass_le_one
     (fullHistoryBobFilter_posSemidef G n S D L t.1 t.2.2)
     (fullHistoryBobFilter_complement_posSemidef G n S D L t.1 t.2.2)
 
-theorem fullHistoryAtomCountingWeight_sum_le
+lemma fullHistoryAtomCountingWeight_sum_le
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n)) :
     (∑ t : FullHistoryEntropyAtom X Y A B n D L,
@@ -19695,7 +19695,7 @@ theorem fullHistoryAtomCountingWeight_sum_le
       rw [fullHistoryWeight_sum G D L]
       ring
 
-theorem fullHistoryAtomBornMass_sum
+lemma fullHistoryAtomBornMass_sum
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
@@ -19711,7 +19711,7 @@ theorem fullHistoryAtomBornMass_sum
     Fintype.sum_prod_type] using
     fullSubsetHistory_mass_eq_postselection G n S D L hL
 
-theorem fullHistoryAtomEntropy_le
+lemma fullHistoryAtomEntropy_le
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
@@ -19760,7 +19760,7 @@ theorem fullHistoryAtomEntropy_le
     (fun t _ => fullHistoryAtomBornMass_nonneg G n S D L t)
     hW hp rfl hmass hbound
 
-theorem fullHistoryAliceEntropyPotential_lower_bound
+lemma fullHistoryAliceEntropyPotential_lower_bound
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
@@ -19819,7 +19819,7 @@ open scoped BigOperators
     {j : Fin n // j ∈ fullHistoryRemaining n D (insert i L)} → Y
   deriving Fintype
 
-theorem fullHistoryRemaining_insert_subset
+lemma fullHistoryRemaining_insert_subset
     {n : ℕ} (D L : Finset (Fin n)) (i : Fin n) :
     fullHistoryRemaining n D (insert i L) ⊆
       fullHistoryRemaining n D L := by
@@ -19970,7 +19970,7 @@ open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 set_option backward.isDefEq.respectTransparency false
 set_option maxHeartbeats 1000000
 
-theorem finsetSubtype_prod_insert
+lemma finsetSubtype_prod_insert
     {ι T : Type*} [DecidableEq ι] [CommMonoid T]
     (s : Finset ι) (i : ι) (hi : i ∉ s)
     (f : {j : ι // j ∈ insert i s} → T) :
@@ -20037,7 +20037,7 @@ def fullHistoryRemainingCoordinateEquiv
         simp [he]
       simp [hj]
 
-theorem fullHistoryRemaining_prod_split
+lemma fullHistoryRemaining_prod_split
     {n : ℕ} {T : Type*} [CommMonoid T]
     (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D) (hiL : i ∉ L)
@@ -20097,7 +20097,7 @@ def fullCoordinateBaseWeight
       j ∈ fullHistoryRemaining n D (insert i L)},
     G.marginalY (h.bobRemaining j))
 
-theorem fullCoordinateBaseWeight_nonneg
+lemma fullCoordinateBaseWeight_nonneg
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n)) (i : Fin n)
     (h : FullCoordinateRevealHistory X Y n D L i) :
@@ -20111,7 +20111,7 @@ theorem fullCoordinateBaseWeight_nonneg
         G.marginalX_nonneg (h.aliceRevealed j)))
     (Finset.prod_nonneg fun j _ => G.marginalY_nonneg (h.bobRemaining j))
 
-theorem fullCoordinateOldHistory_weight
+lemma fullCoordinateOldHistory_weight
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D) (hiL : i ∉ L)
@@ -20145,7 +20145,7 @@ theorem fullCoordinateOldHistory_weight
   simp [fullCoordinateOldHistory]
   ring
 
-theorem fullCoordinateNewHistory_weight
+lemma fullCoordinateNewHistory_weight
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n)) (i : Fin n)
     (hiL : i ∉ L)
@@ -20190,7 +20190,7 @@ set_option backward.isDefEq.respectTransparency false
 
 attribute [local instance] Matrix.normedAddCommGroup Matrix.normedSpace
 
-theorem finitePurificationMatrix_pair_difference_gram_apply
+lemma finitePurificationMatrix_pair_difference_gram_apply
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (F : ι → Matrix d d ℂ) (M : Matrix d d ℂ)
     (positive : ∀ i, (F i).PosSemidef)
@@ -20223,7 +20223,7 @@ theorem finitePurificationMatrix_pair_difference_gram_apply
   rw [← hisometry, EuclideanSpace.inner_eq_star_dotProduct]
   simp [dotProduct, map_sub, mul_comm]
 
-theorem ensemblePurificationSubspaceEntry_pair_difference_inner_eq_integral
+lemma ensemblePurificationSubspaceEntry_pair_difference_inner_eq_integral
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (F : ι → Matrix d d ℂ) (M : Matrix d d ℂ)
     (positive : ∀ i, (F i).PosSemidef)
@@ -20276,7 +20276,7 @@ theorem ensemblePurificationSubspaceEntry_pair_difference_inner_eq_integral
   rw [hfi', hgi', hfj', hgj']
   simp [RCLike.inner_apply, mul_comm]
 
-theorem finitePurificationMatrix_pair_difference_gram_eq_integral
+lemma finitePurificationMatrix_pair_difference_gram_eq_integral
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (F : ι → Matrix d d ℂ) (M : Matrix d d ℂ)
     (positive : ∀ i, (F i).PosSemidef)
@@ -20338,7 +20338,7 @@ open WithLp
 open scoped BigOperators ComplexOrder Kronecker MatrixOrder
   Matrix.Norms.L2Operator InnerProductSpace
 
-theorem finiteLocalPurificationVector_sub_left
+lemma finiteLocalPurificationVector_sub_left
     {X Y A B eA eB : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype eA] [Fintype eB]
@@ -20358,7 +20358,7 @@ theorem finiteLocalPurificationVector_sub_left
   unfold finiteLocalPurificationVector
   rw [← WithLp.toLp_sub, ← Matrix.sub_mulVec, hmatrix]
 
-theorem finiteLocalPurificationVector_sub_right
+lemma finiteLocalPurificationVector_sub_right
     {X Y A B eA eB : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype eA] [Fintype eB]
@@ -20378,7 +20378,7 @@ theorem finiteLocalPurificationVector_sub_right
   unfold finiteLocalPurificationVector
   rw [← WithLp.toLp_sub, ← Matrix.sub_mulVec, hmatrix]
 
-theorem finiteLocalPurificationVector_sub_left_norm_sq
+lemma finiteLocalPurificationVector_sub_left_norm_sq
     {X Y A B eA eB : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype eA] [Fintype eB]
@@ -20394,7 +20394,7 @@ theorem finiteLocalPurificationVector_sub_left_norm_sq
     finiteLocalPurificationVector_norm_sq]
   rfl
 
-theorem finiteLocalPurificationVector_sub_right_norm_sq
+lemma finiteLocalPurificationVector_sub_right_norm_sq
     {X Y A B eA eB : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype eA] [Fintype eB]
@@ -20567,7 +20567,7 @@ section CoordinateFilters
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem fullCoordinateAliceQuestion_eq
+lemma fullCoordinateAliceQuestion_eq
     {n : ℕ} (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D) (hiL : i ∉ L)
     (r : FullCoordinateRevealHistory X Y n D L i)
@@ -20600,7 +20600,7 @@ theorem fullCoordinateAliceQuestion_eq
           fullCoordinateAssembleHiddenAlice,
                     hjD, hjL, hji]
 
-theorem fullCoordinateBobQuestion_eq
+lemma fullCoordinateBobQuestion_eq
     {n : ℕ} (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D) (hiL : i ∉ L)
     (r : FullCoordinateRevealHistory X Y n D L i)
@@ -20632,7 +20632,7 @@ theorem fullCoordinateBobQuestion_eq
                     fullCoordinateOldHistory, fullCoordinateNewHistory,
           hjD, hjL, hji]
 
-theorem fullCoordinateHiddenAliceWeight_split
+lemma fullCoordinateHiddenAliceWeight_split
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D) (hiL : i ∉ L)
@@ -20663,7 +20663,7 @@ theorem fullCoordinateHiddenAliceWeight_split
   simp [fullCoordinateNewHistory,
     hj]
 
-theorem fullCoordinateHiddenBobWeight_split
+lemma fullCoordinateHiddenBobWeight_split
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n)) (i : Fin n)
     (hiL : i ∉ L)
@@ -20689,7 +20689,7 @@ theorem fullCoordinateHiddenBobWeight_split
     exact hiL (he ▸ j.property)
   simp [fullCoordinateOldHistory,     hj]
 
-theorem fullCoordinateAliceFilter_conditional_mean
+lemma fullCoordinateAliceFilter_conditional_mean
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D) (hiL : i ∉ L)
@@ -20738,7 +20738,7 @@ theorem fullCoordinateAliceFilter_conditional_mean
       simp [f, conditionalAliceAverage, fullHistoryAliceFilter,
         Fintype.sum_prod_type, Finset.smul_sum, smul_smul]
 
-theorem fullCoordinateBobFilter_conditional_mean
+lemma fullCoordinateBobFilter_conditional_mean
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D) (hiL : i ∉ L)
@@ -20787,7 +20787,7 @@ theorem fullCoordinateBobFilter_conditional_mean
 
 end CoordinateFilters
 
-theorem matrixLogEntropy_weighted_jensen_posSemidef
+lemma matrixLogEntropy_weighted_jensen_posSemidef
     {ι d : Type*} [Fintype ι] [Fintype d] [DecidableEq d]
     (weight : ι → ℝ) (F : ι → Matrix d d ℂ)
     (M : Matrix d d ℂ)
@@ -20833,7 +20833,7 @@ section ConditionalJensen
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem conditionalAlice_matrixLogEntropy_gap_posSemidef
+lemma conditionalAlice_matrixLogEntropy_gap_posSemidef
     {d : Type*} [Fintype d] [DecidableEq d]
     (G : Game X Y A B)
     (H : X → Matrix d d ℂ)
@@ -20865,7 +20865,7 @@ def fullCoordinateAliceEntropyIncrement
           (fullCoordinateAliceMeanFilter G n S D L i r α y))
       (fullCoordinateBobQuestionFilter G n S D L i r β y)
 
-theorem fullCoordinateAliceEntropyIncrement_eq
+lemma fullCoordinateAliceEntropyIncrement_eq
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D) (hiL : i ∉ L)
@@ -20893,7 +20893,7 @@ theorem fullCoordinateAliceEntropyIncrement_eq
     G n S D L i hiD hiL r β] at h
   exact h
 
-theorem fullCoordinateAliceEntropyIncrement_nonneg
+lemma fullCoordinateAliceEntropyIncrement_nonneg
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D) (hiL : i ∉ L)
@@ -20954,7 +20954,7 @@ def fullCoordinateBaseWinIndicator
     G.predicate (r.aliceConditioned j) (r.bobConditioned j)
       (α j) (β j) = true then 1 else 0
 
-theorem fullCoordinateBaseWinIndicator_nonneg
+lemma fullCoordinateBaseWinIndicator_nonneg
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n)) (i : Fin n)
     (r : FullCoordinateRevealHistory X Y n D L i)
@@ -20965,7 +20965,7 @@ theorem fullCoordinateBaseWinIndicator_nonneg
   unfold fullCoordinateBaseWinIndicator
   split <;> norm_num
 
-theorem fullCoordinateOldHistory_winIndicator_eq
+lemma fullCoordinateOldHistory_winIndicator_eq
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n)) (i : Fin n)
     (r : FullCoordinateRevealHistory X Y n D L i)
@@ -20979,7 +20979,7 @@ theorem fullCoordinateOldHistory_winIndicator_eq
   simp [fullHistoryWinIndicator, fullCoordinateBaseWinIndicator,
     fullCoordinateOldHistory]
 
-theorem fullCoordinateNewHistory_winIndicator_eq
+lemma fullCoordinateNewHistory_winIndicator_eq
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n)) (i : Fin n)
     (r : FullCoordinateRevealHistory X Y n D L i)
@@ -20993,7 +20993,7 @@ theorem fullCoordinateNewHistory_winIndicator_eq
   simp [fullHistoryWinIndicator, fullCoordinateBaseWinIndicator,
     fullCoordinateNewHistory]
 
-theorem fullCoordinate_three_sum_rotate
+lemma fullCoordinate_three_sum_rotate
     {I J K T : Type*}
     [Fintype I] [Fintype J] [Fintype K] [AddCommMonoid T]
     (f : I → J → K → T) :
@@ -21008,7 +21008,7 @@ theorem fullCoordinate_three_sum_rotate
       intro j _
       rw [Finset.sum_comm]
 
-theorem fullCoordinateOldHistory_sum
+lemma fullCoordinateOldHistory_sum
     {T : Type*} [AddCommMonoid T]
     {n : ℕ} (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D) (hiL : i ∉ L)
@@ -21021,7 +21021,7 @@ theorem fullCoordinateOldHistory_sum
     using ((fullCoordinateOldHistoryEquiv
       (X := X) (Y := Y) D L i hiD hiL).symm.sum_comp f).symm
 
-theorem fullCoordinateNewHistory_sum
+lemma fullCoordinateNewHistory_sum
     {T : Type*} [AddCommMonoid T]
     {n : ℕ} (D L : Finset (Fin n)) (i : Fin n)
     (hiL : i ∉ L)
@@ -21034,7 +21034,7 @@ theorem fullCoordinateNewHistory_sum
     using ((fullCoordinateNewHistoryEquiv
       (X := X) (Y := Y) D L i hiL).symm.sum_comp f).symm
 
-theorem fullCoordinateWeightedOldSum
+lemma fullCoordinateWeightedOldSum
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D) (hiL : i ∉ L)
@@ -21088,7 +21088,7 @@ theorem fullCoordinateWeightedOldSum
         fullCoordinateOldHistory_winIndicator_eq G D L i r y α β]
       ring
 
-theorem fullCoordinateWeightedNewSum
+lemma fullCoordinateWeightedNewSum
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n)) (i : Fin n)
     (hiL : i ∉ L)
@@ -21152,7 +21152,7 @@ def fullCoordinateAliceTotalEntropyIncrement
       fullCoordinateBaseWinIndicator G D L i r α β *
       fullCoordinateAliceEntropyIncrement G n S D L i r α β
 
-theorem fullHistoryAliceEntropyPotential_increment
+lemma fullHistoryAliceEntropyPotential_increment
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D) (hiL : i ∉ L) :
@@ -21186,7 +21186,7 @@ theorem fullHistoryAliceEntropyPotential_increment
   exact fullCoordinateAliceEntropyIncrement_eq
     G n S D L i hiD hiL r α β
 
-theorem fullCoordinateAliceTotalEntropyIncrement_nonneg
+lemma fullCoordinateAliceTotalEntropyIncrement_nonneg
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D) (hiL : i ∉ L) :
@@ -21232,7 +21232,7 @@ def sourceRemainingPermutationCoordinate
     (k : Fin (Finset.univ \ D).card) : Fin n :=
   (sourceRemainingPermutationCoordinateSubtype D π k).val
 
-@[simp] theorem sourceRemainingPermutationRank_coordinate
+@[simp] lemma sourceRemainingPermutationRank_coordinate
     {n : ℕ} (D : Finset (Fin n))
     (π : SourceRemainingPermutation D)
     (k : Fin (Finset.univ \ D).card) :
@@ -21240,7 +21240,7 @@ def sourceRemainingPermutationCoordinate
       (sourceRemainingPermutationCoordinateSubtype D π k) = k := by
   simp [sourceRemainingPermutationCoordinateSubtype]
 
-theorem sourceRemainingPermutationCoordinate_not_mem
+lemma sourceRemainingPermutationCoordinate_not_mem
     {n : ℕ} (D : Finset (Fin n))
     (π : SourceRemainingPermutation D)
     (k : Fin (Finset.univ \ D).card) :
@@ -21265,7 +21265,7 @@ def sourceRemainingPermutationPrefix
   exact (sourceRemainingPermutationPrefixSubtype D π k).image
     (fun i : SourceRemainingCoordinate D => i.val)
 
-theorem sourceRemainingPermutationPrefix_subset
+lemma sourceRemainingPermutationPrefix_subset
     {n : ℕ} (D : Finset (Fin n))
     (π : SourceRemainingPermutation D)
     (k : Fin ((Finset.univ \ D).card + 1)) :
@@ -21275,7 +21275,7 @@ theorem sourceRemainingPermutationPrefix_subset
   obtain ⟨j, _, hj⟩ := Finset.mem_image.mp hi
   simpa [hj] using j.property
 
-theorem sourceRemainingPermutationCoordinate_not_mem_prefix
+lemma sourceRemainingPermutationCoordinate_not_mem_prefix
     {n : ℕ} (D : Finset (Fin n))
     (π : SourceRemainingPermutation D)
     (k : Fin (Finset.univ \ D).card) :
@@ -21291,7 +21291,7 @@ theorem sourceRemainingPermutationCoordinate_not_mem_prefix
   have hlt := (Finset.mem_filter.mp hj).2
   simp at hlt
 
-theorem sourceRemainingPermutationPrefixSubtype_succ
+lemma sourceRemainingPermutationPrefixSubtype_succ
     {n : ℕ} (D : Finset (Fin n))
     (π : SourceRemainingPermutation D)
     (k : Fin (Finset.univ \ D).card) :
@@ -21323,7 +21323,7 @@ theorem sourceRemainingPermutationPrefixSubtype_succ
       simp
     · omega
 
-theorem sourceRemainingPermutationPrefix_succ
+lemma sourceRemainingPermutationPrefix_succ
     {n : ℕ} (D : Finset (Fin n))
     (π : SourceRemainingPermutation D)
     (k : Fin (Finset.univ \ D).card) :
@@ -21336,7 +21336,7 @@ theorem sourceRemainingPermutationPrefix_succ
     Finset.image_insert]
   rfl
 
-@[simp] theorem sourceRemainingPermutationPrefix_zero
+@[simp] lemma sourceRemainingPermutationPrefix_zero
     {n : ℕ} (D : Finset (Fin n))
     (π : SourceRemainingPermutation D) :
     sourceRemainingPermutationPrefix D π 0 = ∅ := by
@@ -21344,7 +21344,7 @@ theorem sourceRemainingPermutationPrefix_succ
   simp [sourceRemainingPermutationPrefix,
     sourceRemainingPermutationPrefixSubtype]
 
-@[simp] theorem sourceRemainingPermutationPrefix_last
+@[simp] lemma sourceRemainingPermutationPrefix_last
     {n : ℕ} (D : Finset (Fin n))
     (π : SourceRemainingPermutation D) :
     sourceRemainingPermutationPrefix D π
@@ -21363,7 +21363,7 @@ theorem sourceRemainingPermutationPrefix_succ
       (sourceRemainingPermutationRank D π
         (⟨i, hi⟩ : SourceRemainingCoordinate D)).isLt⟩
 
-theorem sourceRemainingPermutationCoordinate_sum
+lemma sourceRemainingPermutationCoordinate_sum
     {T : Type*} [AddCommMonoid T]
     {n : ℕ} (D : Finset (Fin n))
     (π : SourceRemainingPermutation D)
@@ -21375,7 +21375,7 @@ theorem sourceRemainingPermutationCoordinate_sum
   exact (sourceRemainingPermutationRank D π).symm.sum_comp
     (fun i : SourceRemainingCoordinate D => f i.val)
 
-theorem fin_sum_successive_sub
+lemma fin_sum_successive_sub
     {m : ℕ} (f : Fin (m + 1) → ℝ) :
     (∑ k : Fin m, (f k.succ - f k.castSucc)) =
       f (Fin.last m) - f 0 := by
@@ -21397,7 +21397,7 @@ def sourcePermutationAliceEntropyIncrement
     (sourceRemainingPermutationPrefix D π k.castSucc)
     (sourceRemainingPermutationCoordinate D π k)
 
-theorem sourcePermutationAliceEntropyIncrement_nonneg
+lemma sourcePermutationAliceEntropyIncrement_nonneg
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (π : SourceRemainingPermutation D)
     (k : Fin (Finset.univ \ D).card) :
@@ -21406,7 +21406,7 @@ theorem sourcePermutationAliceEntropyIncrement_nonneg
   · exact sourceRemainingPermutationCoordinate_not_mem D π k
   · exact sourceRemainingPermutationCoordinate_not_mem_prefix D π k
 
-theorem sourcePermutationAliceEntropyPotential_step
+lemma sourcePermutationAliceEntropyPotential_step
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (π : SourceRemainingPermutation D)
     (k : Fin (Finset.univ \ D).card) :
@@ -21422,7 +21422,7 @@ theorem sourcePermutationAliceEntropyPotential_step
     (sourceRemainingPermutationCoordinate_not_mem D π k)
     (sourceRemainingPermutationCoordinate_not_mem_prefix D π k)
 
-theorem sourcePermutationAliceEntropyIncrement_sum
+lemma sourcePermutationAliceEntropyIncrement_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (π : SourceRemainingPermutation D) :
     (∑ k : Fin (Finset.univ \ D).card,
@@ -21450,7 +21450,7 @@ theorem sourcePermutationAliceEntropyIncrement_sum
           (sourceRemainingPermutationPrefix D π k))
     _ = _ := by simp
 
-theorem sourcePermutationAliceEntropyIncrement_sum_le
+lemma sourcePermutationAliceEntropyIncrement_sum_le
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (hp : 0 < (strategyEventLaw (G.repeat n) S).eventMass
@@ -21481,7 +21481,7 @@ def sourceUniformPermutationAverage
     ((Fintype.card (SourceRemainingPermutation D) : ℝ) *
       ((Finset.univ \ D).card : ℝ))
 
-theorem sourceRemainingPermutation_card_pos
+lemma sourceRemainingPermutation_card_pos
     {n : ℕ} (D : Finset (Fin n)) :
     0 < (Fintype.card (SourceRemainingPermutation D) : ℝ) := by
   classical
@@ -21489,7 +21489,7 @@ theorem sourceRemainingPermutation_card_pos
     ⟨Equiv.refl (SourceRemainingCoordinate D)⟩ :
       0 < Fintype.card (SourceRemainingPermutation D))
 
-theorem sourceUniformPermutationAverage_le
+lemma sourceUniformPermutationAverage_le
     {n : ℕ} (D : Finset (Fin n))
     (hm : 0 < (Finset.univ \ D).card)
     (f : SourceRemainingPermutation D →
@@ -21533,7 +21533,7 @@ theorem sourceUniformPermutationAverage_le
     _ = C / ((Finset.univ \ D).card : ℝ) :=
       mul_div_mul_left C ((Finset.univ \ D).card : ℝ) hperm.ne'
 
-theorem sourceUniformPermutationAverage_nonneg
+lemma sourceUniformPermutationAverage_nonneg
     {n : ℕ} (D : Finset (Fin n))
     (f : SourceRemainingPermutation D →
       Fin (Finset.univ \ D).card → ℝ)
@@ -21547,7 +21547,7 @@ theorem sourceUniformPermutationAverage_nonneg
       (Nat.cast_nonneg (Fintype.card (SourceRemainingPermutation D)))
       (Nat.cast_nonneg (Finset.univ \ D).card)
 
-theorem sourceUniformPermutationAliceEntropyBudget
+lemma sourceUniformPermutationAliceEntropyBudget
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (hm : 0 < (Finset.univ \ D).card)
@@ -21586,13 +21586,13 @@ def exactRight
     (coordinate : M) (partition : M → Bool) : Finset M :=
   Finset.univ.filter fun j => j ≠ coordinate ∧ partition j = true
 
-theorem exactLeft_coordinate_not_mem
+lemma exactLeft_coordinate_not_mem
     {M : Type*} [Fintype M] [DecidableEq M]
     (coordinate : M) (partition : M → Bool) :
     coordinate ∉ exactLeft coordinate partition := by
   simp [exactLeft]
 
-theorem exactRight_coordinate_not_mem
+lemma exactRight_coordinate_not_mem
     {M : Type*} [Fintype M] [DecidableEq M]
     (coordinate : M) (partition : M → Bool) :
     coordinate ∉ exactRight coordinate partition := by
@@ -21648,7 +21648,7 @@ def exactRightPrefix
       (exactRightRank seed j).val < seed.rightCut.val)).image
         Subtype.val
 
-theorem exactLeftPrefix_subset
+lemma exactLeftPrefix_subset
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     exactLeftPrefix seed ⊆
@@ -21657,7 +21657,7 @@ theorem exactLeftPrefix_subset
   obtain ⟨a, _, ha⟩ := Finset.mem_image.mp hj
   exact ha ▸ a.property
 
-theorem exactRightPrefix_subset
+lemma exactRightPrefix_subset
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     exactRightPrefix seed ⊆
@@ -21684,7 +21684,7 @@ def exactSeedWeight
     (1 / ((exactRight
       seed.coordinate seed.partition).card + 1 : ℝ))
 
-theorem exactSeedWeight_nonneg
+lemma exactSeedWeight_nonneg
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     0 ≤ exactSeedWeight seed := by
@@ -21715,7 +21715,7 @@ def exactSeedEquiv
       leftCut, rightCut⟩
     rfl
 
-@[simp] theorem exactSeedEquiv_symm_apply
+@[simp] lemma exactSeedEquiv_symm_apply
     {M : Type*} [Fintype M] [DecidableEq M]
     (t : ExactSeedTuple M) :
     (exactSeedEquiv M).symm t =
@@ -21723,7 +21723,7 @@ def exactSeedEquiv
         t.2.2.2.2.1, t.2.2.2.2.2⟩ := by
   rfl
 
-theorem exactForwardSeed_sum
+lemma exactForwardSeed_sum
     {M : Type*} [Fintype M] [DecidableEq M]
     (f : ExactForwardSeed M → ℝ) :
     (∑ seed : ExactForwardSeed M, f seed) =
@@ -21746,7 +21746,7 @@ theorem exactForwardSeed_sum
       simp [Fintype.sum_sigma, Fintype.sum_prod_type,
         exactSeedEquiv_symm_apply]
 
-theorem exactUniform_sum
+lemma exactUniform_sum
     {T : Type*} [Fintype T]
     (positive : 0 < Fintype.card T) :
     (∑ _t : T, (1 / (Fintype.card T : ℝ))) = 1 := by
@@ -21755,7 +21755,7 @@ theorem exactUniform_sum
   simp only [Finset.sum_const, Finset.card_univ, nsmul_eq_mul]
   field_simp [hcard]
 
-theorem exactUniform_sum_mul
+lemma exactUniform_sum_mul
     {T : Type*} [Fintype T]
     (positive : 0 < Fintype.card T) (value : ℝ) :
     (∑ _t : T,
@@ -21763,7 +21763,7 @@ theorem exactUniform_sum_mul
   rw [← Finset.mul_sum, exactUniform_sum positive]
   ring
 
-theorem exactPrefixUniform_sum_mul
+lemma exactPrefixUniform_sum_mul
     (m : ℕ) (value : ℝ) :
     (∑ _k : Fin (m + 1),
       value * (1 / ((m : ℝ) + 1))) = value := by
@@ -21771,7 +21771,7 @@ theorem exactPrefixUniform_sum_mul
     (exactUniform_sum_mul
       (T := Fin (m + 1)) (by simp) value)
 
-theorem exactPermutationUniform_sum_mul
+lemma exactPermutationUniform_sum_mul
     {T : Type*} [Fintype T] (value : ℝ) :
     (∑ _π : Equiv.Perm T,
       value * (1 / (Fintype.card (Equiv.Perm T) : ℝ))) = value := by
@@ -21788,7 +21788,7 @@ open scoped BigOperators ComplexOrder Kronecker MatrixOrder
 
 set_option backward.isDefEq.respectTransparency false
 
-theorem common_finite_purification_pair_jensen
+lemma common_finite_purification_pair_jensen
     {ι κ d : Type*}
     [Fintype ι] [Fintype κ] [Fintype d] [DecidableEq d]
     (weight : ι → ℝ)
@@ -21848,7 +21848,7 @@ theorem common_finite_purification_pair_jensen
   simp_rw [hpair]
   exact hlocal
 
-theorem commonFinitePurification_weighted_left_variation_le
+lemma commonFinitePurification_weighted_left_variation_le
     {X Y A B ι κ eB : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype ι] [Fintype κ] [Fintype eB]
@@ -21926,7 +21926,7 @@ theorem commonFinitePurification_weighted_left_variation_le
   rw [hsum] at hnonneg
   linarith
 
-theorem commonFinitePurification_weighted_right_variation_le
+lemma commonFinitePurification_weighted_right_variation_le
     {X Y A B ι κ eA : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype ι] [Fintype κ] [Fintype eA]
@@ -21996,7 +21996,7 @@ open WithLp
 open scoped BigOperators ComplexOrder Kronecker MatrixOrder
   Matrix.Norms.L2Operator InnerProductSpace
 
-theorem rectangular_matrix_quadratic_compression
+lemma rectangular_matrix_quadratic_compression
     {d e : Type*}
     [Fintype d] [Fintype e] [DecidableEq d] [DecidableEq e]
     (K : Matrix e d ℂ) (E : Matrix e e ℂ)
@@ -22022,7 +22022,7 @@ theorem rectangular_matrix_quadratic_compression
     Matrix.mulVec_mulVec]
   rw [dotProduct_comm]
 
-theorem finiteLocalPurificationJointMatrix_compression
+lemma finiteLocalPurificationJointMatrix_compression
     {X Y A B eA eB : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype eA] [Fintype eB]
@@ -22048,7 +22048,7 @@ theorem finiteLocalPurificationJointMatrix_compression
     ← Matrix.mul_kronecker_mul]
   simp
 
-theorem finiteLocalPurificationVector_quadratic
+lemma finiteLocalPurificationVector_quadratic
     {X Y A B eA eB : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype eA] [Fintype eB]
@@ -22110,7 +22110,7 @@ def conditionedBobCoordinateEffect
     then (S.bobMeasurement ys).effect answers
     else 0
 
-theorem conditionedAliceCoordinateEffect_posSemidef
+lemma conditionedAliceCoordinateEffect_posSemidef
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (α : {j : Fin n // j ∈ D} → A)
@@ -22124,7 +22124,7 @@ theorem conditionedAliceCoordinateEffect_posSemidef
   · exact (S.aliceMeasurement xs).positive answers
   · exact Matrix.PosSemidef.zero
 
-theorem conditionedBobCoordinateEffect_posSemidef
+lemma conditionedBobCoordinateEffect_posSemidef
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (β : {j : Fin n // j ∈ D} → B)
@@ -22138,7 +22138,7 @@ theorem conditionedBobCoordinateEffect_posSemidef
   · exact (S.bobMeasurement ys).positive answers
   · exact Matrix.PosSemidef.zero
 
-theorem conditionedAliceCoordinateEffect_sum
+lemma conditionedAliceCoordinateEffect_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (α : {j : Fin n // j ∈ D} → A)
@@ -22165,7 +22165,7 @@ theorem conditionedAliceCoordinateEffect_sum
         simp [ha.symm]
     _ = _ := by simp
 
-theorem conditionedBobCoordinateEffect_sum
+lemma conditionedBobCoordinateEffect_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (β : {j : Fin n // j ∈ D} → B)
@@ -22329,13 +22329,13 @@ def exactPriorQuestionWeight
     (q : ExactFullQuestion X Y n) : ℝ :=
   (G.repeat n).questionWeight q.1 q.2
 
-theorem exactPriorQuestionWeight_nonneg
+lemma exactPriorQuestionWeight_nonneg
     (G : Game X Y A B) (n : ℕ)
     (q : ExactFullQuestion X Y n) :
     0 ≤ exactPriorQuestionWeight G n q :=
   (G.repeat n).weight_nonneg q.1 q.2
 
-theorem exactPriorQuestionWeight_sum
+lemma exactPriorQuestionWeight_sum
     (G : Game X Y A B) (n : ℕ) :
     (∑ q : ExactFullQuestion X Y n,
       exactPriorQuestionWeight G n q) = 1 := by
@@ -22352,7 +22352,7 @@ def exactRevealMass
     then exactPriorQuestionWeight G n q
     else 0
 
-theorem exactRevealMass_nonneg
+lemma exactRevealMass_nonneg
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -22365,7 +22365,7 @@ theorem exactRevealMass_nonneg
   · exact exactPriorQuestionWeight_nonneg G n q
   · exact le_rfl
 
-theorem exactRevealMass_sum
+lemma exactRevealMass_sum
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D) :
@@ -22414,7 +22414,7 @@ def exactJointQuestionMass
     then exactPriorQuestionWeight G n q
     else 0
 
-theorem exactAliceQuestionMass_nonneg
+lemma exactAliceQuestionMass_nonneg
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -22428,7 +22428,7 @@ theorem exactAliceQuestionMass_nonneg
   · exact exactPriorQuestionWeight_nonneg G n q
   · exact le_rfl
 
-theorem exactBobQuestionMass_nonneg
+lemma exactBobQuestionMass_nonneg
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -22474,7 +22474,7 @@ def exactBobQuestionFilter
         conditionedBobEffect G n S D answer q.2
     else 0
 
-theorem exactAliceQuestionFilter_posSemidef
+lemma exactAliceQuestionFilter_posSemidef
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -22494,7 +22494,7 @@ theorem exactAliceQuestionFilter_posSemidef
           G n D seed history x))
   · exact Matrix.PosSemidef.zero
 
-theorem exactBobQuestionFilter_posSemidef
+lemma exactBobQuestionFilter_posSemidef
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -22534,7 +22534,7 @@ def exactBobMeanFilter
   ∑ y : Y, G.conditionalYGivenX x y •
     exactBobQuestionFilter G n S D seed history answer y
 
-theorem exactAliceMeanFilter_posSemidef
+lemma exactAliceMeanFilter_posSemidef
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -22550,7 +22550,7 @@ theorem exactAliceMeanFilter_posSemidef
     G n S D seed history answer x).smul
     (G.conditionalXGivenY_nonneg y x)
 
-theorem exactBobMeanFilter_posSemidef
+lemma exactBobMeanFilter_posSemidef
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -22600,7 +22600,7 @@ def exactBobCoordinateFilter
           seed.coordinate.val b
     else 0
 
-theorem exactAliceCoordinateFilter_posSemidef
+lemma exactAliceCoordinateFilter_posSemidef
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -22621,7 +22621,7 @@ theorem exactAliceCoordinateFilter_posSemidef
           G n D seed history x))
   · exact Matrix.PosSemidef.zero
 
-theorem exactBobCoordinateFilter_posSemidef
+lemma exactBobCoordinateFilter_posSemidef
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -22642,7 +22642,7 @@ theorem exactBobCoordinateFilter_posSemidef
           G n D seed history y))
   · exact Matrix.PosSemidef.zero
 
-theorem exactAliceCoordinateFilter_sum
+lemma exactAliceCoordinateFilter_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -22666,7 +22666,7 @@ theorem exactAliceCoordinateFilter_sum
       conditionedAliceCoordinateEffect_sum]
   · simp [hq]
 
-theorem exactBobCoordinateFilter_sum
+lemma exactBobCoordinateFilter_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -22712,7 +22712,7 @@ def exactBobPurificationFamily
     (exactBobQuestionFilter G n S D seed history answer)
     (exactBobMeanFilter G n S D seed history answer)
 
-theorem exactAlicePurificationFamily_posSemidef
+lemma exactAlicePurificationFamily_posSemidef
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -22729,7 +22729,7 @@ theorem exactAlicePurificationFamily_posSemidef
       exact exactAliceMeanFilter_posSemidef
         G n S D seed history answer y
 
-theorem exactBobPurificationFamily_posSemidef
+lemma exactBobPurificationFamily_posSemidef
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -22810,7 +22810,7 @@ def exactBobPurificationMatrix
       G n S D seed history answer)
     Matrix.PosSemidef.zero q
 
-theorem exactAlicePurificationMatrix_gram
+lemma exactAlicePurificationMatrix_gram
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -22831,7 +22831,7 @@ theorem exactAlicePurificationMatrix_gram
       G n S D seed history answer)
     Matrix.PosSemidef.zero q
 
-theorem exactBobPurificationMatrix_gram
+lemma exactBobPurificationMatrix_gram
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -22889,7 +22889,7 @@ noncomputable instance exactHistoryFlagFintype
     (exactHistoryFlagEquiv
       (X := X) (Y := Y) (A := A) (B := B) D).symm
 
-theorem exactHistoryFlag_sum
+lemma exactHistoryFlag_sum
     {n : ℕ} (D : Finset (Fin n))
     (f : ExactHistoryFlag X Y A B D → ℝ) :
     (∑ r : ExactHistoryFlag X Y A B D, f r) =
@@ -22966,7 +22966,7 @@ def exactUnnormalizedGamma
     (exactBobPurificationMatrix
       G n S D r.seed r.history r.bobAnswer (.inr x))
 
-theorem exactUnnormalizedPsi_norm_sq
+lemma exactUnnormalizedPsi_norm_sq
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -22983,7 +22983,7 @@ theorem exactUnnormalizedPsi_norm_sq
     exactBobPurificationMatrix_gram]
   rfl
 
-theorem exactAliceQuestionPurificationMatrix_gram
+lemma exactAliceQuestionPurificationMatrix_gram
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -22997,7 +22997,7 @@ theorem exactAliceQuestionPurificationMatrix_gram
   exactAlicePurificationMatrix_gram
     G n S D r.seed r.history r.aliceAnswer (.inl x)
 
-theorem exactBobQuestionPurificationMatrix_gram
+lemma exactBobQuestionPurificationMatrix_gram
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -23059,7 +23059,7 @@ def exactBobRefinedPOVM
       G n S D r.seed r.history r.bobAnswer y)
     b₀
 
-theorem exactAliceRefinedPOVM_compression
+lemma exactAliceRefinedPOVM_compression
     [DecidableEq A]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
@@ -23088,7 +23088,7 @@ theorem exactAliceRefinedPOVM_compression
       G n S D r.seed r.history r.aliceAnswer x)
     a₀ a
 
-theorem exactBobRefinedPOVM_compression
+lemma exactBobRefinedPOVM_compression
     [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
@@ -23117,7 +23117,7 @@ theorem exactBobRefinedPOVM_compression
       G n S D r.seed r.history r.bobAnswer y)
     b₀ b
 
-theorem exactRefinedPOVM_quadratic
+lemma exactRefinedPOVM_quadratic
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
@@ -23168,7 +23168,7 @@ def exactPaddedVector
     | .inr (.inl a), .inr (.inr b) => z (a, b)
     | _, _ => 0
 
-theorem exactPaddedVector_norm
+lemma exactPaddedVector_norm
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -23184,7 +23184,7 @@ theorem exactPaddedVector_norm
   nlinarith [norm_nonneg (exactPaddedVector G n S D r z),
     norm_nonneg z]
 
-theorem exactPaddedVector_sub
+lemma exactPaddedVector_sub
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -23211,7 +23211,7 @@ def exactPaddedDefault
   classical
   exact PiLp.single 2 (.inl PUnit.unit, .inl PUnit.unit) (1 : ℂ)
 
-theorem exactPaddedDefault_norm
+lemma exactPaddedDefault_norm
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) :
@@ -23300,7 +23300,7 @@ def exactBobQuestionCompatible
       ys j.val.val = history.bobLeftPrefix j) ∧
   ys seed.coordinate.val = y
 
-theorem exactRevealCode_compatible_iff
+lemma exactRevealCode_compatible_iff
     {n : ℕ} (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
     (history : ExactRevealHistory X Y D seed)
@@ -23356,7 +23356,7 @@ theorem exactRevealCode_compatible_iff
       cases har
       rfl
 
-theorem exactCompatible_coordinate_eq_or
+lemma exactCompatible_coordinate_eq_or
     {n : ℕ} (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
     (history : ExactRevealHistory X Y D seed)
@@ -23401,7 +23401,7 @@ theorem exactCompatible_coordinate_eq_or
           exact (hb.2.1 ⟨jr, hright⟩).trans
             (hb'.2.1 ⟨jr, hright⟩).symm
 
-theorem exactQuestionWeight_rectangle
+lemma exactQuestionWeight_rectangle
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -23444,7 +23444,7 @@ def exactFiberQuestionWeight
   then (G.repeat n).questionWeight xs ys
   else 0
 
-theorem exactFiberQuestionWeight_rectangle
+lemma exactFiberQuestionWeight_rectangle
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -23502,7 +23502,7 @@ def exactFiberQuestionMass
   ∑ xs : Fin n → X, ∑ ys : Fin n → Y,
     exactFiberQuestionWeight G n D seed history x y xs ys
 
-theorem exactFiberQuestionWeight_mul_mass
+lemma exactFiberQuestionWeight_mul_mass
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -23568,12 +23568,12 @@ set_option maxHeartbeats 1200000
 
 attribute [local instance] Classical.propDecidable
 
-theorem exactFintypeCard_eq
+lemma exactFintypeCard_eq
     {T : Type*} (first second : Fintype T) :
     @Fintype.card T first = @Fintype.card T second :=
   @Fintype.card_congr T T first second (Equiv.refl T)
 
-theorem exactSeedWeight_sum
+lemma exactSeedWeight_sum
     {M : Type*} [Fintype M] [DecidableEq M]
     (nonempty : 0 < Fintype.card M) :
     (∑ seed : ExactForwardSeed M,
@@ -23661,11 +23661,11 @@ def HasSubexponentialWitness (v : ℕ → ℝ) : Prop :=
   ∀ c : ℝ, 0 < c → ∀ C : ℝ, 0 < C →
     ∃ n : ℕ, C * Real.exp (-c * (n : ℝ)) < v n
 
-theorem not_hasExponentialBound_iff (v : ℕ → ℝ) :
+lemma not_hasExponentialBound_iff (v : ℕ → ℝ) :
     ¬ HasExponentialBound v ↔ HasSubexponentialWitness v := by
   simp [HasExponentialBound, HasSubexponentialWitness]
 
-theorem arbitrarily_large_witness_of_not_hasExponentialBound
+lemma arbitrarily_large_witness_of_not_hasExponentialBound
     {v : ℕ → ℝ}
     (hv : ∀ n : ℕ, v n ≤ 1)
     (h_no_bound : ¬ HasExponentialBound v)
@@ -23721,7 +23721,7 @@ open scoped BigOperators
 
 open QuantumParallelRepetition.Pinsker
 
-theorem sum_positive_difference_eq_totalVariation
+lemma sum_positive_difference_eq_totalVariation
     {ι : Type*} [Fintype ι]
     (p q : ι → ℝ)
     (hp : (∑ i, p i) = 1)
@@ -23741,7 +23741,7 @@ theorem sum_positive_difference_eq_totalVariation
   simp_rw [hpoint]
   rw [← Finset.sum_div, Finset.sum_add_distrib, hzero, add_zero]
 
-theorem finiteTotalVariation_comm
+lemma finiteTotalVariation_comm
     {ι : Type*} [Fintype ι]
     (p q : ι → ℝ) :
     finiteTotalVariation p q = finiteTotalVariation q p := by
@@ -23751,7 +23751,7 @@ theorem finiteTotalVariation_comm
   intro i _
   exact abs_sub_comm (p i) (q i)
 
-theorem expectation_le_add_totalVariation
+lemma expectation_le_add_totalVariation
     {ι : Type*} [Fintype ι]
     (p q f : ι → ℝ)
     (hp : (∑ i, p i) = 1)
@@ -23787,7 +23787,7 @@ theorem expectation_le_add_totalVariation
           U * finiteTotalVariation p q := by
       rw [← Finset.mul_sum, hpositive]
 
-theorem winning_expectation_transfer
+lemma winning_expectation_transfer
     {ι : Type*} [Fintype ι]
     (p q win : ι → ℝ)
     (hp : (∑ i, p i) = 1)
@@ -23823,7 +23823,7 @@ def pureVerifierEffect
     (x : X) (y : Y) : Matrix (dA × dB) (dA × dB) ℂ :=
   (pureVectorStrategy G z hz PA PB).winningEffect x y
 
-theorem pureVectorWinningProbability_eq
+lemma pureVectorWinningProbability_eq
     (G : Game X Y A B)
     (z : EuclideanSpace ℂ (dA × dB)) (hz : ‖z‖ = 1)
     (PA : X → POVM A dA) (PB : Y → POVM B dB) :
@@ -23849,7 +23849,7 @@ def flaggedQuestionWeight
 
 omit [Fintype J] [DecidableEq J] in
 
-theorem flaggedQuestionWeight_nonneg
+lemma flaggedQuestionWeight_nonneg
     (G : Game X Y A B) (flagWeight : J → ℝ)
     (nonnegative : ∀ j, 0 ≤ flagWeight j)
     (ω : J × (X × Y)) :
@@ -23859,7 +23859,7 @@ theorem flaggedQuestionWeight_nonneg
 
 omit [DecidableEq J] in
 
-theorem flaggedQuestionWeight_sum
+lemma flaggedQuestionWeight_sum
     (G : Game X Y A B) (flagWeight : J → ℝ)
     (normalized : (∑ j, flagWeight j) = 1) :
     (∑ ω : J × (X × Y),
@@ -23889,7 +23889,7 @@ def totalSamplingLoss (K₀ α η lam : ℝ) : ℝ :=
 def roundedWinningLowerBound (ε K₀ α η lam : ℝ) : ℝ :=
   1 - ε / 2 - totalSamplingLoss K₀ α η lam
 
-theorem totalSamplingLoss_tendsto_zero
+lemma totalSamplingLoss_tendsto_zero
     {ι : Type*} {l : Filter ι}
     (K₀ : ℝ) {α η lam : ι → ℝ}
     (hα : Tendsto α l (𝓝 0))
@@ -23937,7 +23937,7 @@ theorem totalSamplingLoss_tendsto_zero
     simpa using hinner.const_mul (2 : ℝ)
   simpa [totalSamplingLoss] using hclassical.add hdouble
 
-theorem totalSamplingLoss_eventually_lt
+lemma totalSamplingLoss_eventually_lt
     {ι : Type*} {l : Filter ι}
     (K₀ : ℝ) {α η lam : ι → ℝ}
     (hα : Tendsto α l (𝓝 0))
@@ -23948,7 +23948,7 @@ theorem totalSamplingLoss_eventually_lt
   (totalSamplingLoss_tendsto_zero K₀ hα hη hlam).eventually
     (gt_mem_nhds hε)
 
-theorem source_equation_twenty_nine_contradiction
+lemma source_equation_twenty_nine_contradiction
     {X Y A B : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B)
@@ -23973,7 +23973,7 @@ noncomputable section
 open scoped BigOperators ComplexOrder Kronecker MatrixOrder
   Matrix.Norms.L2Operator InnerProductSpace
 
-theorem matched_payoff_discard_le
+lemma matched_payoff_discard_le
     {ι : Type*} [Fintype ι]
     (weight payoff : ι → ℝ)
     (nonnegative : ∀ i, 0 ≤ weight i)
@@ -24000,7 +24000,7 @@ noncomputable section
 
 open scoped BigOperators
 
-theorem squared_state_triangle
+lemma squared_state_triangle
     {E : Type*} [NormedAddCommGroup E]
     (gamma psi phi : E) :
     ‖gamma - phi‖ ^ 2 ≤
@@ -24016,7 +24016,7 @@ theorem squared_state_triangle
   have hb : 0 ≤ ‖psi - phi‖ := norm_nonneg _
   nlinarith [sq_nonneg (‖gamma - psi‖ - ‖psi - phi‖)]
 
-theorem source_equation_twenty_one
+lemma source_equation_twenty_one
     {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
     (weight : ι → ℝ)
     (nonnegative : ∀ i, 0 ≤ weight i)
@@ -24051,7 +24051,7 @@ theorem source_equation_twenty_one
               ring
     _ ≤ 32 * η := by linarith
 
-theorem weighted_rpow_mean_le
+lemma weighted_rpow_mean_le
     {ι : Type*} [Fintype ι]
     (weight value : ι → ℝ)
     (nonnegative : ∀ i, 0 ≤ weight i)
@@ -24080,7 +24080,7 @@ open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 set_option backward.isDefEq.respectTransparency false
 set_option maxHeartbeats 1500000
 
-theorem fullHistoryRemaining_insert_conditioned
+lemma fullHistoryRemaining_insert_conditioned
     {n : ℕ} (D L : Finset (Fin n)) (i : Fin n) :
     fullHistoryRemaining n (insert i D) L =
       fullHistoryRemaining n D (insert i L) := by
@@ -24233,7 +24233,7 @@ section InsertedWeights
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem fullCoordinateInsertedHistory_weight
+lemma fullCoordinateInsertedHistory_weight
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n)) (i : Fin n) (hiD : i ∉ D)
     (r : FullCoordinateRevealHistory X Y n D L i)
@@ -24293,7 +24293,7 @@ theorem fullCoordinateInsertedHistory_weight
     fullCoordinateAnswerExtension]
   ring
 
-theorem conditionedAliceEffect_insert_eq_coordinate
+lemma conditionedAliceEffect_insert_eq_coordinate
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (i : Fin n) (hiD : i ∉ D)
     (α : {j : Fin n // j ∈ D} → A)
@@ -24334,7 +24334,7 @@ theorem conditionedAliceEffect_insert_eq_coordinate
   · have hnot := mt hiff.mpr h
     simp only [if_neg h, if_neg hnot]
 
-theorem conditionedBobEffect_insert_eq_coordinate
+lemma conditionedBobEffect_insert_eq_coordinate
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (i : Fin n) (hiD : i ∉ D)
     (β : {j : Fin n // j ∈ D} → B)
@@ -24388,7 +24388,7 @@ open scoped BigOperators ComplexOrder Kronecker MatrixOrder
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem conditionedCoordinateEffects_born_expansion
+lemma conditionedCoordinateEffects_born_expansion
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
@@ -24432,7 +24432,7 @@ def normalizedPureVector
     (z : EuclideanSpace ℂ d) : EuclideanSpace ℂ d :=
   ((‖z‖⁻¹ : ℝ) : ℂ) • z
 
-theorem quadraticExpectation_normalizedPureVector
+lemma quadraticExpectation_normalizedPureVector
     {d : Type*} [Fintype d]
     (W : EuclideanSpace ℂ d →L[ℂ] EuclideanSpace ℂ d)
     (z : EuclideanSpace ℂ d) :
@@ -24454,7 +24454,7 @@ open scoped BigOperators
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exists_repeatedStrategy_of_lt_entangledValue
+lemma exists_repeatedStrategy_of_lt_entangledValue
     (G : Game X Y A B) {n : ℕ} {r : ℝ}
     (hr : 0 < r)
     (hvalue : r < repeatedEntangledValue G n) :
@@ -24474,7 +24474,7 @@ theorem exists_repeatedStrategy_of_lt_entangledValue
   subst v
   exact ⟨S, hv⟩
 
-theorem exists_purifiedRepeatedStrategy_of_lt_entangledValue
+lemma exists_purifiedRepeatedStrategy_of_lt_entangledValue
     (G : Game X Y A B) {n : ℕ} {r : ℝ}
     (hr : 0 < r)
     (hvalue : r < repeatedEntangledValue G n) :
@@ -24485,7 +24485,7 @@ theorem exists_purifiedRepeatedStrategy_of_lt_entangledValue
   refine ⟨S, ?_⟩
   rwa [purifiedStrategy_winProbability]
 
-theorem arbitrarily_large_purifiedRepeatedStrategy_of_subexponentialWitness
+lemma arbitrarily_large_purifiedRepeatedStrategy_of_subexponentialWitness
     (G : Game X Y A B)
     (hwitness : HasSubexponentialWitness (repeatedEntangledValue G))
     {c : ℝ} (hc : 0 < c) (N : ℕ) :
@@ -24504,7 +24504,7 @@ theorem arbitrarily_large_purifiedRepeatedStrategy_of_subexponentialWitness
     exists_purifiedRepeatedStrategy_of_lt_entangledValue G
       (Real.exp_pos _) hvalue⟩
 
-theorem postselection_log_cost_le
+lemma postselection_log_cost_le
     {θ p : ℝ} (hθ : 0 < θ) (hθp : θ ≤ p) :
     Real.log (1 / p) ≤ Real.log (1 / θ) := by
   have hp : 0 < p := lt_of_lt_of_le hθ hθp
@@ -24512,7 +24512,7 @@ theorem postselection_log_cost_le
     exact one_div_le_one_div_of_le hθ hθp
   exact Real.log_le_log (by positivity : 0 < 1 / p) hinv
 
-theorem greedy_terminal_of_log_cost
+lemma greedy_terminal_of_log_cost
     {θ η : ℝ} {T : ℕ}
     (hθ : 0 < θ)
     (hη_one : η ≤ 1)
@@ -24536,7 +24536,7 @@ theorem greedy_terminal_of_log_cost
     _ < θ := (Real.exp_lt_exp.mpr hlog).trans_eq
       (Real.exp_log hθ)
 
-theorem divisorStopping_nat_bound
+lemma divisorStopping_nat_bound
     {n q : ℕ} (hq : 0 < q) (hqn : q ≤ n) :
     n < 2 * (n / q) * q := by
   have hT : 0 < n / q := by
@@ -24548,7 +24548,7 @@ theorem divisorStopping_nat_bound
     omega
   exact hnext.trans_le (Nat.mul_le_mul_right q hfactor)
 
-theorem sourceRate_mul_lt_divisorStopping
+lemma sourceRate_mul_lt_divisorStopping
     {n q : ℕ} (hq : 0 < q) (hqn : q ≤ n)
     {η : ℝ} (hη : 0 < η) :
     (η / (4 * (q : ℝ))) * (n : ℝ) <
@@ -24574,7 +24574,7 @@ theorem sourceRate_mul_lt_divisorStopping
         mul_pos hη hT
       linarith
 
-theorem repeatedStrategy_exists_divisor_greedy_conditioning
+lemma repeatedStrategy_exists_divisor_greedy_conditioning
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     {η : ℝ} {q : ℕ}
@@ -24616,7 +24616,7 @@ theorem repeatedStrategy_exists_divisor_greedy_conditioning
   apply repeatedStrategy_exists_greedy_conditioning
     G n S hθ hη hη_one (Nat.div_le_self n q) (le_refl _) hterminal
 
-theorem divisor_greedy_card_mul_lt
+lemma divisor_greedy_card_mul_lt
     {n q : ℕ} (hq : 0 < q)
     {D : Finset (Fin n)} (hD : D.card < n / q) :
     D.card * q < n := by
@@ -24678,7 +24678,7 @@ noncomputable instance sourceHistoryFlagFintype
     (sourceHistoryFlagEquiv (X := X) (Y := Y)
       (A := A) (B := B) D).symm
 
-theorem sourceHistoryFlag_sum
+lemma sourceHistoryFlag_sum
     {n : ℕ} (D : Finset (Fin n))
     (f : SourceHistoryFlag X Y A B D → ℝ) :
     (∑ r : SourceHistoryFlag X Y A B D, f r) =
@@ -24742,7 +24742,7 @@ def postselectionMass
 
 omit [DecidableEq ι] in
 
-theorem allWinMass_le_postselectionMass
+lemma allWinMass_le_postselectionMass
     (law : FiniteEventLaw Ω) (wins : ι → Ω → Bool)
     (C : Finset ι) :
     law.eventMass (FiniteEventLaw.winEvent wins Finset.univ) ≤
@@ -24751,7 +24751,7 @@ theorem allWinMass_le_postselectionMass
 
 omit [DecidableEq ι] in
 
-theorem postselectionMass_le_one
+lemma postselectionMass_le_one
     (law : FiniteEventLaw Ω) (wins : ι → Ω → Bool)
     (C : Finset ι) :
     postselectionMass law wins C ≤ 1 := by
@@ -24773,7 +24773,7 @@ def uniformRemainingFailure
     conditionalCoordinateFailure law wins C i) /
     ((Finset.univ \ C).card : ℝ)
 
-theorem uniformRemainingFailure_lt_of_failure_sum
+lemma uniformRemainingFailure_lt_of_failure_sum
     (law : FiniteEventLaw Ω) (wins : ι → Ω → Bool)
     (C : Finset ι) {η : ℝ}
     (hp : 0 < postselectionMass law wins C)
@@ -24805,7 +24805,7 @@ def repeatedPostselectionMass
   postselectionMass (strategyEventLaw (G.repeat n) S)
     (repeatedCoordinateWin G n) C
 
-theorem repeated_winProbability_le_postselectionMass
+lemma repeated_winProbability_le_postselectionMass
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n)) (C : Finset (Fin n)) :
     S.winProbability ≤ repeatedPostselectionMass G n S C := by
@@ -24813,7 +24813,7 @@ theorem repeated_winProbability_le_postselectionMass
   exact allWinMass_le_postselectionMass
     (strategyEventLaw (G.repeat n) S) (repeatedCoordinateWin G n) C
 
-theorem repeatedPostselectionMass_pos
+lemma repeatedPostselectionMass_pos
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n)) (C : Finset (Fin n))
     (hwin : 0 < S.winProbability) :
@@ -24821,12 +24821,12 @@ theorem repeatedPostselectionMass_pos
   lt_of_lt_of_le hwin
     (repeated_winProbability_le_postselectionMass G n S C)
 
-theorem remainingCoordinates_card
+lemma remainingCoordinates_card
     {n : ℕ} (C : Finset (Fin n)) :
     (Finset.univ \ C).card = n - C.card := by
   simp [Finset.card_sdiff_of_subset (Finset.subset_univ C)]
 
-theorem repeatedStrategy_exists_conditioning
+lemma repeatedStrategy_exists_conditioning
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     {η : ℝ} {q : ℕ}
@@ -24867,7 +24867,7 @@ noncomputable section
 
 open scoped BigOperators ComplexOrder MatrixOrder
 
-theorem source_equation_nineteen_alice
+lemma source_equation_nineteen_alice
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -24882,7 +24882,7 @@ theorem source_equation_nineteen_alice
   matrixLogEntropy_born_lower_bound_left
     ρ F hF hFcomplement G hG hGcomplement
 
-theorem source_equation_nineteen_bob
+lemma source_equation_nineteen_bob
     {dA dB : Type*}
     [Fintype dA] [Fintype dB]
     [DecidableEq dA] [DecidableEq dB]
@@ -24931,7 +24931,7 @@ def martingaleRate
       answerLogCost (A := A) (B := B) D) /
     ((Finset.univ \ D).card : ℝ)
 
-theorem answerCount_pos_of_postselection
+lemma answerCount_pos_of_postselection
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (hp : 0 < repeatedPostselectionMass G n S D) :
@@ -24956,7 +24956,7 @@ theorem answerCount_pos_of_postselection
       (FiniteEventLaw.winEvent (repeatedCoordinateWin G n) D) at hp
   linarith
 
-theorem martingale_log_cost_eq
+lemma martingale_log_cost_eq
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (hp : 0 < repeatedPostselectionMass G n S D) :
@@ -24984,7 +24984,7 @@ theorem martingale_log_cost_eq
               answerLogCost, one_div, Real.log_inv]
             ring
 
-theorem aliceMartingaleEntropyBudget
+lemma aliceMartingaleEntropyBudget
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (hm : 0 < (Finset.univ \ D).card)
@@ -25012,7 +25012,7 @@ section ActualPurificationHistories
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem bornWeighted_normalized_distance
+lemma bornWeighted_normalized_distance
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (fallback u v : E) (hfallback : ‖fallback‖ = 1) :
     ‖u‖ ^ 2 *
@@ -25051,7 +25051,7 @@ set_option maxHeartbeats 1800000
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem fullCoordinateInsertedHistory_winIndicator_eq
+lemma fullCoordinateInsertedHistory_winIndicator_eq
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n)) (i : Fin n) (hiD : i ∉ D)
     (r : FullCoordinateRevealHistory X Y n D L i)
@@ -25129,7 +25129,7 @@ def fullCoordinateInsertedHiddenAliceEquiv
     funext j
     simp
 
-theorem fullCoordinateInsertedAliceQuestion_eq
+lemma fullCoordinateInsertedAliceQuestion_eq
     {n : ℕ} (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D) (hiL : i ∉ L)
     (r : FullCoordinateRevealHistory X Y n D L i)
@@ -25163,7 +25163,7 @@ theorem fullCoordinateInsertedAliceQuestion_eq
           fullHistoryRemainingInsertedEquiv, hjD, hji, hjL]
         congr 1
 
-theorem fullCoordinateInsertedHiddenAliceWeight_eq
+lemma fullCoordinateInsertedHiddenAliceWeight_eq
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n)) (i : Fin n)
     (r : FullCoordinateRevealHistory X Y n D L i)
@@ -25198,7 +25198,7 @@ theorem fullCoordinateInsertedHiddenAliceWeight_eq
         G.conditionalXGivenY (r.bobRemaining j) (hidden j))
     _ = _ := rfl
 
-theorem fullCoordinateInsertedBobQuestion_eq
+lemma fullCoordinateInsertedBobQuestion_eq
     {n : ℕ} (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D) (hiL : i ∉ L)
     (r : FullCoordinateRevealHistory X Y n D L i)
@@ -25228,7 +25228,7 @@ theorem fullCoordinateInsertedBobQuestion_eq
           fullCoordinateOldHistory,
           hjD, hji, hjL]
 
-theorem fullCoordinateInsertedHiddenBobWeight_eq
+lemma fullCoordinateInsertedHiddenBobWeight_eq
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n)) (i : Fin n)
     (r : FullCoordinateRevealHistory X Y n D L i)
@@ -25240,7 +25240,7 @@ theorem fullCoordinateInsertedHiddenBobWeight_eq
         (fullCoordinateOldHistory D L i r y) hidden := by
   rfl
 
-theorem fullCoordinateInsertedHistory_aliceFilter
+lemma fullCoordinateInsertedHistory_aliceFilter
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D) (hiL : i ∉ L)
@@ -25309,7 +25309,7 @@ theorem fullCoordinateInsertedHistory_aliceFilter
       rw [conditionedAliceEffect_insert_eq_coordinate
         G n S D i hiD α a]
 
-theorem fullCoordinateInsertedHistory_bobFilter
+lemma fullCoordinateInsertedHistory_bobFilter
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D) (hiL : i ∉ L)
@@ -25341,7 +25341,7 @@ theorem fullCoordinateInsertedHistory_bobFilter
   rw [fullCoordinateInsertedBobQuestion_eq D L i hiD hiL r x y hidden]
   rw [conditionedBobEffect_insert_eq_coordinate G n S D i hiD β b]
 
-theorem fullCoordinateInsertedHistory_sum
+lemma fullCoordinateInsertedHistory_sum
     {T : Type*} [AddCommMonoid T]
     {n : ℕ} (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D)
@@ -25355,7 +25355,7 @@ theorem fullCoordinateInsertedHistory_sum
     using ((fullCoordinateInsertedHistoryEquiv
       (X := X) (Y := Y) D L i hiD).sum_comp f).symm
 
-theorem fullCoordinateAnswerExtension_sum
+lemma fullCoordinateAnswerExtension_sum
     {T R : Type*} [Fintype T] [AddCommMonoid R]
     {n : ℕ} (D : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D)
@@ -25368,7 +25368,7 @@ theorem fullCoordinateAnswerExtension_sum
     using ((fullCoordinateAnswerExtensionEquiv
       (T := T) D i hiD).sum_comp f).symm
 
-theorem fullCoordinateWeightedInsertedSum
+lemma fullCoordinateWeightedInsertedSum
     (G : Game X Y A B) {n : ℕ}
     (D L : Finset (Fin n)) (i : Fin n)
     (hiD : i ∉ D)
@@ -25537,7 +25537,7 @@ def fullCoordinateAcceptedPostselectedMass
               (fullCoordinateBobRefinementEffect
                 G n S D L i r β y b)))
 
-theorem fullCoordinateAcceptedPostselectedMass_eq
+lemma fullCoordinateAcceptedPostselectedMass_eq
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D L : Finset (Fin n)) (i : Fin n)
@@ -25623,7 +25623,7 @@ def sourceHistoryAcceptedMass
       (∑ x : X, ∑ y : Y, G.questionWeight x y *
         sourceHistoryAcceptedQuestionMass G n S D r x y)
 
-theorem sourceHistoryQuadraticExpectation_matrix_sum
+lemma sourceHistoryQuadraticExpectation_matrix_sum
     {I d : Type*} [Fintype I] [Fintype d] [DecidableEq d]
     (M : I → Matrix d d ℂ) (z : EuclideanSpace ℂ d) :
     quadraticExpectation
@@ -25648,7 +25648,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem sourceHistoryAcceptedMass_eq_uniform
+lemma sourceHistoryAcceptedMass_eq_uniform
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n)) (D : Finset (Fin n)) :
     sourceHistoryAcceptedMass G n S D =
@@ -25719,7 +25719,7 @@ theorem sourceHistoryAcceptedMass_eq_uniform
       intro k _
       ring
 
-theorem sourceHistoryAcceptedMass_eq_remaining_average
+lemma sourceHistoryAcceptedMass_eq_remaining_average
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n)) (D : Finset (Fin n)) :
     sourceHistoryAcceptedMass G n S D =
@@ -25751,7 +25751,7 @@ theorem sourceHistoryAcceptedMass_eq_remaining_average
   rw [hsum]
   exact mul_div_mul_left _ _ hperm.ne'
 
-theorem sourceHistoryAcceptedMass_gt_of_greedy
+lemma sourceHistoryAcceptedMass_gt_of_greedy
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n)) (D : Finset (Fin n))
     (hm : 0 < (Finset.univ \ D).card)
@@ -25837,7 +25837,7 @@ def taggedTensorVector
         else 0
     | _, _ => 0
 
-theorem taggedTensorVector_norm
+lemma taggedTensorVector_norm
     (r : R) (z : EuclideanSpace ℂ (ι r × ι r)) :
     ‖taggedTensorVector r z‖ = ‖z‖ := by
   classical
@@ -25869,7 +25869,7 @@ theorem taggedTensorVector_norm
 
 omit [Fintype R] [∀ r, Fintype (ι r)] in
 
-theorem taggedTensorVector_sub
+lemma taggedTensorVector_sub
     (r : R) (u v : EuclideanSpace ℂ (ι r × ι r)) :
     taggedTensorVector r (u - v) =
       taggedTensorVector r u - taggedTensorVector r v := by
@@ -25894,7 +25894,7 @@ end TaggedTensorBlocks
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem martingaleRate_nonneg
+lemma martingaleRate_nonneg
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (hm : 0 < (Finset.univ \ D).card)
@@ -25927,13 +25927,13 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem remainingCoordinate_card_pos
+lemma remainingCoordinate_card_pos
     {n : ℕ} (D : Finset (Fin n))
     (hm : 0 < (Finset.univ \ D).card) :
     0 < Fintype.card (SourceRemainingCoordinate D) := by
   simpa using hm
 
-theorem finiteTotalVariation_triangle
+lemma finiteTotalVariation_triangle
     {ι : Type*} [Fintype ι]
     (p q r : ι → ℝ) :
     finiteTotalVariation p r ≤
@@ -25957,7 +25957,7 @@ def weightedConditionalJoint
     κ × ι → ℝ :=
   fun t => weight t.1 * conditional t.1 t.2
 
-theorem weightedConditionalJoint_totalVariation
+lemma weightedConditionalJoint_totalVariation
     {κ ι : Type*} [Fintype κ] [Fintype ι]
     (weight : κ → ℝ) (hweight : ∀ k, 0 ≤ weight k)
     (left right : κ → ι → ℝ) :
@@ -25987,7 +25987,7 @@ theorem weightedConditionalJoint_totalVariation
       intro k _
       ring
 
-theorem finiteTotalVariation_equiv
+lemma finiteTotalVariation_equiv
     {ι κ : Type*} [Fintype ι] [Fintype κ]
     (e : ι ≃ κ) (p q : κ → ℝ) :
     finiteTotalVariation (p ∘ e) (q ∘ e) =
@@ -26007,14 +26007,14 @@ def localQuestionWeight
   G.questionWeight c.2.1 c.2.2 /
     (Fintype.card (SourceRemainingCoordinate D) : ℝ)
 
-theorem localQuestionWeight_nonneg
+lemma localQuestionWeight_nonneg
     (G : Game X Y A B) (n : ℕ) (D : Finset (Fin n))
     (c : LocalQuestionContext X Y D) :
     0 ≤ localQuestionWeight G n D c := by
   exact div_nonneg (G.weight_nonneg c.2.1 c.2.2)
     (Nat.cast_nonneg _)
 
-theorem localQuestionWeight_sum
+lemma localQuestionWeight_sum
     (G : Game X Y A B) (n : ℕ) (D : Finset (Fin n))
     (hm : 0 < (Finset.univ \ D).card) :
     (∑ c : LocalQuestionContext X Y D,
@@ -26041,7 +26041,7 @@ def conditionedEventDistribution
     (law : FiniteEventLaw Ω) (event : Finset Ω) : Ω → ℝ :=
   fun ω => if ω ∈ event then law.weight ω / law.eventMass event else 0
 
-theorem conditionedEventDistribution_nonneg
+lemma conditionedEventDistribution_nonneg
     {Ω : Type*} [Fintype Ω]
     (law : FiniteEventLaw Ω) (event : Finset Ω)
     (positive : 0 < law.eventMass event) (ω : Ω) :
@@ -26051,7 +26051,7 @@ theorem conditionedEventDistribution_nonneg
   · exact div_nonneg (law.weight_nonneg ω) positive.le
   · exact le_rfl
 
-theorem conditionedEventDistribution_sum
+lemma conditionedEventDistribution_sum
     {Ω : Type*} [Fintype Ω]
     (law : FiniteEventLaw Ω) (event : Finset Ω)
     (positive : 0 < law.eventMass event) :
@@ -26068,7 +26068,7 @@ theorem conditionedEventDistribution_sum
       change law.eventMass event / law.eventMass event = 1
       exact div_self positive.ne'
 
-theorem conditionedEventDistribution_absolute_continuity
+lemma conditionedEventDistribution_absolute_continuity
     {Ω : Type*} [Fintype Ω]
     (law : FiniteEventLaw Ω) (event : Finset Ω) (ω : Ω) :
     law.weight ω = 0 →
@@ -26076,7 +26076,7 @@ theorem conditionedEventDistribution_absolute_continuity
   intro hzero
   simp [conditionedEventDistribution, hzero]
 
-theorem conditionedEventDistribution_relativeEntropy
+lemma conditionedEventDistribution_relativeEntropy
     {Ω : Type*} [Fintype Ω]
     (law : FiniteEventLaw Ω) (event : Finset Ω)
     (positive : 0 < law.eventMass event) :
@@ -26116,7 +26116,7 @@ theorem conditionedEventDistribution_relativeEntropy
         conditionedEventDistribution_sum law event positive]
       ring
 
-theorem conditionedEventDistribution_projection_relativeEntropy_le
+lemma conditionedEventDistribution_projection_relativeEntropy_le
     {Ω κ : Type*} [Fintype Ω] [Fintype κ]
     (law : FiniteEventLaw Ω) (event : Finset Ω)
     (positive : 0 < law.eventMass event)
@@ -26156,7 +26156,7 @@ def repeatedConditionedOutcomeLaw
     (strategyEventLaw (G.repeat n) S)
     (FiniteEventLaw.winEvent (repeatedCoordinateWin G n) D)
 
-theorem repeatedConditionedOutcomeLaw_relativeEntropy
+lemma repeatedConditionedOutcomeLaw_relativeEntropy
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (hp : 0 < repeatedPostselectionMass G n S D) :
@@ -26182,14 +26182,14 @@ attribute [local instance] Classical.propDecidable
 def finiteUniformWeight (Z : Type*) [Fintype Z] : ℝ :=
   1 / (Fintype.card Z : ℝ)
 
-theorem finiteUniformWeight_pos
+lemma finiteUniformWeight_pos
     {Z : Type*} [Fintype Z]
     (positive : 0 < Fintype.card Z) :
     0 < finiteUniformWeight Z := by
   unfold finiteUniformWeight
   exact one_div_pos.mpr (by exact_mod_cast positive)
 
-theorem finiteUniformWeight_sum
+lemma finiteUniformWeight_sum
     {Z : Type*} [Fintype Z]
     (positive : 0 < Fintype.card Z) :
     (∑ _z : Z, finiteUniformWeight Z) = 1 := by
@@ -26199,7 +26199,7 @@ theorem finiteUniformWeight_sum
   simp only [Finset.sum_const, Finset.card_univ, nsmul_eq_mul]
   field_simp [hcard]
 
-theorem finiteProbability_le_one
+lemma finiteProbability_le_one
     {Z : Type*} [Fintype Z]
     (p : Z → ℝ)
     (nonnegative : ∀ z, 0 ≤ p z)
@@ -26212,7 +26212,7 @@ theorem finiteProbability_le_one
         (fun a _ => nonnegative a) (Finset.mem_univ z)
     _ = 1 := normalized
 
-theorem finiteRelativeEntropy_uniform_le_log_card
+lemma finiteRelativeEntropy_uniform_le_log_card
     {Z : Type*} [Fintype Z]
     (p : Z → ℝ)
     (nonnegative : ∀ z, 0 ≤ p z)
@@ -26258,7 +26258,7 @@ def uniformFlagReference
     (prior : Ω → ℝ) : Ω × Z → ℝ :=
   fun t => prior t.1 * finiteUniformWeight Z
 
-theorem uniformFlagReference_nonneg
+lemma uniformFlagReference_nonneg
     {Ω Z : Type*} [Fintype Ω] [Fintype Z]
     (prior : Ω → ℝ)
     (nonnegative : ∀ ω, 0 ≤ prior ω)
@@ -26268,7 +26268,7 @@ theorem uniformFlagReference_nonneg
   exact mul_nonneg (nonnegative t.1)
     (finiteUniformWeight_pos positive).le
 
-theorem uniformFlagReference_sum
+lemma uniformFlagReference_sum
     {Ω Z : Type*} [Fintype Ω] [Fintype Z]
     (prior : Ω → ℝ)
     (normalized : (∑ ω, prior ω) = 1)
@@ -26281,7 +26281,7 @@ theorem uniformFlagReference_sum
     finiteUniformWeight_sum positive, mul_one]
   exact normalized
 
-theorem uniformFlagReference_firstMarginal
+lemma uniformFlagReference_firstMarginal
     {Ω Z : Type*} [Fintype Ω] [Fintype Z]
     (prior : Ω → ℝ)
     (positive : 0 < Fintype.card Z) :
@@ -26293,7 +26293,7 @@ theorem uniformFlagReference_firstMarginal
   rw [← Finset.mul_sum, finiteUniformWeight_sum positive]
   ring
 
-theorem uniformFlagReference_conditional
+lemma uniformFlagReference_conditional
     {Ω Z : Type*} [Fintype Ω] [Fintype Z]
     (prior : Ω → ℝ)
     (positive : 0 < Fintype.card Z)
@@ -26309,7 +26309,7 @@ theorem uniformFlagReference_conditional
       finiteUniformWeight Z
   field_simp [hprior]
 
-theorem uniformFlagReference_absolute_continuity
+lemma uniformFlagReference_absolute_continuity
     {Ω Z : Type*} [Fintype Ω] [Fintype Z]
     (joint : Ω × Z → ℝ)
     (prior : Ω → ℝ)
@@ -26333,7 +26333,7 @@ theorem uniformFlagReference_absolute_continuity
     (fun a _ => hjoint (ω, a))).mp
       hmarginal z (Finset.mem_univ z)
 
-theorem uniformFlagRelativeEntropy_le
+lemma uniformFlagRelativeEntropy_le
     {Ω Z : Type*} [Fintype Ω] [Fintype Z]
     (joint : Ω × Z → ℝ)
     (prior : Ω → ℝ)
@@ -26397,7 +26397,7 @@ theorem uniformFlagRelativeEntropy_le
       rw [← Finset.sum_mul, hmarginal_normalized]
       ring
 
-theorem finiteRelativeEntropy_nonneg
+lemma finiteRelativeEntropy_nonneg
     {Ω : Type*} [Fintype Ω]
     (p q : Ω → ℝ)
     (hp : ∀ ω, 0 ≤ p ω)
@@ -26409,7 +26409,7 @@ theorem finiteRelativeEntropy_nonneg
   exact mul_nonneg (hq ω)
     (InformationTheory.klFun_nonneg (div_nonneg (hp ω) (hq ω)))
 
-theorem groupedMass_nonneg
+lemma groupedMass_nonneg
     {Ω κ : Type*} [Fintype Ω] [Fintype κ] [DecidableEq κ]
     (f : Ω → κ) (p : Ω → ℝ)
     (hp : ∀ ω, 0 ≤ p ω) (a : κ) :
@@ -26417,7 +26417,7 @@ theorem groupedMass_nonneg
   unfold groupedMass
   exact Finset.sum_nonneg (fun ω _ => hp ω)
 
-theorem groupedMass_absolute_continuity
+lemma groupedMass_absolute_continuity
     {Ω κ : Type*} [Fintype Ω] [Fintype κ] [DecidableEq κ]
     (f : Ω → κ) (p q : Ω → ℝ)
     (hq : ∀ ω, 0 ≤ q ω)
@@ -26436,7 +26436,7 @@ theorem groupedMass_absolute_continuity
       (fun ω _ => hq ω)).mp hzero ω hω
   exact absolute_continuity ω hqzero
 
-theorem groupedMass_comp
+lemma groupedMass_comp
     {Ω κ θ : Type*} [Fintype Ω] [Fintype κ] [Fintype θ]
     [DecidableEq κ] [DecidableEq θ]
     (f : Ω → κ) (g : κ → θ) (p : Ω → ℝ) :
@@ -26451,7 +26451,7 @@ theorem groupedMass_comp
       (Finset.univ.filter fun b : κ => g b = a)
       f p)
 
-theorem groupedMass_id
+lemma groupedMass_id
     {Ω : Type*} [Fintype Ω] [DecidableEq Ω]
     (p : Ω → ℝ) :
     groupedMass id p = p := by
@@ -26472,7 +26472,7 @@ def finitePrefixMask
     (Ω × (Fin h → Y)) → (Ω × (Fin h → Y)) :=
   fun t => (t.1, fun j => if j.val < k.val then t.2 j else base)
 
-theorem finitePrefixMask_comp
+lemma finitePrefixMask_comp
     {Ω Y : Type*} {h : ℕ} (base : Y)
     (k : Fin h) :
     finitePrefixMask (Ω := Ω) base k.castSucc ∘
@@ -26490,7 +26490,7 @@ theorem finitePrefixMask_comp
     · have hjfin : ¬ j < k := hj
       simp [finitePrefixMask, Function.comp_apply, hjfin]
 
-theorem finitePrefixMask_last
+lemma finitePrefixMask_last
     {Ω Y : Type*} {h : ℕ} (base : Y) :
     finitePrefixMask (Ω := Ω) base (Fin.last h) = id := by
   funext t
@@ -26508,7 +26508,7 @@ def finitePrefixRelativeEntropy
     (groupedMass (finitePrefixMask base k) joint)
     (groupedMass (finitePrefixMask base k) prior)
 
-theorem finitePrefixRelativeEntropy_telescope
+lemma finitePrefixRelativeEntropy_telescope
     {Ω Y : Type*} [Fintype Ω] [Fintype Y] {h : ℕ}
     (joint prior : Ω × (Fin h → Y) → ℝ)
     (base : Y) :
@@ -26532,7 +26532,7 @@ theorem finitePrefixRelativeEntropy_telescope
   rw [Finset.sum_sub_distrib]
   linarith
 
-theorem finitePrefixRelativeEntropy_budget
+lemma finitePrefixRelativeEntropy_budget
     {Ω Y : Type*} [Fintype Ω] [Fintype Y] {h : ℕ}
     (joint prior : Ω × (Fin h → Y) → ℝ)
     (hjoint : ∀ t, 0 ≤ joint t)
@@ -26554,7 +26554,7 @@ theorem finitePrefixRelativeEntropy_budget
         (finitePrefixMask base 0) prior hprior)
   linarith
 
-theorem reversePartition_relativeEntropy_budget
+lemma reversePartition_relativeEntropy_budget
     {M : Type*} [Fintype M] [DecidableEq M]
     (nonempty : 0 < Fintype.card M)
     (increment : (s : Finset M) → Fin s.card → ℝ)
@@ -26623,7 +26623,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem groupedMass_sum
+lemma groupedMass_sum
     {Ω κ : Type*} [Fintype Ω] [Fintype κ] [DecidableEq κ]
     (projection : Ω → κ) (mass : Ω → ℝ) :
     (∑ a : κ, groupedMass projection mass a) =
@@ -26631,7 +26631,7 @@ theorem groupedMass_sum
   unfold groupedMass
   exact Finset.sum_fiberwise Finset.univ projection mass
 
-theorem groupedMass_first
+lemma groupedMass_first
     {Ω Z : Type*} [Fintype Ω] [Fintype Z]
     [DecidableEq Ω]
     (joint : Ω × Z → ℝ) :
@@ -26658,13 +26658,13 @@ def repeatedConditionedAnswerFlag
     ConditionedAnswerFlag A B D :=
   (fun i => ω.2.2.1 i, fun i => ω.2.2.2 i)
 
-theorem conditionedAnswerFlag_card
+lemma conditionedAnswerFlag_card
     {n : ℕ} (D : Finset (Fin n)) :
     (Fintype.card (ConditionedAnswerFlag A B D) : ℝ) =
       fullHistoryAnswerCount (A := A) (B := B) D := by
   simp [fullHistoryAnswerCount]
 
-theorem conditionedAnswerFlag_card_pos
+lemma conditionedAnswerFlag_card_pos
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (hp : 0 < repeatedPostselectionMass G n S D) :
@@ -26675,7 +26675,7 @@ theorem conditionedAnswerFlag_card_pos
     exact answerCount_pos_of_postselection G n S D hp
   exact_mod_cast hreal
 
-theorem conditionedAnswerFlag_log_card
+lemma conditionedAnswerFlag_log_card
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (hp : 0 < repeatedPostselectionMass G n S D) :
@@ -26717,7 +26717,7 @@ abbrev ExactJointOutcome
     (X Y A B : Type*) {n : ℕ} (D : Finset (Fin n)) :=
   ExactRemainingSeed D × ExactOutcome X Y A B n
 
-theorem exactRemainingSeedWeight_sum
+lemma exactRemainingSeedWeight_sum
     {n : ℕ} (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card) :
     (∑ seed : ExactRemainingSeed D,
@@ -26732,7 +26732,7 @@ def exactPostselectedJointLaw
   exactSeedWeight q.1 *
     repeatedConditionedOutcomeLaw G n S D q.2
 
-theorem exactPostselectedJointLaw_nonneg
+lemma exactPostselectedJointLaw_nonneg
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -26744,7 +26744,7 @@ theorem exactPostselectedJointLaw_nonneg
     (FiniteEventLaw.winEvent (repeatedCoordinateWin G n) D)
     positive q.2
 
-theorem exactPostselectedJointLaw_sum
+lemma exactPostselectedJointLaw_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -26784,7 +26784,7 @@ def exactSourcePushforward
     K → ℝ :=
   groupedMass projection (exactPostselectedJointLaw G n S D)
 
-theorem exactSourcePushforward_nonneg
+lemma exactSourcePushforward_nonneg
     {K : Type*} [Fintype K]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
@@ -26796,7 +26796,7 @@ theorem exactSourcePushforward_nonneg
     (exactPostselectedJointLaw G n S D)
     (exactPostselectedJointLaw_nonneg G n S D positive) k
 
-theorem exactSourcePushforward_sum
+lemma exactSourcePushforward_sum
     {K : Type*} [Fintype K]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
@@ -26861,7 +26861,7 @@ def exactLocallySampleableLaw
   exactSourcePushforward G n S D
     (exactLocallySampleableCode D)
 
-theorem exactLocallySampleableLaw_nonneg
+lemma exactLocallySampleableLaw_nonneg
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -26870,7 +26870,7 @@ theorem exactLocallySampleableLaw_nonneg
   exactSourcePushforward_nonneg G n S D positive
     (exactLocallySampleableCode D) t
 
-theorem exactLocallySampleableLaw_sum
+lemma exactLocallySampleableLaw_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -26880,7 +26880,7 @@ theorem exactLocallySampleableLaw_sum
   exactSourcePushforward_sum G n S D remaining positive
     (exactLocallySampleableCode D)
 
-theorem exactLocallySampleableLaw_eq_zero_of_question_zero
+lemma exactLocallySampleableLaw_eq_zero_of_question_zero
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (i : SourceRemainingCoordinate D) (x : X) (y : Y)
@@ -26936,7 +26936,7 @@ def exactBobLocalMass
   ∑ r : ExactHistoryFlag X Y A B D,
     ∑ x : X, Q (i, x, y, r)
 
-theorem exactAliceLocalMass_nonneg
+lemma exactAliceLocalMass_nonneg
     {n : ℕ} (D : Finset (Fin n))
     (Q : ExactLocallySampleableTuple X Y A B D → ℝ)
     (nonnegative : ∀ t, 0 ≤ Q t)
@@ -26946,7 +26946,7 @@ theorem exactAliceLocalMass_nonneg
   exact Finset.sum_nonneg
     (fun r _ => Finset.sum_nonneg (fun y _ => nonnegative (i, x, y, r)))
 
-theorem exactBobLocalMass_nonneg
+lemma exactBobLocalMass_nonneg
     {n : ℕ} (D : Finset (Fin n))
     (Q : ExactLocallySampleableTuple X Y A B D → ℝ)
     (nonnegative : ∀ t, 0 ≤ Q t)
@@ -26980,7 +26980,7 @@ def exactBobLocalConditional
     (∑ x : X, Q (i, x, y, r)) /
       exactBobLocalMass D Q i y
 
-theorem exactAliceLocalConditional_nonneg
+lemma exactAliceLocalConditional_nonneg
     {n : ℕ} (D : Finset (Fin n))
     (base : ExactHistoryFlag X Y A B D)
     (Q : ExactLocallySampleableTuple X Y A B D → ℝ)
@@ -26996,7 +26996,7 @@ theorem exactAliceLocalConditional_nonneg
       (Finset.sum_nonneg (fun y _ => nonnegative (i, x, y, r)))
       (exactAliceLocalMass_nonneg D Q nonnegative i x)
 
-theorem exactBobLocalConditional_nonneg
+lemma exactBobLocalConditional_nonneg
     {n : ℕ} (D : Finset (Fin n))
     (base : ExactHistoryFlag X Y A B D)
     (Q : ExactLocallySampleableTuple X Y A B D → ℝ)
@@ -27012,7 +27012,7 @@ theorem exactBobLocalConditional_nonneg
       (Finset.sum_nonneg (fun x _ => nonnegative (i, x, y, r)))
       (exactBobLocalMass_nonneg D Q nonnegative i y)
 
-theorem exactAliceLocalMass_zero_apply
+lemma exactAliceLocalMass_zero_apply
     {n : ℕ} (D : Finset (Fin n))
     (Q : ExactLocallySampleableTuple X Y A B D → ℝ)
     (nonnegative : ∀ t, 0 ≤ Q t)
@@ -27032,7 +27032,7 @@ theorem exactAliceLocalMass_zero_apply
     (fun y _ => nonnegative (i, x, y, r))).mp
       hr y (Finset.mem_univ y)
 
-theorem exactBobLocalMass_zero_apply
+lemma exactBobLocalMass_zero_apply
     {n : ℕ} (D : Finset (Fin n))
     (Q : ExactLocallySampleableTuple X Y A B D → ℝ)
     (nonnegative : ∀ t, 0 ≤ Q t)
@@ -27052,7 +27052,7 @@ theorem exactBobLocalMass_zero_apply
     (fun x _ => nonnegative (i, x, y, r))).mp
       hr x (Finset.mem_univ x)
 
-theorem exactAliceLocalConditional_zero_apply
+lemma exactAliceLocalConditional_zero_apply
     {n : ℕ} (D : Finset (Fin n))
     (base : ExactHistoryFlag X Y A B D)
     (Q : ExactLocallySampleableTuple X Y A B D → ℝ)
@@ -27072,7 +27072,7 @@ theorem exactAliceLocalConditional_zero_apply
       (fun y _ => nonnegative (i, x, y, r))).mp
         hfiber y (Finset.mem_univ y)
 
-theorem exactBobLocalConditional_zero_apply
+lemma exactBobLocalConditional_zero_apply
     {n : ℕ} (D : Finset (Fin n))
     (base : ExactHistoryFlag X Y A B D)
     (Q : ExactLocallySampleableTuple X Y A B D → ℝ)
@@ -27092,7 +27092,7 @@ theorem exactBobLocalConditional_zero_apply
       (fun x _ => nonnegative (i, x, y, r))).mp
         hfiber x (Finset.mem_univ x)
 
-theorem exactAliceLocalConditional_sum
+lemma exactAliceLocalConditional_sum
     {n : ℕ} (D : Finset (Fin n))
     (base : ExactHistoryFlag X Y A B D)
     (Q : ExactLocallySampleableTuple X Y A B D → ℝ)
@@ -27105,7 +27105,7 @@ theorem exactAliceLocalConditional_sum
   · rw [← Finset.sum_div]
     exact div_self hmass
 
-theorem exactBobLocalConditional_sum
+lemma exactBobLocalConditional_sum
     {n : ℕ} (D : Finset (Fin n))
     (base : ExactHistoryFlag X Y A B D)
     (Q : ExactLocallySampleableTuple X Y A B D → ℝ)
@@ -27140,7 +27140,7 @@ def exactLocallySampleableJB
       t.1 t.2.2.1 t.2.2.2 /
     (Fintype.card (SourceRemainingCoordinate D) : ℝ)
 
-theorem exactLocallySampleableJA_nonneg
+lemma exactLocallySampleableJA_nonneg
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -27156,7 +27156,7 @@ theorem exactLocallySampleableJA_nonneg
         t.1 t.2.1 t.2.2.2))
     (Nat.cast_nonneg _)
 
-theorem exactLocallySampleableJB_nonneg
+lemma exactLocallySampleableJB_nonneg
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -27172,13 +27172,13 @@ theorem exactLocallySampleableJB_nonneg
         t.1 t.2.2.1 t.2.2.2))
     (Nat.cast_nonneg _)
 
-theorem exactRemainingCoordinate_card_pos
+lemma exactRemainingCoordinate_card_pos
     {n : ℕ} (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card) :
     0 < Fintype.card (SourceRemainingCoordinate D) := by
   simpa using remaining
 
-theorem exactLocallySampleableJA_sum
+lemma exactLocallySampleableJA_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -27220,7 +27220,7 @@ theorem exactLocallySampleableJA_sum
         nsmul_eq_mul, mul_one]
       exact div_self hcard
 
-theorem exactLocallySampleableJB_sum
+lemma exactLocallySampleableJB_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -27262,7 +27262,7 @@ theorem exactLocallySampleableJB_sum
         nsmul_eq_mul, mul_one]
       exact div_self hcard
 
-theorem exactLocallySampleableLaw_absolute_continuous_JA
+lemma exactLocallySampleableLaw_absolute_continuous_JA
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -27295,7 +27295,7 @@ theorem exactLocallySampleableLaw_absolute_continuous_JA
       (exactLocallySampleableLaw_nonneg G n S D positive)
       i x y r hconditional
 
-theorem exactLocallySampleableLaw_absolute_continuous_JB
+lemma exactLocallySampleableLaw_absolute_continuous_JB
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -27328,7 +27328,7 @@ theorem exactLocallySampleableLaw_absolute_continuous_JB
       (exactLocallySampleableLaw_nonneg G n S D positive)
       i x y r hconditional
 
-theorem exactLocallySampleableJA_pinsker
+lemma exactLocallySampleableJA_pinsker
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -27352,7 +27352,7 @@ theorem exactLocallySampleableJA_pinsker
       G n S D remaining positive)
     (exactLocallySampleableJA_sum G n S D remaining base)
 
-theorem exactLocallySampleableJB_pinsker
+lemma exactLocallySampleableJB_pinsker
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -27392,7 +27392,7 @@ def exactLocalConditionalFamily
   | .inl (i, x) => exactAliceLocalConditional D base Q i x r
   | .inr (i, y) => exactBobLocalConditional D base Q i y r
 
-theorem exactLocalConditionalFamily_nonneg
+lemma exactLocalConditionalFamily_nonneg
     {n : ℕ} (D : Finset (Fin n))
     (base : ExactHistoryFlag X Y A B D)
     (Q : ExactLocallySampleableTuple X Y A B D → ℝ)
@@ -27406,7 +27406,7 @@ theorem exactLocalConditionalFamily_nonneg
   · exact exactBobLocalConditional_nonneg
       D base Q nonnegative i y r
 
-theorem exactLocalConditionalFamily_sum
+lemma exactLocalConditionalFamily_sum
     {n : ℕ} (D : Finset (Fin n))
     (base : ExactHistoryFlag X Y A B D)
     (Q : ExactLocallySampleableTuple X Y A B D → ℝ)
@@ -27445,7 +27445,7 @@ def exactConditionalQuestionWeight
       G n D seed history x y xs ys /
     exactFiberQuestionMass G n D seed history x y
 
-theorem exactFiberQuestionMass_eq_jointQuestionMass
+lemma exactFiberQuestionMass_eq_jointQuestionMass
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -27519,7 +27519,7 @@ def exactJointBobCoordinateFilter
     conditionedBobCoordinateEffect
       G n S D answer ys seed.coordinate.val b
 
-theorem exactFiber_born_of_rank_one
+lemma exactFiber_born_of_rank_one
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -27562,7 +27562,7 @@ theorem exactFiber_born_of_rank_one
   field_simp [nonzero]
   nlinarith [hborn]
 
-theorem exactJointQuestionFilter_born
+lemma exactJointQuestionFilter_born
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -27588,7 +27588,7 @@ theorem exactJointQuestionFilter_born
     (conditionedAliceEffect G n S D aliceAnswer)
     (conditionedBobEffect G n S D bobAnswer)
 
-theorem exactJointCoordinateFilter_born
+lemma exactJointCoordinateFilter_born
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -27635,7 +27635,7 @@ def exactJointConditionalWinningMass
           G n S D seed history bobAnswer x y b)
     else 0
 
-theorem exactJointConditionalWinningMass_born
+lemma exactJointConditionalWinningMass_born
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -27686,7 +27686,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactFiberQuestionWeight_sum_bobQuestion
+lemma exactFiberQuestionWeight_sum_bobQuestion
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -27727,7 +27727,7 @@ theorem exactFiberQuestionWeight_sum_bobQuestion
       simp [exactFiberQuestionWeight,
         exactPriorQuestionWeight, hcompatible]
 
-theorem exactFiberQuestionWeight_sum_aliceQuestion
+lemma exactFiberQuestionWeight_sum_aliceQuestion
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -27768,7 +27768,7 @@ theorem exactFiberQuestionWeight_sum_aliceQuestion
       simp [exactFiberQuestionWeight,
         exactPriorQuestionWeight, hcompatible]
 
-theorem exactAliceQuestionMass_eq_sum_fiberMass
+lemma exactAliceQuestionMass_eq_sum_fiberMass
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -27808,7 +27808,7 @@ theorem exactAliceQuestionMass_eq_sum_fiberMass
     _ = _ := by
       rfl
 
-theorem exactBobQuestionMass_eq_sum_fiberMass
+lemma exactBobQuestionMass_eq_sum_fiberMass
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -27848,7 +27848,7 @@ theorem exactBobQuestionMass_eq_sum_fiberMass
     _ = _ := by
       rfl
 
-theorem exactCompatible_aliceMixed_coordinate_eq_or
+lemma exactCompatible_aliceMixed_coordinate_eq_or
     {n : ℕ} (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
     (history : ExactRevealHistory X Y D seed)
@@ -27893,7 +27893,7 @@ theorem exactCompatible_aliceMixed_coordinate_eq_or
           exact (hb.2.1 ⟨jr, hright⟩).trans
             (hb'.2.1 ⟨jr, hright⟩).symm
 
-theorem exactQuestionWeight_aliceMixed_rectangle
+lemma exactQuestionWeight_aliceMixed_rectangle
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -27922,7 +27922,7 @@ theorem exactQuestionWeight_aliceMixed_rectangle
   · simp [hAlice, mul_comm]
   · simp [hBob]
 
-theorem exactFiberQuestionWeight_aliceMixed_rectangle
+lemma exactFiberQuestionWeight_aliceMixed_rectangle
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -27953,7 +27953,7 @@ theorem exactFiberQuestionWeight_aliceMixed_rectangle
       G n D seed history x y y' xs xs' ys ys'
       ha ha' hb hb')
 
-theorem exactCompatible_bobMixed_coordinate_eq_or
+lemma exactCompatible_bobMixed_coordinate_eq_or
     {n : ℕ} (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
     (history : ExactRevealHistory X Y D seed)
@@ -27998,7 +27998,7 @@ theorem exactCompatible_bobMixed_coordinate_eq_or
           exact (hb.2.1 ⟨jr, hright⟩).trans
             (hb'.2.1 ⟨jr, hright⟩).symm
 
-theorem exactQuestionWeight_bobMixed_rectangle
+lemma exactQuestionWeight_bobMixed_rectangle
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -28027,7 +28027,7 @@ theorem exactQuestionWeight_bobMixed_rectangle
   · simp [hAlice, mul_comm]
   · simp [hBob]
 
-theorem exactFiberQuestionWeight_bobMixed_rectangle
+lemma exactFiberQuestionWeight_bobMixed_rectangle
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -28058,7 +28058,7 @@ theorem exactFiberQuestionWeight_bobMixed_rectangle
       G n D seed history x x' y xs xs' ys ys'
       ha ha' hb hb')
 
-theorem exactMixedRowMarginal_mul_total
+lemma exactMixedRowMarginal_mul_total
     {ι κ : Type*} [Fintype ι] [Fintype κ]
     (left right : ι → κ → ℝ)
     (rectangle : ∀ i i' j j',
@@ -28104,7 +28104,7 @@ theorem exactMixedRowMarginal_mul_total
         (∑ i' : ι, ∑ j : κ, left i' j) := by
       simp only [Finset.mul_sum]
 
-theorem exactFiberAliceMarginal_mul_cross_mass
+lemma exactFiberAliceMarginal_mul_cross_mass
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -28125,7 +28125,7 @@ theorem exactFiberAliceMarginal_mul_cross_mass
   exact exactFiberQuestionWeight_aliceMixed_rectangle
     G n D seed history x y y' u v s t
 
-theorem exactFiberBobMarginal_mul_cross_mass
+lemma exactFiberBobMarginal_mul_cross_mass
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -28182,7 +28182,7 @@ theorem exactFiberBobMarginal_mul_cross_mass
     _ = _ := by
       rw [Finset.sum_comm]
 
-theorem exactFiberQuestionWeight_nonneg
+lemma exactFiberQuestionWeight_nonneg
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -28196,7 +28196,7 @@ theorem exactFiberQuestionWeight_nonneg
   · exact (G.repeat n).weight_nonneg xs ys
   · exact le_rfl
 
-theorem exactFiberQuestionMass_nonneg
+lemma exactFiberQuestionMass_nonneg
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -28210,7 +28210,7 @@ theorem exactFiberQuestionMass_nonneg
       exactFiberQuestionWeight_nonneg
         G n D seed history x y xs ys))
 
-theorem exactAliceFiberNormalizedRow
+lemma exactAliceFiberNormalizedRow
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -28273,7 +28273,7 @@ theorem exactAliceFiberNormalizedRow
           G n D seed history x y := by
       rw [Finset.sum_mul]
 
-theorem exactBobFiberNormalizedColumn
+lemma exactBobFiberNormalizedColumn
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -28336,7 +28336,7 @@ theorem exactBobFiberNormalizedColumn
           G n D seed history x y := by
       rw [Finset.sum_mul]
 
-theorem exactAliceConditionalMatrix_eq_joint
+lemma exactAliceConditionalMatrix_eq_joint
     {d : Type*} [Fintype d]
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
@@ -28419,7 +28419,7 @@ theorem exactAliceConditionalMatrix_eq_joint
       rw [← exactAliceFiberNormalizedRow
         G n D seed history x y xs nonzero]
 
-theorem exactBobConditionalMatrix_eq_joint
+lemma exactBobConditionalMatrix_eq_joint
     {d : Type*} [Fintype d]
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
@@ -28502,7 +28502,7 @@ theorem exactBobConditionalMatrix_eq_joint
       rw [← exactBobFiberNormalizedColumn
         G n D seed history x y ys nonzero]
 
-theorem exactAliceQuestionFilter_eq_joint
+lemma exactAliceQuestionFilter_eq_joint
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -28519,7 +28519,7 @@ theorem exactAliceQuestionFilter_eq_joint
     G n D seed history x y nonzero
     (conditionedAliceEffect G n S D answer)
 
-theorem exactBobQuestionFilter_eq_joint
+lemma exactBobQuestionFilter_eq_joint
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -28536,7 +28536,7 @@ theorem exactBobQuestionFilter_eq_joint
     G n D seed history x y nonzero
     (conditionedBobEffect G n S D answer)
 
-theorem exactAliceCoordinateFilter_eq_joint
+lemma exactAliceCoordinateFilter_eq_joint
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -28554,7 +28554,7 @@ theorem exactAliceCoordinateFilter_eq_joint
     (fun xs => conditionedAliceCoordinateEffect
       G n S D answer xs seed.coordinate.val a)
 
-theorem exactBobCoordinateFilter_eq_joint
+lemma exactBobCoordinateFilter_eq_joint
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -28572,7 +28572,7 @@ theorem exactBobCoordinateFilter_eq_joint
     (fun ys => conditionedBobCoordinateEffect
       G n S D answer ys seed.coordinate.val b)
 
-theorem exactSourceEquationTen
+lemma exactSourceEquationTen
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -28633,7 +28633,7 @@ def exactFixedAliceQuestionMass
       (G.repeat n).questionWeight xs ys
     else 0
 
-theorem exactFixedBobQuestionMass_eq_product
+lemma exactFixedBobQuestionMass_eq_product
     (G : Game X Y A B) (n : ℕ)
     (fixed : Finset (Fin n))
     (xs : Fin n → X) (known : Fin n → Y) :
@@ -28694,7 +28694,7 @@ theorem exactFixedBobQuestionMass_eq_product
       · simp [hj]
       · simp [hj, Game.marginalX]
 
-theorem exactFixedAliceQuestionMass_eq_product
+lemma exactFixedAliceQuestionMass_eq_product
     (G : Game X Y A B) (n : ℕ)
     (fixed : Finset (Fin n))
     (known : Fin n → X) (ys : Fin n → Y) :
@@ -28755,7 +28755,7 @@ theorem exactFixedAliceQuestionMass_eq_product
       · simp [hj]
       · simp [hj, Game.marginalY]
 
-theorem exactFixedBobQuestionMass_insert
+lemma exactFixedBobQuestionMass_insert
     (G : Game X Y A B) (n : ℕ)
     (fixed : Finset (Fin n)) (j : Fin n) (fresh : j ∉ fixed)
     (xs : Fin n → X) (known : Fin n → Y) (y : Y) :
@@ -28797,7 +28797,7 @@ theorem exactFixedBobQuestionMass_insert
   rw [← G.marginalX_mul_conditionalYGivenX (xs j) y]
   ring
 
-theorem exactFixedAliceQuestionMass_insert
+lemma exactFixedAliceQuestionMass_insert
     (G : Game X Y A B) (n : ℕ)
     (fixed : Finset (Fin n)) (j : Fin n) (fresh : j ∉ fixed)
     (known : Fin n → X) (ys : Fin n → Y) (x : X) :
@@ -28859,19 +28859,19 @@ def exactReverseRightSide
   insert seed.coordinate
     (exactRight seed.coordinate seed.partition)
 
-@[simp] theorem exactReverseLeftSide_coordinate_mem
+@[simp] lemma exactReverseLeftSide_coordinate_mem
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     seed.coordinate ∈ exactReverseLeftSide seed := by
   simp [exactReverseLeftSide]
 
-@[simp] theorem exactReverseRightSide_coordinate_mem
+@[simp] lemma exactReverseRightSide_coordinate_mem
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     seed.coordinate ∈ exactReverseRightSide seed := by
   simp [exactReverseRightSide]
 
-theorem exactReverseLeftSide_card
+lemma exactReverseLeftSide_card
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     (exactReverseLeftSide seed).card =
@@ -28879,7 +28879,7 @@ theorem exactReverseLeftSide_card
   simp [exactReverseLeftSide,
     exactLeft_coordinate_not_mem, Nat.add_comm]
 
-theorem exactReverseRightSide_card
+lemma exactReverseRightSide_card
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     (exactReverseRightSide seed).card =
@@ -28887,7 +28887,7 @@ theorem exactReverseRightSide_card
   simp [exactReverseRightSide,
     exactRight_coordinate_not_mem, Nat.add_comm]
 
-theorem exactReverseLeftSide_markedWeight
+lemma exactReverseLeftSide_markedWeight
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     reverseMarkedPartitionWeight
@@ -28896,7 +28896,7 @@ theorem exactReverseLeftSide_markedWeight
   reverseMarkedPartitionWeight_eq_forward
     (exactReverseLeftSide_coordinate_mem seed)
 
-theorem exactReverseRightSide_markedWeight
+lemma exactReverseRightSide_markedWeight
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     reverseMarkedPartitionWeight
@@ -28905,7 +28905,7 @@ theorem exactReverseRightSide_markedWeight
   reverseMarkedPartitionWeight_eq_forward
     (exactReverseRightSide_coordinate_mem seed)
 
-theorem exactRemainingReverse_relativeEntropy_budget
+lemma exactRemainingReverse_relativeEntropy_budget
     {n : ℕ} (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
     (increment :
@@ -28972,7 +28972,7 @@ def exactReverseRightSeedWeight
       ((exactLeft
         seed.coordinate seed.partition).card + 1 : ℝ))
 
-theorem exactReverseLeftPermutation_card
+lemma exactReverseLeftPermutation_card
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     Fintype.card
@@ -28988,7 +28988,7 @@ theorem exactReverseLeftPermutation_card
   simp [exactReverseLeftSide_card,
     Nat.factorial_succ, Nat.mul_comm]
 
-theorem exactReverseRightPermutation_card
+lemma exactReverseRightPermutation_card
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     Fintype.card
@@ -29004,7 +29004,7 @@ theorem exactReverseRightPermutation_card
   simp [exactReverseRightSide_card,
     Nat.factorial_succ, Nat.mul_comm]
 
-theorem exactReverseLeftSeedWeight_eq_forward
+lemma exactReverseLeftSeedWeight_eq_forward
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     exactReverseLeftSeedWeight seed =
@@ -29021,7 +29021,7 @@ theorem exactReverseLeftSeedWeight_eq_forward
   field_simp
   ring
 
-theorem exactReverseRightSeedWeight_eq_forward
+lemma exactReverseRightSeedWeight_eq_forward
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     exactReverseRightSeedWeight seed =
@@ -29052,7 +29052,7 @@ def exactHistoryAccepted
       (r.aliceAnswer j)
       (r.bobAnswer j) = true
 
-theorem exactHistoryCode_accepted_iff
+lemma exactHistoryCode_accepted_iff
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (q : ExactJointOutcome X Y A B D) :
@@ -29073,7 +29073,7 @@ theorem exactHistoryCode_accepted_iff
   · intro h j
     exact h j.val j.property
 
-theorem exactLocallySampleableLaw_zero_of_not_accepted
+lemma exactLocallySampleableLaw_zero_of_not_accepted
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (i : SourceRemainingCoordinate D) (x : X) (y : Y)
@@ -29143,7 +29143,7 @@ def exactGlobalHistoryVector
         ExactGlobalHistoryLocalIndex G n S D) :=
   taggedTensorVector r z
 
-theorem exactGlobalHistoryVector_norm
+lemma exactGlobalHistoryVector_norm
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -29153,7 +29153,7 @@ theorem exactGlobalHistoryVector_norm
     ‖exactGlobalHistoryVector G n S D r z‖ = ‖z‖ :=
   taggedTensorVector_norm r z
 
-theorem exactGlobalHistoryVector_sub
+lemma exactGlobalHistoryVector_sub
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -29165,7 +29165,7 @@ theorem exactGlobalHistoryVector_sub
         exactGlobalHistoryVector G n S D r v :=
   taggedTensorVector_sub r u v
 
-theorem exactGlobalHistoryLocalIndex_card_pos
+lemma exactGlobalHistoryLocalIndex_card_pos
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) :
     0 < Fintype.card (ExactGlobalHistoryLocalIndex G n S D) := by
@@ -29231,7 +29231,7 @@ def exactGlobalHistoryFinPsi
       exact normalizeOrDefault_norm _ _
         (exactPaddedDefault_norm G n S D r)⟩
 
-theorem exactGlobalHistoryFinGamma_sub_Psi_norm
+lemma exactGlobalHistoryFinGamma_sub_Psi_norm
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -29297,7 +29297,7 @@ def exactSourceTuplePhi
   (exactGlobalHistoryFinPhi
     G n S D t.2.2.2 t.2.2.1).val
 
-theorem exactSourceTuplePsi_norm
+lemma exactSourceTuplePsi_norm
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (t : ExactLocallySampleableTuple X Y A B D) :
@@ -29305,7 +29305,7 @@ theorem exactSourceTuplePsi_norm
   (exactGlobalHistoryFinPsi
     G n S D t.2.2.2 t.2.1 t.2.2.1).property
 
-theorem exactSourceTupleGamma_norm
+lemma exactSourceTupleGamma_norm
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (t : ExactLocallySampleableTuple X Y A B D) :
@@ -29325,7 +29325,7 @@ def ExactSourceStateDistanceBound
       ‖exactSourceTuplePsi G n S D t -
         exactSourceTuplePhi G n S D t‖ ^ 2) ≤ 8 * η
 
-theorem exactPsiPhi_BornWeighted_normalized_distance
+lemma exactPsiPhi_BornWeighted_normalized_distance
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -29347,7 +29347,7 @@ theorem exactPsiPhi_BornWeighted_normalized_distance
     exactPaddedVector_norm] at h
   exact h
 
-theorem exactGammaPsi_BornWeighted_normalized_distance
+lemma exactGammaPsi_BornWeighted_normalized_distance
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -29388,7 +29388,7 @@ theorem exactGammaPsi_BornWeighted_normalized_distance
           exactUnnormalizedPsi G n S D r x y‖ ^ 2 := by
         rw [norm_sub_rev]
 
-theorem exactSourceEquationTwentyOne_of_fifteen
+lemma exactSourceEquationTwentyOne_of_fifteen
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -29452,7 +29452,7 @@ def exactFairBobQuestionEntropyIncrement
         (exactBobMeanFilter
           G n S D r.seed r.history r.bobAnswer x))
 
-theorem exactFairAlice_conditional_variation_le
+lemma exactFairAlice_conditional_variation_le
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) (y : Y)
@@ -29479,7 +29479,7 @@ theorem exactFairAlice_conditional_variation_le
   rw [exactBobPurificationMatrix_gram] at h
   exact h
 
-theorem exactFairBob_conditional_variation_le
+lemma exactFairBob_conditional_variation_le
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) (x : X)
@@ -29536,7 +29536,7 @@ def exactFairBobHistoryEntropyIncrement
   ∑ x : X, G.marginalX x *
     exactFairBobQuestionEntropyIncrement G n S D r x
 
-theorem exactFairAliceHistoryVariation_le_entropy
+lemma exactFairAliceHistoryVariation_le_entropy
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) :
@@ -29572,7 +29572,7 @@ theorem exactFairAliceHistoryVariation_le_entropy
                 ring
       _ ≤ _ := mul_le_mul_of_nonneg_left hlocal (G.marginalY_nonneg y)
 
-theorem exactFairBobHistoryVariation_le_entropy
+lemma exactFairBobHistoryVariation_le_entropy
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) :
@@ -29615,7 +29615,7 @@ def exactFairHistoryPriorWeight
   exactSeedWeight r.seed *
     exactRevealMass G n D r.seed r.history
 
-theorem exactFairHistoryPriorWeight_nonneg
+lemma exactFairHistoryPriorWeight_nonneg
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) :
@@ -29623,7 +29623,7 @@ theorem exactFairHistoryPriorWeight_nonneg
   exact mul_nonneg (exactSeedWeight_nonneg r.seed)
     (exactRevealMass_nonneg G n D r.seed r.history)
 
-theorem exactAcceptedFairAliceVariation_le_entropy
+lemma exactAcceptedFairAliceVariation_le_entropy
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) :
     (∑ r : ExactHistoryFlag X Y A B D,
@@ -29644,7 +29644,7 @@ theorem exactAcceptedFairAliceVariation_le_entropy
       (exactFairHistoryPriorWeight_nonneg G n D r)
   · exact le_rfl
 
-theorem exactAcceptedFairBobVariation_le_entropy
+lemma exactAcceptedFairBobVariation_le_entropy
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) :
     (∑ r : ExactHistoryFlag X Y A B D,
@@ -29703,7 +29703,7 @@ def ExactSourceClassicalInformationBound
       (exactLocallySampleableJB G n S D base) ≤
         exactSourceClassicalInformationRate G n S D
 
-theorem exactFiniteRelativeEntropy_equiv
+lemma exactFiniteRelativeEntropy_equiv
     {ι κ : Type*} [Fintype ι] [Fintype κ]
     (e : ι ≃ κ) (p q : ι → ℝ) :
     finiteRelativeEntropy
@@ -29780,7 +29780,7 @@ def exactBobInformationReference
     ((exactBobInformationEquiv
       (X := X) (Y := Y) (A := A) (B := B) D).symm t)
 
-theorem exact_source_equation_twenty_four_alice
+lemma exact_source_equation_twenty_four_alice
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -29841,7 +29841,7 @@ theorem exact_source_equation_twenty_four_alice
     _ = _ := finite_relative_entropy_joint_chain_rule
       p q hp hq hac hpnorm hqnorm
 
-theorem exact_source_equation_twenty_four_bob
+lemma exact_source_equation_twenty_four_bob
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -29907,7 +29907,7 @@ def exactSourcePinskerRate
     (D : Finset (Fin n)) : ℝ :=
   Real.sqrt (exactSourceClassicalInformationRate G n S D / 2)
 
-theorem exact_source_alice_pinsker_of_classical_information
+lemma exact_source_alice_pinsker_of_classical_information
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -29931,7 +29931,7 @@ theorem exact_source_alice_pinsker_of_classical_information
       apply Real.sqrt_le_sqrt
       exact div_le_div_of_nonneg_right information.1 (by norm_num)
 
-theorem exact_source_bob_pinsker_of_classical_information
+lemma exact_source_bob_pinsker_of_classical_information
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -29965,7 +29965,7 @@ set_option maxHeartbeats 1600000
 
 attribute [local instance] Classical.propDecidable
 
-theorem exactSeedCoordinateFiber_sum
+lemma exactSeedCoordinateFiber_sum
     {M : Type*} [Fintype M] [DecidableEq M]
     (coordinate : M) :
     (∑ partition : M → Bool,
@@ -30046,7 +30046,7 @@ theorem exactSeedCoordinateFiber_sum
     exact exactFintypeCard_eq _ _
   · exact exactFintypeCard_eq _ _
 
-theorem exactSeedWeight_coordinate_sum
+lemma exactSeedWeight_coordinate_sum
     {M : Type*} [Fintype M] [DecidableEq M]
     (f : M → ℝ) :
     (∑ seed : ExactForwardSeed M,
@@ -30059,7 +30059,7 @@ theorem exactSeedWeight_coordinate_sum
   simp_rw [← Finset.sum_mul]
   rw [exactSeedCoordinateFiber_sum i]
 
-theorem exactSeedWeight_coordinate_marginal
+lemma exactSeedWeight_coordinate_marginal
     {M : Type*} [Fintype M] [DecidableEq M]
     (i : M) :
     (∑ seed : ExactForwardSeed M,
@@ -30127,7 +30127,7 @@ def exactBobQuestionPriorMarginal
     (G : Game X Y A B) (y : Y) : ℝ :=
   ∑ x : X, G.questionWeight x y
 
-theorem exactAliceInformationReference_firstMarginal
+lemma exactAliceInformationReference_firstMarginal
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (base : ExactHistoryFlag X Y A B D)
@@ -30152,7 +30152,7 @@ theorem exactAliceInformationReference_firstMarginal
   simp_rw [← Finset.sum_div, ← Finset.mul_sum,
     exactAliceLocalConditional_sum, mul_one]
 
-theorem exactBobInformationReference_firstMarginal
+lemma exactBobInformationReference_firstMarginal
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (base : ExactHistoryFlag X Y A B D)
@@ -30195,7 +30195,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactGroupedMass_decidableEq_irrel
+lemma exactGroupedMass_decidableEq_irrel
     {Ω κ : Type*} [Fintype Ω]
     (first second : DecidableEq κ)
     (projection : Ω → κ) (mass : Ω → ℝ) :
@@ -30290,7 +30290,7 @@ def exactInsertedRank
   (Finset.subtypeInsertEquivOption not_mem).trans
     ((Equiv.optionCongr rank).trans (finSuccEquiv' cut).symm)
 
-@[simp] theorem exactInsertedRank_marker
+@[simp] lemma exactInsertedRank_marker
     {M : Type*} [DecidableEq M]
     (i : M) (side : Finset M) (not_mem : i ∉ side)
     (rank : {j : M // j ∈ side} ≃ Fin side.card)
@@ -30300,7 +30300,7 @@ def exactInsertedRank
   simp [exactInsertedRank,
     Finset.subtypeInsertEquivOption]
 
-theorem exactInsertedRank_old
+lemma exactInsertedRank_old
     {M : Type*} [DecidableEq M]
     (i : M) (side : Finset M) (not_mem : i ∉ side)
     (rank : {j : M // j ∈ side} ≃ Fin side.card)
@@ -30335,7 +30335,7 @@ def exactReverseRightRank
     (exactRight_coordinate_not_mem seed.coordinate seed.partition)
     (exactRightRank seed) seed.rightCut
 
-@[simp] theorem exactReverseLeftRank_coordinate
+@[simp] lemma exactReverseLeftRank_coordinate
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     exactReverseLeftRank seed
@@ -30349,7 +30349,7 @@ def exactReverseRightRank
       seed.coordinate seed.partition)
     (exactLeftRank seed) seed.leftCut
 
-@[simp] theorem exactReverseRightRank_coordinate
+@[simp] lemma exactReverseRightRank_coordinate
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     exactReverseRightRank seed
@@ -30363,7 +30363,7 @@ def exactReverseRightRank
       seed.coordinate seed.partition)
     (exactRightRank seed) seed.rightCut
 
-theorem exactReverseLeftRank_old
+lemma exactReverseLeftRank_old
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M)
     (j : {j : M //
@@ -30378,7 +30378,7 @@ theorem exactReverseLeftRank_old
       seed.coordinate seed.partition)
     (exactLeftRank seed) seed.leftCut j
 
-theorem exactReverseRightRank_old
+lemma exactReverseRightRank_old
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M)
     (j : {j : M //
@@ -30403,7 +30403,7 @@ def exactInsertedPrefixBefore
       (exactInsertedRank i side not_mem rank cut j).val <
         cut.val)).image Subtype.val
 
-theorem exactInsertedPrefixBefore_marker_eq
+lemma exactInsertedPrefixBefore_marker_eq
     {M : Type*} [Fintype M] [DecidableEq M]
     (i : M) (side : Finset M) (not_mem : i ∉ side)
     (rank : {j : M // j ∈ side} ≃ Fin side.card)
@@ -30474,7 +30474,7 @@ def exactReverseRightPrefixBeforeMarked
       seed.coordinate seed.partition)
     (exactRightRank seed) seed.rightCut
 
-theorem exactReverseLeftPrefixBeforeMarked_eq
+lemma exactReverseLeftPrefixBeforeMarked_eq
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     exactReverseLeftPrefixBeforeMarked seed =
@@ -30486,7 +30486,7 @@ theorem exactReverseLeftPrefixBeforeMarked_eq
       seed.coordinate seed.partition)
     (exactLeftRank seed) seed.leftCut
 
-theorem exactReverseRightPrefixBeforeMarked_eq
+lemma exactReverseRightPrefixBeforeMarked_eq
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     exactReverseRightPrefixBeforeMarked seed =
@@ -30519,7 +30519,7 @@ def exactOrderedSidePrefix
     (fun j : {j : M // j ∈ side} =>
       (rank j).val < cut.val)).image Subtype.val
 
-theorem exactOrderedSidePrefix_mem_iff
+lemma exactOrderedSidePrefix_mem_iff
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M)
     (rank : {j : M // j ∈ side} ≃ Fin side.card)
@@ -30540,7 +30540,7 @@ theorem exactOrderedSidePrefix_mem_iff
       ⟨⟨j, hj⟩, Finset.mem_filter.mpr
         ⟨Finset.mem_univ _, hlt⟩, rfl⟩
 
-theorem exactInsertedPrefixBefore_mem_iff
+lemma exactInsertedPrefixBefore_mem_iff
     {M : Type*} [Fintype M] [DecidableEq M]
     (i : M) (side : Finset M) (not_mem : i ∉ side)
     (rank : {j : M // j ∈ side} ≃ Fin side.card)
@@ -30581,7 +30581,7 @@ def exactReverseContextOtherPrefix
   exactOrderedSidePrefix
     context.otherSide context.otherRank context.otherCut
 
-theorem exactReverseLeftSide_complement
+lemma exactReverseLeftSide_complement
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     exactRight seed.coordinate seed.partition =
@@ -30594,7 +30594,7 @@ theorem exactReverseLeftSide_complement
       simp [exactRight, exactLeft,
         exactReverseLeftSide, hcoordinate, hbit]
 
-theorem exactReverseRightSide_complement
+lemma exactReverseRightSide_complement
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     exactLeft seed.coordinate seed.partition =
@@ -30661,7 +30661,7 @@ def exactReverseBobContextAt
   else
     exactDefaultReverseSideContext side
 
-@[simp] theorem exactReverseAliceContextAt_actual
+@[simp] lemma exactReverseAliceContextAt_actual
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     exactReverseAliceContextAt
@@ -30669,7 +30669,7 @@ def exactReverseBobContextAt
       exactReverseAliceContext seed := by
   simp [exactReverseAliceContextAt]
 
-@[simp] theorem exactReverseBobContextAt_actual
+@[simp] lemma exactReverseBobContextAt_actual
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     exactReverseBobContextAt
@@ -30677,7 +30677,7 @@ def exactReverseBobContextAt
       exactReverseBobContext seed := by
   simp [exactReverseBobContextAt]
 
-@[simp] theorem exactReverseAliceContext_otherPrefix
+@[simp] lemma exactReverseAliceContext_otherPrefix
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     exactReverseContextOtherPrefix
@@ -30685,7 +30685,7 @@ def exactReverseBobContextAt
       exactRightPrefix seed := by
   rfl
 
-@[simp] theorem exactReverseBobContext_otherPrefix
+@[simp] lemma exactReverseBobContext_otherPrefix
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     exactReverseContextOtherPrefix
@@ -30754,7 +30754,7 @@ def exactReverseBobSourceProjection
        (fun j => q.2.2.1 j.val.val)⟩,
       fun k => q.2.1 (context.sideRank.symm k).val.val)
 
-@[simp] theorem exactReverseAliceContext_marked_rank
+@[simp] lemma exactReverseAliceContext_marked_rank
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     ((exactReverseAliceContext seed).sideRank
@@ -30765,7 +30765,7 @@ def exactReverseBobSourceProjection
     Equiv.trans_apply,
     exactReverseLeftRank_coordinate]
 
-@[simp] theorem exactReverseBobContext_marked_rank
+@[simp] lemma exactReverseBobContext_marked_rank
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     ((exactReverseBobContext seed).sideRank
@@ -30784,7 +30784,7 @@ def exactReverseContextPrefixBefore
   exactOrderedSidePrefix
     side context.sideRank position.castSucc
 
-theorem exactReverseAliceContext_prefix_before_marked
+lemma exactReverseAliceContext_prefix_before_marked
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     exactReverseContextPrefixBefore
@@ -30844,7 +30844,7 @@ theorem exactReverseAliceContext_prefix_before_marked
     _ = exactLeftPrefix seed :=
       exactReverseLeftPrefixBeforeMarked_eq seed
 
-theorem exactReverseBobContext_prefix_before_marked
+lemma exactReverseBobContext_prefix_before_marked
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     exactReverseContextPrefixBefore
@@ -30931,7 +30931,7 @@ def exactPrefixNextDecode
     ((Ω × (Fin h → V)) × V) → (Ω × (Fin h → V)) :=
   fun t => (t.1.1, Function.update t.1.2 k t.2)
 
-theorem exactPrefixNextDecode_comp
+lemma exactPrefixNextDecode_comp
     {Ω V : Type*} {h : ℕ}
     (default : V) (k : Fin h) :
     exactPrefixNextDecode (Ω := Ω) (V := V) k ∘
@@ -30963,7 +30963,7 @@ theorem exactPrefixNextDecode_comp
           finitePrefixMask, Function.comp_apply,
           Function.update_of_ne heq, hfin, hnotle]
 
-theorem exactPrefixNextCode_comp
+lemma exactPrefixNextCode_comp
     {Ω V : Type*} {h : ℕ}
     (default : V) (k : Fin h) :
     exactPrefixNextCode default k ∘
@@ -30976,7 +30976,7 @@ theorem exactPrefixNextCode_comp
   · simp [exactPrefixNextCode,
       finitePrefixMask, Function.comp_apply]
 
-theorem exactPrefixNext_relativeEntropy_eq
+lemma exactPrefixNext_relativeEntropy_eq
     {Ω V : Type*} [Fintype Ω] [Fintype V] {h : ℕ}
     (joint prior : Ω × (Fin h → V) → ℝ)
     (joint_nonnegative : ∀ t, 0 ≤ joint t)
@@ -31034,7 +31034,7 @@ theorem exactPrefixNext_relativeEntropy_eq
       exactPrefixNextDecode_comp] at hdp
     exact hdp
 
-theorem exactPrefixNext_firstMarginal
+lemma exactPrefixNext_firstMarginal
     {Ω V : Type*} [Fintype Ω] [Fintype V] {h : ℕ}
     (mass : Ω × (Fin h → V) → ℝ)
     (default : V) (k : Fin h) :
@@ -31056,7 +31056,7 @@ theorem exactPrefixNext_firstMarginal
         (finitePrefixMask default k.castSucc) mass := by
         rfl
 
-theorem exactPrefixEntropyIncrement_eq_conditional
+lemma exactPrefixEntropyIncrement_eq_conditional
     {Ω V : Type*} [Fintype Ω] [Fintype V] {h : ℕ}
     (joint prior : Ω × (Fin h → V) → ℝ)
     (joint_nonnegative : ∀ t, 0 ≤ joint t)
@@ -31180,7 +31180,7 @@ def exactReverseAliceCanonicalPartition
   fun j => if j = coordinate then ignored
     else if j ∈ side then false else true
 
-theorem exactReverseAliceCanonicalPartition_side
+lemma exactReverseAliceCanonicalPartition_side
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) (coordinate : M)
     (member : coordinate ∈ side) (ignored : Bool) :
@@ -31197,7 +31197,7 @@ theorem exactReverseAliceCanonicalPartition_side
         exactReverseAliceCanonicalPartition,
         hj, hs]
 
-theorem exactReverseAliceCanonicalPartition_unique
+lemma exactReverseAliceCanonicalPartition_unique
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) (coordinate : M)
     (partition : M → Bool)
@@ -31246,7 +31246,7 @@ def exactReverseBobCanonicalPartition
   fun j => if j = coordinate then ignored
     else if j ∈ side then true else false
 
-theorem exactReverseBobCanonicalPartition_side
+lemma exactReverseBobCanonicalPartition_side
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) (coordinate : M)
     (member : coordinate ∈ side) (ignored : Bool) :
@@ -31263,7 +31263,7 @@ theorem exactReverseBobCanonicalPartition_side
         exactReverseBobCanonicalPartition,
         hj, hs]
 
-theorem exactReverseBobCanonicalPartition_unique
+lemma exactReverseBobCanonicalPartition_unique
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) (coordinate : M)
     (partition : M → Bool)
@@ -31306,7 +31306,7 @@ def exactReverseBobPartitionFiberEquiv
   right_inv ignored := by
     simp [exactReverseBobCanonicalPartition]
 
-theorem exactReverseAlicePartitionFiber_card
+lemma exactReverseAlicePartitionFiber_card
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) (coordinate : M)
     (member : coordinate ∈ side) :
@@ -31318,7 +31318,7 @@ theorem exactReverseAlicePartitionFiber_card
     (exactReverseAlicePartitionFiberEquiv
       side coordinate member)
 
-theorem exactReverseBobPartitionFiber_card
+lemma exactReverseBobPartitionFiber_card
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) (coordinate : M)
     (member : coordinate ∈ side) :
@@ -31330,7 +31330,7 @@ theorem exactReverseBobPartitionFiber_card
     (exactReverseBobPartitionFiberEquiv
       side coordinate member)
 
-theorem exactFiniteIndicator_sum
+lemma exactFiniteIndicator_sum
     {T : Type*} [Fintype T]
     (predicate : T → Prop) [DecidablePred predicate]
     (weight : ℝ) :
@@ -31347,7 +31347,7 @@ theorem exactFiniteIndicator_sum
     _ = (Fintype.card {t : T // predicate t} : ℝ) * weight := by
       simp [Fintype.card_subtype]
 
-theorem exactReverseAlicePartitionFiber_sum
+lemma exactReverseAlicePartitionFiber_sum
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) (coordinate : M)
     (member : coordinate ∈ side) (weight : ℝ) :
@@ -31360,7 +31360,7 @@ theorem exactReverseAlicePartitionFiber_sum
     side coordinate member]
   norm_num
 
-theorem exactReverseBobPartitionFiber_sum
+lemma exactReverseBobPartitionFiber_sum
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) (coordinate : M)
     (member : coordinate ∈ side) (weight : ℝ) :
@@ -31373,7 +31373,7 @@ theorem exactReverseBobPartitionFiber_sum
     side coordinate member]
   norm_num
 
-theorem exactReversePartition_orderCut_sum
+lemma exactReversePartition_orderCut_sum
     {M : Type*} [Fintype M] [DecidableEq M]
     (coordinate : M) (partition : M → Bool) :
     (∑ leftOrder : Equiv.Perm
@@ -31410,7 +31410,7 @@ theorem exactReversePartition_orderCut_sum
   field_simp [hleft.ne', hright.ne',
     hleft_factorial.ne', hright_factorial.ne']
 
-theorem exactReverseAlicePartition_orderCut_fiber_sum
+lemma exactReverseAlicePartition_orderCut_fiber_sum
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) (coordinate : M) (partition : M → Bool) :
     (∑ leftOrder : Equiv.Perm
@@ -31441,7 +31441,7 @@ theorem exactReverseAlicePartition_orderCut_fiber_sum
       exactReversePartition_orderCut_sum coordinate partition
   · simp [exactReverseLeftSide, hside]
 
-theorem exactReverseBobPartition_orderCut_fiber_sum
+lemma exactReverseBobPartition_orderCut_fiber_sum
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) (coordinate : M) (partition : M → Bool) :
     (∑ leftOrder : Equiv.Perm
@@ -31472,7 +31472,7 @@ theorem exactReverseBobPartition_orderCut_fiber_sum
       exactReversePartition_orderCut_sum coordinate partition
   · simp [exactReverseRightSide, hside]
 
-theorem exactReverseAliceSide_marginal
+lemma exactReverseAliceSide_marginal
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) :
     groupedMass exactReverseLeftSide
@@ -31517,7 +31517,7 @@ theorem exactReverseAliceSide_marginal
     fairPartitionWeight, Nat.cast_pow]
   ring
 
-theorem exactReverseBobSide_marginal
+lemma exactReverseBobSide_marginal
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) :
     groupedMass exactReverseRightSide
@@ -31576,7 +31576,7 @@ def exactReverseBobConditionalSeedWeight
     exactSeedWeight seed / reversePartitionWeight side
   else 0
 
-theorem exactReverseAliceConditionalSeedWeight_nonneg
+lemma exactReverseAliceConditionalSeedWeight_nonneg
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) (seed : ExactForwardSeed M) :
     0 ≤ exactReverseAliceConditionalSeedWeight side seed := by
@@ -31586,7 +31586,7 @@ theorem exactReverseAliceConditionalSeedWeight_nonneg
       (reversePartitionWeight_nonneg side)
   · exact le_rfl
 
-theorem exactReverseBobConditionalSeedWeight_nonneg
+lemma exactReverseBobConditionalSeedWeight_nonneg
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) (seed : ExactForwardSeed M) :
     0 ≤ exactReverseBobConditionalSeedWeight side seed := by
@@ -31596,7 +31596,7 @@ theorem exactReverseBobConditionalSeedWeight_nonneg
       (reversePartitionWeight_nonneg side)
   · exact le_rfl
 
-theorem exactReverseAliceConditionalSeedWeight_cancel
+lemma exactReverseAliceConditionalSeedWeight_cancel
     {M : Type*} [Fintype M] [DecidableEq M]
     (nonempty : 0 < Fintype.card M)
     (side : Finset M) (seed : ExactForwardSeed M) :
@@ -31618,7 +31618,7 @@ theorem exactReverseAliceConditionalSeedWeight_cancel
     field_simp [hpositive.ne']
   · simp [exactReverseAliceConditionalSeedWeight, hs]
 
-theorem exactReverseBobConditionalSeedWeight_cancel
+lemma exactReverseBobConditionalSeedWeight_cancel
     {M : Type*} [Fintype M] [DecidableEq M]
     (nonempty : 0 < Fintype.card M)
     (side : Finset M) (seed : ExactForwardSeed M) :
@@ -31640,7 +31640,7 @@ theorem exactReverseBobConditionalSeedWeight_cancel
     field_simp [hpositive.ne']
   · simp [exactReverseBobConditionalSeedWeight, hs]
 
-theorem exactReverseAliceConditionalSeedWeight_sum
+lemma exactReverseAliceConditionalSeedWeight_sum
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) (nonempty : side.Nonempty) :
     (∑ seed : ExactForwardSeed M,
@@ -31670,7 +31670,7 @@ theorem exactReverseAliceConditionalSeedWeight_sum
       rw [exactReverseAliceSide_marginal]
       exact div_self hside.ne'
 
-theorem exactReverseBobConditionalSeedWeight_sum
+lemma exactReverseBobConditionalSeedWeight_sum
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) (nonempty : side.Nonempty) :
     (∑ seed : ExactForwardSeed M,
@@ -31734,7 +31734,7 @@ def exactReverseBobConditionalSeedLaw
         exactReverseBobConditionalSeedWeight_sum side hside }
   else exactForwardSeedLaw nonempty
 
-@[simp] theorem exactReverseAliceConditionalSeedLaw_weight
+@[simp] lemma exactReverseAliceConditionalSeedLaw_weight
     {M : Type*} [Fintype M] [DecidableEq M]
     (nonempty : 0 < Fintype.card M)
     (side : Finset M) (hside : side.Nonempty)
@@ -31744,7 +31744,7 @@ def exactReverseBobConditionalSeedLaw
       exactReverseAliceConditionalSeedWeight side seed := by
   simp [exactReverseAliceConditionalSeedLaw, hside]
 
-@[simp] theorem exactReverseBobConditionalSeedLaw_weight
+@[simp] lemma exactReverseBobConditionalSeedLaw_weight
     {M : Type*} [Fintype M] [DecidableEq M]
     (nonempty : 0 < Fintype.card M)
     (side : Finset M) (hside : side.Nonempty)
@@ -31797,7 +31797,7 @@ def reweightedSeedWinEvent
       q.2 ∈ FiniteEventLaw.winEvent
         (repeatedCoordinateWin G n) D)
 
-theorem reweightedSeedWinEventMass
+lemma reweightedSeedWinEventMass
     {K : Type*} [Fintype K]
     (seedLaw : FiniteEventLaw K)
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -31841,7 +31841,7 @@ def reweightedSeedPosterior
     (reweightedSeedPriorEventLaw seedLaw G n S)
     (reweightedSeedWinEvent (K := K) G n D)
 
-theorem reweightedSeedPosterior_eq_product
+lemma reweightedSeedPosterior_eq_product
     {K : Type*} [Fintype K]
     (seedLaw : FiniteEventLaw K)
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -31881,7 +31881,7 @@ theorem reweightedSeedPosterior_eq_product
       repeatedConditionedOutcomeLaw,
       conditionedEventDistribution, hlift, hq]
 
-theorem reweightedSeedProjection_relativeEntropy_le
+lemma reweightedSeedProjection_relativeEntropy_le
     {K U : Type*} [Fintype K] [Fintype U]
     (seedLaw : FiniteEventLaw K)
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -31935,7 +31935,7 @@ def reweightedSeedFlaggedProjectionLaw
   groupedMass (fun q => (projection q, flag q))
     (reweightedSeedPosterior seedLaw G n S D)
 
-theorem reweightedSeedFlaggedProjectionLaw_firstMarginal
+lemma reweightedSeedFlaggedProjectionLaw_firstMarginal
     {K U Z : Type*} [Fintype K] [Fintype U] [Fintype Z]
     (seedLaw : FiniteEventLaw K)
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -31952,7 +31952,7 @@ theorem reweightedSeedFlaggedProjectionLaw_firstMarginal
   rw [groupedMass_comp]
   rfl
 
-theorem reweightedSeed_flagged_projection_relativeEntropy_le
+lemma reweightedSeed_flagged_projection_relativeEntropy_le
     {K U Z : Type*} [Fintype K] [Fintype U] [Fintype Z]
     (seedLaw : FiniteEventLaw K)
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -32040,7 +32040,7 @@ theorem reweightedSeed_flagged_projection_relativeEntropy_le
       exact reweightedSeedProjection_relativeEntropy_le
         seedLaw G n S D positive projection
 
-theorem reweightedSeed_source_equation_twenty_five
+lemma reweightedSeed_source_equation_twenty_five
     {K U : Type*} [Fintype K] [Fintype U]
     (seedLaw : FiniteEventLaw K)
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -32100,7 +32100,7 @@ def reweightedSeedPrefixPrior
       (Ω := Ω) (V := V)
       (Z := ConditionedAnswerFlag A B D)).symm t)
 
-theorem reweightedSeedPrefixJoint_nonneg
+lemma reweightedSeedPrefixJoint_nonneg
     {K Ω V : Type*} [Fintype K] [Fintype Ω] [Fintype V]
     {h : ℕ} (seedLaw : FiniteEventLaw K)
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -32121,7 +32121,7 @@ theorem reweightedSeedPrefixJoint_nonneg
   rw [reweightedSeedWinEventMass]
   exact positive
 
-theorem reweightedSeedPrefixPrior_nonneg
+lemma reweightedSeedPrefixPrior_nonneg
     {K Ω V : Type*} [Fintype K] [Fintype Ω] [Fintype V]
     {h : ℕ} (seedLaw : FiniteEventLaw K)
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -32161,7 +32161,7 @@ def reweightedSeedPrefixEntropyIncrement
         seedLaw G n S D projection)
       default k.castSucc
 
-theorem reweightedSeed_source_equation_twenty_six
+lemma reweightedSeed_source_equation_twenty_six
     {K Ω V : Type*} [Fintype K] [Fintype Ω] [Fintype V]
     {h : ℕ} (seedLaw : FiniteEventLaw K)
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -32239,7 +32239,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem reweightedSeedPrefixJoint_sum
+lemma reweightedSeedPrefixJoint_sum
     {K Ω V : Type*} [Fintype K] [Fintype Ω] [Fintype V]
     {h : ℕ} (seedLaw : FiniteEventLaw K)
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -32285,7 +32285,7 @@ theorem reweightedSeedPrefixJoint_sum
           repeatedConditionedAnswerFlag G n S D q.2))
       (conditionedEventDistribution law event)) t
 
-theorem reweightedSeedPrefixPrior_sum
+lemma reweightedSeedPrefixPrior_sum
     {K Ω V : Type*} [Fintype K] [Fintype Ω] [Fintype V]
     {h : ℕ} (seedLaw : FiniteEventLaw K)
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -32312,7 +32312,7 @@ theorem reweightedSeedPrefixPrior_sum
     exact law.weight_sum
   · exact conditionedAnswerFlag_card_pos G n S D positive
 
-theorem reweightedSeedPrefix_absolute_continuity
+lemma reweightedSeedPrefix_absolute_continuity
     {K Ω V : Type*} [Fintype K] [Fintype Ω] [Fintype V]
     {h : ℕ} (seedLaw : FiniteEventLaw K)
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -32370,7 +32370,7 @@ theorem reweightedSeedPrefix_absolute_continuity
         (conditionedEventDistribution law event)) u
   · exact conditionedAnswerFlag_card_pos G n S D positive
 
-theorem reweightedSeedPrefixEntropyIncrement_eq_conditional
+lemma reweightedSeedPrefixEntropyIncrement_eq_conditional
     {K Ω V : Type*} [Fintype K] [Fintype Ω] [Fintype V]
     {h : ℕ} (seedLaw : FiniteEventLaw K)
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -32465,7 +32465,7 @@ open QuantumParallelRepetition.ClassicalInformation
 
 attribute [local instance] Classical.propDecidable
 
-theorem exactReverseAliceConditionalSeedLaw_weight_cancel
+lemma exactReverseAliceConditionalSeedLaw_weight_cancel
     {M : Type*} [Fintype M] [DecidableEq M]
     (nonempty : 0 < Fintype.card M)
     (side : Finset M) (seed : ExactForwardSeed M) :
@@ -32484,7 +32484,7 @@ theorem exactReverseAliceConditionalSeedLaw_weight_cancel
     simp [exactReverseAliceConditionalSeedLaw,
       exactReverseLeftSide]
 
-theorem exactReverseBobConditionalSeedLaw_weight_cancel
+lemma exactReverseBobConditionalSeedLaw_weight_cancel
     {M : Type*} [Fintype M] [DecidableEq M]
     (nonempty : 0 < Fintype.card M)
     (side : Finset M) (seed : ExactForwardSeed M) :
@@ -32514,7 +32514,7 @@ def exactReverseSideContextWeight
       (Equiv.Perm {j : M // j ∈ context.otherSide}) : ℝ)) *
     (1 / (context.otherSide.card + 1 : ℝ))
 
-theorem exactReverseAliceConditionalSeedWeight_eq_context_div_card
+lemma exactReverseAliceConditionalSeedWeight_eq_context_div_card
     {M : Type*} [Fintype M] [DecidableEq M]
     (nonempty : 0 < Fintype.card M)
     (seed : ExactForwardSeed M) :
@@ -32540,7 +32540,7 @@ theorem exactReverseAliceConditionalSeedWeight_eq_context_div_card
   rw [if_pos (exactReverseLeftSide_coordinate_mem seed)]
   field_simp [hside.ne']
 
-theorem exactReverseBobConditionalSeedWeight_eq_context_div_card
+lemma exactReverseBobConditionalSeedWeight_eq_context_div_card
     {M : Type*} [Fintype M] [DecidableEq M]
     (nonempty : 0 < Fintype.card M)
     (seed : ExactForwardSeed M) :
@@ -32606,7 +32606,7 @@ def exactReverseBobMarkerCode
       ⟨seed.coordinate,
         exactReverseRightSide_coordinate_mem seed⟩⟩
 
-@[simp] theorem exactReverseAliceMarkerCode_coordinate
+@[simp] lemma exactReverseAliceMarkerCode_coordinate
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     (((exactReverseAliceMarkerCode seed).2.1.sideRank).symm
@@ -32614,7 +32614,7 @@ def exactReverseBobMarkerCode
       seed.coordinate := by
   simp [exactReverseAliceMarkerCode]
 
-@[simp] theorem exactReverseBobMarkerCode_coordinate
+@[simp] lemma exactReverseBobMarkerCode_coordinate
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     (((exactReverseBobMarkerCode seed).2.1.sideRank).symm
@@ -32622,7 +32622,7 @@ def exactReverseBobMarkerCode
       seed.coordinate := by
   simp [exactReverseBobMarkerCode]
 
-theorem exactReverseAliceMarkerCode_coordinate_injective
+lemma exactReverseAliceMarkerCode_coordinate_injective
     {M : Type*} [Fintype M] [DecidableEq M]
     {a b : ExactForwardSeed M}
     (same : exactReverseAliceMarkerCode a =
@@ -32634,7 +32634,7 @@ theorem exactReverseAliceMarkerCode_coordinate_injective
       (t.2.1.sideRank.symm t.2.2).val) same
   simpa only [exactReverseAliceMarkerCode_coordinate] using h
 
-theorem exactReverseBobMarkerCode_coordinate_injective
+lemma exactReverseBobMarkerCode_coordinate_injective
     {M : Type*} [Fintype M] [DecidableEq M]
     {a b : ExactForwardSeed M}
     (same : exactReverseBobMarkerCode a =
@@ -32646,7 +32646,7 @@ theorem exactReverseBobMarkerCode_coordinate_injective
       (t.2.1.sideRank.symm t.2.2).val) same
   simpa only [exactReverseBobMarkerCode_coordinate] using h
 
-theorem exactReverseAliceMarkerCode_partition_injective
+lemma exactReverseAliceMarkerCode_partition_injective
     {M : Type*} [Fintype M] [DecidableEq M]
     {a b : ExactForwardSeed M}
     (same : exactReverseAliceMarkerCode a =
@@ -32679,7 +32679,7 @@ theorem exactReverseAliceMarkerCode_partition_injective
       cases hb : b.partition j <;>
       simp_all
 
-theorem exactReverseBobMarkerCode_partition_injective
+lemma exactReverseBobMarkerCode_partition_injective
     {M : Type*} [Fintype M] [DecidableEq M]
     {a b : ExactForwardSeed M}
     (same : exactReverseBobMarkerCode a =
@@ -32712,7 +32712,7 @@ theorem exactReverseBobMarkerCode_partition_injective
       cases hb : b.partition j <;>
       simp_all
 
-theorem exactReverseAliceMarkerCode_injective
+lemma exactReverseAliceMarkerCode_injective
     {M : Type*} [Fintype M] [DecidableEq M] :
     Function.Injective (exactReverseAliceMarkerCode (M := M)) := by
   intro a b same
@@ -32877,7 +32877,7 @@ open QuantumParallelRepetition.ClassicalInformation
 
 attribute [local instance] Classical.propDecidable
 
-theorem exactReverseBobMarkerCode_injective
+lemma exactReverseBobMarkerCode_injective
     {M : Type*} [Fintype M] [DecidableEq M] :
     Function.Injective (exactReverseBobMarkerCode (M := M)) := by
   intro a b same
@@ -33090,7 +33090,7 @@ def exactDeleteMarkedRank
             Subtype.ext same
           rw [hj, marked])).trans (finSuccAboveEquiv cut).symm)
 
-theorem exactInsertedRank_deleteMarked
+lemma exactInsertedRank_deleteMarked
     {M : Type*} [DecidableEq M]
     (i : M) (side : Finset M) (not_mem : i ∉ side)
     (rank : {j : M // j ∈ insert i side} ≃
@@ -33160,7 +33160,7 @@ def exactPermutationOfSideRank
     Equiv.Perm {j : M // j ∈ side} :=
   (rank.trans (Finset.equivFin side).symm).symm
 
-theorem exactPermutationOfSideRank_rank
+lemma exactPermutationOfSideRank_rank
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M)
     (rank : {j : M // j ∈ side} ≃ Fin side.card) :
@@ -33170,7 +33170,7 @@ theorem exactPermutationOfSideRank_rank
   intro j
   simp [exactPermutationOfSideRank, Equiv.trans_apply]
 
-theorem exactReverseAliceCanonicalPartition_otherSide
+lemma exactReverseAliceCanonicalPartition_otherSide
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) (coordinate : M)
     (member : coordinate ∈ side) (ignored : Bool) :
@@ -33187,7 +33187,7 @@ theorem exactReverseAliceCanonicalPartition_otherSide
         exactReverseAliceCanonicalPartition,
         marked, belongs]
 
-theorem exactReverseBobCanonicalPartition_otherSide
+lemma exactReverseBobCanonicalPartition_otherSide
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) (coordinate : M)
     (member : coordinate ∈ side) (ignored : Bool) :
@@ -33204,7 +33204,7 @@ theorem exactReverseBobCanonicalPartition_otherSide
         exactReverseBobCanonicalPartition,
         marked, belongs]
 
-theorem exactReverseAliceCanonicalPartition_card
+lemma exactReverseAliceCanonicalPartition_card
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) (coordinate : M)
     (member : coordinate ∈ side) (ignored : Bool) :
@@ -33216,7 +33216,7 @@ theorem exactReverseAliceCanonicalPartition_card
       side coordinate member ignored)
   simpa [exactLeft_coordinate_not_mem] using h
 
-theorem exactReverseBobCanonicalPartition_card
+lemma exactReverseBobCanonicalPartition_card
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M) (coordinate : M)
     (member : coordinate ∈ side) (ignored : Bool) :
@@ -33425,7 +33425,7 @@ open QuantumParallelRepetition.ClassicalInformation
 
 attribute [local instance] Classical.propDecidable
 
-@[simp] theorem exactReverseAliceMarkerDecode_coordinate
+@[simp] lemma exactReverseAliceMarkerDecode_coordinate
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M)
     (context : ExactReverseSideContext M side)
@@ -33435,7 +33435,7 @@ attribute [local instance] Classical.propDecidable
       (context.sideRank.symm marker).val := by
   rfl
 
-@[simp] theorem exactReverseBobMarkerDecode_coordinate
+@[simp] lemma exactReverseBobMarkerDecode_coordinate
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M)
     (context : ExactReverseSideContext M side)
@@ -33445,7 +33445,7 @@ attribute [local instance] Classical.propDecidable
       (context.sideRank.symm marker).val := by
   rfl
 
-@[simp] theorem exactReverseAliceMarkerDecode_side
+@[simp] lemma exactReverseAliceMarkerDecode_side
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M)
     (context : ExactReverseSideContext M side)
@@ -33463,7 +33463,7 @@ attribute [local instance] Classical.propDecidable
     side (context.sideRank.symm marker).val
     (context.sideRank.symm marker).property context.ignoredBit
 
-@[simp] theorem exactReverseBobMarkerDecode_side
+@[simp] lemma exactReverseBobMarkerDecode_side
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M)
     (context : ExactReverseSideContext M side)
@@ -33481,7 +33481,7 @@ attribute [local instance] Classical.propDecidable
     side (context.sideRank.symm marker).val
     (context.sideRank.symm marker).property context.ignoredBit
 
-@[simp] theorem exactReverseAliceMarkerDecode_ignoredBit
+@[simp] lemma exactReverseAliceMarkerDecode_ignoredBit
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M)
     (context : ExactReverseSideContext M side)
@@ -33493,7 +33493,7 @@ attribute [local instance] Classical.propDecidable
   simp [exactReverseAliceMarkerDecode,
     exactReverseAliceCanonicalPartition]
 
-@[simp] theorem exactReverseBobMarkerDecode_ignoredBit
+@[simp] lemma exactReverseBobMarkerDecode_ignoredBit
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M)
     (context : ExactReverseSideContext M side)
@@ -33505,7 +33505,7 @@ attribute [local instance] Classical.propDecidable
   simp [exactReverseBobMarkerDecode,
     exactReverseBobCanonicalPartition]
 
-theorem exactSigmaFinCutTransport
+lemma exactSigmaFinCutTransport
     {M : Type*} [DecidableEq M]
     (source target : Finset M) (same : source = target)
     (cut : Fin (target.card + 1)) :
@@ -33517,7 +33517,7 @@ theorem exactSigmaFinCutTransport
   subst target
   simp
 
-theorem exactSigmaSideRankTransport
+lemma exactSigmaSideRankTransport
     {M : Type*} [DecidableEq M]
     (source target : Finset M) (same : source = target)
     (rank : {j : M // j ∈ target} ≃ Fin target.card) :
@@ -33536,7 +33536,7 @@ theorem exactSigmaSideRankTransport
     apply Subtype.ext
     rfl
 
-theorem exactReverseAliceMarkerDecode_otherRank
+lemma exactReverseAliceMarkerDecode_otherRank
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M)
     (context : ExactReverseSideContext M side)
@@ -33570,7 +33570,7 @@ theorem exactReverseAliceMarkerDecode_otherRank
     exactRightRank,
     exactPermutationOfSideRank_rank] using transported
 
-theorem exactReverseAliceMarkerDecode_otherCut
+lemma exactReverseAliceMarkerDecode_otherCut
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M)
     (context : ExactReverseSideContext M side)
@@ -33600,7 +33600,7 @@ theorem exactReverseAliceMarkerDecode_otherCut
     context.otherSide other context.otherCut
   simpa only [exactReverseAliceMarkerDecode] using transported
 
-theorem exactReverseAliceMarkerDecode_sideRank
+lemma exactReverseAliceMarkerDecode_sideRank
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M)
     (context : ExactReverseSideContext M side)
@@ -33675,7 +33675,7 @@ theorem exactReverseAliceMarkerDecode_sideRank
                 finCongr_apply, Fin.val_cast]
     _ = ⟨side, context.sideRank⟩ := transported
 
-theorem exactReverseAliceMarkerDecode_rightInverse
+lemma exactReverseAliceMarkerDecode_rightInverse
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M)
     (context : ExactReverseSideContext M side)
@@ -33773,7 +33773,7 @@ open QuantumParallelRepetition.ClassicalInformation
 
 attribute [local instance] Classical.propDecidable
 
-theorem exactReverseBobMarkerDecode_otherRank
+lemma exactReverseBobMarkerDecode_otherRank
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M)
     (context : ExactReverseSideContext M side)
@@ -33807,7 +33807,7 @@ theorem exactReverseBobMarkerDecode_otherRank
     exactLeftRank,
     exactPermutationOfSideRank_rank] using transported
 
-theorem exactReverseBobMarkerDecode_otherCut
+lemma exactReverseBobMarkerDecode_otherCut
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M)
     (context : ExactReverseSideContext M side)
@@ -33837,7 +33837,7 @@ theorem exactReverseBobMarkerDecode_otherCut
     context.otherSide other context.otherCut
   simpa only [exactReverseBobMarkerDecode] using transported
 
-theorem exactReverseBobMarkerDecode_sideRank
+lemma exactReverseBobMarkerDecode_sideRank
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M)
     (context : ExactReverseSideContext M side)
@@ -33912,7 +33912,7 @@ theorem exactReverseBobMarkerDecode_sideRank
                 finCongr_apply, Fin.val_cast]
     _ = ⟨side, context.sideRank⟩ := transported
 
-theorem exactReverseBobMarkerDecode_rightInverse
+lemma exactReverseBobMarkerDecode_rightInverse
     {M : Type*} [Fintype M] [DecidableEq M]
     (side : Finset M)
     (context : ExactReverseSideContext M side)
@@ -34050,7 +34050,7 @@ def exactReverseBobWeightedMarkerEquiv
     exact exactReverseBobMarkerDecode_rightInverse
       side context position
 
-theorem exactReverseAliceOriginalSeedWeight_factor
+lemma exactReverseAliceOriginalSeedWeight_factor
     {M : Type*} [Fintype M] [DecidableEq M]
     (nonempty : 0 < Fintype.card M)
     (seed : ExactForwardSeed M) :
@@ -34072,7 +34072,7 @@ theorem exactReverseAliceOriginalSeedWeight_factor
       rw [exactReverseAliceConditionalSeedWeight_eq_context_div_card
         nonempty seed]
 
-theorem exactReverseBobOriginalSeedWeight_factor
+lemma exactReverseBobOriginalSeedWeight_factor
     {M : Type*} [Fintype M] [DecidableEq M]
     (nonempty : 0 < Fintype.card M)
     (seed : ExactForwardSeed M) :
@@ -34094,7 +34094,7 @@ theorem exactReverseBobOriginalSeedWeight_factor
       rw [exactReverseBobConditionalSeedWeight_eq_context_div_card
         nonempty seed]
 
-theorem exactUniformFiniteMarkedAverage_sum
+lemma exactUniformFiniteMarkedAverage_sum
     (n : ℕ) (weight : ℝ) (statistic : Fin n → ℝ) :
     (∑ _marker : Fin n,
       weight * ((∑ position : Fin n, statistic position) / (n : ℝ))) =
@@ -34106,7 +34106,7 @@ theorem exactUniformFiniteMarkedAverage_sum
       exact_mod_cast empty
     simp [Finset.mul_sum, nonzero, div_eq_mul_inv, mul_left_comm]
 
-theorem exactReverseAliceUniformMarkedSeed_sum
+lemma exactReverseAliceUniformMarkedSeed_sum
     {M : Type*} [Fintype M] [DecidableEq M]
     (nonempty : 0 < Fintype.card M)
     (statistic : (side : Finset M) →
@@ -34214,7 +34214,7 @@ theorem exactReverseAliceUniformMarkedSeed_sum
                   exactReverseLeftSide_coordinate_mem seed⟩)
       rw [exactReverseAliceOriginalSeedWeight_factor nonempty]
 
-theorem exactReverseBobUniformMarkedSeed_sum
+lemma exactReverseBobUniformMarkedSeed_sum
     {M : Type*} [Fintype M] [DecidableEq M]
     (nonempty : 0 < Fintype.card M)
     (statistic : (side : Finset M) →
@@ -34374,7 +34374,7 @@ def exactReverseBobFilterOperatorMarkerEntropy
           ⟨seed, history, aliceAnswer, bobAnswer⟩
     else 0
 
-theorem exactFairAliceOperatorEntropy_reverse_marked_average
+lemma exactFairAliceOperatorEntropy_reverse_marked_average
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < Fintype.card (SourceRemainingCoordinate D)) :
@@ -34435,7 +34435,7 @@ theorem exactFairAliceOperatorEntropy_reverse_marked_average
       simp only [exactFairHistoryPriorWeight,
         Finset.mul_sum, mul_ite, mul_zero, mul_assoc]
 
-theorem exactFairBobOperatorEntropy_reverse_marked_average
+lemma exactFairBobOperatorEntropy_reverse_marked_average
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < Fintype.card (SourceRemainingCoordinate D)) :
@@ -34562,7 +34562,7 @@ def exactFairBobHistoryLowOperatorPotential
         (exactBobMeanFilter
           G n S D r.seed r.history r.bobAnswer x))
 
-theorem exactFairAliceHistoryEntropy_eq_operatorPotential_sub
+lemma exactFairAliceHistoryEntropy_eq_operatorPotential_sub
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) :
@@ -34579,7 +34579,7 @@ theorem exactFairAliceHistoryEntropy_eq_operatorPotential_sub
   rw [← mul_sub, map_sub]
   rfl
 
-theorem exactFairBobHistoryEntropy_eq_operatorPotential_sub
+lemma exactFairBobHistoryEntropy_eq_operatorPotential_sub
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) :
@@ -34667,7 +34667,7 @@ def exactReverseBobFilterLowOperatorPotential
           ⟨seed, history, aliceAnswer, bobAnswer⟩
     else 0
 
-theorem exactReverseAliceFilterOperatorMarkerEntropy_eq_sub
+lemma exactReverseAliceFilterOperatorMarkerEntropy_eq_sub
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -34698,7 +34698,7 @@ theorem exactReverseAliceFilterOperatorMarkerEntropy_eq_sub
     ring
   · simp [accepted]
 
-theorem exactReverseBobFilterOperatorMarkerEntropy_eq_sub
+lemma exactReverseBobFilterOperatorMarkerEntropy_eq_sub
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -34745,7 +34745,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactFixedQuestionPrefix_insert_iff
+lemma exactFixedQuestionPrefix_insert_iff
     {T : Type*} [DecidableEq T]
     {n : ℕ} (fixed : Finset (Fin n)) (j : Fin n)
     (fresh : j ∉ fixed)
@@ -34788,7 +34788,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactRevealCode_splitAt_independent
+lemma exactRevealCode_splitAt_independent
     {n : ℕ} (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
     (x x' : X) (y y' : Y)
@@ -34853,7 +34853,7 @@ theorem exactRevealCode_splitAt_independent
         seed.coordinate seed.partition (same ▸ hright)
     simp [Equiv.funSplitAt, Equiv.piSplitAt, different]
 
-theorem exactRepeatedQuestionWeight_splitAt_joint
+lemma exactRepeatedQuestionWeight_splitAt_joint
     (G : Game X Y A B) (n : ℕ) (i : Fin n)
     (x : X) (y : Y)
     (tailX : {j : Fin n // j ≠ i} → X)
@@ -34904,7 +34904,7 @@ def exactFairQuestionTailWeight
       G.questionWeight (tailX j) (tailY j)
     else 0
 
-theorem exactFairQuestionTailWeight_independent
+lemma exactFairQuestionTailWeight_independent
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -34922,7 +34922,7 @@ theorem exactFairQuestionTailWeight_independent
   rw [exactRevealCode_splitAt_independent
     D seed x x' y y' tailX tailY]
 
-theorem exactJointQuestionMass_eq_question_mul_tail
+lemma exactJointQuestionMass_eq_question_mul_tail
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -35072,7 +35072,7 @@ theorem exactJointQuestionMass_eq_question_mul_tail
               G n seed.coordinate.val x y tailX tailY
           · simp [h]
 
-theorem exactJointQuestionMass_sum
+lemma exactJointQuestionMass_sum
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -35146,7 +35146,7 @@ theorem exactJointQuestionMass_sum
             simpa [h] using hsum
           · simp [h]
 
-theorem exactJointQuestionMass_eq_reveal_mul_question
+lemma exactJointQuestionMass_eq_reveal_mul_question
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -35218,7 +35218,7 @@ def exactFairConditionedAnswerBornMass
         (conditionedAliceEffect G n S D r.aliceAnswer xs)
         (conditionedBobEffect G n S D r.bobAnswer ys)
 
-theorem exactFiberQuestionWeight_eq_zero_of_mass_zero
+lemma exactFiberQuestionWeight_eq_zero_of_mass_zero
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -35249,7 +35249,7 @@ theorem exactFiberQuestionWeight_eq_zero_of_mass_zero
       G n D seed history x y xs yy)).mp row_zero ys
     (Finset.mem_univ ys)
 
-theorem exactFairConditionedAnswerBornMass_eq_fiber_norm
+lemma exactFairConditionedAnswerBornMass_eq_fiber_norm
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -35280,7 +35280,7 @@ theorem exactFairConditionedAnswerBornMass_eq_fiber_norm
     unfold exactConditionalQuestionWeight
     field_simp [hmass]
 
-theorem exactFairConditionedAnswerBornMass_eq_reveal_question_norm
+lemma exactFairConditionedAnswerBornMass_eq_reveal_question_norm
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -35311,7 +35311,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactLocallySampleableCode_fixedSeed_fiber_iff
+lemma exactLocallySampleableCode_fixedSeed_fiber_iff
     {n : ℕ} (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
     (x : X) (y : Y)
@@ -35375,7 +35375,7 @@ def exactFairFullOutcomeBornMass
     then (strategyEventLaw (G.repeat n) S).weight o
     else 0
 
-theorem exactFairFullOutcomeBornMass_eq_conditioned
+lemma exactFairFullOutcomeBornMass_eq_conditioned
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -35485,7 +35485,7 @@ theorem exactFairFullOutcomeBornMass_eq_conditioned
       exact notfiber ⟨h.1, h.2.1, h.2.2.1⟩
     simp [notcode]
 
-theorem exactFairFullOutcomeBornMass_eq_reveal_question_norm
+lemma exactFairFullOutcomeBornMass_eq_reveal_question_norm
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -35497,7 +35497,7 @@ theorem exactFairFullOutcomeBornMass_eq_reveal_question_norm
   rw [exactFairFullOutcomeBornMass_eq_conditioned,
     exactFairConditionedAnswerBornMass_eq_reveal_question_norm]
 
-theorem exactLocallySampleableLaw_eq_fair_born
+lemma exactLocallySampleableLaw_eq_fair_born
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -35606,7 +35606,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactGlobalHistoryFinPsi_sub_Phi_norm
+lemma exactGlobalHistoryFinPsi_sub_Phi_norm
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -35626,7 +35626,7 @@ theorem exactGlobalHistoryFinPsi_sub_Phi_norm
     LinearIsometryEquiv.norm_map,
     exactGlobalHistoryVector_norm]
 
-theorem exactLocallySampleableLaw_zero_of_coordinate_mismatch
+lemma exactLocallySampleableLaw_zero_of_coordinate_mismatch
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (i : SourceRemainingCoordinate D) (x : X) (y : Y)
@@ -35656,7 +35656,7 @@ theorem exactLocallySampleableLaw_zero_of_coordinate_mismatch
   exact (different
     (coordinate.symm.trans (congrArg ExactForwardSeed.coordinate seed))).elim
 
-theorem exactFairPosteriorExpectation_reindex
+lemma exactFairPosteriorExpectation_reindex
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (f : ExactLocallySampleableTuple X Y A B D → ℝ) :
@@ -35749,7 +35749,7 @@ def exactFairAcceptedBobVariation
         exactFairBobHistoryVariation G n S D r
     else 0
 
-theorem exactFairPsiPhiDistance_mul_postselection_le
+lemma exactFairPsiPhiDistance_mul_postselection_le
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D) :
@@ -35830,7 +35830,7 @@ theorem exactFairPsiPhiDistance_mul_postselection_le
         ring
       · simp [accepted]
 
-theorem exactFairGammaPsiDistance_mul_postselection_le
+lemma exactFairGammaPsiDistance_mul_postselection_le
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D) :
@@ -35921,7 +35921,7 @@ def ExactFairOperatorEntropyBound
   exactFairAcceptedBobEntropy G n S D ≤
       2 * (repeatedPostselectionMass G n S D * η)
 
-theorem exactSourceStateDistanceBound_of_fair_operator_entropy
+lemma exactSourceStateDistanceBound_of_fair_operator_entropy
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (η : ℝ)
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -35976,7 +35976,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactAliceQuestionConditionalWeight_sum
+lemma exactAliceQuestionConditionalWeight_sum
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -36016,7 +36016,7 @@ theorem exactAliceQuestionConditionalWeight_sum
       · simp [zero]
       · exact div_self zero
 
-theorem exactBobQuestionConditionalWeight_sum
+lemma exactBobQuestionConditionalWeight_sum
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -36056,7 +36056,7 @@ theorem exactBobQuestionConditionalWeight_sum
       · simp [zero]
       · exact div_self zero
 
-theorem exactAliceQuestionFilter_complement_posSemidef
+lemma exactAliceQuestionFilter_complement_posSemidef
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -36119,7 +36119,7 @@ theorem exactAliceQuestionFilter_complement_posSemidef
     exact (conditionedAliceEffect_complement_positive
       G n S D answer q.1).smul (weights_nonnegative q)
 
-theorem exactBobQuestionFilter_complement_posSemidef
+lemma exactBobQuestionFilter_complement_posSemidef
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -36182,7 +36182,7 @@ theorem exactBobQuestionFilter_complement_posSemidef
     exact (conditionedBobEffect_complement_positive
       G n S D answer q.2).smul (weights_nonnegative q)
 
-theorem exactAliceMeanFilter_complement_posSemidef
+lemma exactAliceMeanFilter_complement_posSemidef
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -36215,7 +36215,7 @@ theorem exactAliceMeanFilter_complement_posSemidef
       G n S D seed history answer x).smul
         (G.conditionalXGivenY_nonneg y x)
 
-theorem exactBobMeanFilter_complement_posSemidef
+lemma exactBobMeanFilter_complement_posSemidef
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -36248,7 +36248,7 @@ theorem exactBobMeanFilter_complement_posSemidef
       G n S D seed history answer y).smul
         (G.conditionalYGivenX_nonneg x y)
 
-theorem exactFairAliceMean_spectral_entropy_le
+lemma exactFairAliceMean_spectral_entropy_le
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -36280,7 +36280,7 @@ theorem exactFairAliceMean_spectral_entropy_le
     (exactBobQuestionFilter_complement_posSemidef
       G n S D r.seed r.history r.bobAnswer y)
 
-theorem exactFairBobMean_spectral_entropy_le
+lemma exactFairBobMean_spectral_entropy_le
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -36312,7 +36312,7 @@ theorem exactFairBobMean_spectral_entropy_le
     (exactBobMeanFilter_complement_posSemidef
       G n S D r.seed r.history r.bobAnswer x)
 
-theorem exactFairAliceHistoryHighOperatorPotential_nonpos
+lemma exactFairAliceHistoryHighOperatorPotential_nonpos
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) :
@@ -36357,7 +36357,7 @@ theorem exactFairAliceHistoryHighOperatorPotential_nonpos
           (exactBobQuestionFilter_posSemidef
             G n S D r.seed r.history r.bobAnswer y))
 
-theorem exactFairBobHistoryHighOperatorPotential_nonpos
+lemma exactFairBobHistoryHighOperatorPotential_nonpos
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) :
@@ -36401,7 +36401,7 @@ theorem exactFairBobHistoryHighOperatorPotential_nonpos
           (exactBobQuestionFilter_complement_posSemidef
             G n S D r.seed r.history r.bobAnswer y))
 
-theorem exactFairAliceHistoryLowOperatorPotential_neg_le_entropy
+lemma exactFairAliceHistoryLowOperatorPotential_neg_le_entropy
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) :
@@ -36423,7 +36423,7 @@ theorem exactFairAliceHistoryLowOperatorPotential_neg_le_entropy
     (G.marginalY_nonneg y)
   nlinarith
 
-theorem exactFairBobHistoryLowOperatorPotential_neg_le_entropy
+lemma exactFairBobHistoryLowOperatorPotential_neg_le_entropy
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) :
@@ -36445,7 +36445,7 @@ theorem exactFairBobHistoryLowOperatorPotential_neg_le_entropy
     (G.marginalX_nonneg x)
   nlinarith
 
-theorem exactReverseAliceFilterHighOperatorPotential_nonpos
+lemma exactReverseAliceFilterHighOperatorPotential_nonpos
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -36474,7 +36474,7 @@ theorem exactReverseAliceFilterHighOperatorPotential_nonpos
           history, aliceAnswer, bobAnswer⟩)
   · exact le_rfl
 
-theorem exactReverseBobFilterHighOperatorPotential_nonpos
+lemma exactReverseBobFilterHighOperatorPotential_nonpos
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -36555,7 +36555,7 @@ def exactJointPrefixBobOperatorMass
         conditionedBobEffect G n S D answer ys
     else 0
 
-theorem exactJointPrefixQuestionMass_eq_sum_alice
+lemma exactJointPrefixQuestionMass_eq_sum_alice
     (G : Game X Y A B) (n : ℕ)
     (fixedX fixedY : Finset (Fin n))
     (knownX : Fin n → X) (knownY : Fin n → Y) :
@@ -36589,7 +36589,7 @@ theorem exactJointPrefixQuestionMass_eq_sum_alice
     rw [if_neg]
     exact fun h => compatible h.2
 
-theorem exactJointPrefixQuestionMass_eq_sum_bob
+lemma exactJointPrefixQuestionMass_eq_sum_bob
     (G : Game X Y A B) (n : ℕ)
     (fixedX fixedY : Finset (Fin n))
     (knownX : Fin n → X) (knownY : Fin n → Y) :
@@ -36622,7 +36622,7 @@ theorem exactJointPrefixQuestionMass_eq_sum_bob
     rw [if_neg]
     exact fun h => compatible h.1
 
-theorem exactJointPrefixQuestionMass_insert_alice
+lemma exactJointPrefixQuestionMass_insert_alice
     (G : Game X Y A B) (n : ℕ)
     (fixedX fixedY : Finset (Fin n)) (j : Fin n)
     (fresh : j ∉ fixedX) (opposite_fixed : j ∈ fixedY)
@@ -36647,7 +36647,7 @@ theorem exactJointPrefixQuestionMass_insert_alice
       compatible j opposite_fixed]
   · simp [compatible]
 
-theorem exactJointPrefixQuestionMass_insert_bob
+lemma exactJointPrefixQuestionMass_insert_bob
     (G : Game X Y A B) (n : ℕ)
     (fixedX fixedY : Finset (Fin n)) (j : Fin n)
     (opposite_fixed : j ∈ fixedX) (fresh : j ∉ fixedY)
@@ -36672,7 +36672,7 @@ theorem exactJointPrefixQuestionMass_insert_bob
       compatible j opposite_fixed]
   · simp [compatible]
 
-theorem exactJointPrefixQuestionAtom_zero_of_mass_zero
+lemma exactJointPrefixQuestionAtom_zero_of_mass_zero
     (G : Game X Y A B) (n : ℕ)
     (fixedX fixedY : Finset (Fin n))
     (knownX : Fin n → X) (knownY : Fin n → Y)
@@ -36704,7 +36704,7 @@ theorem exactJointPrefixQuestionAtom_zero_of_mass_zero
       · exact (G.repeat n).weight_nonneg xs yy
       · exact le_rfl)).mp row_zero ys (Finset.mem_univ ys)
 
-theorem exactJointPrefixAliceOperatorMass_zero_of_mass_zero
+lemma exactJointPrefixAliceOperatorMass_zero_of_mass_zero
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D fixedX fixedY : Finset (Fin n))
     (answer : {j : Fin n // j ∈ D} → A)
@@ -36729,7 +36729,7 @@ theorem exactJointPrefixAliceOperatorMass_zero_of_mass_zero
     exact zero_smul ℝ (conditionedAliceEffect G n S D answer xs)
   · rw [if_neg compatible]
 
-theorem exactJointPrefixBobOperatorMass_zero_of_mass_zero
+lemma exactJointPrefixBobOperatorMass_zero_of_mass_zero
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D fixedX fixedY : Finset (Fin n))
     (answer : {j : Fin n // j ∈ D} → B)
@@ -36754,7 +36754,7 @@ theorem exactJointPrefixBobOperatorMass_zero_of_mass_zero
     exact zero_smul ℝ (conditionedBobEffect G n S D answer ys)
   · rw [if_neg compatible]
 
-theorem exactJointPrefixAliceOperatorMass_sum_insert
+lemma exactJointPrefixAliceOperatorMass_sum_insert
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D fixedX fixedY : Finset (Fin n)) (j : Fin n)
     (fresh : j ∉ fixedX)
@@ -36819,7 +36819,7 @@ theorem exactJointPrefixAliceOperatorMass_sum_insert
         rw [if_neg]
         exact fun h => compatible ⟨h.1.2, h.2⟩
 
-theorem exactJointPrefixBobOperatorMass_sum_insert
+lemma exactJointPrefixBobOperatorMass_sum_insert
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D fixedX fixedY : Finset (Fin n)) (j : Fin n)
     (fresh : j ∉ fixedY)
@@ -36906,7 +36906,7 @@ def exactJointPrefixBobOperatorFilter
     exactJointPrefixBobOperatorMass
       G n S D fixedX fixedY answer knownX knownY
 
-theorem exactJointPrefixAliceOperatorFilter_martingale
+lemma exactJointPrefixAliceOperatorFilter_martingale
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D fixedX fixedY : Finset (Fin n)) (j : Fin n)
     (fresh : j ∉ fixedX) (opposite_fixed : j ∈ fixedY)
@@ -36983,7 +36983,7 @@ theorem exactJointPrefixAliceOperatorFilter_martingale
           rw [exactJointPrefixAliceOperatorMass_sum_insert
             G n S D fixedX fixedY j fresh answer knownX knownY]
 
-theorem exactJointPrefixBobOperatorFilter_martingale
+lemma exactJointPrefixBobOperatorFilter_martingale
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D fixedX fixedY : Finset (Fin n)) (j : Fin n)
     (opposite_fixed : j ∈ fixedX) (fresh : j ∉ fixedY)
@@ -37088,7 +37088,7 @@ def exactFairBobQuestionMask
   (D ∪ (exactRight seed.coordinate seed.partition).image
     Subtype.val) ∪ (exactLeftPrefix seed).image Subtype.val
 
-theorem exactRevealCode_eq_iff_fair_question_masks
+lemma exactRevealCode_eq_iff_fair_question_masks
     {n : ℕ} (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
     (q q' : ExactFullQuestion X Y n) :
@@ -37180,7 +37180,7 @@ theorem exactRevealCode_eq_iff_fair_question_masks
         Finset.mem_union_right _ <|
           Finset.mem_image.mpr ⟨j.val, j.property, rfl⟩
 
-theorem exactAliceQuestionMass_eq_jointPrefixQuestionMass
+lemma exactAliceQuestionMass_eq_jointPrefixQuestionMass
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -37242,7 +37242,7 @@ theorem exactAliceQuestionMass_eq_jointPrefixQuestionMass
   · rw [if_neg (fun h => compatible (same.mp h)),
       if_neg compatible]
 
-theorem exactBobQuestionMass_eq_jointPrefixQuestionMass
+lemma exactBobQuestionMass_eq_jointPrefixQuestionMass
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -37304,7 +37304,7 @@ theorem exactBobQuestionMass_eq_jointPrefixQuestionMass
   · rw [if_neg (fun h => compatible (same.mp h)),
       if_neg compatible]
 
-theorem exactAliceQuestionFilter_eq_jointPrefixOperatorFilter
+lemma exactAliceQuestionFilter_eq_jointPrefixOperatorFilter
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -37376,7 +37376,7 @@ theorem exactAliceQuestionFilter_eq_jointPrefixOperatorFilter
   · rw [if_neg (fun h => compatible (same.mp h)),
       if_neg compatible, smul_zero]
 
-theorem exactBobQuestionFilter_eq_jointPrefixOperatorFilter
+lemma exactBobQuestionFilter_eq_jointPrefixOperatorFilter
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -37464,7 +37464,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactJointPrefixAliceOperatorMass_eq_sum_bobMass
+lemma exactJointPrefixAliceOperatorMass_eq_sum_bobMass
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D fixedX fixedY : Finset (Fin n))
     (answer : {j : Fin n // j ∈ D} → A)
@@ -37500,7 +37500,7 @@ theorem exactJointPrefixAliceOperatorMass_eq_sum_bobMass
     rw [if_neg]
     exact fun h => compatible h.1
 
-theorem exactJointPrefixBobOperatorMass_eq_sum_aliceMass
+lemma exactJointPrefixBobOperatorMass_eq_sum_aliceMass
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D fixedX fixedY : Finset (Fin n))
     (answer : {j : Fin n // j ∈ D} → B)
@@ -37537,7 +37537,7 @@ theorem exactJointPrefixBobOperatorMass_eq_sum_aliceMass
     rw [if_neg]
     exact fun h => compatible h.2
 
-theorem exactJointPrefixAliceOperatorMass_insert_bob
+lemma exactJointPrefixAliceOperatorMass_insert_bob
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D fixedX fixedY : Finset (Fin n)) (j : Fin n)
     (opposite_fixed : j ∈ fixedX) (fresh : j ∉ fixedY)
@@ -37563,7 +37563,7 @@ theorem exactJointPrefixAliceOperatorMass_insert_bob
       compatible j opposite_fixed, smul_smul]
   · rw [if_neg compatible, if_neg compatible, smul_zero]
 
-theorem exactJointPrefixBobOperatorMass_insert_alice
+lemma exactJointPrefixBobOperatorMass_insert_alice
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D fixedX fixedY : Finset (Fin n)) (j : Fin n)
     (fresh : j ∉ fixedX) (opposite_fixed : j ∈ fixedY)
@@ -37589,7 +37589,7 @@ theorem exactJointPrefixBobOperatorMass_insert_alice
       compatible j opposite_fixed, smul_smul]
   · rw [if_neg compatible, if_neg compatible, smul_zero]
 
-theorem exactJointPrefixAliceOperatorFilter_insert_bob
+lemma exactJointPrefixAliceOperatorFilter_insert_bob
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D fixedX fixedY : Finset (Fin n)) (j : Fin n)
     (opposite_fixed : j ∈ fixedX) (fresh : j ∉ fixedY)
@@ -37622,7 +37622,7 @@ theorem exactJointPrefixAliceOperatorFilter_insert_bob
     · field_simp
   rw [coefficient]
 
-theorem exactJointPrefixBobOperatorFilter_insert_alice
+lemma exactJointPrefixBobOperatorFilter_insert_alice
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D fixedX fixedY : Finset (Fin n)) (j : Fin n)
     (fresh : j ∉ fixedX) (opposite_fixed : j ∈ fixedY)
@@ -37673,7 +37673,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem groupedMass_expectation
+lemma groupedMass_expectation
     {Ω T : Type*} [Fintype Ω] [Fintype T] [DecidableEq T]
     (code : Ω → T) (weight : Ω → ℝ) (f : T → ℝ) :
     (∑ t : T, groupedMass code weight t * f t) =
@@ -37690,7 +37690,7 @@ theorem groupedMass_expectation
     simp [different.symm]
   · simp
 
-theorem exactJointQuestionMass_eq_groupedMass
+lemma exactJointQuestionMass_eq_groupedMass
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -37724,7 +37724,7 @@ theorem exactJointQuestionMass_eq_groupedMass
         congrArg (fun t => t.2.1) h,
         congrArg (fun t => t.2.2) h⟩
 
-theorem exactFairJointQuestionExpectation_reindex
+lemma exactFairJointQuestionExpectation_reindex
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -37784,7 +37784,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactFairAliceHistoryHighOperatorPotential_eq_joint
+lemma exactFairAliceHistoryHighOperatorPotential_eq_joint
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) :
@@ -37837,7 +37837,7 @@ theorem exactFairAliceHistoryHighOperatorPotential_eq_joint
         rw [← G.marginalY_mul_conditionalXGivenY x y]
     _ = _ := Finset.sum_comm
 
-theorem exactFairBobHistoryHighOperatorPotential_eq_joint
+lemma exactFairBobHistoryHighOperatorPotential_eq_joint
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) :
@@ -37860,7 +37860,7 @@ theorem exactFairBobHistoryHighOperatorPotential_eq_joint
   rw [← G.marginalX_mul_conditionalYGivenX x y]
   ring
 
-theorem exactFairAliceHistoryLowOperatorPotential_eq_joint
+lemma exactFairAliceHistoryLowOperatorPotential_eq_joint
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) :
@@ -37895,7 +37895,7 @@ theorem exactFairAliceHistoryLowOperatorPotential_eq_joint
         rw [Finset.sum_mul]
     _ = _ := Finset.sum_comm
 
-theorem exactFairBobHistoryLowOperatorPotential_eq_joint
+lemma exactFairBobHistoryLowOperatorPotential_eq_joint
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) :
@@ -37914,7 +37914,7 @@ theorem exactFairBobHistoryLowOperatorPotential_eq_joint
   unfold Game.marginalX
   rw [Finset.sum_mul]
 
-theorem exactFairAcceptedJointStatistic_reindex
+lemma exactFairAcceptedJointStatistic_reindex
     (G : Game X Y A B) (n : ℕ) (_ : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -38142,7 +38142,7 @@ def exactReverseBobLowQuestionPotential
                 bobAnswer (q.1 seed.coordinate.val)))
         else 0)
 
-theorem exactReverseAliceHighOperatorPotential_eq_question
+lemma exactReverseAliceHighOperatorPotential_eq_question
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -38213,7 +38213,7 @@ theorem exactReverseAliceHighOperatorPotential_eq_question
             (exactReverseBobMarkerDecode side context marker)
             history bobAnswer y))
 
-theorem exactReverseAliceLowOperatorPotential_eq_question
+lemma exactReverseAliceLowOperatorPotential_eq_question
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -38284,7 +38284,7 @@ theorem exactReverseAliceLowOperatorPotential_eq_question
             (exactReverseBobMarkerDecode side context marker)
             history bobAnswer y))
 
-theorem exactReverseBobHighOperatorPotential_eq_question
+lemma exactReverseBobHighOperatorPotential_eq_question
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -38355,7 +38355,7 @@ theorem exactReverseBobHighOperatorPotential_eq_question
               (exactReverseAliceMarkerDecode side context marker)
               history bobAnswer y)))
 
-theorem exactReverseBobLowOperatorPotential_eq_question
+lemma exactReverseBobLowOperatorPotential_eq_question
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -38426,7 +38426,7 @@ theorem exactReverseBobLowOperatorPotential_eq_question
               (exactReverseAliceMarkerDecode side context marker)
               history bobAnswer x)))
 
-theorem exactReverseAliceFilterOperatorMarkerEntropy_eq_question_sub
+lemma exactReverseAliceFilterOperatorMarkerEntropy_eq_question_sub
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -38443,7 +38443,7 @@ theorem exactReverseAliceFilterOperatorMarkerEntropy_eq_question_sub
     exactReverseAliceHighOperatorPotential_eq_question,
     exactReverseAliceLowOperatorPotential_eq_question]
 
-theorem exactReverseBobFilterOperatorMarkerEntropy_eq_question_sub
+lemma exactReverseBobFilterOperatorMarkerEntropy_eq_question_sub
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -38537,7 +38537,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactReverseContextQuestionPrefix_eq_image
+lemma exactReverseContextQuestionPrefix_eq_image
     {n : ℕ} (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
     (context : ExactReverseSideContext
@@ -38554,7 +38554,7 @@ theorem exactReverseContextQuestionPrefix_eq_image
   rw [Finset.image_image]
   rfl
 
-theorem exactReverseAlicePrefixXMask_eq_fair
+lemma exactReverseAlicePrefixXMask_eq_fair
     {n : ℕ} (D : Finset (Fin n))
     (seed : ExactRemainingSeed D) :
     exactReverseAlicePrefixXMask D
@@ -38571,7 +38571,7 @@ theorem exactReverseAlicePrefixXMask_eq_fair
     exactReverseBobContext_prefix_before_marked]
   rfl
 
-theorem exactReverseAliceFixedYMask_eq_insert_fair
+lemma exactReverseAliceFixedYMask_eq_insert_fair
     {n : ℕ} (D : Finset (Fin n))
     (seed : ExactRemainingSeed D) :
     exactReverseAliceFixedYMask D
@@ -38589,7 +38589,7 @@ theorem exactReverseAliceFixedYMask_eq_insert_fair
   simp only [Finset.mem_union, Finset.mem_insert]
   tauto
 
-theorem exactReverseBobFixedXMask_eq_insert_fair
+lemma exactReverseBobFixedXMask_eq_insert_fair
     {n : ℕ} (D : Finset (Fin n))
     (seed : ExactRemainingSeed D) :
     exactReverseBobFixedXMask D
@@ -38607,7 +38607,7 @@ theorem exactReverseBobFixedXMask_eq_insert_fair
   simp only [Finset.mem_union, Finset.mem_insert]
   tauto
 
-theorem exactReverseBobPrefixYMask_eq_fair
+lemma exactReverseBobPrefixYMask_eq_fair
     {n : ℕ} (D : Finset (Fin n))
     (seed : ExactRemainingSeed D) :
     exactReverseBobPrefixYMask D
@@ -38640,7 +38640,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactReverseContextQuestionPrefix_succ
+lemma exactReverseContextQuestionPrefix_succ
     {n : ℕ} (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
     (context : ExactReverseSideContext
@@ -38687,7 +38687,7 @@ theorem exactReverseContextQuestionPrefix_succ
         Nat.lt_trans (Finset.mem_filter.mp ha).2
           (Nat.lt_succ_self marker.val)⟩
 
-theorem exactFairAliceQuestionMask_coordinate_not_mem
+lemma exactFairAliceQuestionMask_coordinate_not_mem
     {n : ℕ} (D : Finset (Fin n))
     (seed : ExactRemainingSeed D) :
     seed.coordinate.val ∉ exactFairAliceQuestionMask D seed := by
@@ -38710,7 +38710,7 @@ theorem exactFairAliceQuestionMask_coordinate_not_mem
     exact exactRight_coordinate_not_mem
       seed.coordinate seed.partition (equal ▸ belongs)
 
-theorem exactFairBobQuestionMask_coordinate_not_mem
+lemma exactFairBobQuestionMask_coordinate_not_mem
     {n : ℕ} (D : Finset (Fin n))
     (seed : ExactRemainingSeed D) :
     seed.coordinate.val ∉ exactFairBobQuestionMask D seed := by
@@ -38789,7 +38789,7 @@ def exactReverseBobAlignedCfcPrefixPotential
                 bobAnswer q.1 q.2))
         else 0)
 
-theorem exactReverseAliceAlignedCfcPrefixPotential_telescope
+lemma exactReverseAliceAlignedCfcPrefixPotential_telescope
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -38808,7 +38808,7 @@ theorem exactReverseAliceAlignedCfcPrefixPotential_telescope
     (exactReverseAliceAlignedCfcPrefixPotential
       G n S D side context) side.card
 
-theorem exactReverseBobAlignedCfcPrefixPotential_telescope
+lemma exactReverseBobAlignedCfcPrefixPotential_telescope
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -38843,7 +38843,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactPriorQuestion_coordinate_weight_ne_zero
+lemma exactPriorQuestion_coordinate_weight_ne_zero
     (G : Game X Y A B) (n : ℕ)
     (q : ExactFullQuestion X Y n)
     (supported : exactPriorQuestionWeight G n q ≠ 0)
@@ -38855,7 +38855,7 @@ theorem exactPriorQuestion_coordinate_weight_ne_zero
   rw [Game.repeat_questionWeight]
   exact Finset.prod_eq_zero (Finset.mem_univ j) zero
 
-theorem exactJointPrefixQuestionMass_pos_of_question
+lemma exactJointPrefixQuestionMass_pos_of_question
     (G : Game X Y A B) (n : ℕ)
     (fixedX fixedY : Finset (Fin n))
     (knownX : Fin n → X) (knownY : Fin n → Y)
@@ -38905,7 +38905,7 @@ theorem exactJointPrefixQuestionMass_pos_of_question
       (fun xs _ => row_nonnegative xs)
       (Finset.mem_univ knownX)
 
-theorem exactRevealCode_update_distinguished_alice
+lemma exactRevealCode_update_distinguished_alice
     {n : ℕ} (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
     (q : ExactFullQuestion X Y n) (x : X) :
@@ -38924,7 +38924,7 @@ theorem exactRevealCode_update_distinguished_alice
   · intro j _
     rfl
 
-theorem exactRevealCode_update_distinguished_bob
+lemma exactRevealCode_update_distinguished_bob
     {n : ℕ} (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
     (q : ExactFullQuestion X Y n) (y : Y) :
@@ -38943,7 +38943,7 @@ theorem exactRevealCode_update_distinguished_bob
         D seed (same ▸ hj)
     exact Function.update_of_ne different y q.2
 
-theorem exactFairAliceMeanFilter_eq_jointPrefixOperatorFilter
+lemma exactFairAliceMeanFilter_eq_jointPrefixOperatorFilter
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -39037,7 +39037,7 @@ theorem exactFairAliceMeanFilter_eq_jointPrefixOperatorFilter
       simpa only [Function.update_eq_self] using stable.symm
     rw [equal]
 
-theorem exactFairBobMeanFilter_eq_jointPrefixOperatorFilter
+lemma exactFairBobMeanFilter_eq_jointPrefixOperatorFilter
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -39148,7 +39148,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactReverseBobMarker_induction
+lemma exactReverseBobMarker_induction
     {n : ℕ} (D : Finset (Fin n))
     (P : (side : Finset (SourceRemainingCoordinate D)) →
       ExactReverseSideContext
@@ -39179,7 +39179,7 @@ theorem exactReverseBobMarker_induction
   rw [inverse] at actual
   exact actual
 
-theorem exactReverseAliceMarker_induction
+lemma exactReverseAliceMarker_induction
     {n : ℕ} (D : Finset (Fin n))
     (P : (side : Finset (SourceRemainingCoordinate D)) →
       ExactReverseSideContext
@@ -39210,7 +39210,7 @@ theorem exactReverseAliceMarker_induction
   rw [inverse] at actual
   exact actual
 
-theorem exactReverseAlicePrefixXMask_succ
+lemma exactReverseAlicePrefixXMask_succ
     {n : ℕ} (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
     (context : ExactReverseSideContext
@@ -39228,7 +39228,7 @@ theorem exactReverseAlicePrefixXMask_succ
   simp only [Finset.mem_union, Finset.mem_insert]
   tauto
 
-theorem exactReverseBobPrefixYMask_succ
+lemma exactReverseBobPrefixYMask_succ
     {n : ℕ} (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
     (context : ExactReverseSideContext
@@ -39246,7 +39246,7 @@ theorem exactReverseBobPrefixYMask_succ
   simp only [Finset.mem_union, Finset.mem_insert]
   tauto
 
-theorem exactReverseAliceLowQuestionPotential_eq_alignedPrefix
+lemma exactReverseAliceLowQuestionPotential_eq_alignedPrefix
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -39309,7 +39309,7 @@ theorem exactReverseAliceLowQuestionPotential_eq_alignedPrefix
         exact accepted
       simp only [if_neg sourceRejected, if_neg accepted]
 
-theorem exactReverseBobLowQuestionPotential_eq_alignedPrefix
+lemma exactReverseBobLowQuestionPotential_eq_alignedPrefix
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -39388,7 +39388,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactAliceQuestionFilter_eq_fullJointPrefixOperatorFilter
+lemma exactAliceQuestionFilter_eq_fullJointPrefixOperatorFilter
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -39429,7 +39429,7 @@ theorem exactAliceQuestionFilter_eq_fullJointPrefixOperatorFilter
       answer q.1 q.2 (q.2 seed.coordinate.val) conditional
   simpa only [Function.update_eq_self] using stable.symm
 
-theorem exactBobQuestionFilter_eq_fullJointPrefixOperatorFilter
+lemma exactBobQuestionFilter_eq_fullJointPrefixOperatorFilter
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -39470,7 +39470,7 @@ theorem exactBobQuestionFilter_eq_fullJointPrefixOperatorFilter
       answer q.1 q.2 (q.1 seed.coordinate.val) conditional
   simpa only [Function.update_eq_self] using stable.symm
 
-theorem exactReverseAliceHighQuestionPotential_eq_alignedPrefix
+lemma exactReverseAliceHighQuestionPotential_eq_alignedPrefix
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -39534,7 +39534,7 @@ theorem exactReverseAliceHighQuestionPotential_eq_alignedPrefix
         exact accepted
       simp only [if_neg sourceRejected, if_neg accepted]
 
-theorem exactReverseBobHighQuestionPotential_eq_alignedPrefix
+lemma exactReverseBobHighQuestionPotential_eq_alignedPrefix
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -39598,7 +39598,7 @@ theorem exactReverseBobHighQuestionPotential_eq_alignedPrefix
         exact accepted
       simp only [if_neg sourceRejected, if_neg accepted]
 
-theorem exactReverseAliceFilterOperatorMarkerEntropy_eq_aligned_step
+lemma exactReverseAliceFilterOperatorMarkerEntropy_eq_aligned_step
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -39615,7 +39615,7 @@ theorem exactReverseAliceFilterOperatorMarkerEntropy_eq_aligned_step
     exactReverseAliceHighQuestionPotential_eq_alignedPrefix,
     exactReverseAliceLowQuestionPotential_eq_alignedPrefix]
 
-theorem exactReverseBobFilterOperatorMarkerEntropy_eq_aligned_step
+lemma exactReverseBobFilterOperatorMarkerEntropy_eq_aligned_step
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -39632,7 +39632,7 @@ theorem exactReverseBobFilterOperatorMarkerEntropy_eq_aligned_step
     exactReverseBobHighQuestionPotential_eq_alignedPrefix,
     exactReverseBobLowQuestionPotential_eq_alignedPrefix]
 
-theorem exactReverseAliceFilterOperatorMarkerEntropy_sum_telescope
+lemma exactReverseAliceFilterOperatorMarkerEntropy_sum_telescope
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -39671,7 +39671,7 @@ theorem exactReverseAliceFilterOperatorMarkerEntropy_sum_telescope
     _ = _ := exactReverseAliceAlignedCfcPrefixPotential_telescope
       G n S D side context
 
-theorem exactReverseBobFilterOperatorMarkerEntropy_sum_telescope
+lemma exactReverseBobFilterOperatorMarkerEntropy_sum_telescope
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -39748,7 +39748,7 @@ def exactFixedSeedOutcomeCode
     outcome.1 seed.coordinate.val,
     outcome.2.1 seed.coordinate.val)
 
-theorem exactFixedSeedOutcomeCode_fiber_iff
+lemma exactFixedSeedOutcomeCode_fiber_iff
     {n : ℕ} (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
     (history : ExactRevealHistory X Y D seed)
@@ -39796,7 +39796,7 @@ theorem exactFixedSeedOutcomeCode_fiber_iff
         · exact funext hb
         · exact Prod.ext hx hy
 
-theorem exactFixedSeedGroupedBornMass_eq
+lemma exactFixedSeedGroupedBornMass_eq
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -39829,7 +39829,7 @@ theorem exactFixedSeedGroupedBornMass_eq
         D seed history aliceAnswer bobAnswer x y outcome).mpr
         incompatible)
 
-theorem exactFixedSeedOutcomeCode_accepted_iff
+lemma exactFixedSeedOutcomeCode_accepted_iff
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -39857,7 +39857,7 @@ theorem exactFixedSeedOutcomeCode_accepted_iff
   · intro accepted j
     exact accepted j.val j.property
 
-theorem exactFairFullOutcomeBornMass_accepted_sum
+lemma exactFairFullOutcomeBornMass_accepted_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D) :
@@ -39994,7 +39994,7 @@ def exactReverseAliceAcceptedScalarEntropy
                 G n S D seed history bobAnswer y)))
     else 0
 
-theorem exactReverseAliceLowOperatorPotential_neg_le_scalarEntropy
+lemma exactReverseAliceLowOperatorPotential_neg_le_scalarEntropy
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -40033,7 +40033,7 @@ theorem exactReverseAliceLowOperatorPotential_neg_le_scalarEntropy
     nlinarith
   · simp [accepted]
 
-theorem exactReverseAliceAlignedCfcPrefixPotential_last_nonpos
+lemma exactReverseAliceAlignedCfcPrefixPotential_last_nonpos
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -40054,7 +40054,7 @@ theorem exactReverseAliceAlignedCfcPrefixPotential_last_nonpos
     last] at high
   exact high
 
-theorem exactReverseAliceFilterOperatorMarkerEntropy_sum_le_scalarEntropy
+lemma exactReverseAliceFilterOperatorMarkerEntropy_sum_le_scalarEntropy
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -40116,7 +40116,7 @@ def exactReverseBobAcceptedScalarEntropy
                 G n S D seed history bobAnswer x)))
     else 0
 
-theorem exactReverseBobFilterLowOperatorPotential_neg_le_scalarEntropy
+lemma exactReverseBobFilterLowOperatorPotential_neg_le_scalarEntropy
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -40152,7 +40152,7 @@ theorem exactReverseBobFilterLowOperatorPotential_neg_le_scalarEntropy
     simpa only [mul_neg] using scaled
   · simp
 
-theorem exactReverseBobAlignedCfcPrefixPotential_terminal_nonpos
+lemma exactReverseBobAlignedCfcPrefixPotential_terminal_nonpos
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -40173,7 +40173,7 @@ theorem exactReverseBobAlignedCfcPrefixPotential_terminal_nonpos
     step] at high
   exact high
 
-theorem exactReverseBobFilterOperatorMarkerEntropy_sum_le_scalarEntropy
+lemma exactReverseBobFilterOperatorMarkerEntropy_sum_le_scalarEntropy
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -40226,7 +40226,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactFairFullOutcomeBornMass_eq_reveal_question_born
+lemma exactFairFullOutcomeBornMass_eq_reveal_question_born
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -40242,7 +40242,7 @@ theorem exactFairFullOutcomeBornMass_eq_reveal_question_born
   rw [exactFairFullOutcomeBornMass_eq_reveal_question_norm,
     exactUnnormalizedPsi_norm_sq]
 
-theorem exactFairAliceMeanBorn_eq_conditional
+lemma exactFairAliceMeanBorn_eq_conditional
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -40262,7 +40262,7 @@ theorem exactFairAliceMeanBorn_eq_conditional
   simp only [map_sum, map_smul, LinearMap.sum_apply,
     LinearMap.smul_apply, smul_eq_mul]
 
-theorem exactFairBobMeanBorn_eq_conditional
+lemma exactFairBobMeanBorn_eq_conditional
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -40281,7 +40281,7 @@ theorem exactFairBobMeanBorn_eq_conditional
   unfold exactBobMeanFilter
   simp only [map_sum, map_smul, smul_eq_mul]
 
-theorem exactFairAliceMeanBornMass_eq_fullOutcome_sum
+lemma exactFairAliceMeanBornMass_eq_fullOutcome_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) :
@@ -40341,7 +40341,7 @@ theorem exactFairAliceMeanBornMass_eq_fullOutcome_sum
         exact (exactFairFullOutcomeBornMass_eq_reveal_question_born
           G n S D r x y).symm
 
-theorem exactFairBobMeanBornMass_eq_fullOutcome_sum
+lemma exactFairBobMeanBornMass_eq_fullOutcome_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) :
@@ -40400,7 +40400,7 @@ theorem exactFairBobMeanBornMass_eq_fullOutcome_sum
         exact (exactFairFullOutcomeBornMass_eq_reveal_question_born
           G n S D r x y).symm
 
-theorem exactFairAliceMeanAcceptedBornMass_sum
+lemma exactFairAliceMeanAcceptedBornMass_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D) :
@@ -40441,7 +40441,7 @@ theorem exactFairAliceMeanAcceptedBornMass_sum
     _ = _ := exactFairFullOutcomeBornMass_accepted_sum
       G n S D seed
 
-theorem exactFairBobMeanAcceptedBornMass_sum
+lemma exactFairBobMeanAcceptedBornMass_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D) :
@@ -40560,7 +40560,7 @@ def exactFairBobScalarBornMass
     (exactBobMeanFilter
       G n S D seed atom.1 atom.2.2.1 atom.2.2.2)
 
-theorem exactFairAliceScalarCountingWeight_nonneg
+lemma exactFairAliceScalarCountingWeight_nonneg
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -40572,7 +40572,7 @@ theorem exactFairAliceScalarCountingWeight_nonneg
       (G.marginalY_nonneg atom.2.2.2)
   · exact le_rfl
 
-theorem exactFairBobScalarCountingWeight_nonneg
+lemma exactFairBobScalarCountingWeight_nonneg
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -40584,7 +40584,7 @@ theorem exactFairBobScalarCountingWeight_nonneg
       (G.marginalX_nonneg atom.2.2.2)
   · exact le_rfl
 
-theorem exactFairAliceScalarBornMass_nonneg
+lemma exactFairAliceScalarBornMass_nonneg
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -40596,7 +40596,7 @@ theorem exactFairAliceScalarBornMass_nonneg
       (exactBobQuestionFilter_posSemidef
         G n S D seed atom.1 atom.2.2.1 atom.2.2.2))
 
-theorem exactFairBobScalarBornMass_nonneg
+lemma exactFairBobScalarBornMass_nonneg
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -40608,7 +40608,7 @@ theorem exactFairBobScalarBornMass_nonneg
       (exactBobMeanFilter_posSemidef
         G n S D seed atom.1 atom.2.2.1 atom.2.2.2))
 
-theorem exactFairAliceScalarCountingWeight_sum_le
+lemma exactFairAliceScalarCountingWeight_sum_le
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D) :
@@ -40652,7 +40652,7 @@ theorem exactFairAliceScalarCountingWeight_sum_le
       rw [exactRevealMass_sum, G.marginalY_normalized]
       ring
 
-theorem exactFairBobScalarCountingWeight_sum_le
+lemma exactFairBobScalarCountingWeight_sum_le
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D) :
@@ -40696,7 +40696,7 @@ theorem exactFairBobScalarCountingWeight_sum_le
       rw [exactRevealMass_sum, G.marginalX_normalized]
       ring
 
-theorem exactFairAliceScalarBornMass_sum
+lemma exactFairAliceScalarBornMass_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D) :
@@ -40741,7 +40741,7 @@ theorem exactFairAliceScalarBornMass_sum
     _ = _ := exactFairAliceMeanAcceptedBornMass_sum
       G n S D seed
 
-theorem exactFairBobScalarBornMass_sum
+lemma exactFairBobScalarBornMass_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D) :
@@ -40786,7 +40786,7 @@ theorem exactFairBobScalarBornMass_sum
     _ = _ := exactFairBobMeanAcceptedBornMass_sum
       G n S D seed
 
-theorem exactFairAliceScalarBornMass_le_one
+lemma exactFairAliceScalarBornMass_le_one
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -40804,7 +40804,7 @@ theorem exactFairAliceScalarBornMass_le_one
     (exactBobQuestionFilter_complement_posSemidef
       G n S D seed atom.1 atom.2.2.1 atom.2.2.2)
 
-theorem exactFairBobScalarBornMass_le_one
+lemma exactFairBobScalarBornMass_le_one
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -40860,7 +40860,7 @@ def exactFairBobSeedScalarEntropy
                 G n S D seed history bobAnswer x)))
     else 0
 
-theorem exactFairAliceSeedScalarEntropy_eq_weighted
+lemma exactFairAliceSeedScalarEntropy_eq_weighted
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D) :
@@ -40889,7 +40889,7 @@ theorem exactFairAliceSeedScalarEntropy_eq_weighted
     ring
   · simp [exactFairAliceScalarCountingWeight, accepted]
 
-theorem exactFairBobSeedScalarEntropy_eq_weighted
+lemma exactFairBobSeedScalarEntropy_eq_weighted
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D) :
@@ -40918,7 +40918,7 @@ theorem exactFairBobSeedScalarEntropy_eq_weighted
     ring
   · simp [exactFairBobScalarCountingWeight, accepted]
 
-theorem exactFairAliceSeedScalarEntropy_le
+lemma exactFairAliceSeedScalarEntropy_le
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -40960,7 +40960,7 @@ theorem exactFairAliceSeedScalarEntropy_le
   rw [exactFairAliceSeedScalarEntropy_eq_weighted]
   exact estimate
 
-theorem exactFairBobSeedScalarEntropy_le
+lemma exactFairBobSeedScalarEntropy_le
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -41002,7 +41002,7 @@ theorem exactFairBobSeedScalarEntropy_le
   rw [exactFairBobSeedScalarEntropy_eq_weighted]
   exact estimate
 
-theorem exactReverseAliceAcceptedScalarEntropy_le
+lemma exactReverseAliceAcceptedScalarEntropy_le
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -41018,7 +41018,7 @@ theorem exactReverseAliceAcceptedScalarEntropy_le
   exact exactFairAliceSeedScalarEntropy_le G n S D positive
     (exactReverseBobMarkerDecode side context marker)
 
-theorem exactReverseBobAcceptedScalarEntropy_le
+lemma exactReverseBobAcceptedScalarEntropy_le
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -41046,17 +41046,17 @@ variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 def sourceAnswerAlphabetBound (A B : Type*) [Fintype A] [Fintype B] : ℝ :=
   max 1 ((Fintype.card A : ℝ) * (Fintype.card B : ℝ))
 
-theorem one_le_sourceAnswerAlphabetBound
+lemma one_le_sourceAnswerAlphabetBound
     (A B : Type*) [Fintype A] [Fintype B] :
     1 ≤ sourceAnswerAlphabetBound A B := by
   exact le_max_left _ _
 
-theorem sourceAnswerAlphabetBound_log_nonneg
+lemma sourceAnswerAlphabetBound_log_nonneg
     (A B : Type*) [Fintype A] [Fintype B] :
     0 ≤ Real.log (sourceAnswerAlphabetBound A B) := by
   exact Real.log_nonneg (one_le_sourceAnswerAlphabetBound A B)
 
-theorem fullHistoryAnswerCount_le_sourceAnswerAlphabetBound_pow
+lemma fullHistoryAnswerCount_le_sourceAnswerAlphabetBound_pow
     {n : ℕ} (D : Finset (Fin n)) :
     fullHistoryAnswerCount (A := A) (B := B) D ≤
       sourceAnswerAlphabetBound A B ^ D.card := by
@@ -41065,7 +41065,7 @@ theorem fullHistoryAnswerCount_le_sourceAnswerAlphabetBound_pow
     (mul_nonneg (Nat.cast_nonneg _) (Nat.cast_nonneg _))
     (le_max_right 1 _) _
 
-theorem fullHistoryAnswerCount_pos_of_postselection
+lemma fullHistoryAnswerCount_pos_of_postselection
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     (D L : Finset (Fin n))
@@ -41089,7 +41089,7 @@ theorem fullHistoryAnswerCount_pos_of_postselection
   have hsecond := fullHistoryAtomCountingWeight_sum_le G D L
   linarith
 
-theorem divisor_greedy_remaining_bounds
+lemma divisor_greedy_remaining_bounds
     {n q : ℕ} (hq : 2 ≤ q)
     {D : Finset (Fin n)} (hD : D.card < n / q) :
     0 < (Finset.univ \ D).card ∧
@@ -41107,7 +41107,7 @@ theorem divisor_greedy_remaining_bounds
         (Finset.subset_univ D))
   omega
 
-theorem divisor_greedy_log_cost_per_remaining_le
+lemma divisor_greedy_log_cost_per_remaining_le
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     {η : ℝ} (hη : 0 < η)
@@ -41208,7 +41208,7 @@ theorem divisor_greedy_log_cost_per_remaining_le
       field_simp
       ring
 
-theorem exists_source_rounding_divisor
+lemma exists_source_rounding_divisor
     (A B : Type*) [Fintype A] [Fintype B]
     {K η δ : ℝ}
     (hK : 0 ≤ K) (hη : 0 < η) (hδ : 0 < δ) :
@@ -41247,7 +41247,7 @@ theorem exists_source_rounding_divisor
       ring
     _ ≤ δ ^ 2 := hsmall.le
 
-theorem arbitrarily_large_purified_divisor_greedy_conditioning_with_rounding
+lemma arbitrarily_large_purified_divisor_greedy_conditioning_with_rounding
     (G : Game X Y A B)
     (hwitness : HasSubexponentialWitness (repeatedEntangledValue G))
     {η K δ : ℝ}
@@ -41336,7 +41336,7 @@ open scoped BigOperators
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem postselectionLogCost_nonneg
+lemma postselectionLogCost_nonneg
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D) :
@@ -41351,7 +41351,7 @@ theorem postselectionLogCost_nonneg
     simpa using at_most_one
   exact Real.log_nonneg inverse_at_least_one
 
-theorem answerLogCost_nonneg_of_postselection
+lemma answerLogCost_nonneg_of_postselection
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D) :
@@ -41382,7 +41382,7 @@ theorem answerLogCost_nonneg_of_postselection
   exact mul_nonneg (Nat.cast_nonneg _)
     (Real.log_nonneg alphabet_at_least_one)
 
-theorem exactSourceClassicalInformationRate_le_three_martingaleRate
+lemma exactSourceClassicalInformationRate_le_three_martingaleRate
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D) :
@@ -41404,7 +41404,7 @@ theorem exactSourceClassicalInformationRate_le_three_martingaleRate
   field_simp
   linarith
 
-theorem exactSourcePinskerRate_le_half_of_martingaleRate
+lemma exactSourcePinskerRate_le_half_of_martingaleRate
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -41421,7 +41421,7 @@ theorem exactSourcePinskerRate_le_half_of_martingaleRate
         G n S D positive
     nlinarith
 
-theorem exact_arbitrarily_large_conditioning_of_subexponentialWitness
+lemma exact_arbitrarily_large_conditioning_of_subexponentialWitness
     (G : Game X Y A B)
     (witness : HasSubexponentialWitness (repeatedEntangledValue G))
     {failureTolerance rateTolerance : ℝ}
@@ -41511,7 +41511,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactReversePartitionInverseCard_le
+lemma exactReversePartitionInverseCard_le
     {M : Type*} [Fintype M] [DecidableEq M] :
     (∑ side : Finset M,
       reversePartitionWeight side / (side.card : ℝ)) ≤
@@ -41549,7 +41549,7 @@ theorem exactReversePartitionInverseCard_le
         ring
     _ = _ := by rw [fairPartitionWeight_sum]; ring
 
-theorem exactReverseBobSeedInverseCard_le
+lemma exactReverseBobSeedInverseCard_le
     {M : Type*} [Fintype M] [DecidableEq M] :
     (∑ seed : ExactForwardSeed M,
       exactSeedWeight seed /
@@ -41580,7 +41580,7 @@ theorem exactReverseBobSeedInverseCard_le
         exact (div_eq_mul_inv _ _).symm
     _ ≤ _ := exactReversePartitionInverseCard_le
 
-theorem exactReverseAliceSeedInverseCard_le
+lemma exactReverseAliceSeedInverseCard_le
     {M : Type*} [Fintype M] [DecidableEq M] :
     (∑ seed : ExactForwardSeed M,
       exactSeedWeight seed /
@@ -41611,7 +41611,7 @@ theorem exactReverseAliceSeedInverseCard_le
         exact (div_eq_mul_inv _ _).symm
     _ ≤ _ := exactReversePartitionInverseCard_le
 
-theorem exactFairSourceScalarCost_nonneg
+lemma exactFairSourceScalarCost_nonneg
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D) :
@@ -41625,7 +41625,7 @@ theorem exactFairSourceScalarCost_nonneg
       (answerLogCost_nonneg_of_postselection
         G n S D positive))
 
-theorem exactFairAcceptedAliceEntropy_le_sourceRate
+lemma exactFairAcceptedAliceEntropy_le_sourceRate
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -41704,7 +41704,7 @@ theorem exactFairAcceptedAliceEntropy_le_sourceRate
       unfold martingaleRate
       ring
 
-theorem exactFairAcceptedBobEntropy_le_sourceRate
+lemma exactFairAcceptedBobEntropy_le_sourceRate
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -41783,7 +41783,7 @@ theorem exactFairAcceptedBobEntropy_le_sourceRate
       unfold martingaleRate
       ring
 
-theorem exactFairOperatorEntropyBound_of_positive
+lemma exactFairOperatorEntropyBound_of_positive
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -41795,7 +41795,7 @@ theorem exactFairOperatorEntropyBound_of_positive
     exactFairAcceptedBobEntropy_le_sourceRate
       G n S D remaining positive⟩
 
-theorem exactSourceStateDistanceBound_of_positive
+lemma exactSourceStateDistanceBound_of_positive
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -41813,7 +41813,7 @@ noncomputable section
 
 open scoped BigOperators ComplexOrder Kronecker MatrixOrder
 
-theorem unconditionalLiterature_weightedNormMean_le_sqrtEnergy
+lemma unconditionalLiterature_weightedNormMean_le_sqrtEnergy
     {ι : Type*} [Fintype ι]
     (weight value : ι → ℝ)
     (weight_nonnegative : ∀ i, 0 ≤ weight i)
@@ -41838,7 +41838,7 @@ theorem unconditionalLiterature_weightedNormMean_le_sqrtEnergy
     _ = Real.sqrt (∑ i, weight i * value i ^ 2) := by
       rw [Real.sqrt_eq_rpow]
 
-theorem unconditionalLiterature_sqrt_two_mul_sqrt_thirtytwo
+lemma unconditionalLiterature_sqrt_two_mul_sqrt_thirtytwo
     (η : ℝ) :
     8 * Real.sqrt 2 * Real.sqrt (32 * η) =
       64 * Real.sqrt η := by
@@ -41855,7 +41855,7 @@ theorem unconditionalLiterature_sqrt_two_mul_sqrt_thirtytwo
           norm_num
           ring
 
-theorem unconditionalLiterature_weightedAsynchronous_le
+lemma unconditionalLiterature_weightedAsynchronous_le
     {ι : Type*} [Fintype ι]
     (weight value asynchronous : ι → ℝ)
     (weight_nonnegative : ∀ i, 0 ≤ weight i)
@@ -41918,7 +41918,7 @@ def dSVDensityRationalPublicMultiscaleFirstHitPhysicalFlagMismatchMass
     ‖z (a, b)‖ ^ 2 *
       if alice a = bob b then (0 : ℝ) else 1
 
-theorem
+lemma
     dSVDensityRationalPublicMultiscaleFirstHitPhysicalFlagMismatchMass_nonneg
     {A C : Type*} [Fintype A] [Fintype C] {L : ℕ}
     (alice : A → Fin (L + 1))
@@ -41945,7 +41945,7 @@ open scoped BigOperators ComplexOrder Kronecker MatrixOrder
 
 attribute [local instance] Classical.propDecidable
 
-theorem dSVDensityRationalHeterogeneousActualPhysicalState_apply
+lemma dSVDensityRationalHeterogeneousActualPhysicalState_apply
     (N : ℕ) {S d L : ℕ}
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ ζ : BipartiteUnitVector d)
@@ -42002,7 +42002,7 @@ theorem dSVDensityRationalHeterogeneousActualPhysicalState_apply
   intro y _
   rfl
 
-theorem dSVDensityRationalHeterogeneousActualPhysicalState_apply_zeroFlag
+lemma dSVDensityRationalHeterogeneousActualPhysicalState_apply_zeroFlag
     (N : ℕ) {S d L : ℕ}
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ ζ : BipartiteUnitVector d)
@@ -42043,7 +42043,7 @@ theorem dSVDensityRationalHeterogeneousActualPhysicalState_apply_zeroFlag
   simp_rw [split_zero]
   simp
 
-theorem dSVDensityRationalHeterogeneousActualSpectralStopping_apply
+lemma dSVDensityRationalHeterogeneousActualSpectralStopping_apply
     {β : Type*} [Fintype β] [DecidableEq β]
     {L : ℕ} (accepted : Fin L → β → Prop)
     (U : Matrix.unitaryGroup β ℂ)
@@ -42103,7 +42103,7 @@ theorem dSVDensityRationalHeterogeneousActualSpectralStopping_apply
     dSVDensityRationalHeterogeneousActualFirstAcceptUnitary_zeroFlag
       accepted v flag history
 
-theorem dSVDensityRationalHeterogeneousActualPhysicalLocalUnitary_apply
+lemma dSVDensityRationalHeterogeneousActualPhysicalLocalUnitary_apply
     {β : Type*} [Fintype β] [DecidableEq β]
     {L : ℕ} (accepted : Fin L → β → Prop)
     (U : Matrix.unitaryGroup β ℂ)
@@ -42163,7 +42163,7 @@ theorem dSVDensityRationalHeterogeneousActualPhysicalLocalUnitary_apply
     dSVDensityRationalHeterogeneousActualSpectralStopping_apply]
   simp [ite_mul]
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualPhysicalLocalUnitary_sourceProduct
     {β : Type*} [Fintype β] [DecidableEq β]
     {L : ℕ} (accepted : Fin L → β → Prop)
@@ -42214,7 +42214,7 @@ def dSVDensityRationalHeterogeneousActualAsynchronousFlagMass
     (dSVDensityRationalHeterogeneousActualPhysicalState
       N width schedule ξ ζ)
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualAsynchronousFlagMass_nonneg
     (N : ℕ) {S d L : ℕ}
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -42237,7 +42237,7 @@ noncomputable section
 open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
-theorem dSVDensityRationalCompleteStoppedOptionalLocalSchedule_before
+lemma dSVDensityRationalCompleteStoppedOptionalLocalSchedule_before
     {L : ℕ} (j : Fin L) (i : Fin (L + 1))
     (earlier : i.val < j.val) :
     dSVDensityRationalCompleteStoppedOptionalLocalSchedule
@@ -42246,7 +42246,7 @@ theorem dSVDensityRationalCompleteStoppedOptionalLocalSchedule_before
   simp [dSVDensityRationalCompleteStoppedOptionalLocalSchedule,
     attempted, Fin.succ_ne_zero, earlier]
 
-theorem dSVDensityRationalCompleteStoppedOptionalLocalSchedule_after
+lemma dSVDensityRationalCompleteStoppedOptionalLocalSchedule_after
     {L : ℕ} (j : Fin L) (i : Fin (L + 1))
     (later : j.val < i.val) :
     dSVDensityRationalCompleteStoppedOptionalLocalSchedule
@@ -42265,7 +42265,7 @@ open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
 attribute [local instance] Classical.propDecidable
 
-theorem
+lemma
     dSVDensityRationalFirstAcceptActualPredicateMask_eq_spectralMask
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ : BipartiteUnitVector d) (outcome : Bool) :
@@ -42290,7 +42290,7 @@ theorem
   · simp [dSVDensityRationalFirstAcceptLocalSpectralMask,
       Matrix.blockDiagonal'_apply, flags]
 
-theorem dSVDensityRationalFirstAcceptActualOptionalOutcome_apply
+lemma dSVDensityRationalFirstAcceptActualOptionalOutcome_apply
     {d : ℕ} (w : ℝ) (N : ℕ)
     (ξ ζ : BipartiteUnitVector d)
     (a b : Option Bool)
@@ -42346,7 +42346,7 @@ def dSVDensityRationalHeterogeneousActualPhysicalFlagBornCopyMatrix
           accepted flag i atom
        then (U : Matrix β β ℂ) atom input else 0)
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualPhysicalFlagBornCopyMatrix_eq_spectralMask
     {β : Type*} [Fintype β] [DecidableEq β] {L : ℕ}
     (accepted : Fin L → β → Prop) (U : Matrix.unitaryGroup β ℂ)
@@ -42363,7 +42363,7 @@ theorem
   simp [dSVDensityRationalHeterogeneousActualPhysicalFlagBornCopyMatrix,
     Matrix.mul_apply, Matrix.diagonal_apply, mul_ite]
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualPhysicalFlagBornCopyConditionMask
     {S d N L : ℕ} (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ : BipartiteUnitVector d)
@@ -42445,7 +42445,7 @@ theorem
   · simp [dSVDensityRationalHeterogeneousActualCopyCondition,
       dSVDensityRationalCompleteStoppedOptionalLocalSchedule, active]
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualPhysicalFlagBornAliceCopy_eq_optionalEffect
     {S d N L : ℕ} (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ : BipartiteUnitVector d)
@@ -42472,7 +42472,7 @@ theorem
             (dSVDensityRationalHeterogeneousActualPhysicalFlagBornCopyWidth
               width schedule i) N ξ outcome).symm
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualPhysicalFlagBornBobCopy_eq_optionalEffect
     {S d N L : ℕ} (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ζ : BipartiteUnitVector d)
@@ -42503,7 +42503,7 @@ theorem
           (dSVDensityRationalHeterogeneousActualPhysicalFlagBornCopyWidth
             width schedule i) N ζ outcome).symm
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualPhysicalFlagBornAlice_sourceProduct
     {S d N L : ℕ} (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ : BipartiteUnitVector d) (flag : Fin (L + 1))
@@ -42541,7 +42541,7 @@ theorem
     (dSVDensityRationalHeterogeneousActualPhysicalFlagBornAliceCopy_eq_optionalEffect
       width schedule ξ flag i)
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualPhysicalFlagBornBob_sourceProduct
     {S d N L : ℕ} (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ζ : BipartiteUnitVector d) (flag : Fin (L + 1))
@@ -42579,7 +42579,7 @@ theorem
     (dSVDensityRationalHeterogeneousActualPhysicalFlagBornBobCopy_eq_optionalEffect
       width schedule ζ flag i)
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualPhysicalFlagBornState_allFlags
     {S d N L : ℕ} (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ ζ : BipartiteUnitVector d)
@@ -42650,7 +42650,7 @@ noncomputable section
 open WithLp
 open scoped BigOperators ComplexOrder Kronecker MatrixOrder
 
-theorem dSVDensityRationalPublicLogPhasePhysicalAlignedLocalAction_apply
+lemma dSVDensityRationalPublicLogPhasePhysicalAlignedLocalAction_apply
     (B N d L m : ℕ)
     (U V : Matrix.unitaryGroup
       (DSVUniformDensityThresholdWholeHistoryLocalIndex
@@ -42833,7 +42833,7 @@ def dSVDensityRationalHeterogeneousTargetFirstSpectralPhysicalSource
     (dSVDensityRationalPublicMultiscalePhaseTargetFirstPreparedSource
       S B N d L m)
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousTargetFirstSpectralPhysicalSource_apply
     (S B N d L m : ℕ)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -42934,7 +42934,7 @@ def dSVDensityRationalMixedCanonicalPrefixPureHarmonicTensor
     let b : Fin N × Fin n := finProdFinEquiv.symm q.2
     z (a.1, b.1) * embezzlementState n (a.2, b.2)
 
-theorem
+lemma
     dSVDensityRationalMixedCanonicalPrefixPureHarmonicTensor_unit
     {N n : ℕ} (z : BipartiteUnitVector N) :
     dSVDensityRationalMixedCanonicalPrefixPureHarmonicTensor
@@ -42942,7 +42942,7 @@ theorem
       tensorEmbezzlementTarget (n := n) z := by
   rfl
 
-theorem
+lemma
     dSVDensityRationalMixedCanonicalPrefixPureHarmonicTensor_sub
     {N : ℕ} (n : ℕ)
     (x y : EuclideanSpace ℂ (Fin N × Fin N)) :
@@ -42973,7 +42973,7 @@ theorem
             (finProdFinEquiv.symm q.2).2)
   ring
 
-theorem
+lemma
     dSVDensityRationalMixedCanonicalPrefixPureHarmonicTensor_norm_sq
     {N n : ℕ} (positive : 0 < n)
     (z : EuclideanSpace ℂ (Fin N × Fin N)) :
@@ -43029,7 +43029,7 @@ theorem
             embezzlementState_norm n positive]
           ring
 
-theorem
+lemma
     dSVDensityRationalMixedCanonicalPrefixPureHarmonicTensor_prefix_sub_norm_sq
     {N n : ℕ} (positive : 0 < n)
     (r s : Fin (N + 1)) :
@@ -43056,7 +43056,7 @@ def dSVDensityRationalMixedCanonicalPrefixPhysicalAcceptedSigmaState
         n (dSVDensityRationalPhysicalMixedAcceptedPrefixWork
           w N ξ ζ i j))
 
-theorem
+lemma
     dSVDensityRationalMixedCanonicalPrefixPhysicalSigmaWeighted_norm_sq
     {H : Type*} [Fintype H] {n : ℕ}
     (history : EuclideanSpace ℂ (H × H))
@@ -43076,7 +43076,7 @@ theorem
       history work (fun _ _ => (0 : EuclideanSpace ℂ (Fin n × Fin n)))
   simpa [zero] using distance
 
-theorem
+lemma
     dSVDensityRationalMixedCanonicalPrefixPhysicalAcceptedSigmaState_norm_sq
     {d N n : ℕ} {w : ℝ} (width : 0 < w)
     (grid : 0 < N) (residual : 0 < n)
@@ -43127,7 +43127,7 @@ def dSVDensityRationalHeterogeneousActualCommonStopScheduledOutcome
     (dSVDensityRationalCompleteStoppedOptionalLocalSchedule
       L j.succ i)
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualCommonStopScheduledOutcome_before
     {S N d L : ℕ} (width : Fin S → ℝ)
     (schedule : Fin L → Fin S)
@@ -43147,7 +43147,7 @@ theorem
   simp [dSVDensityRationalHeterogeneousActualPhysicalFlagBornCopyWidth,
     lt_trans before j.isLt]
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualCommonStopScheduledOutcome_hit
     {S N d L : ℕ} (width : Fin S → ℝ)
     (schedule : Fin L → Fin S)
@@ -43161,7 +43161,7 @@ theorem
   rw [dSVDensityRationalCompleteStoppedOptionalOutcome_some_some]
   simp [dSVDensityRationalHeterogeneousActualPhysicalFlagBornCopyWidth]
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualCommonStopScheduledOutcome_after
     {S N d L : ℕ} (width : Fin S → ℝ)
     (schedule : Fin L → Fin S)
@@ -43178,7 +43178,7 @@ theorem
     (dSVDensityRationalHeterogeneousActualPhysicalFlagBornCopyWidth
       width schedule i) N ξ ζ
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualCommonStopPhysicalState_eq_outcomeProduct
     {S N d L : ℕ} (width : Fin S → ℝ)
     (schedule : Fin L → Fin S)
@@ -43212,7 +43212,7 @@ def dSVDensityRationalPureBaseExactFlagBornMass
     ‖z (a, c)‖ ^ 2 *
       if alice a = flagAlice ∧ bob c = flagBob then 1 else 0
 
-theorem dSVDensityRationalPureMatchedFlagIndicator_sum
+lemma dSVDensityRationalPureMatchedFlagIndicator_sum
     {L : ℕ} (a b : Fin (L + 1)) :
     (∑ flag : Fin (L + 1),
       if a = flag ∧ b = flag then (1 : ℝ) else 0) =
@@ -43227,7 +43227,7 @@ theorem dSVDensityRationalPureMatchedFlagIndicator_sum
       exact same (first.trans second.symm)
     simp [same, absent]
 
-theorem dSVDensityRationalPureMatchedFlagBorn_sum_eq
+lemma dSVDensityRationalPureMatchedFlagBorn_sum_eq
     {A C : Type*} [Fintype A] [Fintype C]
     {L : ℕ} (alice : A → Fin (L + 1))
     (bob : C → Fin (L + 1))
@@ -43262,7 +43262,7 @@ theorem dSVDensityRationalPureMatchedFlagBorn_sum_eq
       rw [← Finset.mul_sum,
         dSVDensityRationalPureMatchedFlagIndicator_sum]
 
-theorem dSVDensityRationalPureFlagBorn_partition
+lemma dSVDensityRationalPureFlagBorn_partition
     {A C : Type*} [Fintype A] [Fintype C]
     {L : ℕ} (alice : A → Fin (L + 1))
     (bob : C → Fin (L + 1))
@@ -43286,7 +43286,7 @@ theorem dSVDensityRationalPureFlagBorn_partition
   intro c _
   split_ifs <;> ring
 
-theorem dSVDensityRationalPureMatchedFlagBorn_zero_succ
+lemma dSVDensityRationalPureMatchedFlagBorn_zero_succ
     {A C : Type*} [Fintype A] [Fintype C]
     {L : ℕ} (alice : A → Fin (L + 1))
     (bob : C → Fin (L + 1))
@@ -43301,7 +43301,7 @@ theorem dSVDensityRationalPureMatchedFlagBorn_zero_succ
             alice bob z j.succ j.succ := by
   rw [Fin.sum_univ_succ]
 
-theorem dSVDensityRationalPureFlagBorn_partition_zero_succ
+lemma dSVDensityRationalPureFlagBorn_partition_zero_succ
     {A C : Type*} [Fintype A] [Fintype C]
     {L : ℕ} (alice : A → Fin (L + 1))
     (bob : C → Fin (L + 1))
@@ -43320,7 +43320,7 @@ theorem dSVDensityRationalPureFlagBorn_partition_zero_succ
     alice bob z] at actual
   linarith
 
-theorem dSVDensityRationalPureFlagBorn_normalized_partition_zero_succ
+lemma dSVDensityRationalPureFlagBorn_normalized_partition_zero_succ
     {A C : Type*} [Fintype A] [Fintype C]
     {L : ℕ} (alice : A → Fin (L + 1))
     (bob : C → Fin (L + 1))
@@ -43345,7 +43345,7 @@ open scoped BigOperators ComplexOrder Kronecker MatrixOrder
 
 attribute [local instance] Classical.propDecidable
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualPhysicalFlagMass_eq_optionalProduct
     {S d N L : ℕ} (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ ζ : BipartiteUnitVector d)
@@ -43389,7 +43389,7 @@ theorem
       intro i _
       rw [EuclideanSpace.norm_sq_eq, Fintype.sum_prod_type]
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualPhysical_firstHitProduct
     {L : ℕ} (continuation : ℕ → ℝ) (success : ℝ) (j : Fin L) :
     (∏ i : Fin (L + 1),
@@ -43430,7 +43430,7 @@ theorem
       rw [prefixProduct, selected, tail, mul_one]
     _ = _ := rfl
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualPhysicalMatchedCopyBorn
     {S d N L : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -43475,7 +43475,7 @@ theorem
     simp [show ¬ i.val < j.val by omega,
       show i.val ≠ j.val by omega]
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualPhysicalFlagMass_succ_succ_eq_stage
     {S d N L : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -43495,7 +43495,7 @@ theorem
     (dSVDensityRationalHeterogeneousPhysicalStageSuccess
       N width schedule ξ ζ j.val) j
 
-theorem dSVDensityRationalHeterogeneousActualPhysicalNoHitCopyBorn
+lemma dSVDensityRationalHeterogeneousActualPhysicalNoHitCopyBorn
     {S d N L : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ ζ : BipartiteUnitVector d) (i : Fin (L + 1)) :
@@ -43524,7 +43524,7 @@ theorem dSVDensityRationalHeterogeneousActualPhysicalNoHitCopyBorn
       dSVUniformDensityThresholdSharedState_norm grid dimension]
     simp [active]
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualPhysicalFlagMass_zero_zero_eq_terminal
     {S d N L : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -43546,7 +43546,7 @@ theorem
     (dSVDensityRationalHeterogeneousPhysicalStageContinue
       N width schedule ξ ζ) L
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualPhysicalBaseFlagBorn_eq_flagMass
     {S d N L : ℕ} (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ ζ : BipartiteUnitVector d)
@@ -43567,7 +43567,7 @@ theorem
   simp only [Fintype.sum_sigma]
   simp [mul_ite, ite_and]
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualPhysicalMatchedFlagMass_eq_stoppedSuccess
     {S d N L : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -43587,7 +43587,7 @@ theorem
         dSVDensityRationalHeterogeneousPhysicalStageSuccess
           N width schedule ξ ζ k) L
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualPhysicalFlagBorn_mass_partition
     {S d N L : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -43631,7 +43631,7 @@ theorem
     [dSVDensityRationalHeterogeneousActualPhysicalBaseFlagBorn_eq_flagMass]
     using actual
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousActualAsynchronousFlagMass_eq_stoppedAsynchronousMass
     {S d N L : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -43659,7 +43659,7 @@ noncomputable section
 open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
-theorem
+lemma
     dSVDensityRationalMixedCanonicalPrefixPhysicalLocalAction_real_smul
     {n : ℕ} (A B : Matrix.unitaryGroup (Fin n) ℂ)
     (r : ℝ) (z : EuclideanSpace ℂ (Fin n × Fin n)) :
@@ -43676,7 +43676,7 @@ theorem
     ((A : Matrix (Fin n) (Fin n) ℂ) ⊗ₖ
       (B : Matrix (Fin n) (Fin n) ℂ))).map_smul_of_tower r z
 
-theorem
+lemma
     dSVDensityRationalMixedCanonicalPrefixPureHarmonicTensor_real_smul
     {N : ℕ} (n : ℕ) (r : ℝ)
     (z : EuclideanSpace ℂ (Fin N × Fin N)) :
@@ -43699,7 +43699,7 @@ theorem
             (finProdFinEquiv.symm q.2).2))
   ring
 
-theorem
+lemma
     dSVDensityRationalMixedCanonicalPrefixPhysicalRawHarmonicTensor_eq
     {N : ℕ} (grid : 0 < N) (n : ℕ)
     (rank : Fin (N + 1)) :
@@ -43737,7 +43737,7 @@ theorem
     dSVDensityRationalMixedCanonicalPrefixPureHarmonicTensor_real_smul,
     dSVDensityRationalMixedCanonicalPrefixPureHarmonicTensor_unit]
 
-theorem
+lemma
     dSVDensityRationalMixedCanonicalPrefixPhysicalAcceptedSigmaState_apply
     {d N n : ℕ} {w : ℝ}
     (width : 0 < w) (grid : 0 < N)
@@ -43797,7 +43797,7 @@ theorem
       simp [below, not_both]
   · simp [same]
 
-theorem
+lemma
     dSVDensityRationalMixedCanonicalPrefixPhysicalRankWeightedAtomError_eq
     {N n : ℕ} (grid : 0 < N)
     (rank : Fin (N + 1))
@@ -43827,7 +43827,7 @@ def dSVDensityRationalPublicBucketPhysicalCommonRank
     have right := s.isLt
     omega⟩
 
-theorem dSVDensityRationalPublicBucketPhysicalCommonRank_eq
+lemma dSVDensityRationalPublicBucketPhysicalCommonRank_eq
     {d N : ℕ} (w : ℝ)
     (ξ ζ : BipartiteUnitVector d)
     (i j : Fin d) :
@@ -43838,7 +43838,7 @@ theorem dSVDensityRationalPublicBucketPhysicalCommonRank_eq
         w N ξ ζ i j := by
   rfl
 
-theorem
+lemma
     exists_proofDSVDensityRationalPublicBucketPhysicalRawRankCleanup_sq
     {Ω I : Type*} [DecidableEq I] {N : ℕ} (grid : 0 < N)
     (bucket : Ω → Fin (N + 1) → I)
@@ -43873,7 +43873,7 @@ theorem
   exact mul_le_mul_of_nonneg_left
     (accurate phase r s) (Nat.cast_nonneg r.val)
 
-theorem
+lemma
     exists_proofDSVDensityRationalPublicBucketPhysicalMixedPrefixCleanup_sq
     {Ω I : Type*} [DecidableEq I] {N : ℕ} (grid : 0 < N)
     (bucket : Ω → Fin (N + 1) → I)
@@ -44039,7 +44039,7 @@ def dSVDensityRationalPublicBucketPhysicalCoherentLocalReset
           (dSVDensityRationalPhysicalAcceptedRank
             w N ζ q.2))) z
 
-theorem
+lemma
     dSVDensityRationalPublicBucketPhysicalCoherentMixedReset_distance_sq
     {d N B n : ℕ} (phases : 0 < B) (Q : ℕ) (w : ℝ)
     (ξ ζ : BipartiteUnitVector d)
@@ -44075,7 +44075,7 @@ noncomputable section
 
 open scoped BigOperators
 
-theorem dSVDensityRationalPublicShiftedResidue_sum
+lemma dSVDensityRationalPublicShiftedResidue_sum
     {B : ℕ} (positive : 0 < B) (a : ℕ) :
     (∑ phase : Fin B, (a + phase.val) % B) =
       ∑ phase : Fin B, phase.val := by
@@ -44092,7 +44092,7 @@ theorem dSVDensityRationalPublicShiftedResidue_sum
       intro phase
       rfl
 
-theorem dSVDensityRationalPublicShiftedQuotient_sum
+lemma dSVDensityRationalPublicShiftedQuotient_sum
     {B : ℕ} (positive : 0 < B) (a : ℕ) :
     (∑ phase : Fin B, (a + phase.val) / B) = a := by
   have decomposition :
@@ -44124,14 +44124,14 @@ theorem dSVDensityRationalPublicShiftedQuotient_sum
         omega
   exact Nat.mul_left_cancel positive cancelled
 
-theorem dSVDensityRationalPublicShiftedQuotient_real_sum
+lemma dSVDensityRationalPublicShiftedQuotient_real_sum
     {B : ℕ} (positive : 0 < B) (a : ℕ) :
     (∑ phase : Fin B, (((a + phase.val) / B : ℕ) : ℝ)) =
       (a : ℝ) := by
   exact_mod_cast
     dSVDensityRationalPublicShiftedQuotient_sum positive a
 
-theorem dSVDensityRationalPublicShiftedBucketMismatch_sum_le
+lemma dSVDensityRationalPublicShiftedBucketMismatch_sum_le
     {B : ℕ} (positive : 0 < B) (a b : ℕ) :
     (∑ phase : Fin B,
       if (a + phase.val) / B = (b + phase.val) / B
@@ -44198,7 +44198,7 @@ theorem dSVDensityRationalPublicShiftedBucketMismatch_sum_le
     simpa [abs_of_nonneg (sub_nonneg.mpr
         (by exact_mod_cast ordered : (b : ℝ) ≤ a))] using bound
 
-theorem dSVDensityRationalPublicShiftedBucketMismatch_average_le
+lemma dSVDensityRationalPublicShiftedBucketMismatch_average_le
     {B : ℕ} (positive : 0 < B) (a b : ℕ) :
     (∑ phase : Fin B,
       (1 / (B : ℝ)) *
@@ -44234,7 +44234,7 @@ def dSVDensityRationalPublicLogRankPhaseWeightedCrossing
           dSVDensityRationalPublicLogRankBucket Q phase s
        then (0 : ℝ) else 1)
 
-theorem dSVDensityRationalPublicLogRankPhaseWeightedCrossing_nonneg
+lemma dSVDensityRationalPublicLogRankPhaseWeightedCrossing_nonneg
     {N : ℕ} (Q B : ℕ) (r s : Fin (N + 1)) :
     0 ≤ dSVDensityRationalPublicLogRankPhaseWeightedCrossing
       Q B r s := by
@@ -44244,7 +44244,7 @@ theorem dSVDensityRationalPublicLogRankPhaseWeightedCrossing_nonneg
   unfold dSVDensityRationalPublicLogRankPhaseWeight
   split <;> positivity
 
-theorem
+lemma
     dSVDensityRationalPublicLogRankPhaseWeightedCrossing_le_fineLabel
     {N B : ℕ} (positive : 0 < B) (Q : ℕ)
     (r s : Fin (N + 1))
@@ -44263,7 +44263,7 @@ theorem
         (dSVDensityRationalPublicLogRankFineLabel Q r)
         (dSVDensityRationalPublicLogRankFineLabel Q s))
 
-theorem dSVDensityRationalPublicLogRankFineLabel_abs_sub_le
+lemma dSVDensityRationalPublicLogRankFineLabel_abs_sub_le
     {N : ℕ} (Q : ℕ) (r s : Fin (N + 1)) :
     |(dSVDensityRationalPublicLogRankFineLabel Q r : ℝ) -
       (dSVDensityRationalPublicLogRankFineLabel Q s : ℝ)| ≤
@@ -44293,7 +44293,7 @@ theorem dSVDensityRationalPublicLogRankFineLabel_abs_sub_le
         (Q : ℝ) * Real.log ((max 1 s.val : ℕ) : ℝ))
     linarith [first.1, second.2]
 
-theorem
+lemma
     dSVDensityRationalPublicLogRankPhaseWeightedCrossing_min_le
     {N B : ℕ} (positive : 0 < B) (Q : ℕ)
     (r s : Fin (N + 1)) :
@@ -44354,7 +44354,7 @@ noncomputable section
 
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
-theorem
+lemma
     dSVDensityRationalPublicLogRankBucketRepresentative_val_pos
     {N B : ℕ} (Q : ℕ) (phase : Fin B)
     (r : Fin (N + 1)) (nonzero : r.val ≠ 0) :
@@ -44366,7 +44366,7 @@ theorem
     (dSVDensityRationalPublicLogRankBucketRepresentative_same
       Q phase r nonzero).1
 
-theorem
+lemma
     dSVDensityRationalPublicLogRankBucketRepresentative_actual_log_sub_lt
     {N B : ℕ} {Q : ℕ} (positive_Q : 0 < Q)
     (phase : Fin B) (r : Fin (N + 1)) (nonzero : r.val ≠ 0) :
@@ -44389,7 +44389,7 @@ theorem
     (dSVDensityRationalPublicLogRankBucketRepresentative_log_sub_lt
       positive_Q phase r nonzero)
 
-theorem
+lemma
     dSVDensityRationalPublicLogRankBucketRepresentative_rank_ratio_lt
     {N B : ℕ} {Q : ℕ} (positive_Q : 0 < Q)
     (phase : Fin B) (r : Fin (N + 1)) (nonzero : r.val ≠ 0) :
@@ -44428,7 +44428,7 @@ theorem
     Real.exp_log (div_pos positive_r positive_representative)] at exponential
   exact exponential
 
-theorem
+lemma
     dSVDensityRationalPublicLogRankBucketRepresentative_relative_sub_lt
     {N B : ℕ} {Q : ℕ} (positive_Q : 0 < Q)
     (phase : Fin B) (r : Fin (N + 1)) (nonzero : r.val ≠ 0) :
@@ -44467,7 +44467,7 @@ theorem
   rw [sub_div, div_self positive_representative.ne']
   linarith
 
-theorem
+lemma
     dSVDensityRationalPublicLogRankBucketRepresentative_relative_abs_lt
     {N B : ℕ} {Q : ℕ} (positive_Q : 0 < Q)
     (phase : Fin B) (r : Fin (N + 1)) (nonzero : r.val ≠ 0) :
@@ -44519,7 +44519,7 @@ noncomputable section
 open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
-theorem dSVDensityRationalPublicLogRankPhaseWeightedCrossing_le_one
+lemma dSVDensityRationalPublicLogRankPhaseWeightedCrossing_le_one
     {N B : ℕ} (positive : 0 < B) (Q : ℕ)
     (r s : Fin (N + 1)) :
     dSVDensityRationalPublicLogRankPhaseWeightedCrossing
@@ -44535,7 +44535,7 @@ theorem dSVDensityRationalPublicLogRankPhaseWeightedCrossing_le_one
     _ = 1 :=
       dSVDensityRationalPublicLogRankPhaseWeight_sum positive
 
-theorem
+lemma
     dSVDensityRationalPublicLogRankPhaseWeightedCrossing_alice_le
     {N B : ℕ} (positive : 0 < B) (Q : ℕ)
     (r s : Fin (N + 1)) :
@@ -44579,7 +44579,7 @@ theorem
     ((Q : ℝ) / (B : ℝ) + 1) * t + m / (B : ℝ)
   nlinarith
 
-theorem
+lemma
     exists_proofDSVDensityRationalPublicBucketPhysicalQuantitativeMixedPrefixCleanup_sq
     {N B : ℕ} (grid : 0 < N) (phases : 0 < B)
     {Q : ℕ} (fine : 0 < Q)
@@ -44766,7 +44766,7 @@ def dSVDensityRationalHeterogeneousCommonStopSpectralAtomWeight
   dSVDensityRationalPrefixHarmonicSpectralOverlap ξ ζ i j /
     ((d : ℝ) * (N : ℝ))
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousCommonStopSpectralAtomWeight_nonneg
     {d : ℕ} (N : ℕ)
     (ξ ζ : BipartiteUnitVector d)
@@ -44787,7 +44787,7 @@ def dSVDensityRationalHeterogeneousCommonStopSpectralRankGap
       |((dSVDensityRationalPhysicalAcceptedRank w N ξ i).val : ℝ) -
         ((dSVDensityRationalPhysicalAcceptedRank w N ζ j).val : ℝ)|
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousCommonStopSpectralRankGap_eq_hazard
     {d N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (w : ℝ) (ξ ζ : BipartiteUnitVector d) :
@@ -44812,7 +44812,7 @@ def dSVDensityRationalHeterogeneousCommonStopSpectralAliceMass
       N ξ ζ i j *
       ((dSVDensityRationalPhysicalAcceptedRank w N ξ i).val : ℝ)
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousCommonStopSpectralAliceMass_eq_diagonalBorn
     {d N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (w : ℝ) (ξ ζ : BipartiteUnitVector d) :
@@ -44874,7 +44874,7 @@ theorem
           w N ξ i).val : ℝ) / (N : ℝ)) / (d : ℝ) := by
       rw [Finset.sum_div]
 
-theorem
+lemma
     exists_proofDSVDensityRationalHeterogeneousCommonStopSpectralGaugeContinuity_sq
     {d N B : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (phases : 0 < B) {Q : ℕ} (fine : 0 < Q)
@@ -45161,7 +45161,7 @@ def dSVDensityRationalHeterogeneousStoppedCommonStopGaugeError
       dSVDensityRationalHeterogeneousCommonStopGaugeStageError
         Q (width (schedule k)) n ξ ζ A C
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousPhysicalDiagonalSurvival_budget
     {d S L N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -45206,7 +45206,7 @@ theorem
       dSVDensityRationalHeterogeneousPhysicalStoppedEscape_budget
         grid dimension width schedule ξ ζ
 
-theorem
+lemma
     exists_proofDSVDensityRationalHeterogeneousStoppedCommonStopGaugeErrorBound
     {d N B : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (phases : 0 < B) {Q : ℕ} (fine : 0 < Q)
@@ -45343,7 +45343,7 @@ def dSVDensityRationalHeterogeneousStoppedCommonPrefixFailureVector
     (dSVDensityRationalHeterogeneousStoppedCommonPrefixFailureCopy
       width schedule ξ ζ j)
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousStoppedCommonPrefixFailureCopy_eq_actual
     {S N d L : ℕ} (width : Fin S → ℝ)
     (schedule : Fin L → Fin S)
@@ -45359,7 +45359,7 @@ theorem
     dSVDensityRationalHeterogeneousActualCommonStopScheduledOutcome_before
       width schedule ξ ζ j ⟨i.val, by omega⟩ i.isLt
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousStoppedCommonPrefixFailureVector_apply
     {S N d L : ℕ} (width : Fin S → ℝ)
     (schedule : Fin L → Fin S)
@@ -45382,7 +45382,7 @@ theorem
   intro i _
   rw [dSVDensityRationalHeterogeneousStoppedCommonPrefixFailureCopy_eq_actual]
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousStoppedCommonPrefixFailureVector_norm_sq
     {S N d L : ℕ} (width : Fin S → ℝ)
     (schedule : Fin L → Fin S)
@@ -45426,7 +45426,7 @@ def dSVDensityRationalHeterogeneousStoppedCommonPrefixHazard
       dSVDensityRationalHeterogeneousCommonStopGaugeStageError
         Q (width (schedule j)) n ξ ζ A C
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousStoppedCommonPrefixHazard_eq_gaugeError
     {d N B S L : ℕ} (Q n : ℕ)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -45442,7 +45442,7 @@ theorem
   simp_rw [
     dSVDensityRationalHeterogeneousStoppedCommonPrefixFailureVector_norm_sq]
 
-theorem
+lemma
     exists_proofDSVDensityRationalHeterogeneousStoppedCommonPrefixHazardBound
     {d N B : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (phases : 0 < B) {Q : ℕ} (fine : 0 < Q)
@@ -45475,7 +45475,7 @@ end
 
 noncomputable section
 
-theorem unconditionalPublicBucket_exp_sub_one_le
+lemma unconditionalPublicBucket_exp_sub_one_le
     {u : ℝ} (nonnegative : 0 ≤ u) (bounded : u ≤ 1) :
     Real.exp u - 1 ≤ (Real.exp 1 - 1) * u := by
   have chord := convexOn_exp.2
@@ -45493,7 +45493,7 @@ def unconditionalPublicBucketLoss
       16 * (Real.exp (((B : ℝ) + 1) / (Q : ℝ)) - 1) +
       8 / (B : ℝ))
 
-theorem exists_proofUnconditionalPublicBucketBalance
+lemma exists_proofUnconditionalPublicBucketBalance
     (t : ℝ) (positive : 0 < t) (bounded : t ≤ 1) :
     ∃ B Q : ℕ, 0 < B ∧ 0 < Q ∧
       (1 / (B : ℝ) ≤ t / 2) ∧
@@ -45605,7 +45605,7 @@ theorem exists_proofUnconditionalPublicBucketBalance
   unfold unconditionalPublicBucketLoss
   nlinarith
 
-theorem exists_proofUnconditionalStoppedCommonPrefixBalancedHazard
+lemma exists_proofUnconditionalStoppedCommonPrefixBalancedHazard
     {d N : ℕ} (grid : 0 < N) (dimension : 0 < d)
     (t : ℝ) (positive : 0 < t) (bounded : t ≤ 1)
     (precision : ℝ) (precision_positive : 0 < precision) :
@@ -45645,13 +45645,13 @@ theorem exists_proofUnconditionalStoppedCommonPrefixBalancedHazard
 def unconditionalPrefactorBucketCoefficient : ℝ :=
   16 * (Real.exp 1 - 1) + 4
 
-theorem unconditionalPrefactorBucketCoefficient_nonneg :
+lemma unconditionalPrefactorBucketCoefficient_nonneg :
     0 ≤ unconditionalPrefactorBucketCoefficient := by
   have exponential := Real.add_one_le_exp (1 : ℝ)
   unfold unconditionalPrefactorBucketCoefficient
   nlinarith
 
-theorem unconditionalPrefactor_fourthRoot_sq
+lemma unconditionalPrefactor_fourthRoot_sq
     {a : ℝ} (nonnegative : 0 ≤ a) :
     (a ^ (1 / 4 : ℝ)) ^ 2 = Real.sqrt a := by
   calc
@@ -45660,7 +45660,7 @@ theorem unconditionalPrefactor_fourthRoot_sq
     _ = a ^ (1 / 2 : ℝ) := by norm_num
     _ = Real.sqrt a := (Real.sqrt_eq_rpow a).symm
 
-theorem unconditionalPrefactor_sixtyFour_fourthRoot_le :
+lemma unconditionalPrefactor_sixtyFour_fourthRoot_le :
     (64 : ℝ) ^ (1 / 4 : ℝ) ≤ 4 := by
   have monotone := Real.rpow_le_rpow
     (by norm_num : (0 : ℝ) ≤ 64)
@@ -45671,7 +45671,7 @@ theorem unconditionalPrefactor_sixtyFour_fourthRoot_le :
     norm_num
   exact monotone.trans_eq fourth
 
-theorem unconditionalPrefactor_fourthRoot_async_le
+lemma unconditionalPrefactor_fourthRoot_async_le
     {eta alpha : ℝ}
     (eta_nonnegative : 0 ≤ eta)
     (alpha_nonnegative : 0 ≤ alpha) :
@@ -45708,7 +45708,7 @@ theorem unconditionalPrefactor_fourthRoot_async_le
     _ ≤ 4 * eta ^ (1 / 8 : ℝ) + alpha ^ (1 / 12 : ℝ) := by
           gcongr
 
-theorem unconditionalPrefactor_fourthRoot_async_le_twelfth
+lemma unconditionalPrefactor_fourthRoot_async_le_twelfth
     {eta alpha : ℝ}
     (eta_nonnegative : 0 ≤ eta)
     (eta_bounded : eta ≤ 1)
@@ -45728,7 +45728,7 @@ theorem unconditionalPrefactor_fourthRoot_async_le_twelfth
     _ ≤ 4 * eta ^ (1 / 12 : ℝ) + alpha ^ (1 / 12 : ℝ) := by
           gcongr
 
-theorem unconditionalPrefactor_balancedHazard_sqrt_le
+lemma unconditionalPrefactor_balancedHazard_sqrt_le
     {a rho : ℝ}
     (positive : 0 < a)
     (rho_nonnegative : 0 ≤ rho) :
@@ -45779,7 +45779,7 @@ theorem unconditionalPrefactor_balancedHazard_sqrt_le
         rho_nonnegative
     nlinarith [product_square]
 
-theorem unconditionalPrefactor_smallHazard_twelfthRoot_le
+lemma unconditionalPrefactor_smallHazard_twelfthRoot_le
     {eta alpha : ℝ}
     (eta_nonnegative : 0 ≤ eta)
     (alpha_positive : 0 < alpha)
@@ -45839,7 +45839,7 @@ theorem unconditionalPrefactor_smallHazard_twelfthRoot_le
     mul_nonneg (show 0 ≤ (2 : ℝ) by norm_num)
       eta_twelfth_nonnegative]
 
-theorem unconditionalPrefactor_largeVerifier_twelfthRoot_le
+lemma unconditionalPrefactor_largeVerifier_twelfthRoot_le
     {eta alpha : ℝ}
     (eta_nonnegative : 0 ≤ eta)
     (alpha_positive : 0 < alpha)
@@ -45878,7 +45878,7 @@ noncomputable section
 open scoped BigOperators ComplexOrder Kronecker MatrixOrder
   Matrix.Norms.L2Operator InnerProductSpace
 
-theorem unconditionalExactSourceScalarClipping
+lemma unconditionalExactSourceScalarClipping
     (d : ℕ) (dimension : 0 < d)
     (alpha : ℝ) (alpha_positive : 0 < alpha)
     (alpha_bounded : alpha ≤ 1) :
@@ -45971,7 +45971,7 @@ def exactLocallySampleableJBRounded
       denominator) /
     (Fintype.card (SourceRemainingCoordinate D) : ℝ)
 
-theorem exactLocallySampleableJA_weightedConditional
+lemma exactLocallySampleableJA_weightedConditional
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (base : ExactHistoryFlag X Y A B D) :
@@ -45995,7 +45995,7 @@ theorem exactLocallySampleableJA_weightedConditional
           (exactLocallySampleableLaw G n S D) i x r
   ring
 
-theorem exactLocallySampleableJB_weightedConditional
+lemma exactLocallySampleableJB_weightedConditional
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (base : ExactHistoryFlag X Y A B D) :
@@ -46019,7 +46019,7 @@ theorem exactLocallySampleableJB_weightedConditional
           (exactLocallySampleableLaw G n S D) i y r
   ring
 
-theorem exactLocallySampleableJARounded_weightedConditional
+lemma exactLocallySampleableJARounded_weightedConditional
     (G : Game X Y A B) (n : ℕ) (D : Finset (Fin n))
     (denominator : ℕ)
     (numerator : ExactLocalSamplerIndex X Y D →
@@ -46042,7 +46042,7 @@ theorem exactLocallySampleableJARounded_weightedConditional
         ((numerator (.inl (i, x)) r : ℝ) / denominator)
   ring
 
-theorem exactLocallySampleableJBRounded_weightedConditional
+lemma exactLocallySampleableJBRounded_weightedConditional
     (G : Game X Y A B) (n : ℕ) (D : Finset (Fin n))
     (denominator : ℕ)
     (numerator : ExactLocalSamplerIndex X Y D →
@@ -46065,7 +46065,7 @@ theorem exactLocallySampleableJBRounded_weightedConditional
         ((numerator (.inr (i, y)) r : ℝ) / denominator)
   ring
 
-theorem exactLocallySampleableJA_rounded_totalVariation_le
+lemma exactLocallySampleableJA_rounded_totalVariation_le
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -46124,7 +46124,7 @@ theorem exactLocallySampleableJA_rounded_totalVariation_le
         localQuestionWeight_sum G n D remaining]
       ring
 
-theorem exactLocallySampleableJB_rounded_totalVariation_le
+lemma exactLocallySampleableJB_rounded_totalVariation_le
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -46183,7 +46183,7 @@ theorem exactLocallySampleableJB_rounded_totalVariation_le
         localQuestionWeight_sum G n D remaining]
       ring
 
-theorem exactLocallySampleableRounded_pair_totalVariation
+lemma exactLocallySampleableRounded_pair_totalVariation
     (G : Game X Y A B) (n : ℕ) (D : Finset (Fin n))
     (denominator : ℕ)
     (numerator : ExactLocalSamplerIndex X Y D →
@@ -46246,7 +46246,7 @@ def exactLocallySampleablePermutationMismatch
               (numerator (.inr (c.1, c.2.2)))
               (nonempty (.inr (c.1, c.2.2))) permutation)
 
-theorem exactLocallySampleablePermutationMismatch_le_two_tv
+lemma exactLocallySampleablePermutationMismatch_le_two_tv
     (G : Game X Y A B) (n : ℕ) (D : Finset (Fin n))
     (denominator : ℕ) (positive : 0 < denominator)
     (numerator : ExactLocalSamplerIndex X Y D →
@@ -46348,14 +46348,14 @@ def exactSourceSharedFlagWeight
       (Equiv.Perm
         (ExactHistoryFlag X Y A B D × Fin denominator)) : ℝ))
 
-theorem exactSourceSharedFlagWeight_nonneg
+lemma exactSourceSharedFlagWeight_nonneg
     {n : ℕ} (D : Finset (Fin n)) (denominator : ℕ)
     (j : ExactSourceSharedFlag X Y A B D denominator) :
     0 ≤ exactSourceSharedFlagWeight D denominator j := by
   unfold exactSourceSharedFlagWeight
   positivity
 
-theorem exactSourceSharedFlagWeight_sum
+lemma exactSourceSharedFlagWeight_sum
     {n : ℕ} (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
     (denominator : ℕ) :
@@ -46420,7 +46420,7 @@ def exactSourcePermutationMatched
       exactSourceBobPermutationHistory
         D denominator numerator nonempty ω.1 ω.2.2)
 
-theorem exactUniformPermutationProbability_eq_indicator_sum
+lemma exactUniformPermutationProbability_eq_indicator_sum
     {ι : Type*} [Fintype ι] [DecidableEq ι]
     (event : Equiv.Perm ι → Prop) :
     uniformPermutationProbability event =
@@ -46433,7 +46433,7 @@ theorem exactUniformPermutationProbability_eq_indicator_sum
   exact (Finset.sum_boole (R := ℝ) event
     (Finset.univ : Finset (Equiv.Perm ι))).symm
 
-theorem exactSourceSharedFlag_mismatch_eq
+lemma exactSourceSharedFlag_mismatch_eq
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n)) (denominator : ℕ)
     (numerator : ExactLocalSamplerIndex X Y D →
@@ -46523,7 +46523,7 @@ theorem exactSourceSharedFlag_mismatch_eq
   intro y _
   exact point i x y
 
-theorem exactSourceSharedFlag_mismatch_le
+lemma exactSourceSharedFlag_mismatch_le
     (G : Game X Y A B) (n : ℕ)
     (D : Finset (Fin n)) (denominator : ℕ)
     (numerator : ExactLocalSamplerIndex X Y D →
@@ -46563,7 +46563,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem reweightedSeed_reverse_source_prefix_information_budget
+lemma reweightedSeed_reverse_source_prefix_information_budget
     {K V : Type*} [Fintype K] [Fintype V]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
@@ -46627,7 +46627,7 @@ def finiteCoordinateMarginal
   classical
   exact groupedMass (fun x : ι → V => x i) p
 
-theorem finiteIndependentProductWeight_nonneg
+lemma finiteIndependentProductWeight_nonneg
     {ι V : Type*} [Fintype ι] [Fintype V]
     (q : ι → V → ℝ) (hq : ∀ i v, 0 ≤ q i v)
     (x : ι → V) :
@@ -46636,7 +46636,7 @@ theorem finiteIndependentProductWeight_nonneg
   unfold finiteIndependentProductWeight
   exact Finset.prod_nonneg fun i _ => hq i (x i)
 
-theorem finiteIndependentProductWeight_sum
+lemma finiteIndependentProductWeight_sum
     {ι V : Type*} [Fintype ι] [Fintype V]
     (q : ι → V → ℝ)
     (hq : ∀ i, (∑ v : V, q i v) = 1) :
@@ -46649,7 +46649,7 @@ theorem finiteIndependentProductWeight_sum
       (Fintype.prod_sum (fun i : ι => fun v : V => q i v)).symm
     _ = 1 := by simp [hq]
 
-theorem finiteCoordinateMarginal_nonneg
+lemma finiteCoordinateMarginal_nonneg
     {ι V : Type*} [Fintype ι] [Fintype V]
     (p : (ι → V) → ℝ) (hp : ∀ x, 0 ≤ p x)
     (i : ι) (v : V) :
@@ -46658,7 +46658,7 @@ theorem finiteCoordinateMarginal_nonneg
   unfold finiteCoordinateMarginal
   exact groupedMass_nonneg (fun x : ι → V => x i) p hp v
 
-theorem finiteCoordinateMarginal_sum
+lemma finiteCoordinateMarginal_sum
     {ι V : Type*} [Fintype ι] [Fintype V]
     (p : (ι → V) → ℝ) (i : ι) :
     (∑ v : V, finiteCoordinateMarginal p i v) =
@@ -46667,7 +46667,7 @@ theorem finiteCoordinateMarginal_sum
   unfold finiteCoordinateMarginal
   exact groupedMass_sum (fun x : ι → V => x i) p
 
-theorem finiteJoint_le_coordinateMarginal
+lemma finiteJoint_le_coordinateMarginal
     {ι V : Type*} [Fintype ι] [Fintype V]
     (p : (ι → V) → ℝ) (hp : ∀ x, 0 ≤ p x)
     (x : ι → V) (i : ι) :
@@ -46678,7 +46678,7 @@ theorem finiteJoint_le_coordinateMarginal
     (fun a _ => hp a)
     (by simp)
 
-theorem finiteCoordinateMarginal_absolute_continuity
+lemma finiteCoordinateMarginal_absolute_continuity
     {ι V : Type*} [Fintype ι] [Fintype V]
     (p : (ι → V) → ℝ) (q : ι → V → ℝ)
     (hac : ∀ x, finiteIndependentProductWeight q x = 0 → p x = 0)
@@ -46695,7 +46695,7 @@ theorem finiteCoordinateMarginal_absolute_continuity
   apply Finset.prod_eq_zero (Finset.mem_univ i)
   simpa [hxi] using hz
 
-theorem finiteJoint_absolute_continuous_product_marginals
+lemma finiteJoint_absolute_continuous_product_marginals
     {ι V : Type*} [Fintype ι] [Fintype V]
     (p : (ι → V) → ℝ) (hp : ∀ x, 0 ≤ p x)
     (x : ι → V) :
@@ -46717,7 +46717,7 @@ theorem finiteJoint_absolute_continuous_product_marginals
     exact Finset.prod_pos fun i _ => hmarginal i
   exact hproduct.ne' hz
 
-theorem finiteCoordinateMarginal_sum_mul
+lemma finiteCoordinateMarginal_sum_mul
     {ι V : Type*} [Fintype ι] [Fintype V]
     (p : (ι → V) → ℝ) (i : ι) (f : V → ℝ) :
     (∑ x : ι → V, p x * f (x i)) =
@@ -46742,7 +46742,7 @@ theorem finiteCoordinateMarginal_sum_mul
       have hxi : x i = v := (Finset.mem_filter.mp hx).2
       simp [hxi]
 
-theorem finiteProductMarginal_relativeEntropy_le
+lemma finiteProductMarginal_relativeEntropy_le
     {ι V : Type*} [Fintype ι] [Fintype V]
     (p : (ι → V) → ℝ) (q : ι → V → ℝ)
     (hp : ∀ x, 0 ≤ p x)
@@ -46888,7 +46888,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactIndependentCoordinateQuestion_marginal
+lemma exactIndependentCoordinateQuestion_marginal
     {M Ω V : Type*} [Fintype M] [DecidableEq M]
     [Fintype Ω] [Fintype V]
     (outcome : Ω → ℝ) (question : Ω → M → V)
@@ -46940,7 +46940,7 @@ theorem exactIndependentCoordinateQuestion_marginal
     _ = (1 / (Fintype.card M : ℝ)) * coordinateMass := by
       rw [exactSeedWeight_coordinate_marginal i]
 
-theorem strategyAliceQuestionPrior_marginal
+lemma strategyAliceQuestionPrior_marginal
     (G : Game X Y A B) (S : Strategy G) (x : X) :
     groupedMass (fun ω : StrategyOutcome X Y A B => ω.1)
         (strategyEventLaw G S).weight x =
@@ -46963,7 +46963,7 @@ theorem strategyAliceQuestionPrior_marginal
   rw [S.outcomeProbability_normalized x y]
   ring
 
-theorem strategyBobQuestionPrior_marginal
+lemma strategyBobQuestionPrior_marginal
     (G : Game X Y A B) (S : Strategy G) (y : Y) :
     groupedMass (fun ω : StrategyOutcome X Y A B => ω.2.1)
         (strategyEventLaw G S).weight y =
@@ -46986,7 +46986,7 @@ theorem strategyBobQuestionPrior_marginal
   rw [S.outcomeProbability_normalized x y]
   ring
 
-theorem repeatedAliceQuestionPrior_product
+lemma repeatedAliceQuestionPrior_product
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (xs : Fin n → X) :
     groupedMass
@@ -47024,7 +47024,7 @@ theorem repeatedAliceQuestionPrior_product
       exact (Fintype.prod_sum
         (fun i : Fin n => fun y : Y => G.questionWeight (xs i) y)).symm
 
-theorem repeatedBobQuestionPrior_product
+lemma repeatedBobQuestionPrior_product
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (ys : Fin n → Y) :
     groupedMass
@@ -47078,7 +47078,7 @@ def repeatedBobPostselectedQuestionLaw
     (fun ω : ExactOutcome X Y A B n => ω.2.1)
     (repeatedConditionedOutcomeLaw G n S D)
 
-theorem exactGroupedMass_equiv
+lemma exactGroupedMass_equiv
     {Ω K V : Type*} [Fintype Ω] [Fintype K] [Fintype V]
     (equiv : Ω ≃ K) (projection : Ω → V) (mass : Ω → ℝ)
     (v : V) :
@@ -47091,7 +47091,7 @@ theorem exactGroupedMass_equiv
   exact equiv.symm.sum_comp
     (fun ω : Ω => if projection ω = v then mass ω else 0)
 
-theorem exactAliceInformationPosterior_firstMarginal_pushforward
+lemma exactAliceInformationPosterior_firstMarginal_pushforward
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (i : SourceRemainingCoordinate D) (x : X) :
     jointFirstMarginal
@@ -47175,7 +47175,7 @@ theorem exactAliceInformationPosterior_firstMarginal_pushforward
             projection mass) (i, x)
       exact hchange.trans (hreindex'.trans hright)
 
-theorem exactBobInformationPosterior_firstMarginal_pushforward
+lemma exactBobInformationPosterior_firstMarginal_pushforward
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (i : SourceRemainingCoordinate D) (y : Y) :
     jointFirstMarginal
@@ -47259,7 +47259,7 @@ theorem exactBobInformationPosterior_firstMarginal_pushforward
             projection mass) (i, y)
       exact hchange.trans (hreindex'.trans hright)
 
-theorem exactAliceInformationPosterior_firstMarginal
+lemma exactAliceInformationPosterior_firstMarginal
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (i : SourceRemainingCoordinate D) (x : X) :
     jointFirstMarginal
@@ -47312,7 +47312,7 @@ theorem exactAliceInformationPosterior_firstMarginal
         (fun ω : ExactOutcome X Y A B n =>
           fun j : SourceRemainingCoordinate D => ω.1 j.val) i x
 
-theorem exactBobInformationPosterior_firstMarginal
+lemma exactBobInformationPosterior_firstMarginal
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (i : SourceRemainingCoordinate D) (y : Y) :
     jointFirstMarginal
@@ -47365,7 +47365,7 @@ theorem exactBobInformationPosterior_firstMarginal
         (fun ω : ExactOutcome X Y A B n =>
           fun j : SourceRemainingCoordinate D => ω.2.1 j.val) i y
 
-theorem finiteProductMarginal_projection_relativeEntropy_le
+lemma finiteProductMarginal_projection_relativeEntropy_le
     {Ω ι V : Type*} [Fintype Ω] [Fintype ι] [Fintype V]
     (posterior prior : Ω → ℝ) (projection : Ω → (ι → V))
     (q : ι → V → ℝ) (budget : ℝ)
@@ -47410,7 +47410,7 @@ theorem finiteProductMarginal_projection_relativeEntropy_le
   rw [actual_prior] at hdpi
   exact htensor.trans (hdpi.trans actual_budget)
 
-theorem repeatedAliceCoordinateInformation_sum_le
+lemma repeatedAliceCoordinateInformation_sum_le
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D) :
@@ -47470,7 +47470,7 @@ theorem repeatedAliceCoordinateInformation_sum_le
   rw [hprojected] at h
   exact h
 
-theorem repeatedBobCoordinateInformation_sum_le
+lemma repeatedBobCoordinateInformation_sum_le
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D) :
@@ -47530,7 +47530,7 @@ theorem repeatedBobCoordinateInformation_sum_le
   rw [hprojected] at h
   exact h
 
-theorem finiteCoordinateMarginal_groupedMass
+lemma finiteCoordinateMarginal_groupedMass
     {Ω ι V : Type*} [Fintype Ω] [Fintype ι] [Fintype V]
     (projection : Ω → (ι → V)) (mass : Ω → ℝ)
     (i : ι) (v : V) :
@@ -47561,7 +47561,7 @@ theorem finiteCoordinateMarginal_groupedMass
         (fun ω : Ω => projection ω i) mass) v
   exact hleft.trans (h.trans hright)
 
-theorem finiteUniformCoordinate_relativeEntropy
+lemma finiteUniformCoordinate_relativeEntropy
     {ι V : Type*} [Fintype ι] [Fintype V]
     (positive : 0 < Fintype.card ι)
     (posterior : ι → V → ℝ) (prior : V → ℝ) :
@@ -47588,7 +47588,7 @@ theorem finiteUniformCoordinate_relativeEntropy
   rw [mul_div_mul_left _ _ huniform]
   ring
 
-theorem repeatedAlicePostselectedQuestionLaw_nonneg
+lemma repeatedAlicePostselectedQuestionLaw_nonneg
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -47603,7 +47603,7 @@ theorem repeatedAlicePostselectedQuestionLaw_nonneg
     (FiniteEventLaw.winEvent (repeatedCoordinateWin G n) D)
     positive ω
 
-theorem repeatedBobPostselectedQuestionLaw_nonneg
+lemma repeatedBobPostselectedQuestionLaw_nonneg
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -47618,7 +47618,7 @@ theorem repeatedBobPostselectedQuestionLaw_nonneg
     (FiniteEventLaw.winEvent (repeatedCoordinateWin G n) D)
     positive ω
 
-theorem repeatedAlicePostselectedCoordinateMarginal
+lemma repeatedAlicePostselectedCoordinateMarginal
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (j : Fin n) (x : X) :
     finiteCoordinateMarginal
@@ -47639,7 +47639,7 @@ theorem repeatedAlicePostselectedCoordinateMarginal
   exact finiteCoordinateMarginal_groupedMass
     projection posterior j x
 
-theorem repeatedBobPostselectedCoordinateMarginal
+lemma repeatedBobPostselectedCoordinateMarginal
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (j : Fin n) (y : Y) :
     finiteCoordinateMarginal
@@ -47660,7 +47660,7 @@ theorem repeatedBobPostselectedCoordinateMarginal
   exact finiteCoordinateMarginal_groupedMass
     projection posterior j y
 
-theorem exactAliceSourceMarginalInformation_eq
+lemma exactAliceSourceMarginalInformation_eq
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -47707,7 +47707,7 @@ theorem exactAliceSourceMarginalInformation_eq
       finiteCoordinateMarginal posterior i.val)
     G.marginalX
 
-theorem exactBobSourceMarginalInformation_eq
+lemma exactBobSourceMarginalInformation_eq
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -47754,7 +47754,7 @@ theorem exactBobSourceMarginalInformation_eq
       finiteCoordinateMarginal posterior i.val)
     G.marginalY
 
-theorem sourceRemaining_nonnegative_sum_le
+lemma sourceRemaining_nonnegative_sum_le
     {n : ℕ} (D : Finset (Fin n)) (f : Fin n → ℝ)
     (nonnegative : ∀ j, 0 ≤ f j) :
     (∑ i : SourceRemainingCoordinate D, f i.val) ≤
@@ -47768,7 +47768,7 @@ theorem sourceRemaining_nonnegative_sum_le
     (Finset.subset_univ (Finset.univ \ D))
     (fun j _ _ => nonnegative j)
 
-theorem exactAliceSourceMarginalInformation_le
+lemma exactAliceSourceMarginalInformation_le
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -47817,7 +47817,7 @@ theorem exactAliceSourceMarginalInformation_le
       rw [hcard]
       ring
 
-theorem exactBobSourceMarginalInformation_le
+lemma exactBobSourceMarginalInformation_le
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -47884,7 +47884,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exact_source_equation_twenty_three_of_conditioned_reverse_prefix
+lemma exact_source_equation_twenty_three_of_conditioned_reverse_prefix
     {KA KB : Type*} [Fintype KA] [Fintype KB]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
@@ -48066,7 +48066,7 @@ def ExactReverseBobConditionalHistoryIdentification
     exactConditionedReverseBobPrefixInformation
       G n S D remaining default
 
-theorem exact_source_equation_twenty_three_of_actual_conditioned_reindex
+lemma exact_source_equation_twenty_three_of_actual_conditioned_reindex
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -48110,7 +48110,7 @@ open QuantumParallelRepetition.ClassicalInformation
 
 attribute [local instance] Classical.propDecidable
 
-theorem finiteRelativeEntropy_self
+lemma finiteRelativeEntropy_self
     {I : Type*} [Fintype I] (mass : I → ℝ) :
     finiteRelativeEntropy mass mass = 0 := by
   unfold finiteRelativeEntropy
@@ -48120,7 +48120,7 @@ theorem finiteRelativeEntropy_self
   · simp [hi]
   · simp [hi, InformationTheory.klFun]
 
-theorem finiteConditionalHistoryRelativeEntropy_eq
+lemma finiteConditionalHistoryRelativeEntropy_eq
     {I R V : Type*} [Fintype I] [Fintype R] [Fintype V]
     (p q : I × (R × V) → ℝ)
     (p_nonnegative : ∀ point, 0 ≤ p point)
@@ -48211,7 +48211,7 @@ open QuantumParallelRepetition.ClassicalInformation
 
 attribute [local instance] Classical.propDecidable
 
-theorem finiteSupportedConditionalHistoryReferenceFirstMarginal_eq
+lemma finiteSupportedConditionalHistoryReferenceFirstMarginal_eq
     {I R V : Type*} [Fintype I] [Fintype R] [Fintype V]
     (p q : I × (R × V) → ℝ)
     (q_nonnegative : ∀ point, 0 ≤ q point)
@@ -48256,7 +48256,7 @@ theorem finiteSupportedConditionalHistoryReferenceFirstMarginal_eq
       rw [← Finset.mul_sum, reference_normalized i supported r]
       ring
 
-theorem finiteSupportedConditionalHistoryReferenceConditional_eq
+lemma finiteSupportedConditionalHistoryReferenceConditional_eq
     {I R V : Type*} [Fintype I] [Fintype R] [Fintype V]
     (p q : I × (R × V) → ℝ)
     (q_nonnegative : ∀ point, 0 ≤ q point)
@@ -48294,7 +48294,7 @@ theorem finiteSupportedConditionalHistoryReferenceConditional_eq
   rw [factor i supported r v, congrFun hhistory r]
   field_simp [hqi, history_supported]
 
-theorem finiteSupportedConditionalHistoryRelativeEntropy_eq_of_factor
+lemma finiteSupportedConditionalHistoryRelativeEntropy_eq_of_factor
     {I R V : Type*} [Fintype I] [Fintype R] [Fintype V]
     (p q : I × (R × V) → ℝ)
     (p_nonnegative : ∀ point, 0 ≤ p point)
@@ -48354,7 +48354,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactAliceInformationPosterior_firstMarginal_eq_localMass
+lemma exactAliceInformationPosterior_firstMarginal_eq_localMass
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (i : SourceRemainingCoordinate D) (x : X) :
@@ -48366,7 +48366,7 @@ theorem exactAliceInformationPosterior_firstMarginal_eq_localMass
   rw [Fintype.sum_prod_type]
   rfl
 
-theorem exactBobInformationPosterior_firstMarginal_eq_localMass
+lemma exactBobInformationPosterior_firstMarginal_eq_localMass
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (i : SourceRemainingCoordinate D) (y : Y) :
@@ -48378,7 +48378,7 @@ theorem exactBobInformationPosterior_firstMarginal_eq_localMass
   rw [Fintype.sum_prod_type]
   rfl
 
-theorem exactAliceSupportedQuestion_marginal_pos
+lemma exactAliceSupportedQuestion_marginal_pos
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -48418,7 +48418,7 @@ theorem exactAliceSupportedQuestion_marginal_pos
     simp
   exact lt_of_le_of_ne (G.marginalX_nonneg x) (Ne.symm hx)
 
-theorem exactBobSupportedQuestion_marginal_pos
+lemma exactBobSupportedQuestion_marginal_pos
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -48458,7 +48458,7 @@ theorem exactBobSupportedQuestion_marginal_pos
     simp
   exact lt_of_le_of_ne (G.marginalY_nonneg y) (Ne.symm hy)
 
-theorem exactAliceInformationPosterior_historyMarginal
+lemma exactAliceInformationPosterior_historyMarginal
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (base : ExactHistoryFlag X Y A B D)
@@ -48490,7 +48490,7 @@ theorem exactAliceInformationPosterior_historyMarginal
   rw [← Finset.sum_div, hmass]
   simp [exactAliceLocalConditional, hlocal]
 
-theorem exactBobInformationPosterior_historyMarginal
+lemma exactBobInformationPosterior_historyMarginal
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (base : ExactHistoryFlag X Y A B D)
@@ -48522,7 +48522,7 @@ theorem exactBobInformationPosterior_historyMarginal
   rw [← Finset.sum_div, hmass]
   simp [exactBobLocalConditional, hlocal]
 
-theorem exactAliceInformationReference_supported_factor
+lemma exactAliceInformationReference_supported_factor
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (base : ExactHistoryFlag X Y A B D)
@@ -48555,7 +48555,7 @@ theorem exactAliceInformationReference_supported_factor
   rw [← G.marginalX_mul_conditionalYGivenX x y]
   ring
 
-theorem exactBobInformationReference_supported_factor
+lemma exactBobInformationReference_supported_factor
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (base : ExactHistoryFlag X Y A B D)
@@ -48588,7 +48588,7 @@ theorem exactBobInformationReference_supported_factor
   rw [← G.marginalY_mul_conditionalXGivenY x y]
   ring
 
-theorem exactAliceSourceConditionalInformation_eq_question
+lemma exactAliceSourceConditionalInformation_eq_question
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -48639,7 +48639,7 @@ theorem exactAliceSourceConditionalInformation_eq_question
     exact exactAliceInformationReference_supported_factor
       G n S D base ix.1 ix.2 hix r y
 
-theorem exactBobSourceConditionalInformation_eq_question
+lemma exactBobSourceConditionalInformation_eq_question
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -48778,7 +48778,7 @@ def exactConditionedReverseBobNextPrior
     (exactReverseBobSourceProjection
       (X := X) (Y := Y) (A := A) (B := B) D side)
 
-theorem exactReverseAliceMaskedProjection_eq_of_history
+lemma exactReverseAliceMaskedProjection_eq_of_history
     {n : ℕ} (D : Finset (Fin n))
     (default : Y)
     (q q' : ExactJointOutcome X Y A B D)
@@ -48947,7 +48947,7 @@ theorem exactReverseAliceMaskedProjection_eq_of_history
         exactReverseAliceContextAt,
         hkcut]
 
-theorem exactReverseBobMaskedProjection_eq_of_history
+lemma exactReverseBobMaskedProjection_eq_of_history
     {n : ℕ} (D : Finset (Fin n))
     (default : X)
     (q q' : ExactJointOutcome X Y A B D)
@@ -49131,7 +49131,7 @@ open QuantumParallelRepetition.ClassicalInformation
 
 attribute [local instance] Classical.propDecidable
 
-theorem groupedMass_product_injective_seed
+lemma groupedMass_product_injective_seed
     {K Ω C T : Type*}
     [Fintype K] [Fintype Ω] [Fintype C] [Fintype T]
     [DecidableEq C] [DecidableEq T]
@@ -49174,7 +49174,7 @@ open QuantumParallelRepetition.ClassicalInformation
 
 attribute [local instance] Classical.propDecidable
 
-theorem jointConditional_groupedMass_eq_of_fiber
+lemma jointConditional_groupedMass_eq_of_fiber
     {Ω C D V : Type*}
     [Fintype Ω] [Fintype C] [Fintype D] [Fintype V]
     [DecidableEq (C × V)] [DecidableEq (D × V)]
@@ -49267,7 +49267,7 @@ def exactReverseBobMarkedHistoryContext
       repeatedConditionedAnswerFlag G n S D outcome),
       projection.2)
 
-theorem exactConditionedAnswerFlag_eq_of_history
+lemma exactConditionedAnswerFlag_eq_of_history
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (q q' : ExactJointOutcome X Y A B D)
@@ -49284,7 +49284,7 @@ theorem exactConditionedAnswerFlag_eq_of_history
       (fun r : ExactHistoryFlag X Y A B D => r.bobAnswer)
       same_history
 
-theorem exactReverseAliceMarkedHistoryContext_eq_of_history
+lemma exactReverseAliceMarkedHistoryContext_eq_of_history
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (default : Y)
     (seed : ExactRemainingSeed D)
@@ -49348,7 +49348,7 @@ theorem exactReverseAliceMarkedHistoryContext_eq_of_history
     · exact hflag
   · exact hprefix
 
-theorem exactReverseBobMarkedHistoryContext_eq_of_history
+lemma exactReverseBobMarkedHistoryContext_eq_of_history
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (default : X)
     (seed : ExactRemainingSeed D)
@@ -49412,7 +49412,7 @@ theorem exactReverseBobMarkedHistoryContext_eq_of_history
     · exact hflag
   · exact hprefix
 
-theorem exactReverseAlice_history_of_marked_context
+lemma exactReverseAlice_history_of_marked_context
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (default : Y)
     (seed : ExactRemainingSeed D)
@@ -49587,7 +49587,7 @@ theorem exactReverseAlice_history_of_marked_context
     · exact congrArg Prod.fst hflag
     · exact congrArg Prod.snd hflag
 
-theorem exactReverseBob_history_of_marked_context
+lemma exactReverseBob_history_of_marked_context
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (default : X)
     (seed : ExactRemainingSeed D)
@@ -49762,7 +49762,7 @@ theorem exactReverseBob_history_of_marked_context
     · exact congrArg Prod.fst hflag
     · exact congrArg Prod.snd hflag
 
-theorem exactReverseAliceMarkedHistoryContext_fiber_iff
+lemma exactReverseAliceMarkedHistoryContext_fiber_iff
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (default : Y)
     (seed : ExactRemainingSeed D)
@@ -49787,7 +49787,7 @@ theorem exactReverseAliceMarkedHistoryContext_fiber_iff
     · exact congrArg Prod.snd same
     · exact congrArg Prod.fst same
 
-theorem exactReverseBobMarkedHistoryContext_fiber_iff
+lemma exactReverseBobMarkedHistoryContext_fiber_iff
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (default : X)
     (seed : ExactRemainingSeed D)
@@ -49812,7 +49812,7 @@ theorem exactReverseBobMarkedHistoryContext_fiber_iff
     · exact congrArg Prod.snd same
     · exact congrArg Prod.fst same
 
-theorem exactReverseAliceMarkedPosteriorConditional_eq_sourceFiber
+lemma exactReverseAliceMarkedPosteriorConditional_eq_sourceFiber
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (default : Y)
     (seed : ExactRemainingSeed D)
@@ -49853,7 +49853,7 @@ theorem exactReverseAliceMarkedPosteriorConditional_eq_sourceFiber
   exact exactReverseAliceMarkedHistoryContext_fiber_iff
     G n S D default seed outcome reference
 
-theorem exactReverseBobMarkedPosteriorConditional_eq_sourceFiber
+lemma exactReverseBobMarkedPosteriorConditional_eq_sourceFiber
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (default : X)
     (seed : ExactRemainingSeed D)
@@ -49912,7 +49912,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem reweightedSeedPrefixPrior_as_flagged_pushforward
+lemma reweightedSeedPrefixPrior_as_flagged_pushforward
     {K Ω V : Type*} [Fintype K] [Fintype Ω] [Fintype V]
     {h : ℕ}
     (seedLaw : FiniteEventLaw K)
@@ -50020,7 +50020,7 @@ theorem reweightedSeedPrefixPrior_as_flagged_pushforward
                     u.1) hfixed
               · exact hsequence
 
-theorem reweightedSeedPrefixPrior_next_flagged_pushforward
+lemma reweightedSeedPrefixPrior_next_flagged_pushforward
     {K Ω V : Type*} [Fintype K] [Fintype Ω] [Fintype V]
     {h : ℕ}
     (seedLaw : FiniteEventLaw K)
@@ -50089,7 +50089,7 @@ open QuantumParallelRepetition.ClassicalInformation
 
 attribute [local instance] Classical.propDecidable
 
-theorem finiteGroupedExpectation_eq_atom_sum
+lemma finiteGroupedExpectation_eq_atom_sum
     {Ω C : Type*} [Fintype Ω] [Fintype C] [DecidableEq C]
     (code : Ω → C) (mass : Ω → ℝ) (value : C → ℝ) :
     (∑ target : C, groupedMass code mass target * value target) =
@@ -50118,7 +50118,7 @@ theorem finiteGroupedExpectation_eq_atom_sum
       Finset.sum_fiberwise Finset.univ code
         (fun outcome => mass outcome * value (code outcome))
 
-theorem jointFirstMarginal_groupedContextNext
+lemma jointFirstMarginal_groupedContextNext
     {Ω C V : Type*} [Fintype Ω] [Fintype C] [Fintype V]
     [DecidableEq C] [DecidableEq (C × V)]
     (context : Ω → C) (next : Ω → V)
@@ -50155,7 +50155,7 @@ theorem jointFirstMarginal_groupedContextNext
           context outcome = target)
         next mass
 
-theorem finiteNextInformation_eq_atom_sum
+lemma finiteNextInformation_eq_atom_sum
     {Ω C V : Type*} [Fintype Ω] [Fintype C] [Fintype V]
     [DecidableEq C] [DecidableEq (C × V)]
     (context : Ω → C) (next : Ω → V)
@@ -50191,7 +50191,7 @@ theorem finiteNextInformation_eq_atom_sum
           target)
         (reference target))
 
-theorem jointAtom_eq_zero_of_firstMarginal_zero
+lemma jointAtom_eq_zero_of_firstMarginal_zero
     {I V : Type*} [Fintype I] [Fintype V]
     (mass : I × V → ℝ)
     (nonnegative : ∀ point, 0 ≤ mass point)
@@ -50205,7 +50205,7 @@ theorem jointAtom_eq_zero_of_firstMarginal_zero
       (fun value _ => nonnegative (index, value))).mp
       zero value (Finset.mem_univ value)
 
-theorem nestedFirstMarginal_mul_conditional
+lemma nestedFirstMarginal_mul_conditional
     {I R V : Type*} [Fintype I] [Fintype R] [Fintype V]
     (mass : I × (R × V) → ℝ)
     (nonnegative : ∀ point, 0 ≤ mass point)
@@ -50233,7 +50233,7 @@ theorem nestedFirstMarginal_mul_conditional
     simp [houter, hinner]
   · field_simp [houter]
 
-theorem nestedConditional_eq_flat
+lemma nestedConditional_eq_flat
     {I R V : Type*} [Fintype I] [Fintype R] [Fintype V]
     (mass : I × (R × V) → ℝ)
     (nonnegative : ∀ point, 0 ≤ mass point)
@@ -50259,7 +50259,7 @@ theorem nestedConditional_eq_flat
       simp [hatom, hhistory]
     · field_simp [houter, hhistory]
 
-theorem finiteNestedNextInformation_eq_atom_sum
+lemma finiteNestedNextInformation_eq_atom_sum
     {I R V : Type*} [Fintype I] [Fintype R] [Fintype V]
     (mass : I × (R × V) → ℝ)
     (nonnegative : ∀ point, 0 ≤ mass point)
@@ -50328,7 +50328,7 @@ theorem finiteNestedNextInformation_eq_atom_sum
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem reweightedSeedPrefixJoint_as_actual_flagged_pushforward
+lemma reweightedSeedPrefixJoint_as_actual_flagged_pushforward
     {K Ω V : Type*} [Fintype K] [Fintype Ω] [Fintype V]
     {h : ℕ}
     (seedLaw : FiniteEventLaw K)
@@ -50409,7 +50409,7 @@ theorem reweightedSeedPrefixJoint_as_actual_flagged_pushforward
   · intro point _
     rfl
 
-theorem exactAliceSourceConditionalInformation_eq_atom_sum
+lemma exactAliceSourceConditionalInformation_eq_atom_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -50462,7 +50462,7 @@ theorem exactAliceSourceConditionalInformation_eq_atom_sum
         (fun index : SourceRemainingCoordinate D × X =>
           G.conditionalYGivenX index.2)
 
-theorem exactBobSourceConditionalInformation_eq_atom_sum
+lemma exactBobSourceConditionalInformation_eq_atom_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -50534,7 +50534,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactPermutationOutputUniformPushforward
+lemma exactPermutationOutputUniformPushforward
     {R : Type*} [Fintype R] [DecidableEq R]
     (denominator : ℕ) (numerator : R → ℕ)
     (normalized : (∑ r, numerator r) = denominator)
@@ -50571,7 +50571,7 @@ theorem exactPermutationOutputUniformPushforward
       rationalPermutationOutput_probability denominator numerator
         normalized nonempty letter
 
-theorem exactPermutationOutputUniformExpectation
+lemma exactPermutationOutputUniformExpectation
     {R : Type*} [Fintype R] [DecidableEq R]
     (denominator : ℕ) (numerator : R → ℕ)
     (normalized : (∑ r, numerator r) = denominator)
@@ -50621,7 +50621,7 @@ def exactSourceAliceSampleTuple
     exactSourceAlicePermutationHistory
       D denominator numerator nonempty outcome.1 outcome.2.1)
 
-theorem exactSourceAliceSampleTuple_expectation
+lemma exactSourceAliceSampleTuple_expectation
     (G : Game X Y A B) (n : ℕ) (D : Finset (Fin n))
     (denominator : ℕ)
     (numerator : ExactLocalSamplerIndex X Y D →
@@ -50731,7 +50731,7 @@ theorem exactSourceAliceSampleTuple_expectation
   intro y _
   exact point coordinate x y
 
-theorem exactSourceAliceSampleTuple_groupedMass
+lemma exactSourceAliceSampleTuple_groupedMass
     (G : Game X Y A B) (n : ℕ) (D : Finset (Fin n))
     (denominator : ℕ)
     (numerator : ExactLocalSamplerIndex X Y D →
@@ -50774,7 +50774,7 @@ def exactFiniteFiberLift
 
 omit [Fintype T] in
 
-theorem exactFiniteFiberLift_groupedMass
+lemma exactFiniteFiberLift_groupedMass
     (projection : Ω → T) (original : Ω → ℝ) (target : T → ℝ)
     (supported : ∀ point,
       groupedMass projection original point = 0 → target point = 0)
@@ -50813,7 +50813,7 @@ theorem exactFiniteFiberLift_groupedMass
           · simp [empty, supported point empty]
           · field_simp
 
-theorem exactFiniteFiberLift_expectation
+lemma exactFiniteFiberLift_expectation
     (projection : Ω → T) (original : Ω → ℝ) (target : T → ℝ)
     (supported : ∀ point,
       groupedMass projection original point = 0 → target point = 0)
@@ -50839,7 +50839,7 @@ theorem exactFiniteFiberLift_expectation
 
 omit [Fintype T] in
 
-theorem exactFiniteFiberLift_absolute_groupedMass
+lemma exactFiniteFiberLift_absolute_groupedMass
     (projection : Ω → T) (original : Ω → ℝ) (target : T → ℝ)
     (original_nonnegative : ∀ outcome, 0 ≤ original outcome)
     (supported : ∀ point,
@@ -50931,7 +50931,7 @@ theorem exactFiniteFiberLift_absolute_groupedMass
       _ = |groupedMass projection original point - target point| := by
           field_simp
 
-theorem exactFiniteFiberLift_totalVariation
+lemma exactFiniteFiberLift_totalVariation
     (projection : Ω → T) (original : Ω → ℝ) (target : T → ℝ)
     (original_nonnegative : ∀ outcome, 0 ≤ original outcome)
     (supported : ∀ point,
@@ -50979,7 +50979,7 @@ open QuantumParallelRepetition.ClassicalInformation
 
 attribute [local instance] Classical.propDecidable
 
-theorem existsCommonSupportPreservingRationalApproximations
+lemma existsCommonSupportPreservingRationalApproximations
     {I K : Type*} [Fintype I] [DecidableEq I] [Fintype K]
     (base : I) (probability : K → I → ℝ)
     (nonnegative : ∀ index letter, 0 ≤ probability index letter)
@@ -51119,7 +51119,7 @@ theorem existsCommonSupportPreservingRationalApproximations
 variable {X Y A B : Type}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactLocallySampleableLaw_absolute_continuous_roundedJA
+lemma exactLocallySampleableLaw_absolute_continuous_roundedJA
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -51198,7 +51198,7 @@ theorem exactLocallySampleableLaw_absolute_continuous_roundedJA
           (Fintype.card (SourceRemainingCoordinate D) : ℝ) = 0
     simp [conditional_zero]
 
-theorem exact_exists_support_preserving_local_shared_permutation
+lemma exact_exists_support_preserving_local_shared_permutation
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -51346,7 +51346,7 @@ def exactSourceWinningEffectCLM
       ExactBobLocalIndex G n S D r) (𝕜 := ℂ)
     (exactSourceWinningEffect G n S D r a₀ b₀ x y)
 
-theorem exactSourceJointEffect_quadratic
+lemma exactSourceJointEffect_quadratic
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (r : ExactHistoryFlag X Y A B D)
@@ -51369,7 +51369,7 @@ theorem exactSourceJointEffect_quadratic
     (exactRefinedPOVM_quadratic
       G n S D r a₀ b₀ x y a b)
 
-theorem exactSourceWinningEffect_quadratic
+lemma exactSourceWinningEffect_quadratic
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (r : ExactHistoryFlag X Y A B D)
@@ -51400,7 +51400,7 @@ theorem exactSourceWinningEffect_quadratic
       G n S D r a₀ b₀ x y a b
   · simp [quadraticExpectation]
 
-theorem exactSourceWinningEffect_quadratic_eq_conditional
+lemma exactSourceWinningEffect_quadratic_eq_conditional
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (r : ExactHistoryFlag X Y A B D)
@@ -51426,7 +51426,7 @@ theorem exactSourceWinningEffect_quadratic_eq_conditional
         G n S D r.seed r.history r.bobAnswer x y b supported]
   · rfl
 
-theorem exactSourceNormalizedWinningEffect_eq_conditional
+lemma exactSourceNormalizedWinningEffect_eq_conditional
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (r : ExactHistoryFlag X Y A B D)
@@ -51478,7 +51478,7 @@ def exactSourceAcceptedCoordinateMass
       exactPostselectedJointLaw G n S D q
     else 0
 
-theorem exactSourceAcceptedCoordinateMass_nonneg
+lemma exactSourceAcceptedCoordinateMass_nonneg
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -51492,7 +51492,7 @@ theorem exactSourceAcceptedCoordinateMass_nonneg
       G n S D positive q
   · exact le_rfl
 
-theorem exactSourceAcceptedCoordinateMass_le_law
+lemma exactSourceAcceptedCoordinateMass_le_law
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -51522,7 +51522,7 @@ def exactSourceConditionalWinningProbability
   exactSourceAcceptedCoordinateMass G n S D t /
     exactLocallySampleableLaw G n S D t
 
-theorem exactSourceConditionalWinningProbability_bounds
+lemma exactSourceConditionalWinningProbability_bounds
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -51546,7 +51546,7 @@ theorem exactSourceConditionalWinningProbability_bounds
     · exact (div_le_one
         (lt_of_le_of_ne law_nonnegative (Ne.symm zero))).mpr mass_le
 
-theorem exactSourceConditionalWinningProbability_mul_law
+lemma exactSourceConditionalWinningProbability_mul_law
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -51567,7 +51567,7 @@ theorem exactSourceConditionalWinningProbability_mul_law
   · unfold exactSourceConditionalWinningProbability
     field_simp [zero]
 
-theorem exactSourceAcceptedCoordinateMass_sum
+lemma exactSourceAcceptedCoordinateMass_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) :
     (∑ t : ExactLocallySampleableTuple X Y A B D,
@@ -51586,7 +51586,7 @@ theorem exactSourceAcceptedCoordinateMass_sum
   · simp [winning]
   · simp [winning]
 
-theorem exactSourceConditionalWinningProbability_expectation
+lemma exactSourceConditionalWinningProbability_expectation
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D) :
@@ -51601,7 +51601,7 @@ theorem exactSourceConditionalWinningProbability_expectation
     G n S D positive]
   exact exactSourceAcceptedCoordinateMass_sum G n S D
 
-theorem exactRepeatedConditionedCoordinateWin
+lemma exactRepeatedConditionedCoordinateWin
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (i : Fin n) :
     (∑ outcome : ExactOutcome X Y A B n,
@@ -51634,7 +51634,7 @@ theorem exactRepeatedConditionedCoordinateWin
       FiniteEventLaw.winEvent, winning, ite_div]
   · simp [FiniteEventLaw.winEvent, winning]
 
-theorem exactSourceAcceptedCoordinateMass_sum_eq_remaining_average
+lemma exactSourceAcceptedCoordinateMass_sum_eq_remaining_average
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) :
     (∑ t : ExactLocallySampleableTuple X Y A B D,
@@ -51698,7 +51698,7 @@ theorem exactSourceAcceptedCoordinateMass_sum_eq_remaining_average
       exact exactRepeatedConditionedCoordinateWin
         G n S D i.val
 
-theorem exactSourceConditionalWinningProbability_eq_accepted_average
+lemma exactSourceConditionalWinningProbability_eq_accepted_average
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D) :
@@ -51721,7 +51721,7 @@ theorem exactSourceConditionalWinningProbability_eq_accepted_average
   rw [← Finset.sum_div]
   ring
 
-theorem exactSource_failure_sum_lt_of_uniform
+lemma exactSource_failure_sum_lt_of_uniform
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -51751,7 +51751,7 @@ theorem exactSource_failure_sum_lt_of_uniform
   have second := (div_lt_iff₀ positive).mp first
   nlinarith
 
-theorem exactSourceConditionalWinningProbability_gt_of_uniform_failure
+lemma exactSourceConditionalWinningProbability_gt_of_uniform_failure
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -51809,7 +51809,7 @@ def exactSourceAliceFlagCoupling
       (exactSourceSharedFlagWeight D denominator))
     (exactLocallySampleableLaw G n S D)
 
-theorem exactSourceAliceFlagCoupling_supported
+lemma exactSourceAliceFlagCoupling_supported
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -51839,7 +51839,7 @@ theorem exactSourceAliceFlagCoupling_supported
     G n S D remaining positive base denominator denominator_positive
     numerator preserves history
 
-theorem exactSourceAliceFlagCoupling_expectation
+lemma exactSourceAliceFlagCoupling_expectation
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -51877,7 +51877,7 @@ theorem exactSourceAliceFlagCoupling_expectation
       numerator normalized preserves nonempty)
     value
 
-theorem exactSourceAliceFlagCoupling_sum
+lemma exactSourceAliceFlagCoupling_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -51904,7 +51904,7 @@ theorem exactSourceAliceFlagCoupling_sum
   simpa [exactLocallySampleableLaw_sum
     G n S D remaining positive] using expectation
 
-theorem exactSourceAliceFlagCoupling_totalVariation
+lemma exactSourceAliceFlagCoupling_totalVariation
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -51987,7 +51987,7 @@ def exactFairWinningOutcomeBornMass
     then (strategyEventLaw (G.repeat n) S).weight outcome
     else 0
 
-theorem exactSourceAcceptedCoordinateMass_eq_seeded_fair_born
+lemma exactSourceAcceptedCoordinateMass_eq_seeded_fair_born
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -52065,7 +52065,7 @@ theorem exactSourceAcceptedCoordinateMass_eq_seeded_fair_born
         G n S D positive
         (history.seed.coordinate, x, y, history))
 
-theorem exactSourceConditionalWinningProbability_eq_fine_born_ratio
+lemma exactSourceConditionalWinningProbability_eq_fine_born_ratio
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -52117,7 +52117,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactFineCoordinateWinningBorn_collapse
+lemma exactFineCoordinateWinningBorn_collapse
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (aliceAnswer : {j : Fin n // j ∈ D} → A)
@@ -52240,7 +52240,7 @@ def exactFairCoordinateRefinedWinningBornMass
               history.bobAnswer ys history.seed.coordinate.val b)
         else 0)
 
-theorem exactFairWinningOutcomeBornMass_eq_refined
+lemma exactFairWinningOutcomeBornMass_eq_refined
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (history : ExactHistoryFlag X Y A B D)
@@ -52391,7 +52391,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactFairWinningOutcomeBornMass_eq_fiber_conditional
+lemma exactFairWinningOutcomeBornMass_eq_fiber_conditional
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (history : ExactHistoryFlag X Y A B D)
@@ -52479,7 +52479,7 @@ theorem exactFairWinningOutcomeBornMass_eq_fiber_conditional
               field_simp [supported]
             · simp [summand, wins]
 
-theorem exactSourceConditionalWinningProbability_eq_normalized_verifier
+lemma exactSourceConditionalWinningProbability_eq_normalized_verifier
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
@@ -52527,7 +52527,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactLocallySampleableLaw_coordinate_eq_of_ne_zero
+lemma exactLocallySampleableLaw_coordinate_eq_of_ne_zero
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (t : ExactLocallySampleableTuple X Y A B D)
@@ -52560,7 +52560,7 @@ theorem exactLocallySampleableLaw_coordinate_eq_of_ne_zero
   exact False.elim
     (different (coordinate.symm.trans history_coordinate))
 
-theorem exactLocallySampleableLaw_accepted_of_ne_zero
+lemma exactLocallySampleableLaw_accepted_of_ne_zero
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (t : ExactLocallySampleableTuple X Y A B D)
@@ -52572,7 +52572,7 @@ theorem exactLocallySampleableLaw_accepted_of_ne_zero
     (exactLocallySampleableLaw_zero_of_not_accepted
       G n S D t.1 t.2.1 t.2.2.1 t.2.2.2 rejected)
 
-theorem exactLocallySampleableLaw_fiber_ne_zero_of_ne_zero
+lemma exactLocallySampleableLaw_fiber_ne_zero_of_ne_zero
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (t : ExactLocallySampleableTuple X Y A B D)
@@ -52615,7 +52615,7 @@ theorem exactLocallySampleableLaw_fiber_ne_zero_of_ne_zero
           G.questionWeight t.2.1 t.2.2.1) by ring]
   simp [reveal_zero]
 
-theorem exactLocallySampleableLaw_psi_ne_zero_of_ne_zero
+lemma exactLocallySampleableLaw_psi_ne_zero_of_ne_zero
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (t : ExactLocallySampleableTuple X Y A B D)
@@ -52842,7 +52842,7 @@ set_option maxRecDepth 2048
 
 attribute [local instance] Classical.propDecidable
 
-@[simp] theorem twoBlockPOVM_effect_inl
+@[simp] lemma twoBlockPOVM_effect_inl
     {C d e : Type} [Fintype C] [DecidableEq C]
     [Fintype d] [Fintype e] [DecidableEq d] [DecidableEq e]
     (P : POVM C d) (Q : POVM C e)
@@ -52854,7 +52854,7 @@ attribute [local instance] Classical.propDecidable
     dependentBlockPOVM, Equiv.sumEquivSigmaBool,
     Matrix.blockDiagonal'_apply]
 
-@[simp] theorem twoBlockPOVM_effect_inr
+@[simp] lemma twoBlockPOVM_effect_inr
     {C d e : Type} [Fintype C] [DecidableEq C]
     [Fintype d] [Fintype e] [DecidableEq d] [DecidableEq e]
     (P : POVM C d) (Q : POVM C e)
@@ -52866,7 +52866,7 @@ attribute [local instance] Classical.propDecidable
     dependentBlockPOVM, Equiv.sumEquivSigmaBool,
     Matrix.blockDiagonal'_apply]
 
-@[simp] theorem dependentBlockPOVM_effect_same
+@[simp] lemma dependentBlockPOVM_effect_same
     {R C : Type*} [Fintype R] [DecidableEq R] [Fintype C]
     {ι : R → Type*}
     [∀ r, Fintype (ι r)] [∀ r, DecidableEq (ι r)]
@@ -52881,7 +52881,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-@[simp] theorem exactSourceGlobalAlicePOVM_effect
+@[simp] lemma exactSourceGlobalAlicePOVM_effect
     [DecidableEq A]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (r : ExactHistoryFlag X Y A B D)
@@ -52896,7 +52896,7 @@ variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     pOVMChangeDecidableEq,
     exactSourceAlicePaddedPOVM]
 
-@[simp] theorem exactSourceGlobalBobPOVM_effect
+@[simp] lemma exactSourceGlobalBobPOVM_effect
     [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (r : ExactHistoryFlag X Y A B D)
@@ -52911,7 +52911,7 @@ variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     pOVMChangeDecidableEq,
     exactSourceBobPaddedPOVM]
 
-theorem matrixQuadraticExpectation_expand
+lemma matrixQuadraticExpectation_expand
     {d : Type*} [Fintype d] [DecidableEq d]
     (M : Matrix d d ℂ) (z : EuclideanSpace ℂ d) :
     quadraticExpectation
@@ -52920,7 +52920,7 @@ theorem matrixQuadraticExpectation_expand
   simp [quadraticExpectation, EuclideanSpace.inner_eq_star_dotProduct,
     Matrix.mulVec, dotProduct]
 
-theorem finiteSum_injective_support
+lemma finiteSum_injective_support
     {d e K : Type*} [Fintype d] [Fintype e] [AddCommMonoid K]
     (f : d → e) (injective : Function.Injective f)
     (g : e → K)
@@ -52941,7 +52941,7 @@ theorem finiteSum_injective_support
       intro i _ j _ same
       exact injective same
 
-theorem matrixQuadraticExpectation_injective
+lemma matrixQuadraticExpectation_injective
     {d e : Type*}
     [Fintype d] [Fintype e] [DecidableEq d] [DecidableEq e]
     (f : d → e) (injective : Function.Injective f)
@@ -52987,7 +52987,7 @@ def exactSourceGlobalJointBasis
   | (i, j) =>
     (.inr ⟨r, .inr (.inl i)⟩, .inr ⟨r, .inr (.inr j)⟩)
 
-theorem exactSourceGlobalJointBasis_injective
+lemma exactSourceGlobalJointBasis_injective
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D) :
@@ -53019,7 +53019,7 @@ theorem exactSourceGlobalJointBasis_injective
     Sum.inr.inj (Sum.inr.inj bob_block)
   exact Prod.ext alice' bob'
 
-theorem exactSourceGlobalJointBasis_vector
+lemma exactSourceGlobalJointBasis_vector
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -53043,7 +53043,7 @@ theorem exactSourceGlobalJointBasis_vector
     else 0) = z (ia, ib)
   simp only [exactPaddedVector, dite_true]
 
-theorem exactSourceGlobalJointBasis_support
+lemma exactSourceGlobalJointBasis_support
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -53119,7 +53119,7 @@ def exactSourceGlobalWinningEffect
         (exactSourceGlobalBobPOVM G n S D b₀ y).effect b
     else 0
 
-theorem exactSourceGlobalWinningEffect_compression
+lemma exactSourceGlobalWinningEffect_compression
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (r : ExactHistoryFlag X Y A B D)
@@ -53146,7 +53146,7 @@ theorem exactSourceGlobalWinningEffect_compression
       exactSourceGlobalBobPOVM_effect]
   · rfl
 
-theorem exactSourceGlobalWinningEffect_quadratic
+lemma exactSourceGlobalWinningEffect_quadratic
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (r : ExactHistoryFlag X Y A B D)
@@ -53190,7 +53190,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-@[simp] theorem reindexedCatalystPOVM_effect
+@[simp] lemma reindexedCatalystPOVM_effect
     {C d : Type*} [Fintype C] [Fintype d] [DecidableEq d]
     (P : POVM C d) (e : ℕ) (c : C)
     (i j : d) (k l : Fin e) :
@@ -53216,7 +53216,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-@[simp] theorem exactSourceGlobalCatalystBobPOVM_effect
+@[simp] lemma exactSourceGlobalCatalystBobPOVM_effect
     [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (e : ℕ) (b₀ b : B) (y : Y)
@@ -53254,7 +53254,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem reweightedSeedPrefixEntropyIncrement_eq_actual_atom_sum
+lemma reweightedSeedPrefixEntropyIncrement_eq_actual_atom_sum
     {K Ω V : Type*} [Fintype K] [Fintype Ω] [Fintype V]
     {h : ℕ}
     (seedLaw : FiniteEventLaw K)
@@ -53390,7 +53390,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactStrategyQuestionCodeGroupedMass
+lemma exactStrategyQuestionCodeGroupedMass
     {C : Type*} [Fintype C] [DecidableEq C]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (code : (Fin n → X) → (Fin n → Y) → C)
@@ -53436,7 +53436,7 @@ theorem exactStrategyQuestionCodeGroupedMass
         ring
   · simp [compatible]
 
-theorem exactRepeatedQuestionWeight_splitAt_bob
+lemma exactRepeatedQuestionWeight_splitAt_bob
     (G : Game X Y A B) (n : ℕ)
     (i : Fin n) (xs : Fin n → X)
     (y : Y) (tail : {j : Fin n // j ≠ i} → Y) :
@@ -53456,7 +53456,7 @@ theorem exactRepeatedQuestionWeight_splitAt_bob
     (Finset.mem_univ i)]
   simp [Equiv.funSplitAt, Equiv.piSplitAt]
 
-theorem exactRepeatedQuestionTail_splitAt_bob
+lemma exactRepeatedQuestionTail_splitAt_bob
     (G : Game X Y A B) (n : ℕ)
     (i : Fin n) (xs : Fin n → X)
     (y y' : Y) (tail : {j : Fin n // j ≠ i} → Y) :
@@ -53490,7 +53490,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactStrategyStableBobQuestionCode_joint_factor
+lemma exactStrategyStableBobQuestionCode_joint_factor
     {C : Type*} [Fintype C] [DecidableEq C]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (coordinate : Fin n)
@@ -53592,7 +53592,7 @@ theorem exactStrategyStableBobQuestionCode_joint_factor
   · simp_rw [same_code]
     simp [compatible]
 
-theorem exactRepeatedQuestionWeight_splitAt_alice
+lemma exactRepeatedQuestionWeight_splitAt_alice
     (G : Game X Y A B) (n : ℕ)
     (coordinate : Fin n) (ys : Fin n → Y)
     (x : X) (tail : {j : Fin n // j ≠ coordinate} → X) :
@@ -53614,7 +53614,7 @@ theorem exactRepeatedQuestionWeight_splitAt_alice
     (Finset.mem_univ coordinate)]
   simp [Equiv.funSplitAt, Equiv.piSplitAt]
 
-theorem exactRepeatedQuestionTail_splitAt_alice
+lemma exactRepeatedQuestionTail_splitAt_alice
     (G : Game X Y A B) (n : ℕ)
     (coordinate : Fin n) (ys : Fin n → Y)
     (x x' : X) (tail : {j : Fin n // j ≠ coordinate} → X) :
@@ -53632,7 +53632,7 @@ theorem exactRepeatedQuestionTail_splitAt_alice
   have different : j ≠ coordinate := (Finset.mem_erase.mp hj).1
   simp [Equiv.funSplitAt, Equiv.piSplitAt, different]
 
-theorem exactStrategyStableAliceQuestionCode_joint_factor
+lemma exactStrategyStableAliceQuestionCode_joint_factor
     {C : Type*} [Fintype C] [DecidableEq C]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (coordinate : Fin n)
@@ -53777,7 +53777,7 @@ def exactBobSourceAtomCode
       (exactHistoryCode D point,
         point.2.1 point.1.coordinate.val))
 
-theorem exactAliceInformationPosterior_eq_jointPushforward
+lemma exactAliceInformationPosterior_eq_jointPushforward
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) :
     exactAliceInformationPosterior G n S D =
@@ -53806,7 +53806,7 @@ theorem exactAliceInformationPosterior_eq_jointPushforward
   · intro point _
     rfl
 
-theorem exactBobInformationPosterior_eq_jointPushforward
+lemma exactBobInformationPosterior_eq_jointPushforward
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) :
     exactBobInformationPosterior G n S D =
@@ -53835,7 +53835,7 @@ theorem exactBobInformationPosterior_eq_jointPushforward
   · intro point _
     rfl
 
-theorem exactAliceSourceConditionalInformation_eq_joint_atom_sum
+lemma exactAliceSourceConditionalInformation_eq_joint_atom_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -53890,7 +53890,7 @@ theorem exactAliceSourceConditionalInformation_eq_joint_atom_sum
             code joint score
     _ = _ := rfl
 
-theorem exactBobSourceConditionalInformation_eq_joint_atom_sum
+lemma exactBobSourceConditionalInformation_eq_joint_atom_sum
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -53960,7 +53960,7 @@ open QuantumParallelRepetition.ClassicalInformation
 
 attribute [local instance] Classical.propDecidable
 
-theorem exactSeedWeight_pos_of_seed
+lemma exactSeedWeight_pos_of_seed
     {M : Type*} [Fintype M] [DecidableEq M]
     (seed : ExactForwardSeed M) :
     0 < exactSeedWeight seed := by
@@ -53983,7 +53983,7 @@ theorem exactSeedWeight_pos_of_seed
   unfold exactSeedWeight
   positivity
 
-theorem jointConditional_product_context_seed
+lemma jointConditional_product_context_seed
     {K Ω C V : Type*}
     [Fintype K] [Fintype Ω] [Fintype C] [Fintype V]
     (context : K → Ω → C)
@@ -54056,7 +54056,7 @@ theorem jointConditional_product_context_seed
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactAliceSourceContextNextPosterior_eq_groupedMass
+lemma exactAliceSourceContextNextPosterior_eq_groupedMass
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) :
     (fun atom :
@@ -54082,7 +54082,7 @@ theorem exactAliceSourceContextNextPosterior_eq_groupedMass
   · intro point _
     rfl
 
-theorem exactBobSourceContextNextPosterior_eq_groupedMass
+lemma exactBobSourceContextNextPosterior_eq_groupedMass
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) :
     (fun atom :
@@ -54108,7 +54108,7 @@ theorem exactBobSourceContextNextPosterior_eq_groupedMass
   · intro point _
     rfl
 
-theorem exactAliceSourcePosteriorConditional_eq_fixedSeedFiber
+lemma exactAliceSourcePosteriorConditional_eq_fixedSeedFiber
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -54248,7 +54248,7 @@ theorem exactAliceSourcePosteriorConditional_eq_fixedSeedFiber
       · congr 1
         exact exactGroupedMass_decidableEq_irrel _ _ _ _
 
-theorem exactBobSourcePosteriorConditional_eq_fixedSeedFiber
+lemma exactBobSourcePosteriorConditional_eq_fixedSeedFiber
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (seed : ExactRemainingSeed D)
@@ -54388,7 +54388,7 @@ theorem exactBobSourcePosteriorConditional_eq_fixedSeedFiber
       · congr 1
         exact exactGroupedMass_decidableEq_irrel _ _ _ _
 
-theorem exactReverseAliceMarkedPosteriorConditional_eq_sourcePosterior
+lemma exactReverseAliceMarkedPosteriorConditional_eq_sourcePosterior
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (default : Y)
     (seed : ExactRemainingSeed D)
@@ -54416,7 +54416,7 @@ theorem exactReverseAliceMarkedPosteriorConditional_eq_sourcePosterior
       (exactAliceSourcePosteriorConditional_eq_fixedSeedFiber
         G n S D seed reference).symm
 
-theorem exactReverseBobMarkedPosteriorConditional_eq_sourcePosterior
+lemma exactReverseBobMarkedPosteriorConditional_eq_sourcePosterior
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (default : X)
     (seed : ExactRemainingSeed D)
@@ -54459,7 +54459,7 @@ open QuantumParallelRepetition.ClassicalInformation
 
 attribute [local instance] Classical.propDecidable
 
-theorem exactReverseAliceSideWeightedPrefix_sum
+lemma exactReverseAliceSideWeightedPrefix_sum
     {M : Type*} [Fintype M] [DecidableEq M]
     (nonempty : 0 < Fintype.card M)
     (score : (side : Finset M) →
@@ -54520,7 +54520,7 @@ theorem exactReverseAliceSideWeightedPrefix_sum
         intro seed _
         simp
 
-theorem exactReverseBobSideWeightedPrefix_sum
+lemma exactReverseBobSideWeightedPrefix_sum
     {M : Type*} [Fintype M] [DecidableEq M]
     (nonempty : 0 < Fintype.card M)
     (score : (side : Finset M) →
@@ -54596,7 +54596,7 @@ open QuantumParallelRepetition.ClassicalInformation
 
 attribute [local instance] Classical.propDecidable
 
-theorem groupedMass_product_stable_context_fiber
+lemma groupedMass_product_stable_context_fiber
     {K Ω I C V : Type*}
     [Fintype K] [Fintype Ω] [Fintype I] [Fintype C] [Fintype V]
     (index : K → I)
@@ -54639,7 +54639,7 @@ theorem groupedMass_product_stable_context_fiber
           _ = extract target := congrArg extract equal
     simp [same, different, Prod.mk.injEq]
 
-theorem jointConditional_product_stable_context_seed
+lemma jointConditional_product_stable_context_seed
     {K Ω I C V : Type*}
     [Fintype K] [Fintype Ω] [Fintype I] [Fintype C] [Fintype V]
     (index : K → I)
@@ -54693,7 +54693,7 @@ theorem jointConditional_product_stable_context_seed
   rw [← Finset.mul_sum]
   exact mul_div_mul_left _ _ nonzero
 
-theorem groupedMass_pos_of_supported_atom
+lemma groupedMass_pos_of_supported_atom
     {K I : Type*} [Fintype K] [Fintype I] [DecidableEq I]
     (code : K → I) (weight : K → ℝ)
     (nonnegative : ∀ seed : K, 0 ≤ weight seed)
@@ -54744,7 +54744,7 @@ def exactReverseBobContextOutcomeProjection
     fun marker =>
       outcome.1 (context.sideRank.symm marker).val.val)
 
-theorem reweightedSeedPrefixNextJoint_as_actual_pushforward
+lemma reweightedSeedPrefixNextJoint_as_actual_pushforward
     {K Ω V : Type*} [Fintype K] [Fintype Ω] [Fintype V]
     {h : ℕ}
     (seedLaw : FiniteEventLaw K)
@@ -54801,7 +54801,7 @@ open QuantumParallelRepetition.ClassicalInformation
 
 attribute [local instance] Classical.propDecidable
 
-theorem groupedMass_productCode_weighted_sum
+lemma groupedMass_productCode_weighted_sum
     {K Ω C : Type*} [Fintype K] [Fintype Ω]
     [Fintype C] [DecidableEq C]
     (code : K → Ω → C)
@@ -54820,7 +54820,7 @@ theorem groupedMass_productCode_weighted_sum
   intro outcome _
   split <;> simp_all
 
-theorem groupedMass_flagSeedOutcome_reassoc
+lemma groupedMass_flagSeedOutcome_reassoc
     {F K Ω C : Type*}
     [Fintype F] [Fintype K] [Fintype Ω]
     [Fintype C] [DecidableEq C]
@@ -54859,7 +54859,7 @@ theorem groupedMass_flagSeedOutcome_reassoc
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem mixedStableBobQuestionCode_joint_factor
+lemma mixedStableBobQuestionCode_joint_factor
     {K C : Type*} [Fintype K] [Fintype C] [DecidableEq C]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (weight : K → ℝ)
@@ -54950,7 +54950,7 @@ theorem mixedStableBobQuestionCode_joint_factor
           code index outcome.1 outcome.2.1)
         weight (strategyEventLaw (G.repeat n) S).weight target).symm
 
-theorem mixedStableAliceQuestionCode_joint_factor
+lemma mixedStableAliceQuestionCode_joint_factor
     {K C : Type*} [Fintype K] [Fintype C] [DecidableEq C]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (weight : K → ℝ)
@@ -55081,7 +55081,7 @@ def exactReverseBobMaskedQuestionRegister
     ((fixed, flag),
       fun position => xs (context.sideRank.symm position).val.val)
 
-theorem exactReverseAliceMaskedQuestionRegister_stable
+lemma exactReverseAliceMaskedQuestionRegister_stable
     {n : ℕ} (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
     (default : Y) (marker : Fin side.card)
@@ -55167,7 +55167,7 @@ theorem exactReverseAliceMaskedQuestionRegister_stable
         Equiv.piSplitAt, different]
     · simp [before]
 
-theorem exactConditionedReverseAliceNextPrior_flagged_mixture
+lemma exactConditionedReverseAliceNextPrior_flagged_mixture
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -55261,7 +55261,7 @@ theorem exactConditionedReverseAliceNextPrior_flagged_mixture
         seedLaw.weight
         (strategyEventLaw (G.repeat n) S).weight target
 
-theorem exactReverseAliceMaskedQuestionRegister_determines
+lemma exactReverseAliceMaskedQuestionRegister_determines
     {n : ℕ} (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
     (default : Y) (marker : Fin side.card)
@@ -55283,7 +55283,7 @@ theorem exactReverseAliceMaskedQuestionRegister_determines
         (context.1.1.1.sideRank.symm marker)) same
   exact actual
 
-theorem exactConditionedReverseAliceNextPrior_marked_joint_factor
+lemma exactConditionedReverseAliceNextPrior_marked_joint_factor
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -55395,7 +55395,7 @@ theorem exactConditionedReverseAliceNextPrior_marked_joint_factor
   exact congrFun (exactGroupedMass_decidableEq_irrel
     _ _ _ _) (target, next)
 
-theorem exactConditionedReverseAliceNextPrior_marked_conditional
+lemma exactConditionedReverseAliceNextPrior_marked_conditional
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -55424,7 +55424,7 @@ theorem exactConditionedReverseAliceNextPrior_marked_conditional
     G n S D remaining side default marker target next]
   exact mul_div_cancel_right₀ _ supported
 
-theorem exactReverseAliceMarkedPriorConditional_eq_game
+lemma exactReverseAliceMarkedPriorConditional_eq_game
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -55504,7 +55504,7 @@ def exactReverseAliceMaskedOutcomeContext
       repeatedConditionedAnswerFlag G n S D outcome),
       projection.2)
 
-theorem exactReverseAliceMaskedOutcomeContext_extract
+lemma exactReverseAliceMaskedOutcomeContext_extract
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -55517,7 +55517,7 @@ theorem exactReverseAliceMaskedOutcomeContext_extract
       context := by
   rfl
 
-theorem exactConditionedReverseAliceNextJoint_marked_mixture
+lemma exactConditionedReverseAliceNextJoint_marked_mixture
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -55563,7 +55563,7 @@ theorem exactConditionedReverseAliceNextJoint_marked_mixture
     exact reweightedSeedPosterior_eq_product
       law G n S D point
 
-theorem exactReverseAliceActualConditionalSeedWeight_pos
+lemma exactReverseAliceActualConditionalSeedWeight_pos
     {n : ℕ} (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
     (seed : ExactRemainingSeed D) :
@@ -55586,7 +55586,7 @@ theorem exactReverseAliceActualConditionalSeedWeight_pos
       (exactRemainingCoordinate_card_pos D remaining)
       (exactReverseLeftSide seed)).mpr side)
 
-theorem exactReverseAliceMaskedOutcomeContext_actual
+lemma exactReverseAliceMaskedOutcomeContext_actual
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (default : Y)
     (seed : ExactRemainingSeed D)
@@ -55606,7 +55606,7 @@ theorem exactReverseAliceMaskedOutcomeContext_actual
     exactReverseAliceMarkedHistoryContext,
     exactReverseAliceSourceProjection]
 
-theorem exactReverseAliceSideMarkedPosteriorConditional_eq_fixedSeedFiber
+lemma exactReverseAliceSideMarkedPosteriorConditional_eq_fixedSeedFiber
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -55747,7 +55747,7 @@ theorem exactReverseAliceSideMarkedPosteriorConditional_eq_fixedSeedFiber
               G n S D default seed outcome
           · simp [next, index, side, marker]
 
-theorem exactReverseAliceSideMarkedPosteriorConditional_eq_sourcePosterior
+lemma exactReverseAliceSideMarkedPosteriorConditional_eq_sourcePosterior
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -55796,7 +55796,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem reweightedSeedPrefixPriorMarginal_ne_zero_of_positive_atom
+lemma reweightedSeedPrefixPriorMarginal_ne_zero_of_positive_atom
     {K Ω V : Type*} [Fintype K] [Fintype Ω] [Fintype V]
     {h : ℕ}
     (law : FiniteEventLaw K)
@@ -55941,7 +55941,7 @@ def exactReverseAliceContextMarkerInformation
           (exactReverseAliceMaskedOutcomeContext
             G n S D side default marker context outcome))
 
-theorem exactReverseAlicePrefixIncrement_eq_contextMarkerInformation
+lemma exactReverseAlicePrefixIncrement_eq_contextMarkerInformation
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -56008,7 +56008,7 @@ theorem exactReverseAlicePrefixIncrement_eq_contextMarkerInformation
         (repeatedConditionedOutcomeLaw G n S D outcome * _)
   ring
 
-theorem exactReverseAlicePrefixInformation_eq_seedMarkerAverage
+lemma exactReverseAlicePrefixInformation_eq_seedMarkerAverage
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -56058,7 +56058,7 @@ theorem exactReverseAlicePrefixInformation_eq_seedMarkerAverage
             G n S D remaining default side
             (exactReverseAliceContextAt side seed) marker)
 
-theorem exactReverseAlicePrefixInformation_eq_markedSeedAverage
+lemma exactReverseAlicePrefixInformation_eq_markedSeedAverage
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -56108,7 +56108,7 @@ theorem exactReverseAlicePrefixInformation_eq_markedSeedAverage
           exactReverseAliceContextMarkerInformation
             G n S D remaining default side context marker)
 
-theorem repeatedConditionedOutcomeLaw_pos_of_ne_zero
+lemma repeatedConditionedOutcomeLaw_pos_of_ne_zero
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (positive : 0 < repeatedPostselectionMass G n S D)
@@ -56125,7 +56125,7 @@ theorem repeatedConditionedOutcomeLaw_pos_of_ne_zero
       positive outcome
   exact lt_of_le_of_ne nonnegative nonzero.symm
 
-theorem exactReverseAliceMarkedPriorMarginal_ne_zero_of_outcome
+lemma exactReverseAliceMarkedPriorMarginal_ne_zero_of_outcome
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -56192,7 +56192,7 @@ def exactAliceSourceSeedBornInformation
         (G.conditionalYGivenX
           (outcome.1 seed.coordinate.val))
 
-theorem exactReverseAliceMarkedContextInformation_eq_source
+lemma exactReverseAliceMarkedContextInformation_eq_source
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -56238,7 +56238,7 @@ theorem exactReverseAliceMarkedContextInformation_eq_source
         (exactReverseAliceMarkedPriorMarginal_ne_zero_of_outcome
           G n S D remaining positive default seed outcome zero))
 
-theorem exactAliceSourceConditionalInformation_eq_seedBornAverage
+lemma exactAliceSourceConditionalInformation_eq_seedBornAverage
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -56260,7 +56260,7 @@ theorem exactAliceSourceConditionalInformation_eq_seedBornAverage
   unfold exactPostselectedJointLaw
   ring
 
-theorem exactReverseAliceConditionalHistoryIdentification_proved
+lemma exactReverseAliceConditionalHistoryIdentification_proved
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -56299,7 +56299,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactReverseBobMaskedQuestionRegister_stable
+lemma exactReverseBobMaskedQuestionRegister_stable
     {n : ℕ} (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
     (default : X) (marker : Fin side.card)
@@ -56385,7 +56385,7 @@ theorem exactReverseBobMaskedQuestionRegister_stable
         Equiv.piSplitAt, different]
     · simp [before]
 
-theorem exactConditionedReverseBobNextPrior_flagged_mixture
+lemma exactConditionedReverseBobNextPrior_flagged_mixture
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -56479,7 +56479,7 @@ theorem exactConditionedReverseBobNextPrior_flagged_mixture
         seedLaw.weight
         (strategyEventLaw (G.repeat n) S).weight target
 
-theorem exactReverseBobMaskedQuestionRegister_determines
+lemma exactReverseBobMaskedQuestionRegister_determines
     {n : ℕ} (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
     (default : X) (marker : Fin side.card)
@@ -56501,7 +56501,7 @@ theorem exactReverseBobMaskedQuestionRegister_determines
         (context.1.1.1.sideRank.symm marker)) same
   exact actual
 
-theorem exactConditionedReverseBobNextPrior_marked_joint_factor
+lemma exactConditionedReverseBobNextPrior_marked_joint_factor
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -56613,7 +56613,7 @@ theorem exactConditionedReverseBobNextPrior_marked_joint_factor
   exact congrFun (exactGroupedMass_decidableEq_irrel
     _ _ _ _) (target, next)
 
-theorem exactConditionedReverseBobNextPrior_marked_conditional
+lemma exactConditionedReverseBobNextPrior_marked_conditional
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -56642,7 +56642,7 @@ theorem exactConditionedReverseBobNextPrior_marked_conditional
     G n S D remaining side default marker target next]
   exact mul_div_cancel_right₀ _ supported
 
-theorem exactReverseBobMarkedPriorConditional_eq_game
+lemma exactReverseBobMarkedPriorConditional_eq_game
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -56722,7 +56722,7 @@ def exactReverseBobMaskedOutcomeContext
       repeatedConditionedAnswerFlag G n S D outcome),
       projection.2)
 
-theorem exactReverseBobMaskedOutcomeContext_extract
+lemma exactReverseBobMaskedOutcomeContext_extract
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (side : Finset (SourceRemainingCoordinate D))
@@ -56735,7 +56735,7 @@ theorem exactReverseBobMaskedOutcomeContext_extract
       context := by
   rfl
 
-theorem exactConditionedReverseBobNextJoint_marked_mixture
+lemma exactConditionedReverseBobNextJoint_marked_mixture
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -56781,7 +56781,7 @@ theorem exactConditionedReverseBobNextJoint_marked_mixture
     exact reweightedSeedPosterior_eq_product
       law G n S D point
 
-theorem exactReverseBobConditionalSeedLaw_actual_pos
+lemma exactReverseBobConditionalSeedLaw_actual_pos
     {M : Type*} [Fintype M] [DecidableEq M]
     (nonempty : 0 < Fintype.card M)
     (seed : ExactForwardSeed M) :
@@ -56801,7 +56801,7 @@ theorem exactReverseBobConditionalSeedLaw_actual_pos
     ((reversePartitionWeight_pos_iff nonempty
       (exactReverseRightSide seed)).mpr sideNonempty)
 
-theorem exactReverseBobMaskedOutcomeContext_actual
+lemma exactReverseBobMaskedOutcomeContext_actual
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (default : X)
     (seed : ExactRemainingSeed D)
@@ -56821,7 +56821,7 @@ theorem exactReverseBobMaskedOutcomeContext_actual
     exactReverseBobMarkedHistoryContext,
     exactReverseBobSourceProjection]
 
-theorem exactConditionedReverseBobNextJoint_marked_conditional_eq_fixedOutcome
+lemma exactConditionedReverseBobNextJoint_marked_conditional_eq_fixedOutcome
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -56967,7 +56967,7 @@ theorem exactConditionedReverseBobNextJoint_marked_conditional_eq_fixedOutcome
               G n S D default seed outcome
           · simp [next, index, side, marker]
 
-theorem exactConditionedReverseBobNextJoint_marked_conditional_eq_sourcePosterior
+lemma exactConditionedReverseBobNextJoint_marked_conditional_eq_sourcePosterior
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -57072,7 +57072,7 @@ def exactReverseBobActualMarkedEntropyScore
           G n S D remaining side))
       target)
 
-theorem exactReverseBobActualMarkedEntropyScore_eq_context
+lemma exactReverseBobActualMarkedEntropyScore_eq_context
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -57089,7 +57089,7 @@ theorem exactReverseBobActualMarkedEntropyScore_eq_context
         marker outcome := by
   rfl
 
-theorem exactConditionedReverseBobPrefixEntropyIncrement_eq_markedOutcomeScore
+lemma exactConditionedReverseBobPrefixEntropyIncrement_eq_markedOutcomeScore
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -57135,7 +57135,7 @@ theorem exactConditionedReverseBobPrefixEntropyIncrement_eq_markedOutcomeScore
             G n S D remaining default side seed marker outcome)
   ring
 
-theorem exactConditionedReverseBobPrefixInformation_eq_sourceMarkerAverage
+lemma exactConditionedReverseBobPrefixInformation_eq_sourceMarkerAverage
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -57166,7 +57166,7 @@ theorem exactConditionedReverseBobPrefixInformation_eq_sourceMarkerAverage
           exactReverseBobActualMarkedEntropyScore
             G n S D remaining default side seed marker outcome)
 
-theorem exactConditionedReverseBobPrefixInformation_eq_sourceMarkedOutcomeScore
+lemma exactConditionedReverseBobPrefixInformation_eq_sourceMarkedOutcomeScore
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -57213,7 +57213,7 @@ theorem exactConditionedReverseBobPrefixInformation_eq_sourceMarkedOutcomeScore
                 exactReverseBobContextMarkedEntropyScore
                   G n S D remaining default side context marker outcome))
 
-theorem exactReverseBobMarkedPriorMarginal_ne_zero_of_outcome
+lemma exactReverseBobMarkedPriorMarginal_ne_zero_of_outcome
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -57268,7 +57268,7 @@ theorem exactReverseBobMarkedPriorMarginal_ne_zero_of_outcome
     (seed, outcome) atom_positive
   exact actual
 
-theorem exactReverseBobActualMarkedEntropy_eq_source
+lemma exactReverseBobActualMarkedEntropy_eq_source
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -57320,7 +57320,7 @@ theorem exactReverseBobActualMarkedEntropy_eq_source
   rw [exactReverseBobMarkedPriorConditional_eq_game
     G n S D remaining default seed outcome prior_supported]
 
-theorem exactReverseBobConditionalHistoryIdentification_proved
+lemma exactReverseBobConditionalHistoryIdentification_proved
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -57368,7 +57368,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exact_source_equation_twenty_three_unconditional
+lemma exact_source_equation_twenty_three_unconditional
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -57435,7 +57435,7 @@ def ExactSourceSupportPreservingClassicalSampler
             G n D denominator numerator nonempty ≤
           4 * (kappa + gamma)
 
-theorem exact_source_equation_twenty_seven_support_preserving
+lemma exact_source_equation_twenty_seven_support_preserving
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -57539,7 +57539,7 @@ theorem exact_source_equation_twenty_seven_support_preserving
     _ ≤ 4 * (kappa + gamma) := by
       nlinarith
 
-theorem
+lemma
     exact_source_equation_twenty_seven_support_preserving_of_information
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
@@ -57575,7 +57575,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem gameQuestionX_nonempty
+lemma gameQuestionX_nonempty
     (G : Game X Y A B) : Nonempty X := by
   classical
   by_contra empty
@@ -57585,7 +57585,7 @@ theorem gameQuestionX_nonempty
     exact (empty ⟨x⟩).elim
   linarith [G.weight_normalized]
 
-theorem gameQuestionY_nonempty
+lemma gameQuestionY_nonempty
     (G : Game X Y A B) : Nonempty Y := by
   classical
   by_contra empty
@@ -57597,7 +57597,7 @@ theorem gameQuestionY_nonempty
     exact (empty ⟨y⟩).elim
   linarith [G.weight_normalized]
 
-theorem exact_source_equation_twenty_three
+lemma exact_source_equation_twenty_three
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -57610,7 +57610,7 @@ theorem exact_source_equation_twenty_three
     (Classical.choice (gameQuestionY_nonempty G))
     (Classical.choice (gameQuestionX_nonempty G))
 
-theorem
+lemma
     exact_source_equation_twenty_seven_support_preserving_unconditional
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
@@ -57656,7 +57656,7 @@ def ExactSourceOneGameRounding
               (exactSourcePinskerRate G n S D + gamma) ≤
             rounded.winProbability
 
-theorem exact_totalSamplingLoss_mono
+lemma exact_totalSamplingLoss_mono
     {K₀ α₁ α₂ η₁ η₂ lam₁ lam₂ : ℝ}
     (constant_nonnegative : 0 ≤ K₀)
     (alpha_nonnegative : 0 ≤ α₁)
@@ -57686,7 +57686,7 @@ theorem exact_totalSamplingLoss_mono
   unfold totalSamplingLoss
   gcongr
 
-theorem exact_standardQuantumParallelRepetition_of_source_rounding
+lemma exact_standardQuantumParallelRepetition_of_source_rounding
     (G : Game X Y A B)
     (rounding : ExactSourceOneGameRounding G) :
     StandardQuantumParallelRepetition G := by
@@ -57827,7 +57827,7 @@ open QuantumParallelRepetition.ClassicalSampling
 
 attribute [local instance] Classical.propDecidable
 
-theorem residualIdentity_quadratic
+lemma residualIdentity_quadratic
     {s t : Type} [Fintype s] [Fintype t]
     [DecidableEq s] [DecidableEq t]
     (M : Matrix s s ℂ)
@@ -57947,7 +57947,7 @@ def exactSourceGlobalCatalystBasisEquiv
       (ExactGlobalHistoryLocalIndex G n S D)
       (Fin e) (Fin e)).trans (Equiv.prodCongr localEquiv localEquiv)
 
-@[simp] theorem exactSourceGlobalCatalystAlicePOVM_effect_global
+@[simp] lemma exactSourceGlobalCatalystAlicePOVM_effect_global
     [DecidableEq A]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (e : ℕ) (a₀ a : A) (x : X)
@@ -57982,7 +57982,7 @@ def exactSourceGlobalCatalystBasisEquiv
     (exactSourceGlobalAlicePOVM G n S D a₀ x)
     e a i j k l
 
-theorem exactSourceGlobalCatalystWinningEffect_compression
+lemma exactSourceGlobalCatalystWinningEffect_compression
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (e : ℕ)
@@ -58049,7 +58049,7 @@ theorem exactSourceGlobalCatalystWinningEffect_compression
         alice_residual]
     · rfl
 
-theorem exactSourceGlobalCatalystWinningEffect_tensor_quadratic
+lemma exactSourceGlobalCatalystWinningEffect_tensor_quadratic
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
@@ -58163,7 +58163,7 @@ theorem exactSourceGlobalCatalystWinningEffect_tensor_quadratic
       source residual
       (embezzlementState_norm e residual_positive)
 
-theorem exactPsi_eq_padded_normalizedPureVector_of_ne_zero
+lemma exactPsi_eq_padded_normalizedPureVector_of_ne_zero
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (r : ExactHistoryFlag X Y A B D)
@@ -58192,7 +58192,7 @@ theorem exactPsi_eq_padded_normalizedPureVector_of_ne_zero
     simp [exactPaddedVector, normalizedPureVector,
       smul_eq_mul]
 
-theorem exactSourceGlobalCatalystWinningEffect_law_supported_verifier
+lemma exactSourceGlobalCatalystWinningEffect_law_supported_verifier
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
@@ -58260,7 +58260,7 @@ def unconditionalMatchedVerifierTensor
     EuclideanSpace ℂ (s × t) :=
   toLp 2 (fun q : s × t => target q.1 * work q.2)
 
-theorem unconditionalMatchedVerifierTensor_norm_sq
+lemma unconditionalMatchedVerifierTensor_norm_sq
     {s t : Type*} [Fintype s] [Fintype t]
     (target : EuclideanSpace ℂ s)
     (work : EuclideanSpace ℂ t) :
@@ -58275,7 +58275,7 @@ theorem unconditionalMatchedVerifierTensor_norm_sq
   rw [← Fintype.sum_mul_sum, ← EuclideanSpace.norm_sq_eq,
     ← EuclideanSpace.norm_sq_eq]
 
-theorem unconditionalMatchedVerifierTensor_norm
+lemma unconditionalMatchedVerifierTensor_norm
     {s t : Type*} [Fintype s] [Fintype t]
     (target : EuclideanSpace ℂ s)
     (work : EuclideanSpace ℂ t) :
@@ -58288,7 +58288,7 @@ theorem unconditionalMatchedVerifierTensor_norm
     norm_nonneg target, norm_nonneg work,
     mul_nonneg (norm_nonneg target) (norm_nonneg work)]
 
-theorem unconditionalMatchedVerifierEffect_tensor_complement
+lemma unconditionalMatchedVerifierEffect_tensor_complement
     {s t : Type*} [Fintype s] [Fintype t]
     [DecidableEq s] [DecidableEq t]
     (effect : Matrix s s ℂ) :
@@ -58308,7 +58308,7 @@ theorem unconditionalMatchedVerifierEffect_tensor_complement
       simp [Matrix.kroneckerMap_apply, same_target]
     · simp [Matrix.kroneckerMap_apply, same_target, same_work]
 
-theorem unconditionalMatchedVerifierEffect_tensor_posSemidef
+lemma unconditionalMatchedVerifierEffect_tensor_posSemidef
     {s t : Type*} [Fintype s] [Fintype t]
     [DecidableEq s] [DecidableEq t]
     (effect : Matrix s s ℂ)
@@ -58316,7 +58316,7 @@ theorem unconditionalMatchedVerifierEffect_tensor_posSemidef
     (effect ⊗ₖ (1 : Matrix t t ℂ)).PosSemidef :=
   positive.kronecker Matrix.PosSemidef.one
 
-theorem unconditionalMatchedVerifierEffect_tensor_complement_posSemidef
+lemma unconditionalMatchedVerifierEffect_tensor_complement_posSemidef
     {s t : Type*} [Fintype s] [Fintype t]
     [DecidableEq s] [DecidableEq t]
     (effect : Matrix s s ℂ)
@@ -58326,7 +58326,7 @@ theorem unconditionalMatchedVerifierEffect_tensor_complement_posSemidef
   rw [unconditionalMatchedVerifierEffect_tensor_complement]
   exact complement.kronecker Matrix.PosSemidef.one
 
-theorem unconditionalMatchedVerifierEffect_tensor_norm_le_one
+lemma unconditionalMatchedVerifierEffect_tensor_norm_le_one
     {s t : Type*} [Fintype s] [Fintype t]
     [DecidableEq s] [DecidableEq t]
     (effect : Matrix s s ℂ)
@@ -58341,7 +58341,7 @@ theorem unconditionalMatchedVerifierEffect_tensor_norm_le_one
     (unconditionalMatchedVerifierEffect_tensor_complement_posSemidef
       effect complement)
 
-theorem unconditionalMatchedVerifierEffect_tensor_quadratic
+lemma unconditionalMatchedVerifierEffect_tensor_quadratic
     {s t : Type*} [Fintype s] [Fintype t]
     [DecidableEq s] [DecidableEq t]
     (effect : Matrix s s ℂ)
@@ -58515,7 +58515,7 @@ def unconditionalSelectedCopyIdealMatchedBranch
     (unconditionalSelectedCopyRetainedWork
       (N := N) width schedule ξ ζ j rest)
 
-theorem unconditionalSelectedCopy_tensor_sub
+lemma unconditionalSelectedCopy_tensor_sub
     {s τ : Type*} [Fintype s] [Fintype τ]
     (x y : EuclideanSpace ℂ s) (work : EuclideanSpace ℂ τ) :
     unconditionalMatchedVerifierTensor x work -
@@ -58526,7 +58526,7 @@ theorem unconditionalSelectedCopy_tensor_sub
     (x i - y i) * work j
   ring
 
-theorem unconditionalSelectedCopyRetainedWork_norm_sq
+lemma unconditionalSelectedCopyRetainedWork_norm_sq
     {S N d L : ℕ} {τ : Type*} [Fintype τ]
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ ζ : BipartiteUnitVector d)
@@ -58539,7 +58539,7 @@ theorem unconditionalSelectedCopyRetainedWork_norm_sq
   rw [unconditionalMatchedVerifierTensor_norm_sq,
     dSVDensityRationalHeterogeneousStoppedCommonPrefixFailureVector_norm_sq]
 
-theorem unconditionalSelectedCopyMatchedBranch_deviation_sq
+lemma unconditionalSelectedCopyMatchedBranch_deviation_sq
     {S N d L B m : ℕ} {τ : Type*} [Fintype τ]
     (Q : ℕ) (width : Fin S → ℝ)
     (schedule : Fin L → Fin S)
@@ -58567,7 +58567,7 @@ theorem unconditionalSelectedCopyMatchedBranch_deviation_sq
     unconditionalSelectedCopyIdealStage
   ring
 
-theorem unconditionalSelectedCopy_weightedAffine
+lemma unconditionalSelectedCopy_weightedAffine
     {ι : Type*} [Fintype ι]
     (weight error asynchronous : ι → ℝ)
     (nonnegative : ∀ i, 0 ≤ weight i)
@@ -58606,7 +58606,7 @@ open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
   Matrix.Norms.L2Operator InnerProductSpace
 
-theorem unconditionalMatchedVerifierAggregate_dependent_continuity
+lemma unconditionalMatchedVerifierAggregate_dependent_continuity
     {J : Type*} [Fintype J]
     {H : J → Type*}
     [∀ j, NormedAddCommGroup (H j)]
@@ -58674,7 +58674,7 @@ theorem unconditionalMatchedVerifierAggregate_dependent_continuity
         Real.sqrt (∑ j : J, weight j * ‖actual j - ideal j‖ ^ 2) := by
           ring
 
-theorem unconditionalMatchedVerifierAggregate_dependent_le
+lemma unconditionalMatchedVerifierAggregate_dependent_le
     {J : Type*} [Fintype J]
     {H : J → Type*}
     [∀ j, NormedAddCommGroup (H j)]
@@ -58745,18 +58745,18 @@ def unconditionalConjugatePureVector
     EuclideanSpace ℂ ι :=
   toLp 2 (fun i : ι => star (z i))
 
-@[simp] theorem unconditionalConjugatePureVector_apply
+@[simp] lemma unconditionalConjugatePureVector_apply
     {ι : Type*} [Fintype ι]
     (z : EuclideanSpace ℂ ι) (i : ι) :
     unconditionalConjugatePureVector z i = star (z i) := by
   rfl
 
-theorem unconditionalConjugatePureVector_norm_sq
+lemma unconditionalConjugatePureVector_norm_sq
     {ι : Type*} [Fintype ι] (z : EuclideanSpace ℂ ι) :
     ‖unconditionalConjugatePureVector z‖ ^ 2 = ‖z‖ ^ 2 := by
   simp [EuclideanSpace.norm_sq_eq]
 
-theorem unconditionalConjugatePureVector_norm
+lemma unconditionalConjugatePureVector_norm
     {ι : Type*} [Fintype ι] (z : EuclideanSpace ℂ ι) :
     ‖unconditionalConjugatePureVector z‖ = ‖z‖ := by
   have squares := unconditionalConjugatePureVector_norm_sq z
@@ -58773,7 +58773,7 @@ def unconditionalConjugatePOVM
     rw [← Matrix.transpose_sum]
     rw [P.complete, Matrix.transpose_one]
 
-theorem unconditionalConjugatePureVector_transpose_quadratic
+lemma unconditionalConjugatePureVector_transpose_quadratic
     {ι : Type*} [Fintype ι] [DecidableEq ι]
     (M : Matrix ι ι ℂ) (z : EuclideanSpace ℂ ι) :
     quadraticExpectation
@@ -58795,7 +58795,7 @@ theorem unconditionalConjugatePureVector_transpose_quadratic
   intro j _
   ring
 
-theorem unconditionalConjugatePOVM_jointEffect
+lemma unconditionalConjugatePOVM_jointEffect
     {A B ι κ : Type*} [Fintype A] [Fintype B]
     [Fintype ι] [Fintype κ] [DecidableEq ι] [DecidableEq κ]
     (P : POVM A ι) (Q : POVM B κ) (a : A) (b : B) :
@@ -58840,7 +58840,7 @@ def unconditionalConjugateSourceGlobalCatalystWinningEffect
           G n S D e b₀ y)).effect b
     else 0
 
-theorem
+lemma
     unconditionalConjugateSourceGlobalCatalystWinningEffect_eq_transpose
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -58866,7 +58866,7 @@ theorem
       a b
   · exact Matrix.transpose_zero.symm
 
-theorem unconditionalConjugateSourceGlobalCatalystWinningEffect_quadratic
+lemma unconditionalConjugateSourceGlobalCatalystWinningEffect_quadratic
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n)) (e : ℕ)
@@ -58926,7 +58926,7 @@ theorem unconditionalConjugateSourceGlobalCatalystWinningEffect_quadratic
       (exactSourceGlobalCatalystWinningEffect
         G n S D e a₀ b₀ x y) z
 
-theorem
+lemma
     unconditionalConjugateSourceGlobalCatalystWinningEffect_law_supported
     [DecidableEq A] [DecidableEq B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -58963,7 +58963,7 @@ noncomputable section
 open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
-theorem unconditionalPublicBucketPhysicalCoherentTarget_apply
+lemma unconditionalPublicBucketPhysicalCoherentTarget_apply
     {d N B n : ℕ} (w : ℝ)
     (ξ ζ : BipartiteUnitVector d)
     (φ ψ : Fin B) (i j : Fin d) (a b : Fin (N * n)) :
@@ -58981,7 +58981,7 @@ theorem unconditionalPublicBucketPhysicalCoherentTarget_apply
           embezzlementState (N * n) (a, b)) := by
   rfl
 
-theorem unconditionalCanonicalAcceptedCoefficient_sourceScale
+lemma unconditionalCanonicalAcceptedCoefficient_sourceScale
     {d N : ℕ} {w : ℝ}
     (width : 0 < w) (grid : 0 < N) (dimension : 0 < d)
     (ξ : BipartiteUnitVector d) (i : Fin d) :
@@ -59037,7 +59037,7 @@ theorem unconditionalCanonicalAcceptedCoefficient_sourceScale
     field_simp
   nlinarith
 
-theorem unconditionalConjugateTranspose_eq_inverse
+lemma unconditionalConjugateTranspose_eq_inverse
     {d : ℕ} (U : Matrix.unitaryGroup (Fin d) ℂ) :
     (conjugateUnitary U : Matrix (Fin d) (Fin d) ℂ).transpose =
       ((U⁻¹ : Matrix.unitaryGroup (Fin d) ℂ) :
@@ -59052,7 +59052,7 @@ theorem unconditionalConjugateTranspose_eq_inverse
       (V : Matrix (Fin d) (Fin d) ℂ))
     (Unitary.star_eq_inv U)
 
-theorem unconditionalConjugateBobBasisOverlapCancellation
+lemma unconditionalConjugateBobBasisOverlapCancellation
     {d : ℕ} (U V : Matrix.unitaryGroup (Fin d) ℂ) :
     (unitaryBasisOverlap U V : Matrix (Fin d) (Fin d) ℂ) *
         (conjugateUnitary V :
@@ -59075,7 +59075,7 @@ theorem unconditionalConjugateBobBasisOverlapCancellation
         Matrix (Fin d) (Fin d) ℂ)
   simp
 
-theorem unconditionalConjugateBobBasisOverlap_sum
+lemma unconditionalConjugateBobBasisOverlap_sum
     {d : ℕ} (U V : Matrix.unitaryGroup (Fin d) ℂ)
     (i b : Fin d) :
     (∑ j : Fin d,
@@ -59088,7 +59088,7 @@ theorem unconditionalConjugateBobBasisOverlap_sum
   simpa [Matrix.mul_apply, Matrix.transpose_apply,
     conjugateUnitary_apply] using identity
 
-theorem unconditionalRationalMixedConjugateBobSpectral_sum
+lemma unconditionalRationalMixedConjugateBobSpectral_sum
     {d : ℕ} (ξ ζ : BipartiteUnitVector d)
     (i b : Fin d) :
     (∑ j : Fin d,
@@ -59103,7 +59103,7 @@ theorem unconditionalRationalMixedConjugateBobSpectral_sum
     (dSVUniformDensityThresholdLeftBobBasis ξ)
     (dSVUniformDensityThresholdLeftBobBasis ζ) i b
 
-theorem unconditionalConjugateCanonicalAcceptedTarget_apply
+lemma unconditionalConjugateCanonicalAcceptedTarget_apply
     {d N : ℕ} (w : ℝ)
     (ξ : BipartiteUnitVector d)
     (a b : Fin d) :
@@ -59123,7 +59123,7 @@ theorem unconditionalConjugateCanonicalAcceptedTarget_apply
   rw [schmidtVector_apply]
   simp
 
-theorem unconditionalMixedConjugateCanonicalAcceptedTarget_sum
+lemma unconditionalMixedConjugateCanonicalAcceptedTarget_sum
     {d N : ℕ} {w : ℝ}
     (width : 0 < w) (grid : 0 < N) (dimension : 0 < d)
     (ξ ζ : BipartiteUnitVector d)
@@ -59231,7 +59231,7 @@ def unconditionalMixedConjugateSigmaAtomLift
     (Matrix.mem_unitaryGroup_iff').mp unitary]
   exact (Matrix.reindexRingEquiv ℂ e).map_one
 
-theorem unconditionalMixedConjugateSigmaAtomLift_apply
+lemma unconditionalMixedConjugateSigmaAtomLift_apply
     {d m : ℕ} (B : ℕ)
     (U : Matrix.unitaryGroup (Fin d) ℂ)
     (φ ψ : Fin B) (i j : Fin d) (a b : Fin m) :
@@ -59266,7 +59266,7 @@ def unconditionalMixedConjugateSigmaLocalAction
             (Σ _ : Fin B × Fin d, Fin m) ℂ)).mulVec
       (ofLp z)))
 
-theorem unconditionalMixedConjugateSigmaLocalAction_apply
+lemma unconditionalMixedConjugateSigmaLocalAction_apply
     {d m : ℕ} (B : ℕ)
     (U V : Matrix.unitaryGroup (Fin d) ℂ)
     (z : EuclideanSpace ℂ
@@ -59297,7 +59297,7 @@ def unconditionalMixedConjugateAcceptedPhaseHarmonicTarget
       (dSVDensityRationalCanonicalAcceptedTarget w N ξ))
     (fun _ _ _ => embezzlementState (N * n))
 
-theorem unconditionalMixedConjugateTargetCovariance
+lemma unconditionalMixedConjugateTargetCovariance
     {d N B n : ℕ} {w : ℝ}
     (width : 0 < w) (grid : 0 < N) (dimension : 0 < d)
     (ξ ζ : BipartiteUnitVector d) :
@@ -59348,7 +59348,7 @@ open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
   Matrix.Norms.L2Operator InnerProductSpace
 
-theorem unconditionalSelectedCopy_coherentPhaseSigma_norm_sq
+lemma unconditionalSelectedCopy_coherentPhaseSigma_norm_sq
     {H : Type*} [Fintype H] {B m : ℕ}
     (phases : 0 < B)
     (history : EuclideanSpace ℂ (H × H))
@@ -59398,7 +59398,7 @@ theorem unconditionalSelectedCopy_coherentPhaseSigma_norm_sq
             Fintype.card_fin, nsmul_eq_mul]
           field_simp
 
-theorem unconditionalSelectedCopy_coherentPhaseConstantWork_norm_sq
+lemma unconditionalSelectedCopy_coherentPhaseConstantWork_norm_sq
     {H : Type*} [Fintype H] {B m : ℕ}
     (phases : 0 < B)
     (history : EuclideanSpace ℂ (H × H))
@@ -59417,7 +59417,7 @@ theorem unconditionalSelectedCopy_coherentPhaseConstantWork_norm_sq
       congr 1
       rw [EuclideanSpace.norm_sq_eq, Fintype.sum_prod_type]
 
-theorem unconditionalSelectedCopy_conjugateAcceptedTarget_norm_sq
+lemma unconditionalSelectedCopy_conjugateAcceptedTarget_norm_sq
     {d N B m : ℕ} (phases : 0 < B)
     (grid : 0 < N) (harmonic : 0 < m)
     (w : ℝ) (ξ : BipartiteUnitVector d) :
@@ -59431,7 +59431,7 @@ theorem unconditionalSelectedCopy_conjugateAcceptedTarget_norm_sq
     embezzlementState_norm (N * m) (Nat.mul_pos grid harmonic)]
   ring
 
-theorem unconditionalSelectedCopy_mixedConjugateLocalAction_norm
+lemma unconditionalSelectedCopy_mixedConjugateLocalAction_norm
     {d B m : ℕ}
     (U V : Matrix.unitaryGroup (Fin d) ℂ)
     (z : EuclideanSpace ℂ
@@ -59443,7 +59443,7 @@ theorem unconditionalSelectedCopy_mixedConjugateLocalAction_norm
       (unconditionalMixedConjugateSigmaAtomLift (m := m) B U)
       (unconditionalMixedConjugateSigmaAtomLift (m := m) B V) z
 
-theorem unconditionalSelectedCopyIdealStage_norm_sq
+lemma unconditionalSelectedCopyIdealStage_norm_sq
     {d N B m : ℕ} {w : ℝ}
     (phases : 0 < B) (grid : 0 < N)
     (dimension : 0 < d) (harmonic : 0 < m)
@@ -59478,7 +59478,7 @@ theorem unconditionalSelectedCopyIdealStage_norm_sq
   apply (eq_div_iff (ne_of_gt dimension_real)).2
   simpa [mul_comm] using cancelled
 
-theorem unconditionalSelectedCopyCleanedStage_norm_sq
+lemma unconditionalSelectedCopyCleanedStage_norm_sq
     {d N B m : ℕ} {w : ℝ}
     (phases : 0 < B) (grid : 0 < N) (harmonic : 0 < m)
     (width : 0 < w)
@@ -59498,7 +59498,7 @@ theorem unconditionalSelectedCopyCleanedStage_norm_sq
     dSVDensityRationalMixedCanonicalPrefixPhysicalAcceptedSigmaState_norm_sq
       width grid harmonic ξ ζ
 
-theorem unconditionalSelectedCopyCleanedMatchedBranch_norm_sq
+lemma unconditionalSelectedCopyCleanedMatchedBranch_norm_sq
     {S N d L B m : ℕ} {τ : Type*} [Fintype τ]
     (phases : 0 < B) (grid : 0 < N) (harmonic : 0 < m)
     (width : Fin S → ℝ) (width_positive : ∀ s, 0 < width s)
@@ -59524,7 +59524,7 @@ theorem unconditionalSelectedCopyCleanedMatchedBranch_norm_sq
     dSVDensityRationalHeterogeneousPhysicalStageOutcome,
     j.isLt, mul_comm]
 
-theorem unconditionalSelectedCopyIdealMatchedBranch_norm_sq
+lemma unconditionalSelectedCopyIdealMatchedBranch_norm_sq
     {S N d L B m : ℕ} {τ : Type*} [Fintype τ]
     (phases : 0 < B) (grid : 0 < N)
     (dimension : 0 < d) (harmonic : 0 < m)
@@ -59580,7 +59580,7 @@ def unconditionalMixedConjugateSelectedBranchLocalAction
       Matrix ((ι × ι) × τ) ((ι × ι) × τ) ℂ).mulVec
       (ofLp z))
 
-theorem unconditionalMixedConjugateSelectedBranch_tensorAction
+lemma unconditionalMixedConjugateSelectedBranch_tensorAction
     {ι τ : Type*} [Fintype ι] [DecidableEq ι]
     [Fintype τ] [DecidableEq τ]
     (U V : Matrix.unitaryGroup ι ℂ)
@@ -59603,7 +59603,7 @@ theorem unconditionalMixedConjugateSelectedBranch_tensorAction
     Matrix.one_apply,
     Fintype.sum_prod_type, Finset.sum_mul, mul_assoc]
 
-theorem unconditionalMixedConjugateSelectedBranch_tensor_smul
+lemma unconditionalMixedConjugateSelectedBranch_tensor_smul
     {s τ : Type*} [Fintype s] [Fintype τ]
     (c : ℝ) (stage : EuclideanSpace ℂ s)
     (work : EuclideanSpace ℂ τ) :
@@ -59615,7 +59615,7 @@ theorem unconditionalMixedConjugateSelectedBranch_tensor_smul
     ((c : ℂ) * stage a) * work b
   ring
 
-theorem unconditionalMixedConjugateSelectedBranchCovariance
+lemma unconditionalMixedConjugateSelectedBranchCovariance
     {S N d L B m : ℕ} {τ : Type*} [Fintype τ] [DecidableEq τ]
     (grid : 0 < N) (dimension : 0 < d)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -59650,7 +59650,7 @@ theorem unconditionalMixedConjugateSelectedBranchCovariance
   exact unconditionalMixedConjugateTargetCovariance
     positive grid dimension ξ ζ
 
-theorem unconditionalPhysicalAcceptedCoherentStage_eq_phaseSigma
+lemma unconditionalPhysicalAcceptedCoherentStage_eq_phaseSigma
     {d N B m : ℕ} (w : ℝ)
     (ξ ζ : BipartiteUnitVector d)
     (φ ψ : Fin B) (i j : Fin d) (a b : Fin (N * m)) :
@@ -59667,7 +59667,7 @@ theorem unconditionalPhysicalAcceptedCoherentStage_eq_phaseSigma
     dSVUniformDensityCorrectedMatchedSigmaWeightedResidual,
     mul_assoc]
 
-theorem unconditionalPhysicalAcceptedCoherentStage_apply
+lemma unconditionalPhysicalAcceptedCoherentStage_apply
     {d N B m : ℕ} {w : ℝ}
     (width : 0 < w) (grid : 0 < N)
     (ξ ζ : BipartiteUnitVector d)
@@ -59723,7 +59723,7 @@ def actualStoppingBranchWinningEffect
 
 omit [Fintype R] [DecidableEq R] in
 
-theorem actualStoppingBranchWinningEffect_posSemidef
+lemma actualStoppingBranchWinningEffect_posSemidef
     (G : Game X Y A B)
     (PA : (r : R) → X → POVM A (ι r))
     (PB : (s : R) → Y → POVM B (κ s))
@@ -59744,7 +59744,7 @@ theorem actualStoppingBranchWinningEffect_posSemidef
 
 omit [Fintype R] [DecidableEq R] in
 
-theorem actualStoppingBranchBorn_nonneg
+lemma actualStoppingBranchBorn_nonneg
     (G : Game X Y A B)
     (PA : (r : R) → X → POVM A (ι r))
     (PB : (s : R) → Y → POVM B (κ s))
@@ -59775,7 +59775,7 @@ def actualStoppingGlobalWinningEffect
           (fun s => PB s y)).effect b
     else 0
 
-theorem actualStoppingGlobalWinningEffect_same
+lemma actualStoppingGlobalWinningEffect_same
     (G : Game X Y A B)
     (PA : (r : R) → X → POVM A (ι r))
     (PB : (s : R) → Y → POVM B (κ s))
@@ -59797,7 +59797,7 @@ theorem actualStoppingGlobalWinningEffect_same
   · simp [dependentBlockPOVM_effect_same]
   · rfl
 
-theorem actualStoppingGlobalWinningEffect_cross_eq_zero
+lemma actualStoppingGlobalWinningEffect_cross_eq_zero
     (G : Game X Y A B)
     (PA : (r : R) → X → POVM A (ι r))
     (PB : (s : R) → Y → POVM B (κ s))
@@ -59829,7 +59829,7 @@ theorem actualStoppingGlobalWinningEffect_cross_eq_zero
         Matrix.blockDiagonal'_apply, right]
     · rfl
 
-theorem actualStoppingGlobalBorn_eq_sum
+lemma actualStoppingGlobalBorn_eq_sum
     (G : Game X Y A B)
     (PA : (r : R) → X → POVM A (ι r))
     (PB : (s : R) → Y → POVM B (κ s))
@@ -59914,7 +59914,7 @@ set_option maxRecDepth 2048
 
 attribute [local instance] Classical.propDecidable
 
-theorem unitaryConjugatePOVM_jointEffect
+lemma unitaryConjugatePOVM_jointEffect
     {A B d : Type} [Fintype A] [Fintype B]
     [Fintype d] [DecidableEq d]
     (U V : Matrix.unitaryGroup d ℂ)
@@ -59962,7 +59962,7 @@ def actualStoppingQuestionLocalAction
       (V : Matrix (Σ r, ι r) (Σ r, ι r) ℂ)).mulVec
       (ofLp z))
 
-theorem actualStoppingQuestionLocalWinningEffect_quadratic
+lemma actualStoppingQuestionLocalWinningEffect_quadratic
     (G : Game X Y A B)
     (PA : (r : R) → X → POVM A (ι r))
     (PB : (r : R) → Y → POVM B (ι r))
@@ -60031,7 +60031,7 @@ theorem actualStoppingQuestionLocalWinningEffect_quadratic
       z).symm
   · simp [quadraticExpectation]
 
-theorem actualStoppingQuestionLocalWinningProbability_eq_sum
+lemma actualStoppingQuestionLocalWinningProbability_eq_sum
     (G : Game X Y A B)
     (PA : (r : R) → X → POVM A (ι r))
     (PB : (r : R) → Y → POVM B (ι r))
@@ -60065,7 +60065,7 @@ theorem actualStoppingQuestionLocalWinningProbability_eq_sum
     G PA PB (actualStoppingQuestionLocalAction
       (U x) (V y) z) x y
 
-theorem actualStoppingQuestionLocalWinningProbability_ge_matched
+lemma actualStoppingQuestionLocalWinningProbability_ge_matched
     {L : ℕ}
     {ι : Fin (L + 1) → Type}
     [∀ r, Fintype (ι r)] [∀ r, DecidableEq (ι r)]
@@ -60134,7 +60134,7 @@ theorem actualStoppingQuestionLocalWinningProbability_ge_matched
               G PA PB stopped r s x y)
             (Finset.mem_univ r)
 
-theorem actualStoppingQuestionLocalFlaggedWinningProbability_ge_matched
+lemma actualStoppingQuestionLocalFlaggedWinningProbability_ge_matched
     {L : ℕ} {J : Type} [Fintype J] [DecidableEq J]
     {ι : Fin (L + 1) → Type}
     [∀ r, Fintype (ι r)] [∀ r, DecidableEq (ι r)]
@@ -60324,7 +60324,7 @@ def dSVDensityRationalHeterogeneousOriginalSameStopSigmaSource
       width schedule ξ ζ
       (fun _ _ _ => embezzlementState m))
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousOriginalSameStopSigmaSource_apply
     (S B N d L m : ℕ)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -60357,7 +60357,7 @@ theorem
     dSVUniformDensityCorrectedMatchedSigmaWeightedResidual,
     dSVDensityRationalPublicBucketCoherentPhaseHistory]
 
-theorem
+lemma
     dSVDensityRationalHeterogeneousOriginalSameStopSigmaSource_eq_stopped
     (S B N d L m : ℕ)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -60395,7 +60395,7 @@ theorem
   rw [dSVDensityRationalHeterogeneousTargetFirstSpectralPhysicalSource_apply]
   simp [ePRState]
 
-theorem dSVDensityRationalHeterogeneousOriginalStoppedState_apply
+lemma dSVDensityRationalHeterogeneousOriginalStoppedState_apply
     (S B N d L m : ℕ)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ ζ : BipartiteUnitVector d)
@@ -60462,7 +60462,7 @@ def directDSVSelectedCopyLocalHistoryEquiv
     (directDSVRemainingCopyEquiv (β := β) j)).trans
     (Fin.insertNthEquiv (fun _ : Fin (L + 1) => β) j.castSucc)
 
-@[simp] theorem directDSVSelectedCopyLocalHistoryEquiv_hit
+@[simp] lemma directDSVSelectedCopyLocalHistoryEquiv_hit
     {L : ℕ} {β : Type*} (j : Fin L)
     (selected : β) (before : Fin j.val → β)
     (after : Fin (L - j.val) → β) :
@@ -60470,7 +60470,7 @@ def directDSVSelectedCopyLocalHistoryEquiv
         (selected, (before, after)) j.castSucc = selected := by
   simp [directDSVSelectedCopyLocalHistoryEquiv]
 
-@[simp] theorem directDSVSelectedCopyLocalHistoryEquiv_before
+@[simp] lemma directDSVSelectedCopyLocalHistoryEquiv_before
     {L : ℕ} {β : Type*} (j : Fin L)
     (selected : β) (before : Fin j.val → β)
     (after : Fin (L - j.val) → β) (i : Fin j.val) :
@@ -60496,7 +60496,7 @@ def directDSVSelectedCopyLocalHistoryEquiv
       else after ⟨k.val - j.val, by omega⟩) = before i
   simp only [k, i.isLt, ↓reduceDIte]
 
-@[simp] theorem directDSVSelectedCopyLocalHistoryEquiv_after
+@[simp] lemma directDSVSelectedCopyLocalHistoryEquiv_after
     {L : ℕ} {β : Type*} (j : Fin L)
     (selected : β) (before : Fin j.val → β)
     (after : Fin (L - j.val) → β) (i : Fin (L - j.val)) :
@@ -60525,7 +60525,7 @@ def directDSVSelectedCopyLocalHistoryEquiv
   have not_before : ¬ j.val + i.val < j.val := by omega
   simp [k, not_before]
 
-theorem directDSVRemainingCopyProductSplit
+lemma directDSVRemainingCopyProductSplit
     {M : Type*} [CommMonoid M]
     {L : ℕ} (j : Fin L) (f : Fin L → M) :
     (∏ i : Fin L, f i) =
@@ -60545,7 +60545,7 @@ theorem directDSVRemainingCopyProductSplit
       rw [Fin.prod_univ_add]
       congr 1
 
-theorem directDSVActualStoppingSelectedHistory_sourceProduct
+lemma directDSVActualStoppingSelectedHistory_sourceProduct
     {S N d L : ℕ}
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ ζ : BipartiteUnitVector d)
@@ -60736,7 +60736,7 @@ def unconditionalSourcePhysicalStoppingTargetFirstStateEquiv
       (unconditionalSourcePhysicalStoppingTargetFirstIndexEquiv
         S B N d L m))
 
-theorem unconditionalSourcePhysicalStoppingTargetFirst_branch_apply
+lemma unconditionalSourcePhysicalStoppingTargetFirst_branch_apply
     {S B N d L m : ℕ}
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ ζ : BipartiteUnitVector d)
@@ -60769,7 +60769,7 @@ theorem unconditionalSourcePhysicalStoppingTargetFirst_branch_apply
   exact dSVDensityRationalHeterogeneousOriginalStoppedState_apply
     S B N d L m width schedule ξ ζ φ ψ ⟨r, a⟩ ⟨s, b⟩ i k
 
-theorem unconditionalSourcePhysicalStoppingBranch_sigmaContinuation
+lemma unconditionalSourcePhysicalStoppingBranch_sigmaContinuation
     {R κ : Type} [Fintype R] [DecidableEq R]
     [Fintype κ] [DecidableEq κ]
     (U V : R → Matrix.unitaryGroup κ ℂ)
@@ -60822,7 +60822,7 @@ def unconditionalSelectedMultiscalePhaseIndexEquiv
       (fun _ : Fin (S + 1) => Fin B) scale)).trans
       (Fintype.equivFin (Fin (S + 1) → Fin B))
 
-theorem unconditionalSelectedMultiscalePhase_card
+lemma unconditionalSelectedMultiscalePhase_card
     (S B : ℕ) :
     Fintype.card
         (DSVDensityRationalPublicMultiscalePhase (S + 1) B) =
@@ -60830,7 +60830,7 @@ theorem unconditionalSelectedMultiscalePhase_card
   simp [DSVDensityRationalPublicMultiscalePhase,
     pow_succ, Nat.mul_comm]
 
-theorem unconditionalSelectedMultiscalePhase_EPR_apply
+lemma unconditionalSelectedMultiscalePhase_EPR_apply
     {S B : ℕ} (scale : Fin (S + 1))
     (p q : Fin B)
     (r t : Fin (Fintype.card (Fin S → Fin B))) :
@@ -60885,7 +60885,7 @@ def unconditionalActualMultiscalePhaseIndexEquiv
       exact unconditionalSelectedMultiscalePhaseIndexEquiv
         (S := S) scale
 
-theorem unconditionalActualMultiscalePhase_EPR_apply
+lemma unconditionalActualMultiscalePhase_EPR_apply
     {S B : ℕ} (scale : Fin S)
     (p q : Fin B)
     (r t : Fin (Fintype.card (Fin (S - 1) → Fin B))) :
@@ -60958,7 +60958,7 @@ def unconditionalSourcePhysicalCleanedStoppingFixedSource
     (dSVDensityRationalPublicMultiscalePhaseTargetFirstPreparedSource
       S B N d L m)
 
-theorem unconditionalSourcePhysicalCleanedStoppingFixedSource_norm
+lemma unconditionalSourcePhysicalCleanedStoppingFixedSource_norm
     {S B N d L m : ℕ}
     (phases : 0 < B) (grid : 0 < N)
     (dimension : 0 < d) (harmonic : 0 < m) :
@@ -60970,7 +60970,7 @@ theorem unconditionalSourcePhysicalCleanedStoppingFixedSource_norm
     dSVDensityRationalPublicMultiscalePhaseTargetFirstPreparedSource_norm
       phases grid dimension harmonic
 
-theorem
+lemma
     unconditionalSourcePhysicalCleanedStoppingLocalAction_reindex
     {S B N d L m : ℕ}
     (U V : Matrix.unitaryGroup
@@ -61030,7 +61030,7 @@ theorem
           (V : Matrix _ _ ℂ) (e.symm b) (e.symm q.2) *
           z (e.symm q.1, e.symm q.2))).symm
 
-theorem
+lemma
     unconditionalSourcePhysicalCleanedStoppingFixedSource_physicalAction
     {S B N d L m : ℕ}
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -61054,7 +61054,7 @@ theorem
   rw [unconditionalSourcePhysicalCleanedStoppingLocalAction_reindex]
   rfl
 
-theorem
+lemma
     unconditionalSourcePhysicalCleanedStoppingFixedSource_branch_apply
     {S B N d L m : ℕ}
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -61131,7 +61131,7 @@ def unconditionalSourcePhysicalCleanedSelectedHistoryEquiv
         have not_hit : ¬ j.val + 1 + i.val = j.val := by omega
         simp [not_before, not_hit]
 
-@[simp] theorem unconditionalSourcePhysicalCleanedSelectedHistoryEquiv_hit
+@[simp] lemma unconditionalSourcePhysicalCleanedSelectedHistoryEquiv_hit
     {L : ℕ} (j : Fin L) (β : Type*) (f : Fin (L + 1) → β) :
     (unconditionalSourcePhysicalCleanedSelectedHistoryEquiv
       j β f).1 = f j.castSucc := by
@@ -61392,7 +61392,7 @@ def unconditionalActualCleanedSelectedFiniteStageDecoder
     unconditionalActualCleanedSelectedFullStageUnitary
       phaseSplit Q width schedule ξ spectral A j)
 
-@[simp] theorem
+@[simp] lemma
     unconditionalActualCleanedSelectedFiniteStageDecoder_succ
     {S B N d L m : ℕ} {R : Type}
     [Fintype R] [DecidableEq R]
@@ -61412,7 +61412,7 @@ def unconditionalActualCleanedSelectedFiniteStageDecoder
         phaseSplit Q width schedule ξ spectral A j := by
   simp [unconditionalActualCleanedSelectedFiniteStageDecoder]
 
-theorem unconditionalActualCleanedSelectedMatchedStoppingBranch
+lemma unconditionalActualCleanedSelectedMatchedStoppingBranch
     {S B N d L m : ℕ} {R : Type}
     [Fintype R] [DecidableEq R]
     (phaseSplit :
@@ -61616,7 +61616,7 @@ def unconditionalActualPhysicalMixedAcceptedRawStage
         ((finProdFinEquiv.symm q.1.2).2,
          (finProdFinEquiv.symm q.2.2).2)
 
-theorem unconditionalActualPhysicalMixedAcceptedSpectralGauge_apply
+lemma unconditionalActualPhysicalMixedAcceptedSpectralGauge_apply
     {B N d m : ℕ}
     (U : Matrix.unitaryGroup
       (DSVUniformDensityThresholdLocalIndex N d) ℂ)
@@ -61657,7 +61657,7 @@ theorem unconditionalActualPhysicalMixedAcceptedSpectralGauge_apply
     Matrix.one_apply, threshold_a, harmonic_a,
     threshold_b, harmonic_b]
 
-theorem
+lemma
     unconditionalActualPhysicalMixedAcceptedSpectralGauge_sum
     {N d : ℕ}
     (f : DSVUniformDensityThresholdLocalIndex N d →
@@ -61677,7 +61677,7 @@ theorem
   intro i _
   rw [Finset.sum_comm]
 
-theorem unconditionalActualPhysicalMixedAcceptedSpectralGauge_stage
+lemma unconditionalActualPhysicalMixedAcceptedSpectralGauge_stage
     {B N d m : ℕ} {w : ℝ}
     (width : 0 < w) (grid : 0 < N)
     (ξ ζ : BipartiteUnitVector d) :
@@ -61805,7 +61805,7 @@ def unconditionalActualCanonicalRawSelectedPhysicalStage
         ((finProdFinEquiv.symm q.1.2).2,
          (finProdFinEquiv.symm q.2.2).2)
 
-theorem unconditionalActualCanonicalCleanedHistorySymm_eq_direct
+lemma unconditionalActualCanonicalCleanedHistorySymm_eq_direct
     {L : ℕ} (j : Fin L) (β : Type*)
     (selected : β) (before : Fin j.val → β)
     (later : Fin (L - j.val) → β) :
@@ -61830,7 +61830,7 @@ theorem unconditionalActualCanonicalCleanedHistorySymm_eq_direct
         (directDSVSelectedCopyLocalHistoryEquiv_after
           j selected before later i).symm
 
-theorem unconditionalActualCanonicalFullSource_eq_rawSelectedStage
+lemma unconditionalActualCanonicalFullSource_eq_rawSelectedStage
     {S B N d L m : ℕ}
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ ζ : BipartiteUnitVector d) (j : Fin L) :
@@ -61912,7 +61912,7 @@ theorem unconditionalActualCanonicalFullSource_eq_rawSelectedStage
   unfold dSVDensityRationalPhysicalAcceptedOutcome
   ring
 
-theorem unconditionalActualCanonicalRawSelectedPhysicalStage_eq
+lemma unconditionalActualCanonicalRawSelectedPhysicalStage_eq
     {B N d m : ℕ} (w : ℝ)
     (ξ ζ : BipartiteUnitVector d) :
     unconditionalActualCanonicalRawSelectedPhysicalStage
@@ -61937,7 +61937,7 @@ def directDSVActualReindexedRetainedPOVM
     (P : POVM C s) : POVM C ι :=
   reindexedPOVM e.symm (purificationAlicePOVM (k := t) P)
 
-@[simp] theorem directDSVActualReindexedRetainedPOVM_effect
+@[simp] lemma directDSVActualReindexedRetainedPOVM_effect
     {C s t ι : Type*}
     [Fintype C] [Fintype s] [Fintype t] [Fintype ι]
     [DecidableEq s] [DecidableEq t] [DecidableEq ι]
@@ -61969,7 +61969,7 @@ def directDSVActualLocalPOVMWinningEffect
       PA.effect a ⊗ₖ PB.effect b
     else 0
 
-theorem directDSVActualReindexedRetainedPOVMWinningEffect
+lemma directDSVActualReindexedRetainedPOVMWinningEffect
     {X Y A B s t u v ι κ : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype s] [Fintype t] [Fintype u] [Fintype v]
@@ -62002,7 +62002,7 @@ theorem directDSVActualReindexedRetainedPOVMWinningEffect
         Matrix.kroneckerMap_apply, Matrix.one_apply,
         Equiv.prodProdProdComm_apply, alice_work, bob_work]
 
-theorem directDSVActualReindexedWinningEffect_quadratic
+lemma directDSVActualReindexedWinningEffect_quadratic
     {ι κ : Type*} [Fintype ι] [Fintype κ]
     [DecidableEq ι] [DecidableEq κ]
     (e : ι ≃ κ) (winning : Matrix κ κ ℂ)
@@ -62044,7 +62044,7 @@ theorem directDSVActualReindexedWinningEffect_quadratic
                 (∑ j : κ, winning i j * z (e.symm j)) *
                   star (z (e.symm i))))
 
-theorem directDSVActualReindexedRetainedPOVMWinningEffect_tensor_quadratic
+lemma directDSVActualReindexedRetainedPOVMWinningEffect_tensor_quadratic
     {X Y A B s t u v ι κ : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype s] [Fintype t] [Fintype u] [Fintype v]
@@ -62084,7 +62084,7 @@ noncomputable section
 open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
-theorem unconditionalSelectedBranchLocalAction_mul
+lemma unconditionalSelectedBranchLocalAction_mul
     {s t : Type*} [Fintype s] [DecidableEq s]
     [Fintype t] [DecidableEq t]
     (U₁ U₂ V₁ V₂ : Matrix.unitaryGroup s ℂ)
@@ -62115,7 +62115,7 @@ def unconditionalSelectedRetainedBilateralRegroup
   left_inv := by rintro ⟨⟨_, _⟩, ⟨_, _⟩⟩; rfl
   right_inv := by rintro ⟨⟨_, _⟩, ⟨_, _⟩⟩; rfl
 
-theorem unconditionalRegroupedSelectedRetainedReindexAction
+lemma unconditionalRegroupedSelectedRetainedReindexAction
     {κ ι τ δ : Type}
     [Fintype κ] [DecidableEq κ]
     [Fintype ι] [DecidableEq ι]
@@ -62218,7 +62218,7 @@ def unconditionalActualFixedSourceRetainedHistoryPairEquiv
     rintro ⟨before, ⟨⟨afterA, afterB⟩, ⟨phaseA, phaseB⟩⟩⟩
     simp
 
-theorem unconditionalActualFixedSourceFullBilateralRegroup_eq
+lemma unconditionalActualFixedSourceFullBilateralRegroup_eq
     {B N d L m : ℕ} {R : Type} (j : Fin L) :
     unconditionalSourcePhysicalCleanedFullBilateralRegroup
         (R := R) (B := B) (N := N) (d := d) (m := m) j =
@@ -62237,7 +62237,7 @@ theorem unconditionalActualFixedSourceFullBilateralRegroup_eq
     ⟨selectedB, beforeB, afterB, phaseB⟩⟩
   rfl
 
-theorem unconditionalActualFixedSourceFullPhysicalBilateralStageTransport
+lemma unconditionalActualFixedSourceFullPhysicalBilateralStageTransport
     {S B N d L m : ℕ} {R : Type}
     [Fintype R] [DecidableEq R]
     (phaseSplit :
@@ -62311,7 +62311,7 @@ theorem unconditionalActualFixedSourceFullPhysicalBilateralStageTransport
     unconditionalActualFixedSourceFullBilateralRegroup_eq,
     e, work, UA, UB] using transport
 
-theorem unconditionalActualFixedSourceDecodedMatchedBranch
+lemma unconditionalActualFixedSourceDecodedMatchedBranch
     {S B N d L m : ℕ}
     (Q : ℕ) (width : Fin S → ℝ) (schedule : Fin L → Fin S)
     (ξ ζ : BipartiteUnitVector d)
@@ -62419,7 +62419,7 @@ attribute [local instance] Classical.propDecidable
 variable {X Y A B : Type}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem exactSourceHistoryFlag_nonempty_of_positive
+lemma exactSourceHistoryFlag_nonempty_of_positive
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card)
@@ -62435,7 +62435,7 @@ theorem exactSourceHistoryFlag_nonempty_of_positive
   obtain ⟨t, _, _⟩ := Finset.exists_ne_zero_of_sum_ne_zero nonzero
   exact ⟨t.2.2.2⟩
 
-theorem exactSourceAnswerTypes_nonempty_of_remaining
+lemma exactSourceAnswerTypes_nonempty_of_remaining
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (remaining : 0 < (Finset.univ \ D).card) :
@@ -62708,7 +62708,7 @@ def unconditionalActualOneScaleFixedSourcePhaseSplit (P : ℕ) :
   (unconditionalActualMultiscalePhaseIndexEquiv
     (B := P) (0 : Fin 1)).symm
 
-theorem unconditionalActualOneScaleFlagControlledFiniteStageDecoder_eq
+lemma unconditionalActualOneScaleFlagControlledFiniteStageDecoder_eq
     {S B N d L m : ℕ} {R : Type}
     [Fintype R] [DecidableEq R]
     (phaseSplit :
@@ -62761,7 +62761,7 @@ def unconditionalActualOneScaleFixedSourceDecodedState
       (unconditionalSourcePhysicalCleanedStoppingFixedSource
         1 P N d L m))
 
-theorem unconditionalActualOneScaleFixedSourcePhysicalQuestionAction
+lemma unconditionalActualOneScaleFixedSourcePhysicalQuestionAction
     {F X Y : Type} {P N d L m : ℕ}
     (Q : ℕ) (width : Fin 1 → ℝ) (schedule : Fin L → Fin 1)
     (ξ : F → X → BipartiteUnitVector d)
@@ -62791,7 +62791,7 @@ theorem unconditionalActualOneScaleFixedSourcePhysicalQuestionAction
   rw [Matrix.mulVec_mulVec, ← Matrix.mul_kronecker_mul]
   rfl
 
-theorem unconditionalActualOneScaleFixedSourceDecodedMatchedBranch
+lemma unconditionalActualOneScaleFixedSourceDecodedMatchedBranch
     {P N d L m : ℕ}
     (Q : ℕ) (width : Fin 1 → ℝ) (schedule : Fin L → Fin 1)
     (ξ ζ : BipartiteUnitVector d)
@@ -62825,7 +62825,7 @@ theorem unconditionalActualOneScaleFixedSourceDecodedMatchedBranch
     unconditionalActualOneScaleFlagControlledFiniteStageDecoder_eq]
     using decoded
 
-theorem
+lemma
     unconditionalActualOneScalePhysicalQuestionDecodedMatchedBranch
     {F X Y : Type} {P N d L m : ℕ}
     (Q : ℕ) (width : Fin 1 → ℝ) (schedule : Fin L → Fin 1)
@@ -62866,7 +62866,7 @@ open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
   Matrix.Norms.L2Operator InnerProductSpace
 
-theorem unconditionalConjugatePureVector_sub_norm
+lemma unconditionalConjugatePureVector_sub_norm
     {ι : Type*} [Fintype ι]
     (x y : EuclideanSpace ℂ ι) :
     ‖unconditionalConjugatePureVector x -
@@ -62879,7 +62879,7 @@ theorem unconditionalConjugatePureVector_sub_norm
     simp [unconditionalConjugatePureVector, star_sub]
   rw [conjugate_sub, unconditionalConjugatePureVector_norm]
 
-theorem unconditionalClippedConjugateUnitTarget_distance_sq_le
+lemma unconditionalClippedConjugateUnitTarget_distance_sq_le
     {d N : ℕ} {w : ℝ}
     (width : 0 < w) (grid : 0 < N)
     (fine : (d : ℝ) / (N : ℝ) < 1 / (w + 1))
@@ -62929,7 +62929,7 @@ theorem unconditionalClippedConjugateUnitTarget_distance_sq_le
     norm_nonneg (gamma.val - accepted.val),
     sq_nonneg (‖psi - gamma.val‖ - ‖gamma.val - accepted.val‖)]
 
-theorem unconditionalMatchedVerifierTensor_sub_right
+lemma unconditionalMatchedVerifierTensor_sub_right
     {s t : Type*} [Fintype s] [Fintype t]
     (x y : EuclideanSpace ℂ s)
     (work : EuclideanSpace ℂ t) :
@@ -62941,7 +62941,7 @@ theorem unconditionalMatchedVerifierTensor_sub_right
     (x q.1 - y q.1) * work q.2
   ring
 
-theorem
+lemma
     unconditionalWeightedClippedConjugateUnitSource_distance_sq_le
     {J : Type*} [Fintype J]
     {d N : ℕ} {w : ℝ}
@@ -62998,7 +62998,7 @@ def unconditionalExactFairGammaUnit
   ⟨exactSourceTupleGamma G n S D u,
     exactSourceTupleGamma_norm G n S D u⟩
 
-theorem unconditionalExactFairGammaUnit_eq_global
+lemma unconditionalExactFairGammaUnit_eq_global
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
     (D : Finset (Fin n))
     (u : ExactLocallySampleableTuple X Y A B D) :
@@ -63016,7 +63016,7 @@ open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
   Matrix.Norms.L2Operator InnerProductSpace
 
-theorem unconditionalCoherentPhaseConstantWork_sub
+lemma unconditionalCoherentPhaseConstantWork_sub
     {H : Type*} [Fintype H] {B m : ℕ}
     (x y : EuclideanSpace ℂ (H × H))
     (work : EuclideanSpace ℂ (Fin m × Fin m)) :
@@ -63034,7 +63034,7 @@ theorem unconditionalCoherentPhaseConstantWork_sub
         (x (i, j) - y (i, j))) * work (a, b)
   ring
 
-theorem unconditionalStoppedPhaseHarmonic_distance_sq
+lemma unconditionalStoppedPhaseHarmonic_distance_sq
     {H : Type*} [Fintype H] {B m : ℕ}
     (phases : 0 < B) (harmonic : 0 < m)
     (x y : EuclideanSpace ℂ (H × H)) :
@@ -63049,7 +63049,7 @@ theorem unconditionalStoppedPhaseHarmonic_distance_sq
     embezzlementState_norm m harmonic]
   ring
 
-theorem unconditionalStoppedPhaseHarmonicDistance_sum_le
+lemma unconditionalStoppedPhaseHarmonicDistance_sum_le
     {J K : Type*} [Fintype K]
     {d B m : ℕ}
     (phases : 0 < B) (harmonic : 0 < m)
@@ -63094,7 +63094,7 @@ theorem unconditionalStoppedPhaseHarmonicDistance_sum_le
       mul_le_of_le_one_right (sq_nonneg _) (work_row j)
     _ = _ := stage
 
-theorem unconditionalWeightedStoppedPhaseHarmonicClippedUnit_le
+lemma unconditionalWeightedStoppedPhaseHarmonicClippedUnit_le
     {J K : Type*} [Fintype J] [Fintype K]
     {d N B m : ℕ} {w : ℝ}
     (width : 0 < w) (grid : 0 < N)
@@ -63149,7 +63149,7 @@ theorem unconditionalWeightedStoppedPhaseHarmonicClippedUnit_le
         width grid fine weight weight_nonnegative weight_normalized
         gamma psi energy energy_bound
 
-theorem unconditionalExactFairStoppedPhaseHarmonicClippedUnit_le
+lemma unconditionalExactFairStoppedPhaseHarmonicClippedUnit_le
     {X Y A B : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -63222,7 +63222,7 @@ theorem unconditionalExactFairStoppedPhaseHarmonicClippedUnit_le
   convert result using 1
   ring
 
-theorem unconditionalCanonicalRaw_eq_norm_smul_unit
+lemma unconditionalCanonicalRaw_eq_norm_smul_unit
     {d N : ℕ} {w : ℝ}
     (width : 0 < w) (grid : 0 < N)
     (fine : (d : ℝ) / (N : ℝ) < 1 / (w + 1))
@@ -63236,7 +63236,7 @@ theorem unconditionalCanonicalRaw_eq_norm_smul_unit
     (dSVDensityRationalCanonicalAcceptedTarget
       w N gamma)).symm
 
-theorem unconditionalConjugateCanonicalRaw_eq_norm_smul_unit
+lemma unconditionalConjugateCanonicalRaw_eq_norm_smul_unit
     {d N : ℕ} {w : ℝ}
     (width : 0 < w) (grid : 0 < N)
     (fine : (d : ℝ) / (N : ℝ) < 1 / (w + 1))
@@ -63272,7 +63272,7 @@ theorem unconditionalConjugateCanonicalRaw_eq_norm_smul_unit
   rw [coefficient]
   simp
 
-theorem unconditionalPhaseCanonicalRaw_eq_norm_smul_unit
+lemma unconditionalPhaseCanonicalRaw_eq_norm_smul_unit
     {d N B m : ℕ} {w : ℝ}
     (width : 0 < w) (grid : 0 < N)
     (fine : (d : ℝ) / (N : ℝ) < 1 / (w + 1))
@@ -63318,7 +63318,7 @@ theorem unconditionalPhaseCanonicalRaw_eq_norm_smul_unit
   rw [coefficient]
   ring
 
-theorem unconditionalMatchedTensor_real_smul_work
+lemma unconditionalMatchedTensor_real_smul_work
     {s t : Type*} [Fintype s] [Fintype t]
     (c : ℝ)
     (stage : EuclideanSpace ℂ s)
@@ -63330,7 +63330,7 @@ theorem unconditionalMatchedTensor_real_smul_work
     stage q.1 * ((c : ℂ) * work q.2)
   ring
 
-theorem unconditionalPhaseCanonical_sourceScale_absorbed
+lemma unconditionalPhaseCanonical_sourceScale_absorbed
     {d N B m : ℕ} {w : ℝ}
     (width : 0 < w) (grid : 0 < N) (dimension : 0 < d)
     (fine : (d : ℝ) / (N : ℝ) < 1 / (w + 1))
@@ -63401,7 +63401,7 @@ theorem unconditionalPhaseCanonical_sourceScale_absorbed
     _ = _ := by
       rw [factor]
 
-theorem unconditionalCanonicalAcceptedScale_sq_eq_diagonalBorn
+lemma unconditionalCanonicalAcceptedScale_sq_eq_diagonalBorn
     {d N : ℕ} {w : ℝ}
     (width : 0 < w) (grid : 0 < N) (dimension : 0 < d)
     (gamma : BipartiteUnitVector d) :
@@ -63418,7 +63418,7 @@ theorem unconditionalCanonicalAcceptedScale_sq_eq_diagonalBorn
     dSVDensityRationalPhysicalDiagonalBornSuccess_eq]
   field_simp [ne_of_gt width, ne_of_gt dimension_real]
 
-theorem unconditionalNormalizedCanonicalRetainedWork_norm_sq
+lemma unconditionalNormalizedCanonicalRetainedWork_norm_sq
     {S N d L B m : ℕ} {T : Type*} [Fintype T]
     (phases : 0 < B) (grid : 0 < N)
     (dimension : 0 < d) (harmonic : 0 < m)
@@ -63471,7 +63471,7 @@ theorem unconditionalNormalizedCanonicalRetainedWork_norm_sq
         phases grid dimension harmonic width width_positive schedule
         gamma phi j rest rest_unit).symm
 
-theorem integratorActualCanonicalRetainedPhaseTail_norm
+lemma integratorActualCanonicalRetainedPhaseTail_norm
     {S B N d L : ℕ}
     (phases : 0 < B) (grid : 0 < N) (dimension : 0 < d)
     (j : Fin L) :
@@ -63594,7 +63594,7 @@ def integratorActualC485SourceVector
     (integratorActualC485NormalizedDiagonalWork
       (B := B) width schedule ξ ζ j)
 
-theorem unconditionalActualC485NormalizedDiagonalWork_mass_sum_le_one
+lemma unconditionalActualC485NormalizedDiagonalWork_mass_sum_le_one
     {S B N d L m : ℕ}
     (phases : 0 < B) (grid : 0 < N)
     (dimension : 0 < d) (harmonic : 0 < m)
@@ -63641,7 +63641,7 @@ open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
   Matrix.Norms.L2Operator InnerProductSpace
 
-theorem unconditionalActualSelectedBranchLocalAction_decidableEq_irrel
+lemma unconditionalActualSelectedBranchLocalAction_decidableEq_irrel
     {ι τ : Type*} [Fintype ι] [DecidableEq ι] [Fintype τ]
     (left right : DecidableEq τ)
     (U V : Matrix.unitaryGroup ι ℂ)
@@ -63654,7 +63654,7 @@ theorem unconditionalActualSelectedBranchLocalAction_decidableEq_irrel
   cases same
   rfl
 
-theorem unconditionalActualC485CanonicalCorrectedIdeal_generic
+lemma unconditionalActualC485CanonicalCorrectedIdeal_generic
     {S N d L B m : ℕ} {T : Type*}
     [Fintype T] [DecidableEq T]
     {width : Fin S → ℝ}
@@ -63700,7 +63700,7 @@ theorem unconditionalActualC485CanonicalCorrectedIdeal_generic
         (B := B) (m := m) grid dimension width schedule ξ ζ j
         positive rest).symm
 
-theorem unconditionalActualC485CanonicalVector_eq_correctedIdeal
+lemma unconditionalActualC485CanonicalVector_eq_correctedIdeal
     {S B N d L m : ℕ}
     {width : Fin S → ℝ}
     (schedule : Fin L → Fin S)
@@ -63748,7 +63748,7 @@ theorem unconditionalActualC485CanonicalVector_eq_correctedIdeal
   exact unconditionalActualSelectedBranchLocalAction_decidableEq_irrel
     _ _ _ _ _
 
-theorem unconditionalActualSelectedBranchLocalAction_norm
+lemma unconditionalActualSelectedBranchLocalAction_norm
     {ι τ : Type*} [Fintype ι] [DecidableEq ι]
     [Fintype τ] [DecidableEq τ]
     (U V : Matrix.unitaryGroup ι ℂ)
@@ -63770,7 +63770,7 @@ theorem unconditionalActualSelectedBranchLocalAction_norm
   change ‖toLp 2 (M.mulVec (ofLp z))‖ = ‖z‖
   nlinarith [norm_nonneg (toLp 2 (M.mulVec (ofLp z))), norm_nonneg z]
 
-theorem unconditionalActualSelectedBranchLocalAction_sub
+lemma unconditionalActualSelectedBranchLocalAction_sub
     {ι τ : Type*} [Fintype ι] [DecidableEq ι]
     [Fintype τ] [DecidableEq τ]
     (U V : Matrix.unitaryGroup ι ℂ)
@@ -63784,7 +63784,7 @@ theorem unconditionalActualSelectedBranchLocalAction_sub
   simp [unconditionalMixedConjugateSelectedBranchLocalAction,
     Matrix.mulVec, dotProduct, Finset.sum_sub_distrib, mul_sub]
 
-theorem unconditionalActualC485CleanDeviation_sq
+lemma unconditionalActualC485CleanDeviation_sq
     {S B N d L m : ℕ}
     (Q : ℕ) (width : Fin S → ℝ)
     (schedule : Fin L → Fin S)
@@ -63816,7 +63816,7 @@ theorem unconditionalActualC485CleanDeviation_sq
     (integratorActualCanonicalRetainedPhaseTail_norm
       phases grid dimension j)
 
-theorem unconditionalActualC485CleanDeviation_eq_hazard
+lemma unconditionalActualC485CleanDeviation_eq_hazard
     {S B N d L m : ℕ}
     (Q : ℕ) (width : Fin S → ℝ)
     (schedule : Fin L → Fin S)
@@ -63841,7 +63841,7 @@ theorem unconditionalActualC485CleanDeviation_eq_hazard
   simp_rw [
     dSVDensityRationalHeterogeneousStoppedCommonPrefixFailureVector_norm_sq]
 
-theorem unconditionalActualC485WeightedCleanDeviation_eq_hazard
+lemma unconditionalActualC485WeightedCleanDeviation_eq_hazard
     {ι : Type*} [Fintype ι]
     {S B N d L m : ℕ}
     (law : ι → ℝ)
@@ -63878,7 +63878,7 @@ open scoped BigOperators
 
 open QuantumParallelRepetition.ClassicalSampling
 
-theorem unconditionalFairMatchedFlag_history_eq
+lemma unconditionalFairMatchedFlag_history_eq
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {n : ℕ} (D : Finset (Fin n)) (denominator : ℕ)
@@ -63904,7 +63904,7 @@ theorem unconditionalFairMatchedFlag_history_eq
           D denominator numerator nonempty flag y) = true at matched
   exact of_decide_eq_true matched
 
-theorem unconditionalFairMatchedFlag_bobTarget_eq_aliceSample
+lemma unconditionalFairMatchedFlag_bobTarget_eq_aliceSample
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -63929,7 +63929,7 @@ theorem unconditionalFairMatchedFlag_bobTarget_eq_aliceSample
   simp only [exactSourceAliceSampleTuple]
   rw [same]
 
-theorem unconditionalFairMatchedFlag_aliceTarget_eq_aliceSample
+lemma unconditionalFairMatchedFlag_aliceTarget_eq_aliceSample
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -63956,7 +63956,7 @@ open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
   Matrix.Norms.L2Operator InnerProductSpace
 
-theorem unconditionalActualOneScaleDecodedMatchedCleanedVector
+lemma unconditionalActualOneScaleDecodedMatchedCleanedVector
     {F X Y : Type} {P N d L m : ℕ}
     (Q : ℕ) (width : Fin 1 → ℝ) (schedule : Fin L → Fin 1)
     (ξ : F → X → BipartiteUnitVector d)
@@ -64114,12 +64114,12 @@ def integratorActualC485WinningEffect
         G n S D b₀ P N m y) x y ⊗ₖ
       (1 : Matrix retained retained ℂ))
 
-theorem unconditionalActualFairSourceEmbezzlementOne_apply :
+lemma unconditionalActualFairSourceEmbezzlementOne_apply :
     embezzlementState 1 (0, 0) = 1 := by
   simp [embezzlementState, rawEmbezzlementState,
     EuclideanSpace.norm_eq, Fintype.sum_prod_type]
 
-theorem unconditionalActualFairSourceTensorEmbezzlementOne_reindex
+lemma unconditionalActualFairSourceTensorEmbezzlementOne_reindex
     {d : ℕ} (ξ : BipartiteUnitVector d) :
     LinearIsometryEquiv.piLpCongrLeft 2 ℂ ℂ
         (Equiv.prodCongr
@@ -64155,7 +64155,7 @@ theorem unconditionalActualFairSourceTensorEmbezzlementOne_reindex
   rw [first, second, first_work, second_work,
     unconditionalActualFairSourceEmbezzlementOne_apply, mul_one]
 
-theorem
+lemma
     unconditionalActualFairSourceConjugateTensorEmbezzlementOne_inverse_reindex
     {d : ℕ} (ξ : BipartiteUnitVector d) :
     LinearIsometryEquiv.piLpCongrLeft 2 ℂ ℂ
@@ -64180,7 +64180,7 @@ theorem
     (unconditionalActualFairSourceTensorEmbezzlementOne_reindex ξ)
   simpa [LinearIsometryEquiv.piLpCongrLeft_apply] using recovered.symm
 
-theorem unconditionalActualFairSourceWinningEffect_reindex
+lemma unconditionalActualFairSourceWinningEffect_reindex
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [decA : DecidableEq A] [decB : DecidableEq B]
@@ -64244,7 +64244,7 @@ def unconditionalActualFairSourceBaseWinningCLM
       (integratorActualC485SourceBobPOVM G n S D b₀ y)
       x y)
 
-theorem unconditionalActualFairSourceEOneReindexedGlobalWinningBorn
+lemma unconditionalActualFairSourceEOneReindexedGlobalWinningBorn
     {d : ℕ}
     (winning :
       Matrix (Fin (d * 1) × Fin (d * 1))
@@ -64284,7 +64284,7 @@ theorem unconditionalActualFairSourceEOneReindexedGlobalWinningBorn
             unconditionalActualFairSourceConjugateTensorEmbezzlementOne_inverse_reindex
               ξ
 
-theorem unconditionalActualFairSourceBaseSupportedBorn
+lemma unconditionalActualFairSourceBaseSupportedBorn
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -64365,7 +64365,7 @@ def unconditionalActualFairSourcePhaseHarmonicWork
     (unconditionalMatchedVerifierTensor
       (ePRState P) (embezzlementState k))
 
-theorem unconditionalActualFairSourcePhaseHarmonicWork_norm
+lemma unconditionalActualFairSourcePhaseHarmonicWork_norm
     {P k : ℕ} (phases : 0 < P) (harmonic : 0 < k) :
     ‖unconditionalActualFairSourcePhaseHarmonicWork P k‖ = 1 := by
   unfold unconditionalActualFairSourcePhaseHarmonicWork
@@ -64375,7 +64375,7 @@ theorem unconditionalActualFairSourcePhaseHarmonicWork_norm
     embezzlementState_norm k harmonic]
   norm_num
 
-theorem unconditionalActualFairSourcePhaseHarmonicStage_sourceProduct
+lemma unconditionalActualFairSourcePhaseHarmonicStage_sourceProduct
     {P N d m : ℕ}
     (ψ : EuclideanSpace ℂ (Fin d × Fin d)) :
     LinearIsometryEquiv.piLpCongrLeft 2 ℂ ℂ
@@ -64401,7 +64401,7 @@ theorem unconditionalActualFairSourcePhaseHarmonicStage_sourceProduct
     unconditionalActualFairSourcePhaseHarmonicWork,
     mul_assoc, mul_left_comm, mul_comm]
 
-theorem unconditionalActualFairSourceSelectedBorn_of_base
+lemma unconditionalActualFairSourceSelectedBorn_of_base
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -64475,7 +64475,7 @@ theorem unconditionalActualFairSourceSelectedBorn_of_base
         (unconditionalConjugatePureVector ψ) = value
   rw [work_unit, one_pow, one_mul, base_born]
 
-theorem unconditionalActualFairSourceOuterBorn_of_base
+lemma unconditionalActualFairSourceOuterBorn_of_base
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -64567,7 +64567,7 @@ theorem unconditionalActualFairSourceOuterBorn_of_base
     stage_unit]
   ring
 
-theorem unconditionalActualFairSourceSupportedBorn
+lemma unconditionalActualFairSourceSupportedBorn
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -64616,7 +64616,7 @@ open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
 attribute [local instance] Classical.propDecidable
 
-theorem unconditionalActualRetainedPOVM_ext
+lemma unconditionalActualRetainedPOVM_ext
     {C ι : Type*} [Fintype C] [Fintype ι] [DecidableEq ι]
     (P Q : POVM C ι)
     (same : ∀ (a : C) (i j : ι), P.effect a i j = Q.effect a i j) :
@@ -64633,7 +64633,7 @@ theorem unconditionalActualRetainedPOVM_ext
       cases effect
       rfl
 
-theorem unconditionalPhysicalOneScaleActualGlobalFiberPOVM_nested
+lemma unconditionalPhysicalOneScaleActualGlobalFiberPOVM_nested
     {C : Type*} [Fintype C]
     {P N d L m : ℕ} {R : Type}
     [Fintype R] [DecidableEq R]
@@ -64683,7 +64683,7 @@ theorem unconditionalPhysicalOneScaleActualGlobalFiberPOVM_nested
         physical8OneScaleActualGlobalFiberEquiv,
         Equiv.prodAssoc_apply, outer, inner, selected, retained]
 
-theorem unconditionalPhysicalOneScaleOriginalFlagPOVM_succ_nested
+lemma unconditionalPhysicalOneScaleOriginalFlagPOVM_succ_nested
     {C Z : Type*} [Fintype C] [DecidableEq C]
     {P N d L m : ℕ} {R : Type}
     [Fintype R] [DecidableEq R]
@@ -64719,7 +64719,7 @@ open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
 attribute [local instance] Classical.propDecidable
 
-theorem unconditionalSelectedGaugeRetainedPOVMNaturality_effect
+lemma unconditionalSelectedGaugeRetainedPOVMNaturality_effect
     {C : Type} [Fintype C]
     {P N d m : ℕ}
     (basis : Matrix.unitaryGroup (Fin d) ℂ)
@@ -64746,7 +64746,7 @@ theorem unconditionalSelectedGaugeRetainedPOVMNaturality_effect
       unconditionalMixedConjugateSigmaAtomLift_apply,
       mul_assoc, ite_and, phase, work, eq_comm]
 
-theorem unconditionalSelectedGaugeRetainedPOVMNaturality
+lemma unconditionalSelectedGaugeRetainedPOVMNaturality
     {C : Type} [Fintype C]
     {P N d m : ℕ}
     (basis : Matrix.unitaryGroup (Fin d) ℂ)
@@ -64777,7 +64777,7 @@ open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
 attribute [local instance] Classical.propDecidable
 
-theorem unconditionalActualFairSourceSelectedRetainedWinningEffectGauge
+lemma unconditionalActualFairSourceSelectedRetainedWinningEffectGauge
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {P N d m : ℕ}
@@ -64808,7 +64808,7 @@ theorem unconditionalActualFairSourceSelectedRetainedWinningEffectGauge
   simp_rw [unitaryConjugatePOVM_jointEffect]
   simp [Finset.mul_sum, Finset.sum_mul]
 
-theorem unconditionalActualFairSourceSelectedRetainedWinningBornGauge
+lemma unconditionalActualFairSourceSelectedRetainedWinningBornGauge
     {X Y A B τ : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype τ] [DecidableEq τ]
@@ -64904,7 +64904,7 @@ open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
 attribute [local instance] Classical.propDecidable
 
-theorem unconditionalActualC485RetainedPureWorkReindexBorn
+lemma unconditionalActualC485RetainedPureWorkReindexBorn
     {s t v : Type}
     [Fintype s] [DecidableEq s]
     [Fintype t] [DecidableEq t]
@@ -64951,7 +64951,7 @@ def unconditionalActualC485RetainedHistoryPairEquiv
     (N := N) (d := d)
     (R := UnconditionalActualCanonicalRetainedPhaseIndex 1 P) j
 
-theorem unconditionalActualC485FullBilateralWorkRegroup
+lemma unconditionalActualC485FullBilateralWorkRegroup
     {P N d L m : ℕ}
     (j : Fin L)
     (z : EuclideanSpace ℂ
@@ -64987,7 +64987,7 @@ open WithLp
 open scoped BigOperators ComplexOrder Kronecker MatrixOrder
   Matrix.Norms.L2Operator InnerProductSpace
 
-theorem unconditionalWeightedClippedMatchedVerifierAndMassLoss
+lemma unconditionalWeightedClippedMatchedVerifierAndMassLoss
     {I K : Type*} [Fintype I] [Fintype K]
     (weight : I → ℝ)
     (weight_nonnegative : ∀ i, 0 ≤ weight i)
@@ -65205,7 +65205,7 @@ open QuantumParallelRepetition.ClassicalSampling
 
 attribute [local instance] Classical.propDecidable
 
-theorem unconditionalFairPhysicalFlaggedStoppingTransfer
+lemma unconditionalFairPhysicalFlaggedStoppingTransfer
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -65545,7 +65545,7 @@ def unconditionalActualLocalPOVMLosingEffect
     if G.predicate x y a b = true then 0
     else PA.effect a ⊗ₖ PB.effect b
 
-theorem unconditionalActualLocalPOVMWinningEffect_posSemidef
+lemma unconditionalActualLocalPOVMWinningEffect_posSemidef
     {X Y A B s t : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype s] [Fintype t] [DecidableEq s] [DecidableEq t]
@@ -65564,7 +65564,7 @@ theorem unconditionalActualLocalPOVMWinningEffect_posSemidef
   · exact ((PA.positive a).kronecker (PB.positive b)).nonneg
   · exact le_rfl
 
-theorem unconditionalActualLocalPOVMLosingEffect_posSemidef
+lemma unconditionalActualLocalPOVMLosingEffect_posSemidef
     {X Y A B s t : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype s] [Fintype t] [DecidableEq s] [DecidableEq t]
@@ -65583,7 +65583,7 @@ theorem unconditionalActualLocalPOVMLosingEffect_posSemidef
   · exact le_rfl
   · exact ((PA.positive a).kronecker (PB.positive b)).nonneg
 
-theorem unconditionalActualLocalPOVMWinningEffect_add_losingEffect
+lemma unconditionalActualLocalPOVMWinningEffect_add_losingEffect
     {X Y A B s t : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype s] [Fintype t] [DecidableEq s] [DecidableEq t]
@@ -65618,7 +65618,7 @@ theorem unconditionalActualLocalPOVMWinningEffect_add_losingEffect
       rw [PA.complete, PB.complete]
       exact Matrix.one_kronecker_one
 
-theorem unconditionalActualLocalPOVMWinningEffect_complement_posSemidef
+lemma unconditionalActualLocalPOVMWinningEffect_complement_posSemidef
     {X Y A B s t : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype s] [Fintype t] [DecidableEq s] [DecidableEq t]
@@ -65647,7 +65647,7 @@ theorem unconditionalActualLocalPOVMWinningEffect_complement_posSemidef
   exact unconditionalActualLocalPOVMLosingEffect_posSemidef
     G PA PB x y
 
-theorem unconditionalActualFairSourceVerifier_isPositive
+lemma unconditionalActualFairSourceVerifier_isPositive
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -65667,7 +65667,7 @@ theorem unconditionalActualFairSourceVerifier_isPositive
     (integratorActualC485SelectedBobPOVM
       G n S D b₀ P N m y) x y
 
-theorem unconditionalActualFairSourceVerifier_complement_isPositive
+lemma unconditionalActualFairSourceVerifier_complement_isPositive
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -65687,7 +65687,7 @@ theorem unconditionalActualFairSourceVerifier_complement_isPositive
     (integratorActualC485SelectedBobPOVM
       G n S D b₀ P N m y) x y
 
-theorem unconditionalActualFairSourceVerifier_norm_le_one
+lemma unconditionalActualFairSourceVerifier_norm_le_one
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -65712,7 +65712,7 @@ theorem unconditionalActualFairSourceVerifier_norm_le_one
       (integratorActualC485SelectedBobPOVM
         G n S D b₀ P N m y) x y
 
-theorem unconditionalActualFairSourceVerifier_born_nonnegative
+lemma unconditionalActualFairSourceVerifier_born_nonnegative
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -65730,7 +65730,7 @@ theorem unconditionalActualFairSourceVerifier_born_nonnegative
     (unconditionalActualFairSourceVerifier_isPositive
       G n S D a₀ b₀ j x y) z
 
-theorem unconditionalActualFairSourceVerifier_born_le_mass
+lemma unconditionalActualFairSourceVerifier_born_le_mass
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -65748,7 +65748,7 @@ theorem unconditionalActualFairSourceVerifier_born_le_mass
     (unconditionalActualFairSourceVerifier_complement_isPositive
       G n S D a₀ b₀ j x y) z
 
-theorem unconditionalActualFairSourceVerifier_historyBorn_bounds
+lemma unconditionalActualFairSourceVerifier_historyBorn_bounds
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -65790,7 +65790,7 @@ theorem unconditionalActualFairSourceVerifier_historyBorn_bounds
           G n S D a₀ b₀ j h.2.1 h.2.2.1 (actual h j)
       _ ≤ 1 := actual_row_mass h
 
-theorem unconditionalActualFairSourceVerifier_historyBorn_nonnegative
+lemma unconditionalActualFairSourceVerifier_historyBorn_nonnegative
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -65816,7 +65816,7 @@ theorem unconditionalActualFairSourceVerifier_historyBorn_nonnegative
   (unconditionalActualFairSourceVerifier_historyBorn_bounds
     G n S D a₀ b₀ actual actual_row_mass h).1
 
-theorem unconditionalActualFairSourceVerifier_historyBorn_bounded
+lemma unconditionalActualFairSourceVerifier_historyBorn_bounded
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -65897,7 +65897,7 @@ def unconditionalActualC485FairSourceClipEnergy
             (unconditionalActualC485FairSourceDiagonalWork
               G n S D w N P schedule u j)‖ ^ 2
 
-theorem unconditionalActualC485FairSourceDiagonalWork_row
+lemma unconditionalActualC485FairSourceDiagonalWork_row
     {X Y A B : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -65921,7 +65921,7 @@ theorem unconditionalActualC485FairSourceDiagonalWork_row
     (unconditionalExactFairGammaUnit G n S D u)
     (exactGlobalHistoryFinPhi G n S D u.2.2.2 u.2.2.1)
 
-theorem unconditionalActualC485FairSourceClipEnergy_le
+lemma unconditionalActualC485FairSourceClipEnergy_le
     {X Y A B : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -65953,7 +65953,7 @@ theorem unconditionalActualC485FairSourceClipEnergy_le
     (fun u => unconditionalActualC485FairSourceDiagonalWork_row
       (m := m) G n S D width grid dimension phases harmonic schedule u)
 
-theorem unconditionalActualC485FairSourceClipEnergy_le_budget
+lemma unconditionalActualC485FairSourceClipEnergy_le_budget
     {X Y A B : Type*}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -65993,7 +65993,7 @@ open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
 attribute [local instance] Classical.propDecidable
 
-theorem unconditionalActualFairSelectedLocalAction_norm_sq
+lemma unconditionalActualFairSelectedLocalAction_norm_sq
     {ι τ : Type} [Fintype ι] [DecidableEq ι]
     [Fintype τ] [DecidableEq τ]
     (U V : Matrix.unitaryGroup ι ℂ)
@@ -66013,7 +66013,7 @@ theorem unconditionalActualFairSelectedLocalAction_norm_sq
   rw [rectangular_matrix_mulVec_norm_sq, gram]
   simp [quadraticExpectation, ← Complex.ofReal_pow]
 
-theorem unconditionalActualFairCleanedVector_norm_sq
+lemma unconditionalActualFairCleanedVector_norm_sq
     {S B N d L m : Nat}
     (phases : 0 < B) (grid : 0 < N)
     (dimension : 0 < d) (harmonic : 0 < m)
@@ -66042,7 +66042,7 @@ theorem unconditionalActualFairCleanedVector_norm_sq
     (integratorActualCanonicalRetainedPhaseTail_norm
       phases grid dimension j)
 
-theorem unconditionalActualFairCleanedRow_eq_stoppedSuccess
+lemma unconditionalActualFairCleanedRow_eq_stoppedSuccess
     {S B N d L m : Nat}
     (phases : 0 < B) (grid : 0 < N)
     (dimension : 0 < d) (harmonic : 0 < m)
@@ -66068,7 +66068,7 @@ theorem unconditionalActualFairCleanedRow_eq_stoppedSuccess
           dSVDensityRationalHeterogeneousPhysicalStageSuccess
             N width schedule ξ ζ k) L)
 
-theorem unconditionalActualFairCleanedRow_le_one
+lemma unconditionalActualFairCleanedRow_le_one
     {S B N d L m : Nat}
     (phases : 0 < B) (grid : 0 < N)
     (dimension : 0 < d) (harmonic : 0 < m)
@@ -66094,7 +66094,7 @@ theorem unconditionalActualFairCleanedRow_le_one
       N width schedule ξ ζ
   linarith
 
-theorem unconditionalActualFairWeightedCleanedMass_le_one
+lemma unconditionalActualFairWeightedCleanedMass_le_one
     {I : Type} [Fintype I]
     {S B N d L m : Nat}
     (weight : I → ℝ)
@@ -66123,7 +66123,7 @@ theorem unconditionalActualFairWeightedCleanedMass_le_one
         (weight_nonnegative h)
     _ = 1 := by simpa using weight_normalized
 
-theorem unconditionalActualFairWeightedStoppedSuccess
+lemma unconditionalActualFairWeightedStoppedSuccess
     {I : Type} [Fintype I]
     {S B N d L m : Nat}
     (weight : I → ℝ)
@@ -66191,7 +66191,7 @@ open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
 attribute [local instance] Classical.propDecidable
 
-theorem unconditionalActualFairCanonicalVector_norm_sq
+lemma unconditionalActualFairCanonicalVector_norm_sq
     {S B N d L m : ℕ}
     (phases : 0 < B) (grid : 0 < N) (harmonic : 0 < m)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -66213,7 +66213,7 @@ theorem unconditionalActualFairCanonicalVector_norm_sq
       (Nat.mul_pos grid harmonic)]
   ring
 
-theorem unconditionalActualFairCanonicalRow_le_one
+lemma unconditionalActualFairCanonicalRow_le_one
     {S B N d L m : ℕ}
     (phases : 0 < B) (grid : 0 < N)
     (dimension : 0 < d) (harmonic : 0 < m)
@@ -66241,7 +66241,7 @@ theorem unconditionalActualFairCanonicalRow_le_one
         (m := m) phases grid dimension harmonic
         width width_positive schedule ξ ζ
 
-theorem unconditionalActualFairWeightedCanonicalMass_le_one
+lemma unconditionalActualFairWeightedCanonicalMass_le_one
     {I : Type} [Fintype I]
     {S B N d L m : ℕ}
     (weight : I → ℝ)
@@ -66281,7 +66281,7 @@ open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
 attribute [local instance] Classical.propDecidable
 
-theorem unconditionalActualFairSourceVector_norm_sq
+lemma unconditionalActualFairSourceVector_norm_sq
     {S B N d L m : ℕ}
     (phases : 0 < B) (grid : 0 < N) (harmonic : 0 < m)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -66304,7 +66304,7 @@ theorem unconditionalActualFairSourceVector_norm_sq
       (Nat.mul_pos grid harmonic)]
   ring
 
-theorem unconditionalActualFairSourceCanonicalVector_norm_sq
+lemma unconditionalActualFairSourceCanonicalVector_norm_sq
     {S B N d L m : ℕ}
     (phases : 0 < B) (grid : 0 < N) (harmonic : 0 < m)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -66324,7 +66324,7 @@ theorem unconditionalActualFairSourceCanonicalVector_norm_sq
     unconditionalActualFairCanonicalVector_norm_sq
       phases grid harmonic width schedule ξ ζ j positive fine]
 
-theorem unconditionalActualFairSourceCanonicalVector_norm
+lemma unconditionalActualFairSourceCanonicalVector_norm
     {S B N d L m : ℕ}
     (phases : 0 < B) (grid : 0 < N) (harmonic : 0 < m)
     (width : Fin S → ℝ) (schedule : Fin L → Fin S)
@@ -66362,7 +66362,7 @@ open QuantumParallelRepetition.Pinsker
 
 attribute [local instance] Classical.propDecidable
 
-theorem unconditionalActualSourceSamplerBounds
+lemma unconditionalActualSourceSamplerBounds
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B)
@@ -66421,7 +66421,7 @@ noncomputable section
 open scoped BigOperators ComplexOrder Kronecker MatrixOrder
   Matrix.Norms.L2Operator InnerProductSpace
 
-theorem unconditionalSourcePhysicalSameGridWeightedStoppingLedger
+lemma unconditionalSourcePhysicalSameGridWeightedStoppingLedger
     {d N : ℕ} (dimension : 0 < d) (grid : 0 < N)
     (w δ : ℝ) (large : 1 ≤ w)
     (precision : 0 < δ) (bounded : δ ≤ 1)
@@ -66566,7 +66566,7 @@ end
 
 noncomputable section
 
-private theorem unconditionalSmallSource_eta_le_one
+private lemma unconditionalSmallSource_eta_le_one
     (eta alpha : ℝ)
     (eta_nonnegative : 0 ≤ eta)
     (alpha_positive : 0 < alpha)
@@ -66578,14 +66578,14 @@ private theorem unconditionalSmallSource_eta_le_one
   have root_square := Real.sq_sqrt eta_nonnegative
   nlinarith
 
-private theorem unconditionalSmallSource_eta_scaled_root
+private lemma unconditionalSmallSource_eta_scaled_root
     (eta : ℝ) (eta_nonnegative : 0 ≤ eta) :
     eta ^ (1 / 12 : ℝ) ≤ (32 * eta) ^ (1 / 12 : ℝ) := by
   apply Real.rpow_le_rpow eta_nonnegative
   · nlinarith
   · norm_num
 
-private theorem unconditionalSmallSource_root_estimates
+private lemma unconditionalSmallSource_root_estimates
     (eta alpha : ℝ)
     (eta_nonnegative : 0 ≤ eta)
     (alpha_positive : 0 < alpha)
@@ -66652,7 +66652,7 @@ private theorem unconditionalSmallSource_root_estimates
   exact ⟨root_nonnegative, eta_bound, delta_bound,
     delta_sq_bound, delta_sqrt_bound⟩
 
-private theorem unconditionalSmallSource_clipping_sqrt_le
+private lemma unconditionalSmallSource_clipping_sqrt_le
     (eta alpha clipping : ℝ)
     (eta_nonnegative : 0 ≤ eta)
     (alpha_positive : 0 < alpha)
@@ -66697,7 +66697,7 @@ private theorem unconditionalSmallSource_clipping_sqrt_le
     _ ≤ 4 * Real.sqrt eta + 4 * Real.sqrt δ := clip_sqrt_base
     _ ≤ 8 * R := by linarith [bounds.2.1, bounds.2.2.2.2]
 
-private theorem unconditionalSmallSource_deviation_sqrt_le
+private lemma unconditionalSmallSource_deviation_sqrt_le
     (eta alpha deviation : ℝ)
     (eta_nonnegative : 0 ≤ eta)
     (alpha_positive : 0 < alpha)
@@ -66747,7 +66747,7 @@ private theorem unconditionalSmallSource_deviation_sqrt_le
       dsimp [R]
       linarith
 
-theorem unconditionalSmallSourcePhysicalLoss
+lemma unconditionalSmallSourcePhysicalLoss
     (K eta alpha deviation clipping : ℝ)
     (constant :
       1024 + 8 *
@@ -66818,7 +66818,7 @@ theorem unconditionalSmallSourcePhysicalLoss
       apply mul_le_mul_of_nonneg_right _ R_nonnegative
       simpa [k] using constant
 
-theorem unconditionalSmallSourcePhysicalRoundedLower
+lemma unconditionalSmallSourcePhysicalRoundedLower
     (K eta alpha deviation clipping epsilon lam actual : ℝ)
     (constant :
       1024 + 8 *
@@ -66893,7 +66893,7 @@ noncomputable section
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem pdfGreedyCeilingHorizon_le
+lemma pdfGreedyCeilingHorizon_le
     (n : ℕ) (τ d : ℝ)
     (threshold : 0 < τ)
     (small : d ≤ τ / 2) :
@@ -66904,7 +66904,7 @@ theorem pdfGreedyCeilingHorizon_le
     (Nat.cast_nonneg n : (0 : ℝ) ≤ n)
   nlinarith
 
-theorem pdfGreedyCeilingHorizon_pow_le_exp
+lemma pdfGreedyCeilingHorizon_pow_le_exp
     (n : ℕ) (τ d : ℝ)
     (threshold : 0 < τ)
     (at_most_one : τ ≤ 1) :
@@ -66930,13 +66930,13 @@ theorem pdfGreedyCeilingHorizon_pow_le_exp
       ring
     _ ≤ Real.exp (-d * (n : ℝ)) := Real.exp_le_exp.mpr exponent
 
-theorem pdfGreedyCard_lt_of_ceil
+lemma pdfGreedyCard_lt_of_ceil
     (k n : ℕ) (τ d : ℝ)
     (below : k < ⌈d * (n : ℝ) / τ⌉₊) :
     (k : ℝ) < d * (n : ℝ) / τ :=
   Nat.lt_ceil.mp below
 
-theorem pdfQuantitativeGreedyConditioning
+lemma pdfQuantitativeGreedyConditioning
     (G : Game X Y A B) (n : ℕ)
     (S : Strategy (G.repeat n))
     (τ d θ : ℝ)
@@ -67007,13 +67007,13 @@ def pdfConditioningTolerance (ε : ℝ) : ℝ :=
 def pdfCatalystAccuracy (K ε : ℝ) : ℝ :=
   (ε / (16 * K)) ^ 12
 
-theorem pdfUniversalRate_pos
+lemma pdfUniversalRate_pos
     {B : ℝ} (positive : 0 < B) :
     0 < pdfUniversalRate B := by
   unfold pdfUniversalRate
   positivity
 
-theorem pdfGapRate_pos
+lemma pdfGapRate_pos
     {B ε ell : ℝ}
     (constant : 0 < B) (gap : 0 < ε) (alphabet : 0 ≤ ell) :
     0 < pdfGapRate B ε ell := by
@@ -67021,7 +67021,7 @@ theorem pdfGapRate_pos
   have universal := pdfUniversalRate_pos constant
   positivity
 
-theorem pdfGapRate_eq_scaled_twelfth_power
+lemma pdfGapRate_eq_scaled_twelfth_power
     {B ε ell : ℝ}
     (constant : 0 < B) (gap : 0 < ε) (alphabet : 0 ≤ ell) :
     pdfGapRate B ε ell =
@@ -67031,7 +67031,7 @@ theorem pdfGapRate_eq_scaled_twelfth_power
   unfold pdfGapRate pdfUniversalRate
   field_simp
 
-theorem pdfGapBase_le_gap
+lemma pdfGapBase_le_gap
     {B ε : ℝ}
     (constant : 1 ≤ B) (gap : 0 < ε) :
     0 < ε / (4 * B) ∧ ε / (4 * B) ≤ ε := by
@@ -67041,7 +67041,7 @@ theorem pdfGapBase_le_gap
   · apply (div_le_iff₀ denominator).2
     nlinarith
 
-theorem pdfGapBase_twelfth_le_gap
+lemma pdfGapBase_twelfth_le_gap
     {B ε : ℝ}
     (constant : 1 ≤ B) (gap : 0 < ε) (unit : ε ≤ 1) :
     (ε / (4 * B)) ^ 12 ≤ ε := by
@@ -67056,13 +67056,13 @@ theorem pdfGapBase_twelfth_le_gap
         (pow_le_one₀ gap.le unit) gap.le
     _ = ε := by ring
 
-theorem pdfGapBase_twelfth_le_one
+lemma pdfGapBase_twelfth_le_one
     {B ε : ℝ}
     (constant : 1 ≤ B) (gap : 0 < ε) (unit : ε ≤ 1) :
     (ε / (4 * B)) ^ 12 ≤ 1 :=
   (pdfGapBase_twelfth_le_gap constant gap unit).trans unit
 
-theorem pdfGapRate_le_gap_div_eight
+lemma pdfGapRate_le_gap_div_eight
     {B ε ell : ℝ}
     (constant : 1 ≤ B) (gap : 0 < ε)
     (unit : ε ≤ 1) (alphabet : 0 ≤ ell) :
@@ -67084,14 +67084,14 @@ theorem pdfGapRate_le_gap_div_eight
           gcongr
     _ = ε / 8 := by ring
 
-theorem pdfConditioningTolerance_bounds
+lemma pdfConditioningTolerance_bounds
     {ε : ℝ} (gap : 0 < ε) (unit : ε ≤ 1) :
     0 < pdfConditioningTolerance ε ∧
       pdfConditioningTolerance ε ≤ 1 / 4 := by
   unfold pdfConditioningTolerance
   constructor <;> nlinarith
 
-theorem pdfGapRate_le_half_conditioningTolerance
+lemma pdfGapRate_le_half_conditioningTolerance
     {B ε ell : ℝ}
     (constant : 1 ≤ B) (gap : 0 < ε)
     (unit : ε ≤ 1) (alphabet : 0 ≤ ell) :
@@ -67105,7 +67105,7 @@ theorem pdfGapRate_le_half_conditioningTolerance
       unfold pdfConditioningTolerance
       ring
 
-theorem pdfGapRate_entropy_factor
+lemma pdfGapRate_entropy_factor
     {B ε ell : ℝ}
     (constant : 0 < B) (gap : 0 < ε) (alphabet : 0 ≤ ell) :
     2 * pdfGapRate B ε ell * (1 + 4 * ell / ε) =
@@ -67119,14 +67119,14 @@ theorem pdfGapRate_entropy_factor
   field_simp
   ring
 
-theorem pdfAlphabetEntropyFactor_le_one
+lemma pdfAlphabetEntropyFactor_le_one
     {ε ell : ℝ} (gap : 0 < ε) (alphabet : 0 ≤ ell) :
     (ε + 4 * ell) / (4 * (ε + ell)) ≤ 1 := by
   have denominator : 0 < 4 * (ε + ell) := by positivity
   apply (div_le_iff₀ denominator).2
   nlinarith
 
-theorem pdfGapRate_entropy_le_twelfth_power
+lemma pdfGapRate_entropy_le_twelfth_power
     {B ε ell : ℝ}
     (constant : 1 ≤ B) (gap : 0 < ε) (alphabet : 0 ≤ ell) :
     2 * pdfGapRate B ε ell * (1 + 4 * ell / ε) ≤
@@ -67143,7 +67143,7 @@ theorem pdfGapRate_entropy_le_twelfth_power
             nonnegative
     _ = _ := by ring
 
-theorem pdfCatalystAccuracy_bounds
+lemma pdfCatalystAccuracy_bounds
     {K ε : ℝ}
     (constant : 1 ≤ K) (gap : 0 < ε) (unit : ε ≤ 1) :
     0 < pdfCatalystAccuracy K ε ∧
@@ -67156,7 +67156,7 @@ theorem pdfCatalystAccuracy_bounds
   unfold pdfCatalystAccuracy
   exact ⟨pow_pos ratio 12, pow_le_one₀ ratio.le bounded⟩
 
-theorem pdfQuantitativeEntropyRate_lt
+lemma pdfQuantitativeEntropyRate_lt
     {n m k : ℕ} {t d τ ell : ℝ}
     (length : 0 < n) (rate : 0 < d) (tolerance : 0 < τ)
     (alphabet : 0 ≤ ell)
@@ -67186,7 +67186,7 @@ theorem pdfQuantitativeEntropyRate_lt
   have scaled := mul_lt_mul_of_pos_left horizon factor
   nlinarith
 
-theorem pdfQuantitativeEntropyRate_lt_twelfth_power
+lemma pdfQuantitativeEntropyRate_lt_twelfth_power
     {B ε ell : ℝ} {n m k : ℕ} {t : ℝ}
     (constant : 1 ≤ B) (gap : 0 < ε)
     (unit : ε ≤ 1) (alphabet : 0 ≤ ell)
@@ -67219,7 +67219,7 @@ theorem pdfQuantitativeEntropyRate_lt_twelfth_power
     (pdfGapRate_entropy_le_twelfth_power
       constant gap alphabet)
 
-theorem pdfCatalystAccuracy_twelfth_root
+lemma pdfCatalystAccuracy_twelfth_root
     {K ε : ℝ} (constant : 1 ≤ K) (gap : 0 < ε) :
     (pdfCatalystAccuracy K ε) ^ (1 / 12 : ℝ) =
       ε / (16 * K) := by
@@ -67229,7 +67229,7 @@ theorem pdfCatalystAccuracy_twelfth_root
   simpa [one_div] using
     (Real.pow_rpow_inv_natCast base (by norm_num : (12 : ℕ) ≠ 0))
 
-theorem pdfGapBase_twelfth_root
+lemma pdfGapBase_twelfth_root
     {B ε : ℝ} (constant : 1 ≤ B) (gap : 0 < ε) :
     ((ε / (4 * B)) ^ (12 : ℕ)) ^ (1 / 12 : ℝ) =
       ε / (4 * B) := by
@@ -67238,7 +67238,7 @@ theorem pdfGapBase_twelfth_root
   simpa [one_div] using
     (Real.pow_rpow_inv_natCast base (by norm_num : (12 : ℕ) ≠ 0))
 
-theorem pdfEntropyRoot_lt_gapBase
+lemma pdfEntropyRoot_lt_gapBase
     {B ε η : ℝ}
     (constant : 1 ≤ B) (gap : 0 < ε)
     (entropy : 0 ≤ η)
@@ -67251,7 +67251,7 @@ theorem pdfEntropyRoot_lt_gapBase
     _ = ε / (4 * B) :=
       pdfGapBase_twelfth_root constant gap
 
-theorem pdfEntropyRoundingLoss_lt_gapQuarter
+lemma pdfEntropyRoundingLoss_lt_gapQuarter
     {B ε η : ℝ}
     (constant : 1 ≤ B) (gap : 0 < ε)
     (entropy : 0 ≤ η)
@@ -67266,7 +67266,7 @@ theorem pdfEntropyRoundingLoss_lt_gapQuarter
     _ = ε / 4 := by
       field_simp
 
-theorem pdfCatalystAccuracy_samplingLoss
+lemma pdfCatalystAccuracy_samplingLoss
     {K ε : ℝ} (constant : 1 ≤ K) (gap : 0 < ε) :
     2 * K * (pdfCatalystAccuracy K ε) ^ (1 / 12 : ℝ) =
       ε / 8 := by
@@ -67287,14 +67287,14 @@ def pdfRoundingCoefficient (K : ℝ) : ℝ :=
     2 * K * (32 : ℝ) ^ (1 / 12 : ℝ) +
     2 * Real.sqrt 8
 
-theorem pdfUniversalErrorCeiling_pos
+lemma pdfUniversalErrorCeiling_pos
     {K : ℝ} (constant : 1 ≤ K) :
     0 < universalErrorCeiling K := by
   have nonnegative : 0 ≤ K := by linarith
   unfold universalErrorCeiling
   positivity
 
-theorem pdfRoundingCoefficient_two_le
+lemma pdfRoundingCoefficient_two_le
     {K : ℝ} (constant : 1 ≤ K) :
     2 ≤ pdfRoundingCoefficient K := by
   have nonnegative : 0 ≤ K := by linarith
@@ -67310,7 +67310,7 @@ theorem pdfRoundingCoefficient_two_le
   unfold pdfRoundingCoefficient
   nlinarith
 
-theorem pdfRoundingCoefficient_one_le
+lemma pdfRoundingCoefficient_one_le
     {K : ℝ} (constant : 1 ≤ K) :
     1 ≤ pdfRoundingCoefficient K := by
   have lower := pdfRoundingCoefficient_two_le constant
@@ -67320,14 +67320,14 @@ end
 
 noncomputable section
 
-theorem pdfSqrt_le_twelfthRoot
+lemma pdfSqrt_le_twelfthRoot
     {eta : ℝ} (nonnegative : 0 ≤ eta) (bounded : eta ≤ 1) :
     Real.sqrt eta ≤ eta ^ (1 / 12 : ℝ) := by
   rw [Real.sqrt_eq_rpow]
   exact Real.rpow_le_rpow_of_exponent_ge'
     nonnegative bounded (by norm_num) (by norm_num)
 
-theorem pdfPinskerRoot_le_twelfthRoot
+lemma pdfPinskerRoot_le_twelfthRoot
     {eta kappa : ℝ}
     (nonnegative : 0 ≤ eta)
     (bounded : eta ≤ 1)
@@ -67342,7 +67342,7 @@ theorem pdfPinskerRoot_le_twelfthRoot
         (pdfSqrt_le_twelfthRoot nonnegative bounded)
         (Real.sqrt_nonneg _)
 
-theorem pdfSqrtEight_le_twelfthRoot
+lemma pdfSqrtEight_le_twelfthRoot
     {eta : ℝ} (nonnegative : 0 ≤ eta) (bounded : eta ≤ 1) :
     Real.sqrt (8 * eta) ≤
       Real.sqrt (8 : ℝ) * eta ^ (1 / 12 : ℝ) := by
@@ -67355,7 +67355,7 @@ theorem pdfSqrtEight_le_twelfthRoot
         (pdfSqrt_le_twelfthRoot nonnegative bounded)
         (Real.sqrt_nonneg _)
 
-theorem pdfQuantitativeRoundingLoss
+lemma pdfQuantitativeRoundingLoss
     {K alpha eta kappa gamma : ℝ}
     (constant : 0 ≤ K)
     (nonnegative : 0 ≤ eta)
@@ -67420,7 +67420,7 @@ noncomputable section
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem pdfExistsRepeatedStrategyAboveExponential
+lemma pdfExistsRepeatedStrategyAboveExponential
     (G : Game X Y A B) (n : ℕ) (d : ℝ)
     (failure : Real.exp (-d * (n : ℝ)) < repeatedEntangledValue G n) :
     ∃ S : Strategy (G.repeat n),
@@ -67428,7 +67428,7 @@ theorem pdfExistsRepeatedStrategyAboveExponential
   exists_repeatedStrategy_of_lt_entangledValue
     G (Real.exp_pos _) failure
 
-theorem pdfFixedExponentialBound_of_sourceEquationTwentyNine
+lemma pdfFixedExponentialBound_of_sourceEquationTwentyNine
     (G : Game X Y A B) (n : ℕ) (d : ℝ)
     (construct :
       ∀ S : Strategy (G.repeat n),
@@ -67459,7 +67459,7 @@ open scoped BigOperators
 variable {X Y A B : Type*}
 variable [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
 
-theorem entangledValue_eq_zero_of_strategyWinProbability_eq_zero
+lemma entangledValue_eq_zero_of_strategyWinProbability_eq_zero
     (G : Game X Y A B)
     (hzero : ∀ S : Strategy G, S.winProbability = 0) :
     entangledValue G = 0 := by
@@ -67512,7 +67512,7 @@ def pdfConstantStrategy
       aliceMeasurement := fun _ => pdfConstantPOVM a
       bobMeasurement := fun _ => pdfConstantPOVM b }
 
-theorem pdfConstantStrategy_outcomeProbability
+lemma pdfConstantStrategy_outcomeProbability
     (G : Game X Y A B) (a : A) (b : B)
     (x : X) (y : Y) (a' : A) (b' : B) :
     (pdfConstantStrategy G a b).outcomeProbability x y a' b' =
@@ -67526,7 +67526,7 @@ theorem pdfConstantStrategy_outcomeProbability
   by_cases alice : a' = a <;> by_cases bob : b' = b <;>
     simp [alice, bob, Matrix.trace_one]
 
-theorem pdfConstantStrategy_winProbability
+lemma pdfConstantStrategy_winProbability
     (G : Game X Y A B) (a : A) (b : B) :
     (pdfConstantStrategy G a b).winProbability =
       ∑ x : X, ∑ y : Y,
@@ -67548,7 +67548,7 @@ theorem pdfConstantStrategy_winProbability
   simp_rw [accepted_outcome]
   simp [mul_ite]
 
-theorem pdfQuestionWeight_le_constantStrategy
+lemma pdfQuestionWeight_le_constantStrategy
     (G : Game X Y A B)
     (x : X) (y : Y) (a : A) (b : B)
     (accepted : G.predicate x y a b = true) :
@@ -67576,7 +67576,7 @@ theorem pdfQuestionWeight_le_constantStrategy
               (fun y' _ => by split_ifs <;> simp [G.weight_nonneg]))
             (Finset.mem_univ x)
 
-theorem pdfPredicate_not_accepted_of_entangledValue_eq_zero
+lemma pdfPredicate_not_accepted_of_entangledValue_eq_zero
     (G : Game X Y A B)
     (zero : entangledValue G = 0)
     (x : X) (y : Y) (a : A) (b : B)
@@ -67593,7 +67593,7 @@ theorem pdfPredicate_not_accepted_of_entangledValue_eq_zero
       ⟨pdfConstantStrategy G a b, rfl⟩
   linarith
 
-theorem pdfRepeatedEntangledValue_eq_zero_of_entangledValue_eq_zero
+lemma pdfRepeatedEntangledValue_eq_zero_of_entangledValue_eq_zero
     (G : Game X Y A B)
     (zero : entangledValue G = 0)
     {n : ℕ} (positive : 0 < n) :
@@ -67629,7 +67629,7 @@ end
 
 noncomputable section
 
-theorem pdfAlphabetEntropy_nonneg
+lemma pdfAlphabetEntropy_nonneg
     {A B : Type} [Fintype A] [Fintype B]
     (alice : Nonempty A) (bob : Nonempty B) :
     0 ≤ Real.log
@@ -67646,7 +67646,7 @@ theorem pdfAlphabetEntropy_nonneg
   nlinarith [mul_nonneg (sub_nonneg.mpr alice_real)
     (sub_nonneg.mpr bob_real)]
 
-theorem pdfGap_le_one
+lemma pdfGap_le_one
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) :
@@ -67654,7 +67654,7 @@ theorem pdfGap_le_one
   have nonnegative := entangledValue_nonneg G
   linarith
 
-theorem pdfPostselectionLogCost_lt_of_exponential
+lemma pdfPostselectionLogCost_lt_of_exponential
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ)
@@ -67669,7 +67669,7 @@ theorem pdfPostselectionLogCost_lt_of_exponential
   rw [one_div, Real.log_inv]
   linarith
 
-theorem pdfPinskerRate_le_sqrt_martingaleRate
+lemma pdfPinskerRate_le_sqrt_martingaleRate
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ)
@@ -67684,7 +67684,7 @@ theorem pdfPinskerRate_le_sqrt_martingaleRate
       G n S D positive
   nlinarith
 
-theorem pdfActualMartingaleRate_lt_twelfth_power
+lemma pdfActualMartingaleRate_lt_twelfth_power
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ)
@@ -67716,7 +67716,7 @@ theorem pdfActualMartingaleRate_lt_twelfth_power
   simpa [martingaleRate, answerLogCost, alphabet_eq]
     using actual
 
-theorem pdfFullQuantitativeSamplingLoss
+lemma pdfFullQuantitativeSamplingLoss
     {K ε eta kappa : ℝ}
     (constant : 1 ≤ K)
     (gap : 0 < ε)
@@ -67758,7 +67758,7 @@ theorem pdfFullQuantitativeSamplingLoss
     field_simp
   linarith
 
-theorem pdf_distributionUniformExponential_of_uniform_source_rounding
+lemma pdf_distributionUniformExponential_of_uniform_source_rounding
     (rounding :
       ∃ K : ℝ, 1 ≤ K ∧
         ∀ {X Y A B : Type}
@@ -67922,13 +67922,13 @@ def unconditionalSourcePhysicalRoundingUniversalConstant : ℝ :=
     (4 * Real.sqrt
       (34 + unconditionalPrefactorBucketCoefficient) + 2)
 
-theorem unconditionalSourcePhysicalRoundingUniversalConstant_ge :
+lemma unconditionalSourcePhysicalRoundingUniversalConstant_ge :
     128 ≤ unconditionalSourcePhysicalRoundingUniversalConstant := by
   unfold unconditionalSourcePhysicalRoundingUniversalConstant
   nlinarith [Real.sqrt_nonneg
     (34 + unconditionalPrefactorBucketCoefficient)]
 
-theorem unconditionalSourcePhysicalRounding_exists_sourceSampler
+lemma unconditionalSourcePhysicalRounding_exists_sourceSampler
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B)
@@ -67972,7 +67972,7 @@ theorem unconditionalSourcePhysicalRounding_exists_sourceSampler
     unconditionalActualSourceSamplerBounds
       G n S D remaining positive base gamma gamma_positive⟩
 
-theorem unconditionalSourcePhysicalRounding_fairTargetEnergy
+lemma unconditionalSourcePhysicalRounding_fairTargetEnergy
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B)
@@ -67993,7 +67993,7 @@ theorem unconditionalSourcePhysicalRounding_fairTargetEnergy
     (exactSourceEquationTwentyOne_of_fifteen
       G n S D positive (martingaleRate G n S D) distance)
 
-theorem unconditionalSourcePhysicalRounding_exists_fairStoppingHazard
+lemma unconditionalSourcePhysicalRounding_exists_fairStoppingHazard
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B)
@@ -68144,7 +68144,7 @@ theorem unconditionalSourcePhysicalRounding_exists_fairStoppingHazard
     simpa only [unconditionalPrefactorBucketCoefficient]
       using hazard
 
-theorem unconditionalSourcePhysicalRounding_largeVerifierBound
+lemma unconditionalSourcePhysicalRounding_largeVerifierBound
     (K eta alpha lam epsilon : ℝ)
     (constant : 128 ≤ K)
     (eta_nonnegative : 0 ≤ eta)
@@ -68195,7 +68195,7 @@ theorem unconditionalSourcePhysicalRounding_largeVerifierBound
   unfold roundedWinningLowerBound totalSamplingLoss
   nlinarith
 
-theorem unconditionalSourcePhysicalRounding_exists_large
+lemma unconditionalSourcePhysicalRounding_exists_large
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B)
@@ -68239,7 +68239,7 @@ theorem unconditionalSourcePhysicalRounding_exists_large
       (by linarith) epsilon_nonnegative large
   exact source_bound.trans rounded.winProbability_nonneg
 
-theorem unconditionalSourcePhysicalRounding_smallRoundedLower
+lemma unconditionalSourcePhysicalRounding_smallRoundedLower
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B)
@@ -68305,7 +68305,7 @@ theorem unconditionalSourcePhysicalRounding_smallRoundedLower
     linarith
   · exact actual_original_verifier
 
-theorem
+lemma
     unconditionalSourcePhysicalRounding_smallRoundedLower_of_stoppedVerifier
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
@@ -68357,7 +68357,7 @@ theorem
   nlinarith [Real.sqrt_nonneg clipping,
     Real.sqrt_nonneg (8 * martingaleRate G n S D)]
 
-theorem unconditionalSourceOneGameRounding_uniform_of_small
+lemma unconditionalSourceOneGameRounding_uniform_of_small
     (small_rounding :
       ∀ {X Y A B : Type}
         [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
@@ -68424,7 +68424,7 @@ open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
   Matrix.Norms.L2Operator InnerProductSpace
 
-theorem unconditionalActualC485GenericRetainedWinningBorn
+lemma unconditionalActualC485GenericRetainedWinningBorn
     {X Y A B s t u v ι κ : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [Fintype s] [Fintype t] [Fintype u] [Fintype v]
@@ -68451,7 +68451,7 @@ theorem unconditionalActualC485GenericRetainedWinningBorn
   rw [directDSVActualReindexedRetainedPOVMWinningEffect,
     directDSVActualReindexedWinningEffect_quadratic]
 
-theorem unconditionalActualC485GenericSelectedWinningRegroupGauge
+lemma unconditionalActualC485GenericSelectedWinningRegroupGauge
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {P N d m : ℕ} {ι κ R T : Type}
@@ -68567,7 +68567,7 @@ theorem unconditionalActualC485GenericSelectedWinningRegroupGauge
           (LinearIsometryEquiv.piLpCongrLeft 2 ℂ ℂ
             (directDSVActualBilateralRetainedIndexEquiv eA eB) z))
 
-theorem unconditionalActualC485GenericDecodedWinningBorn
+lemma unconditionalActualC485GenericDecodedWinningBorn
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {P N d m : ℕ} {ι κ R T : Type}
@@ -68625,7 +68625,7 @@ theorem unconditionalActualC485GenericDecodedWinningBorn
   rw [decoded] at physical
   exact physical.symm
 
-theorem unconditionalActualC485SourceSelectedDecodedWinningBorn
+lemma unconditionalActualC485SourceSelectedDecodedWinningBorn
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {P N d m : ℕ} {ι κ R T : Type}
@@ -68694,7 +68694,7 @@ theorem unconditionalActualC485SourceSelectedDecodedWinningBorn
     unconditionalActualC485GenericDecodedWinningBorn
       G alice bob PA PB eA eB pair x y z actual decoded
 
-theorem unconditionalActualC485CompleteDecodedPhysicalBorn
+lemma unconditionalActualC485CompleteDecodedPhysicalBorn
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {P N d m : ℕ} {ι κ R T : Type}
@@ -68971,7 +68971,7 @@ def unconditionalActualFairSourceBobStoppingUnitary
         G n S D denominator numerator nonempty)
       cleanup
 
-theorem unconditionalActualFairSourceAliceFlagPOVM_succ_nested
+lemma unconditionalActualFairSourceAliceFlagPOVM_succ_nested
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [decA : DecidableEq A]
@@ -69043,7 +69043,7 @@ theorem unconditionalActualFairSourceAliceFlagPOVM_succ_nested
           (integratorActualC485SourceAlicePOVM
             G n S D a₀ q)) j x
 
-theorem unconditionalActualFairSourceBobFlagPOVM_succ_nested
+lemma unconditionalActualFairSourceBobFlagPOVM_succ_nested
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [decB : DecidableEq B]
@@ -69123,7 +69123,7 @@ open WithLp
 open scoped BigOperators Kronecker ComplexOrder MatrixOrder
   Matrix.Norms.L2Operator InnerProductSpace
 
-theorem unconditionalActualPairedDecodedMatchedCleanedVector
+lemma unconditionalActualPairedDecodedMatchedCleanedVector
     {F X Y : Type} {P N d L m : ℕ}
     (Q : ℕ) (width : Fin 1 → ℝ) (schedule : Fin L → Fin 1)
     (ξ : F → X → BipartiteUnitVector d)
@@ -69204,7 +69204,7 @@ def unconditionalActualC485RawPhysicalVerifierBorn
     (Matrix.toEuclideanCLM (n := ι × κ) (𝕜 := ℂ)
       (directDSVActualLocalPOVMWinningEffect G PA PB x y)) z
 
-theorem unconditionalActualC485CompleteDecodedScalarBorn
+lemma unconditionalActualC485CompleteDecodedScalarBorn
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {P N d m : ℕ} {ι κ R T : Type}
@@ -69331,7 +69331,7 @@ def unconditionalActualFairSourcePhysicalStopBorn
           (unconditionalSourcePhysicalCleanedStoppingFixedSource
             1 P N d L m)) j.succ j.succ)
 
-theorem unconditionalActualFairSourceHistoryStopBorn_eq_selected
+lemma unconditionalActualFairSourceHistoryStopBorn_eq_selected
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -69363,7 +69363,7 @@ theorem unconditionalActualFairSourceHistoryStopBorn_eq_selected
   classical
   rfl
 
-theorem unconditionalActualFairSourcePhysicalStopBorn_eq_raw
+lemma unconditionalActualFairSourcePhysicalStopBorn_eq_raw
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [DecidableEq A] [DecidableEq B]
@@ -69406,7 +69406,7 @@ theorem unconditionalActualFairSourcePhysicalStopBorn_eq_raw
   dsimp only
   rfl
 
-theorem unconditionalActualFairSourceMatchedHistoryGamma
+lemma unconditionalActualFairSourceMatchedHistoryGamma
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -69427,7 +69427,7 @@ theorem unconditionalActualFairSourceMatchedHistoryGamma
     (unconditionalFairMatchedFlag_aliceTarget_eq_aliceSample
       G n S D denominator numerator nonempty flag x y).symm
 
-theorem unconditionalActualFairSourceMatchedHistoryPhi
+lemma unconditionalActualFairSourceMatchedHistoryPhi
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -69450,7 +69450,7 @@ theorem unconditionalActualFairSourceMatchedHistoryPhi
     (unconditionalFairMatchedFlag_bobTarget_eq_aliceSample
       G n S D denominator numerator nonempty flag x y matching).symm
 
-theorem unconditionalActualFairSourceMatchedHistoryCleanedVector
+lemma unconditionalActualFairSourceMatchedHistoryCleanedVector
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -69503,7 +69503,7 @@ theorem unconditionalActualFairSourceMatchedHistoryCleanedVector
     (unconditionalActualFairSourceMatchedHistoryPhi
       G n S D denominator numerator nonempty flag x y matching)
 
-theorem unconditionalActualFairSourcePhysicalStopBornWitness
+lemma unconditionalActualFairSourcePhysicalStopBornWitness
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [DecidableEq A] [DecidableEq B]
@@ -69674,7 +69674,7 @@ theorem unconditionalActualFairSourcePhysicalStopBornWitness
         G n S D denominator numerator nonempty a₀ b₀
         Q width schedule UA UB flag x y j := raw_born.symm
 
-theorem unconditionalActualFairSourcePhysicalBranchWitness
+lemma unconditionalActualFairSourcePhysicalBranchWitness
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     [DecidableEq A] [DecidableEq B]
@@ -69759,7 +69759,7 @@ structure UnconditionalActualFairSourceSamplerData
         then 0 else 1) ≤
       4 * (exactSourcePinskerRate G n S D + gamma)
 
-theorem unconditionalActualFairSourceSamplerData_of_positive
+lemma unconditionalActualFairSourceSamplerData_of_positive
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -69846,7 +69846,7 @@ structure UnconditionalActualFairSourceStoppingHazardData
               (64 * Real.sqrt (martingaleRate G n S D) +
                 alpha ^ (1 / 3 : ℝ))
 
-theorem unconditionalActualFairSourceStoppingHazardData_of_positive
+lemma unconditionalActualFairSourceStoppingHazardData_of_positive
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -69955,7 +69955,7 @@ structure UnconditionalActualFairCachedSourceVerifierLedger
       (∑ j : K,
         quadraticExpectation (effect (h, j)) (actual (h, j))) ≤ 1
 
-theorem unconditionalActualFairCachedLedgerStoppingTransfer
+lemma unconditionalActualFairCachedLedgerStoppingTransfer
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) (n : ℕ) (S : Strategy (G.repeat n))
@@ -70147,7 +70147,7 @@ def d (_c : UnconditionalActualFairSourceRoundingContext
     G n S D alpha gamma) : ℕ :=
   Fintype.card (ExactGlobalHistoryLocalIndex G n S D)
 
-theorem dimension_pos
+lemma dimension_pos
     (c : UnconditionalActualFairSourceRoundingContext
       G n S D alpha gamma) : 0 < d c :=
   exactGlobalHistoryLocalIndex_card_pos G n S D
@@ -70162,18 +70162,18 @@ def schedule
       G n S D alpha gamma) : Fin c.stopping.L → Fin 1 :=
   fun _ => 0
 
-theorem width_positive
+lemma width_positive
     (c : UnconditionalActualFairSourceRoundingContext
       G n S D alpha gamma) : 0 < c.stopping.w := by
   linarith [c.stopping.width_large]
 
-theorem width_all
+lemma width_all
     (c : UnconditionalActualFairSourceRoundingContext
       G n S D alpha gamma) : ∀ s : Fin 1, 0 < width c s := by
   intro s
   exact width_positive c
 
-theorem fine_all
+lemma fine_all
     (c : UnconditionalActualFairSourceRoundingContext
       G n S D alpha gamma) :
     ∀ s : Fin 1,
@@ -70250,7 +70250,7 @@ def source
     (width c) (schedule c)
     (gammaVector c p.1) (phiVector c p.1) (psiVector c p.1) p.2
 
-theorem answerNonempty
+lemma answerNonempty
     (c : UnconditionalActualFairSourceRoundingContext
       G n S D alpha gamma) : Nonempty A ∧ Nonempty B :=
   exactSourceAnswerTypes_nonempty_of_remaining
@@ -70361,7 +70361,7 @@ def prepared
     1 c.stopping.P c.stopping.N (d c)
     c.stopping.L c.stopping.m
 
-theorem prepared_normalized
+lemma prepared_normalized
     (c : UnconditionalActualFairSourceRoundingContext
       G n S D alpha gamma) :
     ∀ f : flag c, ‖prepared c f‖ = 1 := by
@@ -70395,7 +70395,7 @@ open UnconditionalActualFairSourceRoundingContext
 
 attribute [local instance] Classical.propDecidable
 
-theorem unconditionalActualFairSourceRoundingContext_actualRow
+lemma unconditionalActualFairSourceRoundingContext_actualRow
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {G : Game X Y A B} {n : ℕ} {S : Strategy (G.repeat n)}
@@ -70410,7 +70410,7 @@ theorem unconditionalActualFairSourceRoundingContext_actualRow
     (gammaVector c h) (phiVector c h)
     c.stopping.Q c.stopping.UA c.stopping.UB
 
-theorem unconditionalActualFairSourceRoundingContext_clippingBound
+lemma unconditionalActualFairSourceRoundingContext_clippingBound
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {G : Game X Y A B} {n : ℕ} {S : Strategy (G.repeat n)}
@@ -70427,7 +70427,7 @@ theorem unconditionalActualFairSourceRoundingContext_clippingBound
     c.stopping.fine c.stopping.phases c.stopping.harmonic
     (schedule c) c.stopping.scalar
 
-theorem unconditionalActualFairSourceRoundingContext_cleanBound
+lemma unconditionalActualFairSourceRoundingContext_cleanBound
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {G : Game X Y A B} {n : ℕ} {S : Strategy (G.repeat n)}
@@ -70493,7 +70493,7 @@ theorem unconditionalActualFairSourceRoundingContext_cleanBound
           simpa only [deviation, actual, canonical] using identification
     _ ≤ _ := fair_hazard
 
-theorem unconditionalActualFairSourceRoundingContext_analyticLedger
+lemma unconditionalActualFairSourceRoundingContext_analyticLedger
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {G : Game X Y A B} {n : ℕ} {S : Strategy (G.repeat n)}
@@ -70616,7 +70616,7 @@ open QuantumParallelRepetition.ClassicalSampling
 
 attribute [local instance] Classical.propDecidable
 
-theorem unconditionalActualFairSourceRoundingContext_verifierLedger
+lemma unconditionalActualFairSourceRoundingContext_verifierLedger
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {G : Game X Y A B} {n : ℕ} {S : Strategy (G.repeat n)}
@@ -70672,7 +70672,7 @@ theorem unconditionalActualFairSourceRoundingContext_verifierLedger
       (fun h j => c.actual (h, j))
       (unconditionalActualFairSourceRoundingContext_actualRow c) h
 
-theorem unconditionalActualFairSourceRoundingContext_physicalBranch
+lemma unconditionalActualFairSourceRoundingContext_physicalBranch
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {G : Game X Y A B} {n : ℕ} {S : Strategy (G.repeat n)}
@@ -70728,7 +70728,7 @@ theorem unconditionalActualFairSourceRoundingContext_physicalBranch
     c.stopping.Q c.width c.schedule c.stopping.UA c.stopping.UB
     c.stopping.grid c.width_all flag x y matching
 
-theorem unconditionalActualFairSourceRoundingContext_stoppedVerifier
+lemma unconditionalActualFairSourceRoundingContext_stoppedVerifier
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     {G : Game X Y A B} {n : ℕ} {S : Strategy (G.repeat n)}
@@ -70784,7 +70784,7 @@ open QuantumParallelRepetition.ClassicalSampling
 
 attribute [local instance] Classical.propDecidable
 
-theorem unconditionalActualFairSourceRoundingData_exists_stoppedVerifier
+lemma unconditionalActualFairSourceRoundingData_exists_stoppedVerifier
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B)
@@ -70848,7 +70848,7 @@ open scoped BigOperators Kronecker ComplexOrder MatrixOrder
 
 open QuantumParallelRepetition.ClassicalSampling
 
-theorem unconditionalSourcePhysicalRounding_exists_small
+lemma unconditionalSourcePhysicalRounding_exists_small
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B)
@@ -70886,7 +70886,7 @@ theorem unconditionalSourcePhysicalRounding_exists_small
       alpha_positive alpha_bounded gamma_positive small
       deviation_bound clipping_bound rounded stopped
 
-theorem unconditionalSourceOneGameRounding_uniform :
+lemma unconditionalSourceOneGameRounding_uniform :
     ∃ K : ℝ, 1 ≤ K ∧
       ∀ {X Y A B : Type}
         [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
@@ -70913,7 +70913,7 @@ end
 
 noncomputable section
 
-theorem pdf_distributionUniformExponential_unconditional :
+lemma pdf_distributionUniformExponential_unconditional :
     ∃ c : ℝ, 0 < c ∧
       ∀ {X Y A B : Type}
         [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
@@ -70932,7 +70932,7 @@ theorem pdf_distributionUniformExponential_unconditional :
   pdf_distributionUniformExponential_of_uniform_source_rounding
     unconditionalSourceOneGameRounding_uniform
 
-theorem exactSourceOneGameRounding_unconditional
+lemma exactSourceOneGameRounding_unconditional
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) :
@@ -70942,7 +70942,7 @@ theorem exactSourceOneGameRounding_unconditional
   refine ⟨K, le_trans (by norm_num : (0 : ℝ) ≤ 1) constant, ?_⟩
   exact round G
 
-theorem exact_standardQuantumParallelRepetition_unconditional
+lemma exact_standardQuantumParallelRepetition_unconditional
     {X Y A B : Type}
     [Fintype X] [Fintype Y] [Fintype A] [Fintype B]
     (G : Game X Y A B) :

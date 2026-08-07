@@ -41,7 +41,7 @@ structure CenteredBody (n : ℕ) where
   centered : barycenter carrier = 0
   uniqueInteriorLatticePoint : interiorLatticePoints carrier = {0}
 
-theorem CenteredBody.volume_pos {n : ℕ} (K : CenteredBody n) :
+lemma CenteredBody.volume_pos {n : ℕ} (K : CenteredBody n) :
     0 < normalizedVolume K.carrier := by
   unfold normalizedVolume
   exact ENNReal.toReal_pos
@@ -57,7 +57,7 @@ namespace BodyMeasure
 open Set MeasureTheory
 open scoped ENNReal
 
-theorem volume_interior_eq_volume {n : ℕ} (K : CenteredBody n) :
+lemma volume_interior_eq_volume {n : ℕ} (K : CenteredBody n) :
     (volume : Measure (Space n)) (interior K.carrier) =
       (volume : Measure (Space n)) K.carrier := by
   exact measure_interior_of_null_frontier
@@ -79,7 +79,7 @@ def monomialIndex {n : ℕ}
     (K : CenteredBody n) (k : ℕ) : Set (Space n) :=
   interior K.carrier ∩ scaledIntegerLattice n k
 
-theorem mem_scaledIntegerLattice_iff {n k : ℕ} (hk : 0 < k)
+lemma mem_scaledIntegerLattice_iff {n k : ℕ} (hk : 0 < k)
     (x : Space n) :
     x ∈ scaledIntegerLattice n k ↔
       ∀ i, (k : ℝ) * x i ∈ Set.range (algebraMap ℤ ℝ) := by
@@ -88,7 +88,7 @@ theorem mem_scaledIntegerLattice_iff {n k : ℕ} (hk : 0 < k)
   exact BoxIntegral.unitPartition.mem_smul_span_iff
     (n := k) (v := x)
 
-theorem mem_monomialIndex_iff {n k : ℕ}
+lemma mem_monomialIndex_iff {n k : ℕ}
     (K : CenteredBody n) (hk : 0 < k)
     (x : Space n) :
     x ∈ monomialIndex K k ↔
@@ -97,7 +97,7 @@ theorem mem_monomialIndex_iff {n k : ℕ}
   rw [monomialIndex, Set.mem_inter_iff,
     mem_scaledIntegerLattice_iff hk]
 
-theorem zero_mem_interior {n : ℕ}
+lemma zero_mem_interior {n : ℕ}
     (K : CenteredBody n) :
     (0 : Space n) ∈ interior K.carrier := by
   have hz :
@@ -112,7 +112,7 @@ theorem zero_mem_interior {n : ℕ}
     simp [integerPoint]
   rwa [hzero] at hz
 
-theorem mem_monomialIndex_one_iff {n : ℕ}
+lemma mem_monomialIndex_one_iff {n : ℕ}
     (K : CenteredBody n) (x : Space n) :
     x ∈ monomialIndex K 1 ↔ x = 0 := by
   classical
@@ -147,7 +147,7 @@ theorem mem_monomialIndex_one_iff {n : ℕ}
     refine ⟨0, ?_⟩
     simp
 
-theorem monomial_count_div_pow_tendsto_volume {n : ℕ}
+lemma monomial_count_div_pow_tendsto_volume {n : ℕ}
     (K : CenteredBody n) :
     Tendsto
       (fun k : ℕ =>
@@ -187,19 +187,19 @@ def supportFunction {n : ℕ}
     (K : Set (Space n)) (x : Space n) : ℝ :=
   sSup ((fun y => pairing y x) '' K)
 
-theorem continuous_pairing_left {n : ℕ} (x : Space n) :
+lemma continuous_pairing_left {n : ℕ} (x : Space n) :
     Continuous (fun u : Space n => pairing u x) := by
   unfold pairing
   exact continuous_finsetSum Finset.univ
     (fun i _ => (continuous_apply i).mul continuous_const)
 
-theorem continuous_pairing_right {n : ℕ} (u : Space n) :
+lemma continuous_pairing_right {n : ℕ} (u : Space n) :
     Continuous (fun x : Space n => pairing u x) := by
   unfold pairing
   exact continuous_finsetSum Finset.univ
     (fun i _ => continuous_const.mul (continuous_apply i))
 
-theorem pairing_le_supportFunction {n : ℕ}
+lemma pairing_le_supportFunction {n : ℕ}
     {K : Set (Space n)}
     (hcompact : IsCompact K) {u : Space n}
     (hu : u ∈ K) (x : Space n) :
@@ -209,7 +209,7 @@ theorem pairing_le_supportFunction {n : ℕ}
     (hcompact.bddAbove_image (continuous_pairing_left x).continuousOn)
     (Set.mem_image_of_mem _ hu)
 
-theorem supportFunction_le {n : ℕ}
+lemma supportFunction_le {n : ℕ}
     {K : Set (Space n)} (hnonempty : K.Nonempty)
     (x : Space n) {c : ℝ}
     (hbound : ∀ y ∈ K, pairing y x ≤ c) :
@@ -219,7 +219,7 @@ theorem supportFunction_le {n : ℕ}
   rintro _ ⟨y, hy, rfl⟩
   exact hbound y hy
 
-theorem supportFunction_attained {n : ℕ}
+lemma supportFunction_attained {n : ℕ}
     {K : Set (Space n)} (hcompact : IsCompact K)
     (hnonempty : K.Nonempty) (x : Space n) :
     ∃ y ∈ K, supportFunction K x = pairing y x := by
@@ -233,7 +233,7 @@ theorem supportFunction_attained {n : ℕ}
 def signVector {n : ℕ} (x : Space n) : Space n :=
   fun i => if 0 ≤ x i then 1 else -1
 
-theorem norm_signVector_le_one {n : ℕ} (x : Space n) :
+lemma norm_signVector_le_one {n : ℕ} (x : Space n) :
     ‖signVector x‖ ≤ (1 : ℝ) := by
   apply (pi_norm_le_iff_of_nonneg (by positivity)).2
   intro i
@@ -241,7 +241,7 @@ theorem norm_signVector_le_one {n : ℕ} (x : Space n) :
   dsimp [signVector]
   split_ifs <;> norm_num
 
-theorem norm_le_sum_abs {n : ℕ} (x : Space n) :
+lemma norm_le_sum_abs {n : ℕ} (x : Space n) :
     ‖x‖ ≤ ∑ i, |x i| := by
   have hnonneg : 0 ≤ ∑ i, |x i| :=
     Finset.sum_nonneg (fun i _ => abs_nonneg (x i))
@@ -251,7 +251,7 @@ theorem norm_le_sum_abs {n : ℕ} (x : Space n) :
   exact Finset.single_le_sum
     (fun j _ => abs_nonneg (x j)) (Finset.mem_univ i)
 
-theorem pairing_signVector {n : ℕ} (x : Space n) :
+lemma pairing_signVector {n : ℕ} (x : Space n) :
     pairing (signVector x) x = ∑ i, |x i| := by
   unfold pairing signVector
   apply Finset.sum_congr rfl
@@ -261,17 +261,17 @@ theorem pairing_signVector {n : ℕ} (x : Space n) :
   · have hnegative : x i < 0 := lt_of_not_ge hi
     simp [hi, abs_of_neg hnegative]
 
-theorem pairing_add_left {n : ℕ}
+lemma pairing_add_left {n : ℕ}
     (u v x : Space n) :
     pairing (u + v) x = pairing u x + pairing v x := by
   simp [pairing, add_mul, Finset.sum_add_distrib]
 
-theorem pairing_smul_left {n : ℕ}
+lemma pairing_smul_left {n : ℕ}
     (a : ℝ) (u x : Space n) :
     pairing (a • u) x = a * pairing u x := by
   simp [pairing, Finset.mul_sum, mul_assoc]
 
-theorem interior_gap {n : ℕ} {K : Set (Space n)}
+lemma interior_gap {n : ℕ} {K : Set (Space n)}
     (hcompact : IsCompact K) {u : Space n}
     (hu : u ∈ interior K) :
     ∃ δ : ℝ, 0 < δ ∧ ∀ x : Space n,
@@ -304,7 +304,7 @@ namespace MonomialIntegrability
 open Set MeasureTheory
 open scoped BigOperators
 
-theorem integrable_exp_neg_mul_abs {a : ℝ} (ha : 0 < a) :
+lemma integrable_exp_neg_mul_abs {a : ℝ} (ha : 0 < a) :
     Integrable (fun x : ℝ => Real.exp (-a * |x|))
       (volume : Measure ℝ) := by
   rw [← integrableOn_univ, ← Iio_union_Ici (a := (0 : ℝ)),
@@ -328,7 +328,7 @@ theorem integrable_exp_neg_mul_abs {a : ℝ} (ha : 0 < a) :
     refine h.congr_fun (fun x hx => ?_) measurableSet_Ici
     rw [abs_of_nonneg (Set.mem_Ici.mp hx)]
 
-theorem sum_abs_le_dimension_mul_norm {n : ℕ} (x : Space n) :
+lemma sum_abs_le_dimension_mul_norm {n : ℕ} (x : Space n) :
     (∑ i, |x i|) ≤ (n : ℝ) * ‖x‖ := by
   calc
     (∑ i, |x i|) ≤ ∑ _i : Fin n, ‖x‖ := by
@@ -337,7 +337,7 @@ theorem sum_abs_le_dimension_mul_norm {n : ℕ} (x : Space n) :
       simpa [Real.norm_eq_abs] using norm_le_pi_norm x i
     _ = (n : ℝ) * ‖x‖ := by simp [nsmul_eq_mul]
 
-theorem integrable_exp_neg_mul_sum_abs (n : ℕ) {a : ℝ}
+lemma integrable_exp_neg_mul_sum_abs (n : ℕ) {a : ℝ}
     (ha : 0 < a) :
     Integrable (fun x : Space n =>
       Real.exp (-a * ∑ i, |x i|))
@@ -356,7 +356,7 @@ theorem integrable_exp_neg_mul_sum_abs (n : ℕ) {a : ℝ}
   rw [hfun]
   exact hprod
 
-theorem integrable_exp_neg_mul_norm {n : ℕ} (hn : 0 < n)
+lemma integrable_exp_neg_mul_norm {n : ℕ} (hn : 0 < n)
     {a : ℝ} (ha : 0 < a) :
     Integrable (fun x : Space n => Real.exp (-a * ‖x‖))
       (volume : Measure (Space n)) := by
@@ -388,7 +388,7 @@ def monomialIntegral {n : ℕ} (k : ℝ) (u : Space n)
   ∫ x : Space n, monomialWeight k u φ x
     ∂(volume : Measure (Space n))
 
-theorem continuous_monomialWeight {n : ℕ} (k : ℝ)
+lemma continuous_monomialWeight {n : ℕ} (k : ℝ)
     (u : Space n) {φ : Space n → ℝ}
     (hφ : Continuous φ) :
     Continuous (monomialWeight k u φ) := by
@@ -397,7 +397,7 @@ theorem continuous_monomialWeight {n : ℕ} (k : ℝ)
     (continuous_const.mul
       ((SupportFunction.continuous_pairing_right u).sub hφ))
 
-theorem interior_sum_abs_gap {n : ℕ}
+lemma interior_sum_abs_gap {n : ℕ}
     {K : Set (Space n)} (hcompact : IsCompact K)
     {u : Space n} (hu : u ∈ interior K) :
     ∃ δ : ℝ, 0 < δ ∧ ∀ x : Space n,
@@ -432,7 +432,7 @@ theorem interior_sum_abs_gap {n : ℕ}
     SupportFunction.pairing_signVector] at hsupport
   linarith
 
-theorem integrable_monomialWeight_of_support_le {n : ℕ}
+lemma integrable_monomialWeight_of_support_le {n : ℕ}
     {K : Set (Space n)} (hcompact : IsCompact K)
     {u : Space n} (hu : u ∈ interior K)
     {φ : Space n → ℝ} (hφ : Continuous φ)
@@ -463,7 +463,7 @@ theorem integrable_monomialWeight_of_support_le {n : ℕ}
       mul_le_mul_of_nonneg_left hcoercive hk.le
     _ = k * C + -(k * δ) * ∑ i, |x i| := by ring
 
-theorem integrable_monomialWeight_of_bounded_support {n : ℕ}
+lemma integrable_monomialWeight_of_bounded_support {n : ℕ}
     {K : Set (Space n)} (hcompact : IsCompact K)
     {u : Space n} (hu : u ∈ interior K)
     {φ : Space n → ℝ} (hφ : Continuous φ)
@@ -479,7 +479,7 @@ theorem integrable_monomialWeight_of_bounded_support {n : ℕ}
   have hlower := (abs_le.mp (hbounded x)).1
   linarith
 
-theorem monomialIntegral_pos_of_bounded_support {n : ℕ}
+lemma monomialIntegral_pos_of_bounded_support {n : ℕ}
     {K : Set (Space n)} (hcompact : IsCompact K)
     {u : Space n} (hu : u ∈ interior K)
     {φ : Space n → ℝ} (hφ : Continuous φ)
@@ -493,7 +493,7 @@ theorem monomialIntegral_pos_of_bounded_support {n : ℕ}
     (integrable_monomialWeight_of_bounded_support
       hcompact hu hφ hbounded hk)
 
-theorem integrable_monomialWeight_of_centeredBody {n : ℕ}
+lemma integrable_monomialWeight_of_centeredBody {n : ℕ}
     (K : CenteredBody n) {u : Space n}
     (hu : u ∈ interior K.carrier)
     {φ : Space n → ℝ} (hφ : Continuous φ)
@@ -517,7 +517,7 @@ def dualVector {n : ℕ}
     (f : Space n →L[ℝ] ℝ) : Space n :=
   fun i => f (Pi.single i (1 : ℝ))
 
-theorem dual_apply_eq_pairing {n : ℕ}
+lemma dual_apply_eq_pairing {n : ℕ}
     (f : Space n →L[ℝ] ℝ) (x : Space n) :
     f x = SupportFunction.pairing x (dualVector f) := by
   classical
@@ -534,7 +534,7 @@ theorem dual_apply_eq_pairing {n : ℕ}
       simp [SupportFunction.pairing, dualVector,
         map_sum, map_smul, smul_eq_mul]
 
-theorem exists_separating_direction {n : ℕ}
+lemma exists_separating_direction {n : ℕ}
     {K : Set (Space n)} (hconvex : Convex ℝ K)
     (hinterior : (interior K).Nonempty)
     {u : Space n} (hu : u ∉ interior K) :
@@ -552,7 +552,7 @@ theorem exists_separating_direction {n : ℕ}
     simp [SupportFunction.pairing]
   · simpa [dual_apply_eq_pairing] using hseparate y hy
 
-theorem pairing_sub_left {n : ℕ}
+lemma pairing_sub_left {n : ℕ}
     (a b x : Space n) :
     SupportFunction.pairing (a - b) x =
       SupportFunction.pairing a x -
@@ -560,7 +560,7 @@ theorem pairing_sub_left {n : ℕ}
   simp [SupportFunction.pairing, sub_mul,
     Finset.sum_sub_distrib]
 
-theorem pairing_add_right {n : ℕ}
+lemma pairing_add_right {n : ℕ}
     (a x y : Space n) :
     SupportFunction.pairing a (x + y) =
       SupportFunction.pairing a x +
@@ -568,14 +568,14 @@ theorem pairing_add_right {n : ℕ}
   simp [SupportFunction.pairing, mul_add,
     Finset.sum_add_distrib]
 
-theorem pairing_smul_right {n : ℕ} (c : ℝ)
+lemma pairing_smul_right {n : ℕ} (c : ℝ)
     (a x : Space n) :
     SupportFunction.pairing a (c • x) =
       c * SupportFunction.pairing a x := by
   simp [SupportFunction.pairing, Finset.mul_sum,
     mul_left_comm]
 
-theorem abs_pairing_le_sum_abs_mul_norm {n : ℕ}
+lemma abs_pairing_le_sum_abs_mul_norm {n : ℕ}
     (a x : Space n) :
     |SupportFunction.pairing a x| ≤
       (∑ i, |a i|) * ‖x‖ := by
@@ -593,7 +593,7 @@ theorem abs_pairing_le_sum_abs_mul_norm {n : ℕ}
     _ = (∑ i, |a i|) * ‖x‖ := by
       rw [Finset.sum_mul]
 
-theorem abs_pairing_le_dimension_mul_norm {n : ℕ}
+lemma abs_pairing_le_dimension_mul_norm {n : ℕ}
     (a x : Space n) :
     |SupportFunction.pairing a x| ≤
       ((n : ℝ) * ‖a‖) * ‖x‖ := by
@@ -614,7 +614,7 @@ def rayTube {n : ℕ} (v : Space n) :
     Set (Space n) :=
   ⋃ j : ℕ, rayBall v j
 
-theorem one_le_abs_cast_sub {i j : ℕ} (hij : i ≠ j) :
+lemma one_le_abs_cast_sub {i j : ℕ} (hij : i ≠ j) :
     (1 : ℝ) ≤ |(i : ℝ) - (j : ℝ)| := by
   rcases lt_or_gt_of_ne hij with hlt | hgt
   · have hcast : (i : ℝ) + 1 ≤ (j : ℝ) := by
@@ -626,7 +626,7 @@ theorem one_le_abs_cast_sub {i j : ℕ} (hij : i ≠ j) :
     rw [abs_of_nonneg (by linarith)]
     linarith
 
-theorem rayBall_pairwise_disjoint {n : ℕ} (v : Space n) :
+lemma rayBall_pairwise_disjoint {n : ℕ} (v : Space n) :
     Pairwise (Function.onFun Disjoint (rayBall v)) := by
   intro i j hij
   apply Metric.ball_disjoint_ball
@@ -642,7 +642,7 @@ theorem rayBall_pairwise_disjoint {n : ℕ} (v : Space n) :
       linarith [norm_nonneg v]
     _ ≤ dist ((i : ℝ) • v) ((j : ℝ) • v) := hdist
 
-theorem rayBall_volume {n : ℕ} (v : Space n)
+lemma rayBall_volume {n : ℕ} (v : Space n)
     (hv : v ≠ 0) (j : ℕ) :
     (volume : Measure (Space n)) (rayBall v j) =
       ENNReal.ofReal ((2 * (‖v‖ / 4)) ^ n) := by
@@ -651,7 +651,7 @@ theorem rayBall_volume {n : ℕ} (v : Space n)
   unfold rayBall
   simpa using Real.volume_pi_ball ((j : ℝ) • v) hr
 
-theorem rayTube_volume_eq_top {n : ℕ}
+lemma rayTube_volume_eq_top {n : ℕ}
     (v : Space n) (hv : v ≠ 0) :
     (volume : Measure (Space n)) (rayTube v) = ⊤ := by
   unfold rayTube
@@ -665,7 +665,7 @@ theorem rayTube_volume_eq_top {n : ℕ}
       (div_pos (norm_pos_iff.mpr hv) (by norm_num))) n
   exact (ENNReal.ofReal_pos.mpr hpositive).ne'
 
-theorem supportFunction_le_pairing_add_on_rayTube {n : ℕ}
+lemma supportFunction_le_pairing_add_on_rayTube {n : ℕ}
     {K : Set (Space n)} (hcompact : IsCompact K)
     (hnonempty : K.Nonempty)
     {u v : Space n}
@@ -725,7 +725,7 @@ theorem supportFunction_le_pairing_add_on_rayTube {n : ℕ}
   rw [pairing_sub_left] at htotal
   linarith
 
-theorem monomialWeight_bounded_below_on_rayTube {n : ℕ}
+lemma monomialWeight_bounded_below_on_rayTube {n : ℕ}
     {K : Set (Space n)} (hcompact : IsCompact K)
     (hnonempty : K.Nonempty)
     {u v : Space n}
@@ -755,7 +755,7 @@ theorem monomialWeight_bounded_below_on_rayTube {n : ℕ}
     _ ≤ k * (SupportFunction.pairing u x - φ x) :=
       mul_le_mul_of_nonneg_left hlower hk.le
 
-theorem not_integrable_monomialWeight_of_not_mem_interior {n : ℕ}
+lemma not_integrable_monomialWeight_of_not_mem_interior {n : ℕ}
     {K : Set (Space n)} (hcompact : IsCompact K)
     (hconvex : Convex ℝ K)
     (hinterior : (interior K).Nonempty)
@@ -801,7 +801,7 @@ theorem not_integrable_monomialWeight_of_not_mem_interior {n : ℕ}
   rw [rayTube_volume_eq_top v hv] at hmeasure
   exact ENNReal.ofReal_ne_top (top_unique hmeasure)
 
-theorem not_integrable_monomialWeight_of_centeredBody_not_mem_interior
+lemma not_integrable_monomialWeight_of_centeredBody_not_mem_interior
     {n : ℕ} (K : CenteredBody n)
     {u : Space n} (hu : u ∉ interior K.carrier)
     {φ : Space n → ℝ} {C : ℝ}
@@ -858,7 +858,7 @@ def weightedDiagonalKernel {n : ℕ}
   ∑' u : LatticeAsymptotics.monomialIndex K k,
     normalizedMonomialDensity K k φ u x
 
-theorem monomialIndex_finite {n k : ℕ}
+lemma monomialIndex_finite {n k : ℕ}
     (K : CenteredBody n) (hk : 0 < k) :
     (LatticeAsymptotics.monomialIndex K k).Finite := by
   classical
@@ -871,7 +871,7 @@ theorem monomialIndex_finite {n k : ℕ}
   exact ZSpan.setFinite_inter _
     (K.compact.isBounded.subset interior_subset)
 
-theorem zero_mem_monomialIndex {n k : ℕ}
+lemma zero_mem_monomialIndex {n k : ℕ}
     (K : CenteredBody n) (hk : 0 < k) :
     (0 : Space n) ∈
       LatticeAsymptotics.monomialIndex K k := by
@@ -881,7 +881,7 @@ theorem zero_mem_monomialIndex {n k : ℕ}
   intro i
   exact ⟨0, by simp⟩
 
-theorem bergmanDimension_pos {n k : ℕ}
+lemma bergmanDimension_pos {n k : ℕ}
     (K : CenteredBody n) (hk : 0 < k) :
     0 < bergmanDimension K k := by
   let : Finite (LatticeAsymptotics.monomialIndex K k) :=
@@ -890,7 +890,7 @@ theorem bergmanDimension_pos {n k : ℕ}
     ⟨⟨0, zero_mem_monomialIndex K hk⟩⟩
   exact Nat.card_pos
 
-theorem weighted_diagonalTerm_eq_normalizedMonomialDensity
+lemma weighted_diagonalTerm_eq_normalizedMonomialDensity
     {n k : ℕ} (K : CenteredBody n)
     (φ : Space n → ℝ)
     (u : LatticeAsymptotics.monomialIndex K k)
@@ -903,7 +903,7 @@ theorem weighted_diagonalTerm_eq_normalizedMonomialDensity
   congr 1
   ring_nf
 
-theorem weightedDiagonalKernel_eq_exp_neg_mul_diagonalKernel
+lemma weightedDiagonalKernel_eq_exp_neg_mul_diagonalKernel
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (φ : Space n → ℝ) (x : Space n) :
     weightedDiagonalKernel K k φ x =
@@ -916,7 +916,7 @@ theorem weightedDiagonalKernel_eq_exp_neg_mul_diagonalKernel
   exact (weighted_diagonalTerm_eq_normalizedMonomialDensity
     K φ u x).symm
 
-theorem bergmanDimension_div_pow_tendsto_volume {n : ℕ}
+lemma bergmanDimension_div_pow_tendsto_volume {n : ℕ}
     (K : CenteredBody n) :
     Tendsto
       (fun k : ℕ =>
@@ -950,34 +950,34 @@ def imaginaryShift {n : ℕ}
     (q : Fin n → ℤ) : LogSpace n :=
   fun i => (q i : ℂ) * (2 * (Real.pi : ℂ) * Complex.I)
 
-theorem differentiable_characterExponent {n : ℕ}
+lemma differentiable_characterExponent {n : ℕ}
     (m : Fin n → ℤ) :
     Differentiable ℂ (characterExponent m) := by
   unfold characterExponent
   fun_prop
 
-theorem differentiable_torusCharacter {n : ℕ}
+lemma differentiable_torusCharacter {n : ℕ}
     (m : Fin n → ℤ) :
     Differentiable ℂ (torusCharacter m) := by
   unfold torusCharacter
   exact (differentiable_characterExponent m).cexp
 
-theorem characterExponent_add {n : ℕ}
+lemma characterExponent_add {n : ℕ}
     (m : Fin n → ℤ) (ζ η : LogSpace n) :
     characterExponent m (ζ + η) =
       characterExponent m ζ + characterExponent m η := by
   simp [characterExponent, mul_add, Finset.sum_add_distrib]
 
-theorem torusCharacter_zero {n : ℕ} (ζ : LogSpace n) :
+lemma torusCharacter_zero {n : ℕ} (ζ : LogSpace n) :
     torusCharacter (0 : Fin n → ℤ) ζ = 1 := by
   simp [torusCharacter, characterExponent]
 
-theorem torusCharacter_ne_zero {n : ℕ}
+lemma torusCharacter_ne_zero {n : ℕ}
     (m : Fin n → ℤ) (ζ : LogSpace n) :
     torusCharacter m ζ ≠ 0 :=
   Complex.exp_ne_zero _
 
-theorem characterExponent_imaginaryShift {n : ℕ}
+lemma characterExponent_imaginaryShift {n : ℕ}
     (m q : Fin n → ℤ) :
     characterExponent m (imaginaryShift q) =
       ((∑ i, m i * q i : ℤ) : ℂ) *
@@ -997,7 +997,7 @@ theorem characterExponent_imaginaryShift {n : ℕ}
             rw [← Finset.sum_mul]
             norm_cast
 
-theorem torusCharacter_imaginaryShift {n : ℕ}
+lemma torusCharacter_imaginaryShift {n : ℕ}
     (m q : Fin n → ℤ) (ζ : LogSpace n) :
     torusCharacter m (ζ + imaginaryShift q) =
       torusCharacter m ζ := by
@@ -1010,14 +1010,14 @@ def realLogSlice {n : ℕ}
     (x : Space n) : LogSpace n :=
   fun i => (x i : ℂ) / 2
 
-theorem characterExponent_realLogSlice_re {n : ℕ}
+lemma characterExponent_realLogSlice_re {n : ℕ}
     (m : Fin n → ℤ) (x : Space n) :
     (characterExponent m (realLogSlice x)).re =
       (∑ i, (m i : ℝ) * x i) / 2 := by
   unfold characterExponent realLogSlice
   simp [Finset.sum_div, Complex.mul_re, ← mul_div_assoc]
 
-theorem norm_sq_torusCharacter_realLogSlice {n : ℕ}
+lemma norm_sq_torusCharacter_realLogSlice {n : ℕ}
     (m : Fin n → ℤ) (x : Space n) :
     ‖torusCharacter m (realLogSlice x)‖ ^ 2 =
       Real.exp (∑ i, (m i : ℝ) * x i) := by
@@ -1026,7 +1026,7 @@ theorem norm_sq_torusCharacter_realLogSlice {n : ℕ}
   congr 1
   ring
 
-theorem angular_characters_orthonormal (n : ℕ) :
+lemma angular_characters_orthonormal (n : ℕ) :
     Orthonormal ℂ
       (UnitAddTorus.mFourierLp
         (d := Fin n) 2) :=
@@ -1082,7 +1082,7 @@ abbrev weightedHilbert {n : ℕ} (k : ℕ)
     (φ : Space n → ℝ) :=
   MeasureTheory.Lp ℂ 2 (weightedTorusMeasure k φ)
 
-theorem radialWeight_measurable {n : ℕ} (k : ℕ)
+lemma radialWeight_measurable {n : ℕ} (k : ℕ)
     {φ : Space n → ℝ} (hφ : Continuous φ) :
     Measurable (radialWeight k φ) := by
   unfold radialWeight
@@ -1090,7 +1090,7 @@ theorem radialWeight_measurable {n : ℕ} (k : ℕ)
     (Real.continuous_exp.comp
       (continuous_const.mul hφ)).measurable
 
-theorem weightedTorusMeasure_eq_withDensity {n : ℕ} (k : ℕ)
+lemma weightedTorusMeasure_eq_withDensity {n : ℕ} (k : ℕ)
     {φ : Space n → ℝ} (hφ : Continuous φ) :
     weightedTorusMeasure k φ =
       ((volume : Measure (Space n)).prod
@@ -1100,12 +1100,12 @@ theorem weightedTorusMeasure_eq_withDensity {n : ℕ} (k : ℕ)
   exact MeasureTheory.prod_withDensity_left
     (radialWeight_measurable k hφ)
 
-theorem angularCharacter_norm {n : ℕ} (m : Fin n → ℤ)
+lemma angularCharacter_norm {n : ℕ} (m : Fin n → ℤ)
     (θ : TorusCharacters.AngularTorus n) :
     ‖UnitAddTorus.mFourier m θ‖ = 1 := by
   simp [UnitAddTorus.mFourier, fourier_apply, norm_prod, Circle.norm_coe]
 
-theorem angularCharacter_inner {n : ℕ} (m q : Fin n → ℤ) :
+lemma angularCharacter_inner {n : ℕ} (m q : Fin n → ℤ) :
     (∫ θ : TorusCharacters.AngularTorus n,
       conj (UnitAddTorus.mFourier m θ) *
         UnitAddTorus.mFourier q θ
@@ -1125,7 +1125,7 @@ def torusMonomial {n : ℕ}
     (m : Fin n → ℤ) (z : LogTorus n) : ℂ :=
   radialCharacter m z.1 * UnitAddTorus.mFourier m z.2
 
-theorem continuous_torusMonomial {n : ℕ}
+lemma continuous_torusMonomial {n : ℕ}
     (m : Fin n → ℤ) :
     Continuous (torusMonomial m) := by
   unfold torusMonomial radialCharacter
@@ -1134,7 +1134,7 @@ theorem continuous_torusMonomial {n : ℕ}
     TorusCharacters.realLogSlice
   fun_prop
 
-theorem torusMonomial_norm_sq {n : ℕ}
+lemma torusMonomial_norm_sq {n : ℕ}
     (m : Fin n → ℤ) (z : LogTorus n) :
     ‖torusMonomial m z‖ ^ 2 =
       Real.exp (SupportFunction.pairing
@@ -1152,7 +1152,7 @@ def integerExponent {n k : ℕ}
     (((LatticeAsymptotics.mem_monomialIndex_iff K hk
       (u : Space n)).mp u.property).2 i)
 
-theorem integerPoint_integerExponent {n k : ℕ}
+lemma integerPoint_integerExponent {n k : ℕ}
     (K : CenteredBody n) (hk : 0 < k)
     (u : LatticeAsymptotics.monomialIndex K k) :
     integerPoint n (integerExponent K hk u) =
@@ -1162,7 +1162,7 @@ theorem integerPoint_integerExponent {n k : ℕ}
     (((LatticeAsymptotics.mem_monomialIndex_iff K hk
       (u : Space n)).mp u.property).2 i)
 
-theorem integerExponent_injective {n k : ℕ}
+lemma integerExponent_injective {n k : ℕ}
     (K : CenteredBody n) (hk : 0 < k) :
     Function.Injective (integerExponent K hk) := by
   intro u v huv
@@ -1178,7 +1178,7 @@ theorem integerExponent_injective {n k : ℕ}
   apply mul_left_cancel₀ hkreal
   exact congrFun hscaled i
 
-theorem radialWeight_mul_exp_pairing {n : ℕ} (k : ℕ)
+lemma radialWeight_mul_exp_pairing {n : ℕ} (k : ℕ)
     (φ : Space n → ℝ)
     (m : Fin n → ℤ) (u : Space n)
     (hm : integerPoint n m = (k : ℝ) • u)
@@ -1196,7 +1196,7 @@ theorem radialWeight_mul_exp_pairing {n : ℕ} (k : ℕ)
   congr 1
   ring
 
-theorem radial_exp_integral_eq_monomialIntegral {n : ℕ} (k : ℕ)
+lemma radial_exp_integral_eq_monomialIntegral {n : ℕ} (k : ℕ)
     {φ : Space n → ℝ} (hφ : Continuous φ)
     (m : Fin n → ℤ) (u : Space n)
     (hm : integerPoint n m = (k : ℝ) • u) :
@@ -1218,7 +1218,7 @@ theorem radial_exp_integral_eq_monomialIntegral {n : ℕ} (k : ℕ)
   simpa only [smul_eq_mul] using
     radialWeight_mul_exp_pairing k φ m u hm x
 
-theorem radial_exp_integrable {n k : ℕ}
+lemma radial_exp_integrable {n k : ℕ}
     (K : CenteredBody n) (hk : 0 < k)
     {φ : Space n → ℝ} (hφ : Continuous φ) {C : ℝ}
     (hbounded : ∀ x : Space n,
@@ -1245,7 +1245,7 @@ theorem radial_exp_integrable {n k : ℕ}
   simpa only [smul_eq_mul] using
     (radialWeight_mul_exp_pairing k φ m u hm x).symm
 
-theorem torusMonomial_sq_integrable {n k : ℕ}
+lemma torusMonomial_sq_integrable {n k : ℕ}
     (K : CenteredBody n) (hk : 0 < k)
     {φ : Space n → ℝ} (hφ : Continuous φ) {C : ℝ}
     (hbounded : ∀ x : Space n,
@@ -1266,7 +1266,7 @@ theorem torusMonomial_sq_integrable {n k : ℕ}
   funext z
   simp [torusMonomial_norm_sq]
 
-theorem torusMonomial_memLp {n k : ℕ}
+lemma torusMonomial_memLp {n k : ℕ}
     (K : CenteredBody n) (hk : 0 < k)
     {φ : Space n → ℝ} (hφ : Continuous φ) {C : ℝ}
     (hbounded : ∀ x : Space n,
@@ -1280,7 +1280,7 @@ theorem torusMonomial_memLp {n k : ℕ}
   exact torusMonomial_sq_integrable
     K hk hφ hbounded m u hu hm
 
-theorem integral_torusMonomial_norm_sq_eq_monomialIntegral
+lemma integral_torusMonomial_norm_sq_eq_monomialIntegral
     {n : ℕ} (k : ℕ)
     {φ : Space n → ℝ} (hφ : Continuous φ)
     (m : Fin n → ℤ) (u : Space n)
@@ -1319,7 +1319,7 @@ theorem integral_torusMonomial_norm_sq_eq_monomialIntegral
             k hφ m u hm]
           simp
 
-theorem torusMonomial_inner_factor {n : ℕ} (k : ℕ)
+lemma torusMonomial_inner_factor {n : ℕ} (k : ℕ)
     (φ : Space n → ℝ) (m q : Fin n → ℤ) :
     (∫ z : LogTorus n,
       conj (torusMonomial m z) * torusMonomial q z
@@ -1358,7 +1358,7 @@ theorem torusMonomial_inner_factor {n : ℕ} (k : ℕ)
                 UnitAddTorus.mFourier q θ)
     _ = _ := by rw [angularCharacter_inner]
 
-theorem torusMonomial_inner_eq_zero_of_ne {n : ℕ}
+lemma torusMonomial_inner_eq_zero_of_ne {n : ℕ}
     (k : ℕ) (φ : Space n → ℝ)
     (m q : Fin n → ℤ) (hmq : m ≠ q) :
     (∫ z : LogTorus n,
@@ -1379,7 +1379,7 @@ def indexedMonomialLp {n k : ℕ}
     u.property.1 (integerPoint_integerExponent K hk u)).toLp
       (torusMonomial (integerExponent K hk u))
 
-theorem indexedMonomialLp_ae {n k : ℕ}
+lemma indexedMonomialLp_ae {n k : ℕ}
     (K : CenteredBody n) (hk : 0 < k)
     {φ : Space n → ℝ} (hφ : Continuous φ) {C : ℝ}
     (hbounded : ∀ x : Space n,
@@ -1395,7 +1395,7 @@ end WeightedTorusHilbert
 
 namespace JetEnvelopeSlopeBridge
 
-theorem coeFn_finset_sum_ae
+lemma coeFn_finset_sum_ae
     {α ι : Type*} [MeasurableSpace α]
     (μ : Measure α) (I : Finset ι)
     (f : ι → MeasureTheory.Lp ℂ 2 μ) :
@@ -1450,7 +1450,7 @@ namespace BergmanJetSlope
 open Set MeasureTheory
 open scoped BigOperators ENNReal
 
-theorem continuous_normalizedMonomialDensity {n k : ℕ}
+lemma continuous_normalizedMonomialDensity {n k : ℕ}
     (K : CenteredBody n)
     {φ : Space n → ℝ} (hφ : Continuous φ)
     (u : LatticeAsymptotics.monomialIndex K k) :
@@ -1461,7 +1461,7 @@ theorem continuous_normalizedMonomialDensity {n k : ℕ}
     (MonomialIntegrability.continuous_monomialWeight
       (k : ℝ) (u : Space n) hφ).div_const _
 
-theorem continuous_weightedDiagonalKernel {n k : ℕ}
+lemma continuous_weightedDiagonalKernel {n k : ℕ}
     (K : CenteredBody n) (hk : 0 < k)
     {φ : Space n → ℝ} (hφ : Continuous φ) :
     Continuous (BergmanMonomials.weightedDiagonalKernel K k φ) := by
@@ -1471,7 +1471,7 @@ theorem continuous_weightedDiagonalKernel {n k : ℕ}
   exact continuous_finsetSum _
     (fun u _ => continuous_normalizedMonomialDensity K hφ u)
 
-theorem continuous_normalizedDiagonalDensity {n k : ℕ}
+lemma continuous_normalizedDiagonalDensity {n k : ℕ}
     (K : CenteredBody n) (hk : 0 < k)
     {φ : Space n → ℝ} (hφ : Continuous φ) :
     Continuous
@@ -1503,7 +1503,7 @@ noncomputable instance instFintypeJetIndexLT (n j : ℕ) :
   Fintype.ofEquiv (Σ r : Fin j, Sym (Fin n) (r : ℕ))
     (symSigmaEquivJetIndexLT n j)
 
-theorem card_jetIndexLT (n j : ℕ) (hj : 0 < j) :
+lemma card_jetIndexLT (n j : ℕ) (hj : 0 < j) :
     Fintype.card (JetIndexLT n j) = (n + j - 1).choose n := by
   rw [← Fintype.card_congr (symSigmaEquivJetIndexLT n j), Fintype.card_sigma]
   simp_rw [Sym.card_sym_eq_multichoose, Fintype.card_fin]
@@ -1514,7 +1514,7 @@ theorem card_jetIndexLT (n j : ℕ) (hj : 0 < j) :
   congr 1
   omega
 
-theorem finrank_le_kernel_add_jetCount
+lemma finrank_le_kernel_add_jetCount
     (𝕜 V : Type*) [Field 𝕜] [AddCommGroup V] [Module 𝕜 V]
     [FiniteDimensional 𝕜 V]
     (n j : ℕ) (hj : 0 < j)
@@ -1538,7 +1538,7 @@ namespace BergmanJetFiltration
 open Set MeasureTheory
 open scoped BigOperators ENNReal
 
-theorem sum_range_jetCount (n N : ℕ) :
+lemma sum_range_jetCount (n N : ℕ) :
     (∑ j ∈ Finset.range N, (n + j).choose n) =
       (n + N).choose (n + 1) := by
   cases N with
@@ -1547,12 +1547,12 @@ theorem sum_range_jetCount (n N : ℕ) :
     simpa [Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using
       Nat.sum_range_add_choose N n
 
-theorem cast_sub_ge_real_sub (a b : ℕ) :
+lemma cast_sub_ge_real_sub (a b : ℕ) :
     (a : ℝ) - (b : ℝ) ≤ ((a - b : ℕ) : ℝ) := by
   exact sub_le_iff_le_add.mpr
     (by exact_mod_cast (show a ≤ a - b + b from le_tsub_add))
 
-theorem real_jetLayercake_le_nat_sum (n d N : ℕ) :
+lemma real_jetLayercake_le_nat_sum (n d N : ℕ) :
     (N : ℝ) * (d : ℝ) -
         (((n + N).choose (n + 1) : ℕ) : ℝ) ≤
       ((∑ j ∈ Finset.range N,
@@ -1599,7 +1599,7 @@ def normalizedHolomorphicMonomial {n k : ℕ}
     TorusCharacters.torusCharacter
       (WeightedTorusHilbert.integerExponent K hk u) ζ
 
-theorem differentiable_normalizedHolomorphicMonomial {n k : ℕ}
+lemma differentiable_normalizedHolomorphicMonomial {n k : ℕ}
     (K : CenteredBody n) (hk : 0 < k)
     (φ : Space n → ℝ)
     (u : LatticeAsymptotics.monomialIndex K k) :
@@ -1632,7 +1632,7 @@ namespace ArbitraryBodySmoothConvexPotentialBridge
 open Set MeasureTheory
 open scoped BigOperators Convolution Topology ContDiff
 
-theorem pairing_sub_right {n : ℕ}
+lemma pairing_sub_right {n : ℕ}
     (u x y : Space n) :
     SupportFunction.pairing u (x - y) =
       SupportFunction.pairing u x -
@@ -1640,7 +1640,7 @@ theorem pairing_sub_right {n : ℕ}
   simp [SupportFunction.pairing, mul_sub,
     Finset.sum_sub_distrib]
 
-theorem supportFunction_lipschitzWith {n : ℕ}
+lemma supportFunction_lipschitzWith {n : ℕ}
     {K : Set (Space n)}
     (hcompact : IsCompact K) (hnonempty : K.Nonempty)
     {R : ℝ} (hR : ∀ u ∈ K, ‖u‖ ≤ R) :
@@ -1679,20 +1679,20 @@ theorem supportFunction_lipschitzWith {n : ℕ}
           ((n : ℝ) * R) * dist x y :=
       add_le_add hy hpair
 
-theorem uniformContinuous_supportFunction {n : ℕ}
+lemma uniformContinuous_supportFunction {n : ℕ}
     {K : Set (Space n)}
     (hcompact : IsCompact K) (hnonempty : K.Nonempty) :
     UniformContinuous (SupportFunction.supportFunction K) := by
   obtain ⟨R, hRpos, hR⟩ := hcompact.isBounded.exists_pos_norm_le
   exact (supportFunction_lipschitzWith hcompact hnonempty hR).uniformContinuous
 
-theorem continuous_supportFunction {n : ℕ}
+lemma continuous_supportFunction {n : ℕ}
     {K : Set (Space n)}
     (hcompact : IsCompact K) (hnonempty : K.Nonempty) :
     Continuous (SupportFunction.supportFunction K) :=
   (uniformContinuous_supportFunction hcompact hnonempty).continuous
 
-theorem convexOn_supportFunction {n : ℕ}
+lemma convexOn_supportFunction {n : ℕ}
     {K : Set (Space n)}
     (hcompact : IsCompact K) (hnonempty : K.Nonempty) :
     ConvexOn ℝ Set.univ
@@ -1725,7 +1725,7 @@ def mollifiedSupport {n : ℕ} (K : Set (Space n))
   ρ.normed (volume : Measure (Space n)) ⋆
     SupportFunction.supportFunction K
 
-theorem contDiff_mollifiedSupport {n : ℕ}
+lemma contDiff_mollifiedSupport {n : ℕ}
     {K : Set (Space n)}
     (hcompact : IsCompact K) (hnonempty : K.Nonempty)
     (ρ : ContDiffBump (0 : Space n)) :
@@ -1736,7 +1736,7 @@ theorem contDiff_mollifiedSupport {n : ℕ}
     ρ.contDiff_normed
     (continuous_supportFunction hcompact hnonempty).locallyIntegrable
 
-theorem convexOn_mollifiedSupport {n : ℕ}
+lemma convexOn_mollifiedSupport {n : ℕ}
     {K : Set (Space n)}
     (hcompact : IsCompact K) (hnonempty : K.Nonempty)
     (ρ : ContDiffBump (0 : Space n)) :
@@ -1766,7 +1766,7 @@ theorem convexOn_mollifiedSupport {n : ℕ}
         (continuous_supportFunction hcompact hnonempty).locallyIntegrable
         x).integrable
 
-theorem dist_mollifiedSupport_le {n : ℕ}
+lemma dist_mollifiedSupport_le {n : ℕ}
     {K : Set (Space n)}
     (hcompact : IsCompact K) (hnonempty : K.Nonempty)
     {R : ℝ} (hRnonneg : 0 ≤ R)
@@ -1791,7 +1791,7 @@ theorem dist_mollifiedSupport_le {n : ℕ}
   exact hlip.trans (mul_le_mul_of_nonneg_left
     (Metric.mem_ball.mp hy).le (mul_nonneg (Nat.cast_nonneg n) hRnonneg))
 
-theorem exists_smooth_convex_potential_uniformly_close {n : ℕ}
+lemma exists_smooth_convex_potential_uniformly_close {n : ℕ}
     {K : Set (Space n)}
     (hcompact : IsCompact K) (hnonempty : K.Nonempty)
     {ε : ℝ} (hε : 0 < ε) :
@@ -1820,7 +1820,7 @@ theorem exists_smooth_convex_potential_uniformly_close {n : ℕ}
   rw [Real.dist_eq] at hdist
   exact lt_of_le_of_lt hdist (by simpa [L, ρ] using hsmall)
 
-theorem exists_smooth_convex_potential_of_centeredBody {n : ℕ}
+lemma exists_smooth_convex_potential_of_centeredBody {n : ℕ}
     (K : CenteredBody n) :
     ∃ φ : Space n → ℝ,
       ContDiff ℝ ∞ φ ∧ ConvexOn ℝ Set.univ φ ∧
@@ -1838,17 +1838,17 @@ def smoothConvexPotential {n : ℕ} (K : CenteredBody n) :
     Space n → ℝ :=
   (exists_smooth_convex_potential_of_centeredBody K).choose
 
-theorem smoothConvexPotential_contDiff {n : ℕ}
+lemma smoothConvexPotential_contDiff {n : ℕ}
     (K : CenteredBody n) :
     ContDiff ℝ ∞ (smoothConvexPotential K) :=
   (exists_smooth_convex_potential_of_centeredBody K).choose_spec.1
 
-theorem smoothConvexPotential_convex {n : ℕ}
+lemma smoothConvexPotential_convex {n : ℕ}
     (K : CenteredBody n) :
     ConvexOn ℝ Set.univ (smoothConvexPotential K) :=
   (exists_smooth_convex_potential_of_centeredBody K).choose_spec.2.1
 
-theorem smoothConvexPotential_bounded {n : ℕ}
+lemma smoothConvexPotential_bounded {n : ℕ}
     (K : CenteredBody n) (x : Space n) :
     |smoothConvexPotential K x -
       SupportFunction.supportFunction K.carrier x| ≤ 1 :=
@@ -1861,7 +1861,7 @@ namespace JetAdaptedOrthonormalBasis
 open Set Module
 open scoped BigOperators InnerProductSpace
 
-theorem starProjection_commute_of_le
+lemma starProjection_commute_of_le
     {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
     [FiniteDimensional ℂ V]
     (U W : Submodule ℂ V) (hUW : U ≤ W) :
@@ -1878,7 +1878,7 @@ theorem starProjection_commute_of_le
   exact (Submodule.starProjection_eq_self_iff.mpr
     (hUW (U.starProjection_apply_mem x))).symm
 
-theorem exists_orthonormalBasis_simultaneously_adapted_finite
+lemma exists_orthonormalBasis_simultaneously_adapted_finite
     {ι V : Type*} [Fintype ι]
     [NormedAddCommGroup V] [InnerProductSpace ℂ V]
     [FiniteDimensional ℂ V]
@@ -1968,7 +1968,7 @@ theorem exists_orthonormalBasis_simultaneously_adapted_finite
     have hmem := (F j).smul_mem (code σ j)⁻¹ hscaled
     simpa [smul_smul, hzero] using hmem
 
-theorem finite_range_antitone_submodule
+lemma finite_range_antitone_submodule
     {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
     [FiniteDimensional ℂ V]
     (F : ℕ → Submodule ℂ V) (hF : Antitone F) :
@@ -1989,7 +1989,7 @@ theorem finite_range_antitone_submodule
   · exact (Submodule.eq_of_le_of_finrank_eq (hF hij) hr.symm).symm
   · exact Submodule.eq_of_le_of_finrank_eq (hF hji) hr
 
-theorem exists_orthonormalBasis_simultaneously_adapted
+lemma exists_orthonormalBasis_simultaneously_adapted
     {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
     [FiniteDimensional ℂ V]
     (F : ℕ → Submodule ℂ V) (hF : Antitone F) :
@@ -2030,7 +2030,7 @@ def adaptedIndices {ι V : Type*} [Fintype ι]
   classical
   exact Finset.univ.filter (fun i => b i ∈ S)
 
-theorem span_adaptedIndices_eq {ι V : Type*} [Fintype ι]
+lemma span_adaptedIndices_eq {ι V : Type*} [Fintype ι]
     [NormedAddCommGroup V] [InnerProductSpace ℂ V]
     (b : OrthonormalBasis ι ℂ V) (S : Submodule ℂ V)
     (hb : ∀ i, b i ∈ S ∨ b i ∈ Sᗮ) :
@@ -2058,7 +2058,7 @@ theorem span_adaptedIndices_eq {ι V : Type*} [Fintype ι]
         exact (Submodule.mem_orthogonal' S (b i)).mp horth x hx
       simp [hcoeff]
 
-theorem card_adaptedIndices_eq_finrank {ι V : Type*} [Fintype ι]
+lemma card_adaptedIndices_eq_finrank {ι V : Type*} [Fintype ι]
     [NormedAddCommGroup V] [InnerProductSpace ℂ V]
     (b : OrthonormalBasis ι ℂ V) (S : Submodule ℂ V)
     (hb : ∀ i, b i ∈ S ∨ b i ∈ Sᗮ) :
@@ -2083,16 +2083,16 @@ open scoped BigOperators Topology
 def bodyRadius {n : ℕ} (K : CenteredBody n) : ℝ :=
   Classical.choose K.compact.isBounded.exists_pos_norm_le
 
-theorem bodyRadius_pos {n : ℕ} (K : CenteredBody n) :
+lemma bodyRadius_pos {n : ℕ} (K : CenteredBody n) :
     0 < bodyRadius K :=
   (Classical.choose_spec K.compact.isBounded.exists_pos_norm_le).1
 
-theorem norm_le_bodyRadius {n : ℕ} (K : CenteredBody n)
+lemma norm_le_bodyRadius {n : ℕ} (K : CenteredBody n)
     (x : Space n) (hx : x ∈ K.carrier) :
     ‖x‖ ≤ bodyRadius K :=
   (Classical.choose_spec K.compact.isBounded.exists_pos_norm_le).2 x hx
 
-theorem analyticAt_torusCharacter {n : ℕ}
+lemma analyticAt_torusCharacter {n : ℕ}
     (m : Fin n → ℤ)
     (p : TorusCharacters.LogSpace n) :
     AnalyticAt ℂ (TorusCharacters.torusCharacter m) p := by
@@ -2105,7 +2105,7 @@ theorem analyticAt_torusCharacter {n : ℕ}
     ((ContinuousLinearMap.proj i :
       TorusCharacters.LogSpace n →L[ℂ] ℂ).analyticAt p)
 
-theorem analyticAt_normalizedHolomorphicMonomial {n k : ℕ}
+lemma analyticAt_normalizedHolomorphicMonomial {n k : ℕ}
     (K : CenteredBody n) (hk : 0 < k)
     (φ : Space n → ℝ)
     (u : LatticeAsymptotics.monomialIndex K k)
@@ -2133,12 +2133,12 @@ def legendreTransform {n : ℕ}
     (φ : Space n → ℝ) (u : Space n) : ℝ :=
   sSup (Set.range (phase u φ))
 
-theorem continuous_phase {n : ℕ} (u : Space n)
+lemma continuous_phase {n : ℕ} (u : Space n)
     {φ : Space n → ℝ} (hφ : Continuous φ) :
     Continuous (phase u φ) :=
   (SupportFunction.continuous_pairing_right u).sub hφ
 
-theorem exists_phase_le_const_sub_mul_sum_abs {n : ℕ}
+lemma exists_phase_le_const_sub_mul_sum_abs {n : ℕ}
     {K : Set (Space n)} (hcompact : IsCompact K)
     {u : Space n} (hu : u ∈ interior K)
     {φ : Space n → ℝ} {C : ℝ}
@@ -2154,7 +2154,7 @@ theorem exists_phase_le_const_sub_mul_sum_abs {n : ℕ}
   unfold phase
   linarith
 
-theorem exists_phase_maximizer {n : ℕ}
+lemma exists_phase_maximizer {n : ℕ}
     {K : Set (Space n)} (hcompact : IsCompact K)
     {u : Space n} (hu : u ∈ interior K)
     {φ : Space n → ℝ} (hφ : Continuous φ) {C : ℝ}
@@ -2184,7 +2184,7 @@ theorem exists_phase_maximizer {n : ℕ}
   have hcoerce := hcoercive x
   nlinarith [mul_le_mul_of_nonneg_left hnorm hδ.le]
 
-theorem legendreTransform_eq_of_maximizer {n : ℕ}
+lemma legendreTransform_eq_of_maximizer {n : ℕ}
     {u : Space n} {φ : Space n → ℝ}
     (x : Space n)
     (hmax : ∀ y : Space n,
@@ -2202,7 +2202,7 @@ theorem legendreTransform_eq_of_maximizer {n : ℕ}
         exact hmax y⟩
     · exact ⟨x, rfl⟩
 
-theorem exists_legendre_maximizer {n : ℕ}
+lemma exists_legendre_maximizer {n : ℕ}
     {K : Set (Space n)} (hcompact : IsCompact K)
     {u : Space n} (hu : u ∈ interior K)
     {φ : Space n → ℝ} (hφ : Continuous φ) {C : ℝ}
@@ -2254,7 +2254,7 @@ namespace GlobalBergmanKernelBound
 open Set MeasureTheory Filter
 open scoped BigOperators ENNReal Topology
 
-theorem supportFunction_add_smul_le {n : ℕ}
+lemma supportFunction_add_smul_le {n : ℕ}
     (K : CenteredBody n)
     (x v : Space n) {t : ℝ} (ht : 0 ≤ t) :
     SupportFunction.supportFunction K.carrier (x + t • v) ≤
@@ -2278,7 +2278,7 @@ theorem supportFunction_add_smul_le {n : ℕ}
         t * SupportFunction.supportFunction K.carrier v :=
       add_le_add hx (mul_le_mul_of_nonneg_left hv ht)
 
-theorem convex_extrapolation_lower {n : ℕ}
+lemma convex_extrapolation_lower {n : ℕ}
     {φ : Space n → ℝ}
     (hφ : ConvexOn ℝ Set.univ φ)
     (x y : Space n) {t : ℝ} (ht : 1 ≤ t) :
@@ -2313,7 +2313,7 @@ theorem convex_extrapolation_lower {n : ℕ}
   rw [hcancel] at hscaled
   linarith
 
-theorem convex_supportCompatible_sub_le_support {n : ℕ}
+lemma convex_supportCompatible_sub_le_support {n : ℕ}
     (K : CenteredBody n)
     {φ : Space n → ℝ}
     (hconvex : ConvexOn ℝ Set.univ φ) {C : ℝ}
@@ -2355,7 +2355,7 @@ theorem convex_supportCompatible_sub_le_support {n : ℕ}
   dsimp [D, gap] at hlarge
   linarith
 
-theorem convex_supportCompatible_lipschitz {n : ℕ}
+lemma convex_supportCompatible_lipschitz {n : ℕ}
     (K : CenteredBody n)
     {φ : Space n → ℝ}
     (hconvex : ConvexOn ℝ Set.univ φ) {C : ℝ}
@@ -2399,7 +2399,7 @@ def phaseSlopeBound {n : ℕ} (K : CenteredBody n)
     (L : NNReal) : ℝ :=
   (n : ℝ) * LaurentJetSeparatedness.bodyRadius K + (L : ℝ)
 
-theorem phaseSlopeBound_nonneg {n : ℕ}
+lemma phaseSlopeBound_nonneg {n : ℕ}
     (K : CenteredBody n) (L : NNReal) :
     0 ≤ phaseSlopeBound K L := by
   unfold phaseSlopeBound
@@ -2411,7 +2411,7 @@ theorem phaseSlopeBound_nonneg {n : ℕ}
 def bodyPhaseSlopeBound {n : ℕ} (K : CenteredBody n) : ℝ :=
   2 * ((n : ℝ) * LaurentJetSeparatedness.bodyRadius K)
 
-theorem phaseSlopeBound_body {n : ℕ}
+lemma phaseSlopeBound_body {n : ℕ}
     (K : CenteredBody n) :
     phaseSlopeBound K
       (Real.toNNReal ((n : ℝ) *
@@ -2425,7 +2425,7 @@ theorem phaseSlopeBound_body {n : ℕ}
   rw [Real.coe_toNNReal _ hnonneg]
   ring
 
-theorem monomialExponent_norm_le_bodyRadius {n k : ℕ}
+lemma monomialExponent_norm_le_bodyRadius {n k : ℕ}
     (K : CenteredBody n)
     (u : LatticeAsymptotics.monomialIndex K k) :
     ‖(u : Space n)‖ ≤
@@ -2433,7 +2433,7 @@ theorem monomialExponent_norm_le_bodyRadius {n k : ℕ}
   exact LaurentJetSeparatedness.norm_le_bodyRadius
     K u (interior_subset u.property.1)
 
-theorem phase_abs_sub_le {n k : ℕ}
+lemma phase_abs_sub_le {n k : ℕ}
     (K : CenteredBody n)
     {φ : Space n → ℝ} {L : NNReal}
     (hφ : LipschitzWith L φ)
@@ -2489,7 +2489,7 @@ theorem phase_abs_sub_le {n k : ℕ}
       unfold phaseSlopeBound
       ring
 
-theorem real_volume_ball_inv_nat {n k : ℕ}
+lemma real_volume_ball_inv_nat {n k : ℕ}
     (hk : 0 < k) (x : Space n) :
     (volume : Measure (Space n)).real
       (Metric.ball x (k : ℝ)⁻¹) =
@@ -2500,7 +2500,7 @@ theorem real_volume_ball_inv_nat {n k : ℕ}
   rw [ENNReal.toReal_ofReal (by positivity)]
   simp [div_eq_mul_inv]
 
-theorem phase_lower_on_inv_nat_ball {n k : ℕ}
+lemma phase_lower_on_inv_nat_ball {n k : ℕ}
     (K : CenteredBody n) (hk : 0 < k)
     {φ : Space n → ℝ} {L : NNReal}
     (hφ : LipschitzWith L φ)
@@ -2527,7 +2527,7 @@ theorem phase_lower_on_inv_nat_ball {n k : ℕ}
     le_abs_self _
   linarith [hkreal]
 
-theorem eventually_bergmanDimension_le_volume_mul_pow
+lemma eventually_bergmanDimension_le_volume_mul_pow
     {n : ℕ} (K : CenteredBody n) :
     ∀ᶠ k : ℕ in atTop,
       (BergmanMonomials.bergmanDimension K k : ℝ) ≤
@@ -2545,7 +2545,7 @@ def globalKernelPolynomialConstant {n : ℕ}
   (normalizedVolume K.carrier + 1) *
     Real.exp (bodyPhaseSlopeBound K) / (2 : ℝ) ^ n
 
-theorem globalKernelPolynomialConstant_pos {n : ℕ}
+lemma globalKernelPolynomialConstant_pos {n : ℕ}
     (K : CenteredBody n) :
     0 < globalKernelPolynomialConstant K := by
   unfold globalKernelPolynomialConstant
@@ -2557,7 +2557,7 @@ def globalKernelLogError {n : ℕ}
   (Real.log (globalKernelPolynomialConstant K) +
     2 * (n : ℝ) * Real.log (k : ℝ)) / (k : ℝ)
 
-theorem tendsto_globalKernelLogError {n : ℕ}
+lemma tendsto_globalKernelLogError {n : ℕ}
     (K : CenteredBody n) :
     Tendsto (globalKernelLogError K) atTop (𝓝 0) := by
   have hnat : Tendsto (fun k : ℕ => (k : ℝ)) atTop atTop :=
@@ -2599,7 +2599,7 @@ def coordinateMultiplicity {n r : ℕ}
   classical
   exact Fintype.card {a : Fin r // q a = i}
 
-theorem sum_coordinateMultiplicity {n r : ℕ}
+lemma sum_coordinateMultiplicity {n r : ℕ}
     (q : Fin r → Fin n) :
     (∑ i : Fin n, coordinateMultiplicity q i) = r := by
   classical
@@ -2612,7 +2612,7 @@ def multiIndexSigmaEquiv {n : ℕ} (α : Fin n → ℕ) :
     ((i : Fin n) × Fin (α i)) ≃ Fin (∑ i, α i) :=
   Fintype.equivFinOfCardEq (by simp)
 
-theorem multiIndexCoordinate_eq_sigma {n : ℕ}
+lemma multiIndexCoordinate_eq_sigma {n : ℕ}
     (α : Fin n → ℕ) (q : Fin (∑ i, α i)) :
     AdaptedBergmanBasis.multiIndexCoordinate α q =
       ((multiIndexSigmaEquiv α).symm q).1 := by
@@ -2630,7 +2630,7 @@ def multiIndexCoordinateFiberEquiv {n : ℕ}
   exact ⟨fun h => (multiIndexCoordinate_eq_sigma α q).symm ▸ h,
     fun h => (multiIndexCoordinate_eq_sigma α q) ▸ h⟩
 
-theorem exists_multiIndexCoordinate_perm {n : ℕ}
+lemma exists_multiIndexCoordinate_perm {n : ℕ}
     (α : Fin n → ℕ)
     (q : Fin (∑ i, α i) → Fin n)
     (hq : ∀ i : Fin n,
@@ -2674,7 +2674,7 @@ def exponentialPartition {ι : Type*} [Fintype ι]
     (w : ι → ℝ) (order : ι → ℕ) (t : ℝ) : ℝ :=
   exponentialMoment w order 0 t
 
-theorem exponentialPartition_pos {ι : Type*} [Fintype ι]
+lemma exponentialPartition_pos {ι : Type*} [Fintype ι]
     (w : ι → ℝ) (order : ι → ℕ)
     (hw : ∀ i, 0 ≤ w i) (hpositive : ∃ i, 0 < w i)
     (t : ℝ) : 0 < exponentialPartition w order t := by
@@ -2687,7 +2687,7 @@ theorem exponentialPartition_pos {ι : Type*} [Fintype ι]
     (fun j _ => mul_nonneg (hw j) (Real.exp_pos _).le)
     (Finset.mem_univ i)
 
-theorem hasDerivAt_exponentialMoment {ι : Type*} [Fintype ι]
+lemma hasDerivAt_exponentialMoment {ι : Type*} [Fintype ι]
     (w : ι → ℝ) (order : ι → ℕ) (r : ℕ) (t : ℝ) :
     HasDerivAt (exponentialMoment w order r)
       (exponentialMoment w order (r + 1) t) t := by
@@ -2699,7 +2699,7 @@ theorem hasDerivAt_exponentialMoment {ι : Type*} [Fintype ι]
     (w i * (order i : ℝ) ^ r)).congr_deriv (by
       simp [pow_succ, mul_assoc, mul_left_comm, mul_comm])
 
-theorem hasDerivAt_exponentialPartition {ι : Type*} [Fintype ι]
+lemma hasDerivAt_exponentialPartition {ι : Type*} [Fintype ι]
     (w : ι → ℝ) (order : ι → ℕ) (t : ℝ) :
     HasDerivAt (exponentialPartition w order)
       (exponentialMoment w order 1 t) t := by
@@ -2707,7 +2707,7 @@ theorem hasDerivAt_exponentialPartition {ι : Type*} [Fintype ι]
     (exponentialMoment w order 1 t) t
   exact hasDerivAt_exponentialMoment w order 0 t
 
-theorem exponentialMoment_sq_le_partition_mul_second
+lemma exponentialMoment_sq_le_partition_mul_second
     {ι : Type*} [Fintype ι]
     (w : ι → ℝ) (order : ι → ℕ)
     (hw : ∀ i, 0 ≤ w i) (t : ℝ) :
@@ -2735,7 +2735,7 @@ def logarithmicPotential {ι : Type*} [Fintype ι]
     (w : ι → ℝ) (order : ι → ℕ) (k : ℝ) (t : ℝ) : ℝ :=
   Real.log (exponentialPartition w order t) / k
 
-theorem hasDerivAt_logarithmicPotential {ι : Type*} [Fintype ι]
+lemma hasDerivAt_logarithmicPotential {ι : Type*} [Fintype ι]
     (w : ι → ℝ) (order : ι → ℕ)
     (hw : ∀ i, 0 ≤ w i) (hpositive : ∃ i, 0 < w i)
     (k t : ℝ) :
@@ -2746,7 +2746,7 @@ theorem hasDerivAt_logarithmicPotential {ι : Type*} [Fintype ι]
   exact ((hasDerivAt_exponentialPartition w order t).log
     (exponentialPartition_pos w order hw hpositive t).ne').div_const k
 
-theorem hasDerivAt_logarithmicSlope {ι : Type*} [Fintype ι]
+lemma hasDerivAt_logarithmicSlope {ι : Type*} [Fintype ι]
     (w : ι → ℝ) (order : ι → ℕ)
     (hw : ∀ i, 0 ≤ w i) (hpositive : ∃ i, 0 < w i)
     (k t : ℝ) :
@@ -2762,7 +2762,7 @@ theorem hasDerivAt_logarithmicSlope {ι : Type*} [Fintype ι]
     (hasDerivAt_exponentialPartition w order t)
     (exponentialPartition_pos w order hw hpositive t).ne').div_const k
 
-theorem convexOn_logarithmicPotential {ι : Type*} [Fintype ι]
+lemma convexOn_logarithmicPotential {ι : Type*} [Fintype ι]
     (w : ι → ℝ) (order : ι → ℕ)
     (hw : ∀ i, 0 ≤ w i) (hpositive : ∃ i, 0 < w i)
     {k : ℝ} (hk : 0 < k) :
@@ -2799,7 +2799,7 @@ theorem convexOn_logarithmicPotential {ι : Type*} [Fintype ι]
       · exact sq_nonneg _
     · exact hk.le
 
-theorem logarithmicPotential_deriv_nonneg {ι : Type*} [Fintype ι]
+lemma logarithmicPotential_deriv_nonneg {ι : Type*} [Fintype ι]
     (w : ι → ℝ) (order : ι → ℕ)
     (hw : ∀ i, 0 ≤ w i) (hpositive : ∃ i, 0 < w i)
     {k : ℝ} (hk : 0 < k) (t : ℝ) :
@@ -2815,7 +2815,7 @@ theorem logarithmicPotential_deriv_nonneg {ι : Type*} [Fintype ι]
     · exact (exponentialPartition_pos w order hw hpositive t).le
   · exact hk.le
 
-theorem logarithmicPotential_deriv_le {ι : Type*} [Fintype ι]
+lemma logarithmicPotential_deriv_le {ι : Type*} [Fintype ι]
     (w : ι → ℝ) (order : ι → ℕ)
     (hw : ∀ i, 0 ≤ w i) (hpositive : ∃ i, 0 < w i)
     {k : ℝ} (hk : 0 < k) (J : ℕ)
@@ -2853,17 +2853,17 @@ def canonicalScale {n : ℕ} (K : CenteredBody n) : ℝ :=
   ((n.factorial : ℝ) * normalizedVolume K.carrier) ^
     ((n : ℝ)⁻¹)
 
-theorem factorial_mul_volume_pos {n : ℕ}
+lemma factorial_mul_volume_pos {n : ℕ}
     (K : CenteredBody n) :
     0 < (n.factorial : ℝ) * normalizedVolume K.carrier := by
   exact mul_pos (by exact_mod_cast Nat.factorial_pos n) K.volume_pos
 
-theorem canonicalScale_pos {n : ℕ}
+lemma canonicalScale_pos {n : ℕ}
     (K : CenteredBody n) : 0 < canonicalScale K := by
   unfold canonicalScale
   exact Real.rpow_pos_of_pos (factorial_mul_volume_pos K) _
 
-theorem canonicalScale_pow {n : ℕ} (hn : 0 < n)
+lemma canonicalScale_pow {n : ℕ} (hn : 0 < n)
     (K : CenteredBody n) :
     canonicalScale K ^ n =
       (n.factorial : ℝ) * normalizedVolume K.carrier := by
@@ -2878,7 +2878,7 @@ namespace JetAsymptotics
 open Asymptotics Filter MeasureTheory
 open scoped BigOperators Topology
 
-theorem tendsto_floor_mul_div_nat {t : ℝ} (ht : 0 ≤ t) :
+lemma tendsto_floor_mul_div_nat {t : ℝ} (ht : 0 ≤ t) :
     Tendsto
       (fun k : ℕ => (Nat.floor (t * (k : ℝ)) : ℝ) / (k : ℝ))
       atTop (𝓝 t) := by
@@ -2887,7 +2887,7 @@ theorem tendsto_floor_mul_div_nat {t : ℝ} (ht : 0 ≤ t) :
       tendsto_natCast_atTop_atTop)
   exact Filter.Eventually.of_forall fun _ => rfl
 
-theorem tendsto_shifted_floor_mul_div_nat
+lemma tendsto_shifted_floor_mul_div_nat
     {t : ℝ} (ht : 0 ≤ t) (b : ℕ) :
     Tendsto
       (fun k : ℕ =>
@@ -2897,7 +2897,7 @@ theorem tendsto_shifted_floor_mul_div_nat
     (tendsto_const_div_atTop_nhds_zero_nat (b : ℝ))
   simpa [Nat.cast_add, add_div] using h
 
-theorem tendsto_choose_floor_mul_div_pow
+lemma tendsto_choose_floor_mul_div_pow
     (r b : ℕ) {t : ℝ} (ht : 0 < t) :
     Tendsto
       (fun k : ℕ =>
@@ -2962,7 +2962,7 @@ theorem tendsto_choose_floor_mul_div_pow
   have hfact : (r.factorial : ℝ) ≠ 0 := by positivity
   field_simp
 
-theorem tendsto_normalized_jetLayercake_profile {n : ℕ}
+lemma tendsto_normalized_jetLayercake_profile {n : ℕ}
     (K : CenteredBody n) {t : ℝ} (ht : 0 < t) :
     Tendsto
       (fun k : ℕ =>
@@ -3013,7 +3013,7 @@ theorem tendsto_normalized_jetLayercake_profile {n : ℕ}
   rw [pow_succ]
   field_simp
 
-theorem normalized_jetLayercake_value_at_bodyScale {n : ℕ}
+lemma normalized_jetLayercake_value_at_bodyScale {n : ℕ}
     (K : CenteredBody n) {c : ℝ}
     (hscale : c ^ n = (n.factorial : ℝ) *
       normalizedVolume K.carrier) :
@@ -3044,7 +3044,7 @@ def coordinateSum (n : ℕ) : Space n →ₗ[ℝ] ℝ where
   map_smul' c x := by
     simp [Finset.mul_sum]
 
-theorem coordinateSum_surjective (n : ℕ) (hn : 0 < n) :
+lemma coordinateSum_surjective (n : ℕ) (hn : 0 < n) :
     Function.Surjective (coordinateSum n) := by
   classical
   intro t
@@ -3052,11 +3052,11 @@ theorem coordinateSum_surjective (n : ℕ) (hn : 0 < n) :
   refine ⟨fun j => if j = i then t else 0, ?_⟩
   simp [coordinateSum]
 
-theorem continuous_coordinateSum (n : ℕ) :
+lemma continuous_coordinateSum (n : ℕ) :
     Continuous (coordinateSum n) := by
   exact continuous_finsetSum Finset.univ (fun i _ => continuous_apply i)
 
-theorem mem_centeredSimplex_iff {n : ℕ} {y : Space n} :
+lemma mem_centeredSimplex_iff {n : ℕ} {y : Space n} :
     y ∈ centeredSimplex n ↔
       (∀ i, -(1 : ℝ) ≤ y i) ∧ (∑ i, y i) ≤ 1 := by
   classical
@@ -3087,7 +3087,7 @@ theorem mem_centeredSimplex_iff {n : ℕ} {y : Space n} :
       field_simp
       ring
 
-theorem isClosed_standardSimplex (n : ℕ) :
+lemma isClosed_standardSimplex (n : ℕ) :
     IsClosed (standardSimplex n) := by
   have hcoords :
       IsClosed (⋂ i : Fin n, {x : Space n | 0 ≤ x i}) :=
@@ -3102,7 +3102,7 @@ theorem isClosed_standardSimplex (n : ℕ) :
   rw [hset]
   exact hcoords.inter hsum
 
-theorem isCompact_standardSimplex (n : ℕ) :
+lemma isCompact_standardSimplex (n : ℕ) :
     IsCompact (standardSimplex n) := by
   apply IsCompact.of_isClosed_subset
     (isCompact_Icc (a := (0 : Space n)) (b := 1))
@@ -3115,17 +3115,17 @@ theorem isCompact_standardSimplex (n : ℕ) :
     exact (Finset.single_le_sum (fun j _ => hx.1 j)
       (Finset.mem_univ i)).trans hx.2
 
-theorem continuous_simplexDilation (n : ℕ) :
+lemma continuous_simplexDilation (n : ℕ) :
     Continuous (simplexDilation n) := by
   apply continuous_pi
   intro i
   exact (continuous_const.mul (continuous_apply i)).sub continuous_const
 
-theorem isCompact_centeredSimplex (n : ℕ) :
+lemma isCompact_centeredSimplex (n : ℕ) :
     IsCompact (centeredSimplex n) := by
   exact (isCompact_standardSimplex n).image (continuous_simplexDilation n)
 
-theorem convex_centeredSimplex (n : ℕ) :
+lemma convex_centeredSimplex (n : ℕ) :
     Convex ℝ (centeredSimplex n) := by
   intro x hx y hy a b ha hb hab
   have hx' := mem_centeredSimplex_iff.mp hx
@@ -3146,7 +3146,7 @@ theorem convex_centeredSimplex (n : ℕ) :
               (mul_le_mul_of_nonneg_left hy'.2 hb)
       _ = 1 := by simpa using hab
 
-theorem isOpen_strict_centered_halfspaces (n : ℕ) :
+lemma isOpen_strict_centered_halfspaces (n : ℕ) :
     IsOpen {x : Space n |
       (∀ i, -(1 : ℝ) < x i) ∧ (∑ i, x i) < 1} := by
   have hcoords :
@@ -3164,7 +3164,7 @@ theorem isOpen_strict_centered_halfspaces (n : ℕ) :
   rw [hset]
   exact hcoords.inter hsum
 
-theorem coordinate_lt_of_mem_interior_centeredSimplex
+lemma coordinate_lt_of_mem_interior_centeredSimplex
     {n : ℕ} {x : Space n}
     (hx : x ∈ interior (centeredSimplex n)) (i : Fin n) :
     -(1 : ℝ) < x i := by
@@ -3179,7 +3179,7 @@ theorem coordinate_lt_of_mem_interior_centeredSimplex
     (continuous_apply i) (Ici (-(1 : ℝ))), interior_Ici] at hi
   exact hi
 
-theorem coordinateSum_lt_of_mem_interior_centeredSimplex
+lemma coordinateSum_lt_of_mem_interior_centeredSimplex
     {n : ℕ} (hn : 0 < n) {x : Space n}
     (hx : x ∈ interior (centeredSimplex n)) :
     (∑ i, x i) < 1 := by
@@ -3195,7 +3195,7 @@ theorem coordinateSum_lt_of_mem_interior_centeredSimplex
     (continuous_coordinateSum n) (Iic (1 : ℝ)), interior_Iic] at hi
   exact hi
 
-theorem mem_interior_centeredSimplex_iff {n : ℕ} (hn : 0 < n)
+lemma mem_interior_centeredSimplex_iff {n : ℕ} (hn : 0 < n)
     {x : Space n} :
     x ∈ interior (centeredSimplex n) ↔
       (∀ i, -(1 : ℝ) < x i) ∧ (∑ i, x i) < 1 := by
@@ -3213,7 +3213,7 @@ theorem mem_interior_centeredSimplex_iff {n : ℕ} (hn : 0 < n)
         ⟨fun i => (hy.1 i).le, hy.2.le⟩
     exact (interior_maximal hsub (isOpen_strict_centered_halfspaces n)) hx
 
-theorem zero_mem_interior_centeredSimplex (n : ℕ) (hn : 0 < n) :
+lemma zero_mem_interior_centeredSimplex (n : ℕ) (hn : 0 < n) :
     (0 : Space n) ∈ interior (centeredSimplex n) := by
   apply (mem_interior_centeredSimplex_iff hn).mpr
   constructor
@@ -3221,11 +3221,11 @@ theorem zero_mem_interior_centeredSimplex (n : ℕ) (hn : 0 < n) :
     simp
   · simp
 
-theorem interior_centeredSimplex_nonempty (n : ℕ) (hn : 0 < n) :
+lemma interior_centeredSimplex_nonempty (n : ℕ) (hn : 0 < n) :
     (interior (centeredSimplex n)).Nonempty :=
   ⟨0, zero_mem_interior_centeredSimplex n hn⟩
 
-theorem interior_integerPoint_eq_zero {n : ℕ} (hn : 0 < n)
+lemma interior_integerPoint_eq_zero {n : ℕ} (hn : 0 < n)
     (z : Fin n → ℤ)
     (hz : integerPoint n z ∈
       interior (centeredSimplex n)) :
@@ -3259,7 +3259,7 @@ theorem interior_integerPoint_eq_zero {n : ℕ} (hn : 0 < n)
     le_antisymm (hsum_zero ▸ hi_le) (hnonneg i)
   simpa using hi_zero
 
-theorem interiorLatticePoints_centeredSimplex (n : ℕ) (hn : 0 < n) :
+lemma interiorLatticePoints_centeredSimplex (n : ℕ) (hn : 0 < n) :
     interiorLatticePoints (centeredSimplex n) = {0} := by
   ext z
   constructor
@@ -3288,7 +3288,7 @@ open scoped BigOperators ENNReal Pointwise
 def splitStandardSimplex (n : ℕ) : Set (ℝ × Space n) :=
   {p | 0 ≤ p.1 ∧ (∀ i, 0 ≤ p.2 i) ∧ p.1 + (∑ i, p.2 i) ≤ 1}
 
-theorem splitStandardSimplex_eq_preimage (n : ℕ) :
+lemma splitStandardSimplex_eq_preimage (n : ℕ) :
     splitStandardSimplex n =
       (MeasurableEquiv.piFinSuccAbove
         (fun _ : Fin (n + 1) => ℝ) 0).symm ⁻¹'
@@ -3298,14 +3298,14 @@ theorem splitStandardSimplex_eq_preimage (n : ℕ) :
     MeasurableEquiv.piFinSuccAbove_symm_apply, Fin.insertNthEquiv,
     Fin.forall_fin_succ, Fin.sum_univ_succ, and_assoc]
 
-theorem measurableSet_splitStandardSimplex (n : ℕ) :
+lemma measurableSet_splitStandardSimplex (n : ℕ) :
     MeasurableSet (splitStandardSimplex n) := by
   rw [splitStandardSimplex_eq_preimage]
   exact (Ehrhart.Geometry.isClosed_standardSimplex (n + 1)).measurableSet.preimage
     (MeasurableEquiv.piFinSuccAbove
       (fun _ : Fin (n + 1) => ℝ) 0).symm.measurable
 
-theorem splitStandardSimplex_fiber_of_mem_Ico (n : ℕ) {t : ℝ}
+lemma splitStandardSimplex_fiber_of_mem_Ico (n : ℕ) {t : ℝ}
     (ht : t ∈ Set.Ico (0 : ℝ) 1) :
     Prod.mk t ⁻¹' splitStandardSimplex n =
       (1 - t) • standardSimplex n := by
@@ -3330,7 +3330,7 @@ theorem splitStandardSimplex_fiber_of_mem_Ico (n : ℕ) {t : ℝ}
     rw [← Finset.mul_sum, inv_mul_le_one₀ hscale] at hsum
     linarith
 
-theorem splitStandardSimplex_fiber_eq_empty (n : ℕ) {t : ℝ}
+lemma splitStandardSimplex_fiber_eq_empty (n : ℕ) {t : ℝ}
     (ht : t < 0 ∨ 1 < t) :
     Prod.mk t ⁻¹' splitStandardSimplex n = ∅ := by
   ext x
@@ -3343,7 +3343,7 @@ theorem splitStandardSimplex_fiber_eq_empty (n : ℕ) {t : ℝ}
       Finset.sum_nonneg (fun i _ => hx.2.1 i)
     linarith [hx.2.2]
 
-theorem normalizedVolume_smul_standardSimplex (n : ℕ) (r : ℝ)
+lemma normalizedVolume_smul_standardSimplex (n : ℕ) (r : ℝ)
     (hr : 0 ≤ r) :
     normalizedVolume (r • standardSimplex n) =
       r ^ n * normalizedVolume (standardSimplex n) := by
@@ -3353,7 +3353,7 @@ theorem normalizedVolume_smul_standardSimplex (n : ℕ) (r : ℝ)
     Module.finrank_fin_fun, ENNReal.toReal_mul,
     ENNReal.toReal_ofReal (pow_nonneg hr n)]
 
-theorem normalizedVolume_splitStandardSimplex_fiber_ae (n : ℕ) :
+lemma normalizedVolume_splitStandardSimplex_fiber_ae (n : ℕ) :
     (fun t : ℝ => normalizedVolume
       (Prod.mk t ⁻¹' splitStandardSimplex n)) =ᵐ[volume]
         (Set.Icc (0 : ℝ) 1).indicator
@@ -3383,7 +3383,7 @@ theorem normalizedVolume_splitStandardSimplex_fiber_ae (n : ℕ) :
       splitStandardSimplex_fiber_eq_empty n (Or.inl hneg)]
     simp [normalizedVolume]
 
-theorem volume_splitStandardSimplex (n : ℕ) :
+lemma volume_splitStandardSimplex (n : ℕ) :
     (volume : Measure (ℝ × Space n)) (splitStandardSimplex n) =
       (volume : Measure (Space (n + 1)))
         (standardSimplex (n + 1)) := by
@@ -3393,7 +3393,7 @@ theorem volume_splitStandardSimplex (n : ℕ) :
       (fun _ : Fin (n + 1) => ℝ) 0).symm).measure_preimage_equiv
       (standardSimplex (n + 1))
 
-theorem normalizedVolume_standardSimplex_succ_eq_integral_fibers
+lemma normalizedVolume_standardSimplex_succ_eq_integral_fibers
     (n : ℕ) :
     normalizedVolume (standardSimplex (n + 1)) =
       ∫ t : ℝ, normalizedVolume
@@ -3427,7 +3427,7 @@ theorem normalizedVolume_standardSimplex_succ_eq_integral_fibers
             (measurable_measure_prodMk_left hmeas).aemeasurable
             (MeasureTheory.Measure.ae_measure_lt_top hmeas hfinite)
 
-theorem integral_one_sub_pow_Icc (n : ℕ) :
+lemma integral_one_sub_pow_Icc (n : ℕ) :
     (∫ t in Set.Icc (0 : ℝ) 1, (1 - t) ^ n) =
       1 / ((n : ℝ) + 1) := by
   rw [MeasureTheory.integral_Icc_eq_integral_Ioc,
@@ -3436,7 +3436,7 @@ theorem integral_one_sub_pow_Icc (n : ℕ) :
     integral_pow]
   norm_num
 
-theorem normalizedVolume_standardSimplex_succ (n : ℕ) :
+lemma normalizedVolume_standardSimplex_succ (n : ℕ) :
     normalizedVolume (standardSimplex (n + 1)) =
       normalizedVolume (standardSimplex n) /
         ((n : ℝ) + 1) := by
@@ -3463,7 +3463,7 @@ theorem normalizedVolume_standardSimplex_succ (n : ℕ) :
           rw [integral_one_sub_pow_Icc n]
           ring
 
-theorem normalizedVolume_standardSimplex (n : ℕ) :
+lemma normalizedVolume_standardSimplex (n : ℕ) :
     normalizedVolume (standardSimplex n) =
       1 / (n.factorial : ℝ) := by
   induction n with
@@ -3483,7 +3483,7 @@ theorem normalizedVolume_standardSimplex (n : ℕ) :
       have hdenom : (n : ℝ) + 1 ≠ 0 := by positivity
       field_simp
 
-theorem normalizedVolume_centeredSimplex_eq_scale_mul (n : ℕ) :
+lemma normalizedVolume_centeredSimplex_eq_scale_mul (n : ℕ) :
     normalizedVolume (centeredSimplex n) =
       ((n : ℝ) + 1) ^ n *
         normalizedVolume (standardSimplex n) := by
@@ -3508,7 +3508,7 @@ theorem normalizedVolume_centeredSimplex (n : ℕ) (_hn : 0 < n) :
     normalizedVolume_standardSimplex n]
   simp [sharpConstant, div_eq_mul_inv]
 
-theorem centeredSimplex_coordinate_tail {n : ℕ}
+lemma centeredSimplex_coordinate_tail {n : ℕ}
     (T : Set (Space n))
     (hT : ∀ y, y ∈ T ↔
       (∀ j, -(1 : ℝ) ≤ y j) ∧ (∑ j, y j) ≤ 1)
@@ -3572,7 +3572,7 @@ theorem centeredSimplex_coordinate_tail {n : ℕ}
         Pi.one_apply]
       linarith [hx0 i]
 
-theorem centeredSimplex_coordinate_tail_measure {n : ℕ}
+lemma centeredSimplex_coordinate_tail_measure {n : ℕ}
     (T : Set (Space n))
     (hT : ∀ y, y ∈ T ↔
       (∀ j, -(1 : ℝ) ≤ y j) ∧ (∑ j, y j) ≤ 1)
@@ -3598,7 +3598,7 @@ theorem centeredSimplex_coordinate_tail_measure {n : ℕ}
       (pow_nonneg (sub_nonneg.mpr ht1.le) n)]
   rfl
 
-theorem centered_integral_zero_of_coordinate_tails
+lemma centered_integral_zero_of_coordinate_tails
     {n : ℕ} (K : Set (Space n)) (hK : IsCompact K) (v : ℝ)
     (hT : ∀ y, y ∈ K ↔
       (∀ j, -(1 : ℝ) ≤ y j) ∧ (∑ j, y j) ≤ 1)
@@ -3711,7 +3711,7 @@ def realLogCoordinate {n : ℕ}
     (z : TorusCharacters.LogSpace n) : Space n :=
   fun i => 2 * (z i).re
 
-theorem normSq_torusCharacter_eq_realLogSlice {n : ℕ}
+lemma normSq_torusCharacter_eq_realLogSlice {n : ℕ}
     (m : Fin n → ℤ) (z : TorusCharacters.LogSpace n) :
     Complex.normSq (TorusCharacters.torusCharacter m z) =
       Complex.normSq (TorusCharacters.torusCharacter m
@@ -3730,7 +3730,7 @@ theorem normSq_torusCharacter_eq_realLogSlice {n : ℕ}
   simp only [Complex.normSq_eq_norm_sq,
     TorusCharacters.torusCharacter, Complex.norm_exp, hre]
 
-theorem exponentialPartition_le_exp_mul_sum
+lemma exponentialPartition_le_exp_mul_sum
     {ι : Type*} [Fintype ι]
     (w : ι → ℝ) (order : ι → ℕ)
     (hw : ∀ i, 0 ≤ w i)
@@ -3767,7 +3767,7 @@ def localUpperBounds {X : Type*} [TopologicalSpace X]
     (f : X → ℝ) (x : X) : Set ℝ :=
   {c | ∀ᶠ y : X in 𝓝 x, f y ≤ c}
 
-theorem localUpperBounds_bddBelow {X : Type*} [TopologicalSpace X]
+lemma localUpperBounds_bddBelow {X : Type*} [TopologicalSpace X]
     (f : X → ℝ) (x : X) :
     BddBelow (localUpperBounds f x) := by
   refine ⟨f x, ?_⟩
@@ -3779,14 +3779,14 @@ def upperRegularization {X : Type*} [TopologicalSpace X]
     (f : X → ℝ) (x : X) : ℝ :=
   sInf (localUpperBounds f x)
 
-theorem upperRegularization_le_of_eventually
+lemma upperRegularization_le_of_eventually
     {X : Type*} [TopologicalSpace X]
     (f : X → ℝ) (x : X) {c : ℝ}
     (hc : ∀ᶠ y : X in 𝓝 x, f y ≤ c) :
     upperRegularization f x ≤ c := by
   exact csInf_le (localUpperBounds_bddBelow f x) hc
 
-theorem le_upperRegularization
+lemma le_upperRegularization
     {X : Type*} [TopologicalSpace X]
     (f : X → ℝ) (x : X)
     (hb : (localUpperBounds f x).Nonempty) :
@@ -3796,7 +3796,7 @@ theorem le_upperRegularization
   change (∀ᶠ y : X in 𝓝 x, f y ≤ c) at hc
   exact hc.self_of_nhds
 
-theorem upperSemicontinuous_upperRegularization
+lemma upperSemicontinuous_upperRegularization
     {X : Type*} [TopologicalSpace X]
     (f : X → ℝ)
     (hb : ∀ x : X, (localUpperBounds f x).Nonempty) :
@@ -3818,7 +3818,7 @@ theorem upperSemicontinuous_upperRegularization
   exact lt_of_le_of_lt
     (upperRegularization_le_of_eventually f y hlocal) hca
 
-theorem upperRegularization_le_of_continuous_majorant
+lemma upperRegularization_le_of_continuous_majorant
     {X : Type*} [TopologicalSpace X]
     (f b : X → ℝ) (hb : Continuous b)
     (hpoint : ∀ x : X, f x ≤ b x) (x : X) :
@@ -3832,7 +3832,7 @@ theorem upperRegularization_le_of_continuous_majorant
   exact upperRegularization_le_of_eventually f x
     (hev.mono fun y hy => le_trans (hpoint y) hy.le)
 
-theorem localUpperBounds_nonempty_of_continuous_majorant
+lemma localUpperBounds_nonempty_of_continuous_majorant
     {X : Type*} [TopologicalSpace X]
     (f b : X → ℝ) (hb : Continuous b)
     (hpoint : ∀ x : X, f x ≤ b x) (x : X) :
@@ -3845,7 +3845,7 @@ theorem localUpperBounds_nonempty_of_continuous_majorant
       (Iio_mem_nhds (by linarith : b x < b x + 1))
   exact hev.mono fun y hy => le_trans (hpoint y) hy.le
 
-theorem upperRegularization_mono
+lemma upperRegularization_mono
     {X : Type*} [TopologicalSpace X]
     (f g : X → ℝ) (x : X)
     (hle : ∀ y : X, f y ≤ g y)
@@ -3865,7 +3865,7 @@ def jointLogTime {n : ℕ}
     (q : PositiveJointLogSpace n) : ℝ :=
   Real.log (Complex.normSq q.val.2)
 
-theorem jointLogTime_pos {n : ℕ}
+lemma jointLogTime_pos {n : ℕ}
     (q : PositiveJointLogSpace n) :
     0 < jointLogTime q := by
   unfold jointLogTime
@@ -3875,12 +3875,12 @@ def jointRealCoordinate {n : ℕ}
     (q : PositiveJointLogSpace n) : Space n :=
   realLogCoordinate q.val.1
 
-theorem continuous_jointRealCoordinate (n : ℕ) :
+lemma continuous_jointRealCoordinate (n : ℕ) :
     Continuous (jointRealCoordinate (n := n)) := by
   unfold jointRealCoordinate realLogCoordinate
   fun_prop
 
-theorem continuous_jointLogTime (n : ℕ) :
+lemma continuous_jointLogTime (n : ℕ) :
     Continuous (jointLogTime (n := n)) := by
   unfold jointLogTime
   have hτ : Continuous
@@ -3901,7 +3901,7 @@ def positiveJointDomain (n : ℕ) :
     Set (TorusCharacters.LogSpace n × ℂ) :=
   {q | 1 < Complex.normSq q.2}
 
-theorem log_norm_le_circleAverage_of_differentiable
+lemma log_norm_le_circleAverage_of_differentiable
     {g : ℂ → ℂ}
     (hg : Differentiable ℂ g)
     (hzero : g 0 ≠ 0)
@@ -3945,7 +3945,7 @@ theorem log_norm_le_circleAverage_of_differentiable
     linarith
   simpa [G, Real.circleAverage_eq_circleAverage_zero_one] using hcenter
 
-theorem log_hilbert_norm_le_circleAverage_all_radius
+lemma log_hilbert_norm_le_circleAverage_all_radius
     {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     {F : ℂ → H}
     (hF : Differentiable ℂ F)
@@ -4040,7 +4040,7 @@ theorem log_hilbert_norm_le_circleAverage_all_radius
   norm_num at hcombined
   linarith
 
-theorem log_hilbert_norm_sq_le_circleAverage_all_radius
+lemma log_hilbert_norm_sq_le_circleAverage_all_radius
     {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     {F : ℂ → H}
     (hF : Differentiable ℂ F)
@@ -4071,7 +4071,7 @@ def roundedLatticeExponent {n : ℕ} (k : ℕ)
     (u : Space n) : Space n :=
   fun i => (⌊(k : ℝ) * u i⌋ : ℝ) / (k : ℝ)
 
-theorem roundedLatticeExponent_mem_scaledIntegerLattice {n : ℕ}
+lemma roundedLatticeExponent_mem_scaledIntegerLattice {n : ℕ}
     {k : ℕ} (hk : 0 < k) (u : Space n) :
     roundedLatticeExponent k u ∈
       LatticeAsymptotics.scaledIntegerLattice n k := by
@@ -4082,7 +4082,7 @@ theorem roundedLatticeExponent_mem_scaledIntegerLattice {n : ℕ}
   have hkreal : (k : ℝ) ≠ 0 := by exact_mod_cast Nat.ne_of_gt hk
   field_simp
 
-theorem roundedLatticeExponent_coordinate_error {n : ℕ}
+lemma roundedLatticeExponent_coordinate_error {n : ℕ}
     {k : ℕ} (hk : 0 < k)
     (u : Space n) (i : Fin n) :
     roundedLatticeExponent k u i ≤ u i ∧
@@ -4105,7 +4105,7 @@ theorem roundedLatticeExponent_coordinate_error {n : ℕ}
     apply (div_lt_div_iff_of_pos_right hkreal).mpr
     linarith
 
-theorem roundedLatticeExponent_norm_sub_le {n : ℕ}
+lemma roundedLatticeExponent_norm_sub_le {n : ℕ}
     {k : ℕ} (hk : 0 < k) (u : Space n) :
     ‖roundedLatticeExponent k u - u‖ ≤ 1 / (k : ℝ) := by
   have hkreal : 0 < (k : ℝ) := by exact_mod_cast hk
@@ -4116,7 +4116,7 @@ theorem roundedLatticeExponent_norm_sub_le {n : ℕ}
   rw [abs_of_nonpos (sub_nonpos.mpr h.1)]
   linarith [h.2]
 
-theorem tendsto_roundedLatticeExponent {n : ℕ}
+lemma tendsto_roundedLatticeExponent {n : ℕ}
     (u : Space n) :
     Tendsto (fun k : ℕ => roundedLatticeExponent k u)
       atTop (𝓝 u) := by
@@ -4128,7 +4128,7 @@ theorem tendsto_roundedLatticeExponent {n : ℕ}
   exact roundedLatticeExponent_norm_sub_le
     (lt_of_lt_of_le Nat.zero_lt_one hk) u
 
-theorem eventually_roundedLatticeExponent_mem_monomialIndex
+lemma eventually_roundedLatticeExponent_mem_monomialIndex
     {n : ℕ} (K : CenteredBody n)
     {u : Space n} (hu : u ∈ interior K.carrier) :
     ∀ᶠ k : ℕ in atTop,
@@ -4152,7 +4152,7 @@ open Set Filter MeasureTheory Matrix
 open scoped Topology BigOperators
 open TranslatedGaussianLatticeAsymptotics
 
-theorem zero_mem_monomialIndex_all_weights {n : ℕ}
+lemma zero_mem_monomialIndex_all_weights {n : ℕ}
     (K : CenteredBody n) (k : ℕ) :
     (0 : Space n) ∈
       LatticeAsymptotics.monomialIndex K k := by
@@ -4172,7 +4172,7 @@ def nearestMonomialIndex {n : ℕ}
     else
       ⟨0, zero_mem_monomialIndex_all_weights K k⟩
 
-theorem eventually_nearestMonomialIndex_eq_rounded {n : ℕ}
+lemma eventually_nearestMonomialIndex_eq_rounded {n : ℕ}
     (K : CenteredBody n)
     {u : Space n} (hu : u ∈ interior K.carrier) :
     ∀ᶠ k : ℕ in atTop,
@@ -4182,7 +4182,7 @@ theorem eventually_nearestMonomialIndex_eq_rounded {n : ℕ}
     K hu] with k hk
   simp [nearestMonomialIndex, hk]
 
-theorem tendsto_nearestMonomialIndex {n : ℕ}
+lemma tendsto_nearestMonomialIndex {n : ℕ}
     (K : CenteredBody n)
     {u : Space n} (hu : u ∈ interior K.carrier) :
     Tendsto (fun k : ℕ =>
@@ -4214,19 +4214,19 @@ def normalizedMeasure {n : ℕ}
   (volume : Measure (Space n)).withDensity
     (fun x => ENNReal.ofReal (normalizedDensity a x))
 
-theorem partition_pos {n : ℕ} {a : Space n → ℝ}
+lemma partition_pos {n : ℕ} {a : Space n → ℝ}
     (ha : Integrable (fun x : Space n => Real.exp (-a x))
       (volume : Measure (Space n))) :
     0 < partition a := by
   exact MeasureTheory.integral_exp_pos ha
 
-theorem normalizedDensity_pos {n : ℕ} {a : Space n → ℝ}
+lemma normalizedDensity_pos {n : ℕ} {a : Space n → ℝ}
     (ha : Integrable (fun x : Space n => Real.exp (-a x))
       (volume : Measure (Space n))) (x : Space n) :
     0 < normalizedDensity a x := by
   exact div_pos (Real.exp_pos _) (partition_pos ha)
 
-theorem normalizedDensity_integrable {n : ℕ}
+lemma normalizedDensity_integrable {n : ℕ}
     {a : Space n → ℝ}
     (ha : Integrable (fun x : Space n => Real.exp (-a x))
       (volume : Measure (Space n))) :
@@ -4234,7 +4234,7 @@ theorem normalizedDensity_integrable {n : ℕ}
       (volume : Measure (Space n)) := by
   exact ha.div_const _
 
-theorem integral_normalizedDensity {n : ℕ}
+lemma integral_normalizedDensity {n : ℕ}
     {a : Space n → ℝ}
     (ha : Integrable (fun x : Space n => Real.exp (-a x))
       (volume : Measure (Space n))) :
@@ -4244,7 +4244,7 @@ theorem integral_normalizedDensity {n : ℕ}
   rw [MeasureTheory.integral_div]
   exact div_self (partition_pos ha).ne'
 
-theorem normalizedMeasure_univ {n : ℕ}
+lemma normalizedMeasure_univ {n : ℕ}
     {a : Space n → ℝ}
     (ha : Integrable (fun x : Space n => Real.exp (-a x))
       (volume : Measure (Space n))) :
@@ -4259,7 +4259,7 @@ theorem normalizedMeasure_univ {n : ℕ}
     integral_normalizedDensity ha]
   exact ENNReal.ofReal_one
 
-theorem normalizedMeasure_isProbability {n : ℕ}
+lemma normalizedMeasure_isProbability {n : ℕ}
     {a : Space n → ℝ}
     (ha : Integrable (fun x : Space n => Real.exp (-a x))
       (volume : Measure (Space n))) :
@@ -4283,7 +4283,7 @@ def actualGradient {n : ℕ}
     (x : Space n) : Space n :=
   MonomialDivergence.dualVector (fderiv ℝ φ x)
 
-theorem pairing_actualGradient_eq_fderiv {n : ℕ}
+lemma pairing_actualGradient_eq_fderiv {n : ℕ}
     (φ : Space n → ℝ)
     (x v : Space n) :
     SupportFunction.pairing (actualGradient φ x) v =
@@ -4324,7 +4324,7 @@ def canonicalSourceMomentPotential {n : ℕ}
   supportError := 1
   supportBound := smoothConvexPotential_bounded K
 
-theorem sourceMomentDensity_integrable {n : ℕ}
+lemma sourceMomentDensity_integrable {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     Integrable
@@ -4342,7 +4342,7 @@ theorem sourceMomentDensity_integrable {n : ℕ}
     (volume : Measure (Space n)) at h
   simpa [SupportFunction.pairing] using h
 
-theorem sourceMomentDensity_integral_pos {n : ℕ}
+lemma sourceMomentDensity_integral_pos {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     0 < (∫ x : Space n,
@@ -4356,7 +4356,7 @@ theorem sourceMomentDensity_integral_pos {n : ℕ}
     MonomialIntegrability.monomialWeight,
     SupportFunction.pairing] using h
 
-theorem sourceMomentPhase_le_supportError {n : ℕ}
+lemma sourceMomentPhase_le_supportError {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K)
     {p : Space n} (hp : p ∈ K.carrier)
@@ -4368,7 +4368,7 @@ theorem sourceMomentPhase_le_supportError {n : ℕ}
   unfold phase
   linarith
 
-theorem sourceMomentPhase_bddAbove {n : ℕ}
+lemma sourceMomentPhase_bddAbove {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K)
     {p : Space n} (hp : p ∈ K.carrier) :
@@ -4377,7 +4377,7 @@ theorem sourceMomentPhase_bddAbove {n : ℕ}
   rintro _ ⟨x, rfl⟩
   exact sourceMomentPhase_le_supportError D hp x
 
-theorem sourceMomentLegendre_le_supportError {n : ℕ}
+lemma sourceMomentLegendre_le_supportError {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K)
     {p : Space n} (hp : p ∈ K.carrier) :
@@ -4387,7 +4387,7 @@ theorem sourceMomentLegendre_le_supportError {n : ℕ}
   rintro _ ⟨x, rfl⟩
   exact sourceMomentPhase_le_supportError D hp x
 
-theorem neg_sourceMomentPotential_zero_le_legendre {n : ℕ}
+lemma neg_sourceMomentPotential_zero_le_legendre {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K)
     {p : Space n} (hp : p ∈ K.carrier) :
@@ -4398,7 +4398,7 @@ theorem neg_sourceMomentPotential_zero_le_legendre {n : ℕ}
   simpa [legendreTransform, phase,
     SupportFunction.pairing] using h
 
-theorem abs_sourceMomentLegendre_le {n : ℕ}
+lemma abs_sourceMomentLegendre_le {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K)
     {p : Space n} (hp : p ∈ K.carrier) :
@@ -4413,7 +4413,7 @@ theorem abs_sourceMomentLegendre_le {n : ℕ}
   · exact (sourceMomentLegendre_le_supportError D hp).trans
       (le_max_left D.supportError |D.potential 0|)
 
-theorem convexOn_sourceMomentLegendre {n : ℕ}
+lemma convexOn_sourceMomentLegendre {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     ConvexOn ℝ K.carrier (legendreTransform D.potential) := by
@@ -4450,7 +4450,7 @@ theorem convexOn_sourceMomentLegendre {n : ℕ}
     add_le_add (mul_le_mul_of_nonneg_left hpmax ha)
       (mul_le_mul_of_nonneg_left hqmax hb)
 
-theorem continuousOn_sourceMomentLegendre_interior {n : ℕ}
+lemma continuousOn_sourceMomentLegendre_interior {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     ContinuousOn (legendreTransform D.potential)
@@ -4465,7 +4465,7 @@ open Set Function Filter MeasureTheory
 open LaplaceAsymptotics MomentExistence
 open scoped BigOperators ENNReal Topology
 
-theorem sourceMomentLegendre_aestronglyMeasurable_restrict
+lemma sourceMomentLegendre_aestronglyMeasurable_restrict
     {n : ℕ} {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     AEStronglyMeasurable
@@ -4484,7 +4484,7 @@ theorem sourceMomentLegendre_aestronglyMeasurable_restrict
     (continuousOn_sourceMomentLegendre_interior D)
     isOpen_interior.measurableSet
 
-theorem sourceMomentLegendre_integrableOn
+lemma sourceMomentLegendre_integrableOn
     {n : ℕ} {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     IntegrableOn
@@ -4509,7 +4509,7 @@ def sourceMomentPartition {n : ℕ}
     Real.exp (-D.potential x)
     ∂(volume : Measure (Space n))
 
-theorem sourceMomentPartition_pos {n : ℕ}
+lemma sourceMomentPartition_pos {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     0 < sourceMomentPartition D :=
@@ -4529,7 +4529,7 @@ def sourceMomentBermanFunctional {n : ℕ}
   Real.log (sourceMomentPartition D) -
     sourceMomentBodyEnergy D
 
-theorem exists_sourceMomentLegendre_maximizer
+lemma exists_sourceMomentLegendre_maximizer
     {n : ℕ} {K : CenteredBody n}
     (D : SourceMomentPotential K)
     {p : Space n} (hp : p ∈ interior K.carrier) :
@@ -4561,7 +4561,7 @@ def normalizedSourcePointwiseFamily {n : ℕ}
       dist (f x) (f y) ≤
         (sourceBodyLipschitzConstant K : ℝ) * dist x y}
 
-theorem isClosed_normalizedSourcePointwiseFamily {n : ℕ}
+lemma isClosed_normalizedSourcePointwiseFamily {n : ℕ}
     (K : CenteredBody n) :
     IsClosed (normalizedSourcePointwiseFamily K) := by
   have hzero : IsClosed
@@ -4593,7 +4593,7 @@ theorem isClosed_normalizedSourcePointwiseFamily {n : ℕ}
     exact isClosed_iInter fun x => isClosed_iInter fun y => hpair x y
   exact hzero.inter hforall
 
-theorem isCompact_normalizedSourcePointwiseFamily {n : ℕ}
+lemma isCompact_normalizedSourcePointwiseFamily {n : ℕ}
     (K : CenteredBody n) :
     IsCompact (normalizedSourcePointwiseFamily K) := by
   let Q : Space n → Set ℝ := fun x =>
@@ -4619,7 +4619,7 @@ def normalizedSourceContinuousFamily {n : ℕ}
   {f | f 0 = 0 ∧
     LipschitzWith (sourceBodyLipschitzConstant K) f}
 
-theorem normalizedSourceContinuousFamily_image {n : ℕ}
+lemma normalizedSourceContinuousFamily_image {n : ℕ}
     (K : CenteredBody n) :
     ContinuousMap.toFun '' normalizedSourceContinuousFamily K =
       normalizedSourcePointwiseFamily K := by
@@ -4633,7 +4633,7 @@ theorem normalizedSourceContinuousFamily_image {n : ℕ}
     let g : C(Space n, ℝ) := ⟨f, hlip.continuous⟩
     exact ⟨g, ⟨hf.1, hlip⟩, rfl⟩
 
-theorem equicontinuous_normalizedSourceContinuousFamily {n : ℕ}
+lemma equicontinuous_normalizedSourceContinuousFamily {n : ℕ}
     (K : CenteredBody n) :
     Equicontinuous
       ((↑) : normalizedSourceContinuousFamily K →
@@ -4648,7 +4648,7 @@ theorem equicontinuous_normalizedSourceContinuousFamily {n : ℕ}
   intro x y f
   exact f.property.2.dist_le_mul x y
 
-theorem isCompact_normalizedSourceContinuousFamily {n : ℕ}
+lemma isCompact_normalizedSourceContinuousFamily {n : ℕ}
     (K : CenteredBody n) :
     IsCompact (normalizedSourceContinuousFamily K) := by
   apply ArzelaAscoli.isCompact_of_equicontinuous
@@ -4657,7 +4657,7 @@ theorem isCompact_normalizedSourceContinuousFamily {n : ℕ}
     exact isCompact_normalizedSourcePointwiseFamily K
   · exact equicontinuous_normalizedSourceContinuousFamily K
 
-theorem sourceMomentBodyFenchel_le {n : ℕ}
+lemma sourceMomentBodyFenchel_le {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K)
     {p : Space n}
@@ -4687,7 +4687,7 @@ def sourceMomentMinimumPoint {n : ℕ}
   (exists_sourceMomentLegendre_maximizer D
     (LatticeAsymptotics.zero_mem_interior K)).choose
 
-theorem sourceMomentMinimumPoint_le {n : ℕ}
+lemma sourceMomentMinimumPoint_le {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K)
     (x : Space n) :
@@ -4709,13 +4709,13 @@ def minimumNormalizedSourceContinuousMap {n : ℕ}
     (D.smooth.continuous.comp
       (continuous_id.add continuous_const)).sub continuous_const
 
-theorem minimumNormalizedSourceContinuousMap_zero {n : ℕ}
+lemma minimumNormalizedSourceContinuousMap_zero {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     minimumNormalizedSourceContinuousMap D 0 = 0 := by
   simp [minimumNormalizedSourceContinuousMap]
 
-theorem minimumNormalizedSourceContinuousMap_nonneg {n : ℕ}
+lemma minimumNormalizedSourceContinuousMap_nonneg {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K)
     (x : Space n) :
@@ -4726,7 +4726,7 @@ theorem minimumNormalizedSourceContinuousMap_nonneg {n : ℕ}
     (sourceMomentMinimumPoint_le D
       (x + sourceMomentMinimumPoint D))
 
-theorem minimumNormalizedSourceContinuousMap_le_support {n : ℕ}
+lemma minimumNormalizedSourceContinuousMap_le_support {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K)
     (x : Space n) :
@@ -4739,7 +4739,7 @@ theorem minimumNormalizedSourceContinuousMap_le_support {n : ℕ}
       (sourceMomentMinimumPoint D)
   simpa [minimumNormalizedSourceContinuousMap] using h
 
-theorem convexOn_minimumNormalizedSourceContinuousMap {n : ℕ}
+lemma convexOn_minimumNormalizedSourceContinuousMap {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     ConvexOn ℝ Set.univ (minimumNormalizedSourceContinuousMap D) := by
@@ -4778,7 +4778,7 @@ theorem convexOn_minimumNormalizedSourceContinuousMap {n : ℕ}
           b * (D.potential (y + z) - D.potential z) := by
       ring
 
-theorem minimumNormalizedSourceContinuousMap_lipschitz {n : ℕ}
+lemma minimumNormalizedSourceContinuousMap_lipschitz {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     LipschitzWith (sourceBodyLipschitzConstant K)
@@ -4794,7 +4794,7 @@ theorem minimumNormalizedSourceContinuousMap_lipschitz {n : ℕ}
       (x + sourceMomentMinimumPoint D)
       (y + sourceMomentMinimumPoint D)
 
-theorem minimumNormalizedSourceContinuousMap_mem {n : ℕ}
+lemma minimumNormalizedSourceContinuousMap_mem {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     minimumNormalizedSourceContinuousMap D ∈
@@ -4802,7 +4802,7 @@ theorem minimumNormalizedSourceContinuousMap_mem {n : ℕ}
   ⟨minimumNormalizedSourceContinuousMap_zero D,
     minimumNormalizedSourceContinuousMap_lipschitz D⟩
 
-theorem convexOn_of_tendsto_minimumNormalizedSourceContinuousMap
+lemma convexOn_of_tendsto_minimumNormalizedSourceContinuousMap
     {n : ℕ}
     {K : CenteredBody n}
     (D : ℕ → SourceMomentPotential K)
@@ -4827,7 +4827,7 @@ theorem convexOn_of_tendsto_minimumNormalizedSourceContinuousMap
     (convexOn_minimumNormalizedSourceContinuousMap (D (φ j))).2
       (Set.mem_univ x) (Set.mem_univ y) ha hb hab
 
-theorem exists_minimumNormalizedSourceConvex_subsequence {n : ℕ}
+lemma exists_minimumNormalizedSourceConvex_subsequence {n : ℕ}
     {K : CenteredBody n}
     (D : ℕ → SourceMomentPotential K) :
     ∃ (f : C(Space n, ℝ))
@@ -4862,7 +4862,7 @@ theorem exists_minimumNormalizedSourceConvex_subsequence {n : ℕ}
       (Eventually.of_forall fun j =>
         minimumNormalizedSourceContinuousMap_le_support (D (φ j)) x)
 
-theorem sourceCenteredBody_setIntegral_id_eq_zero {n : ℕ}
+lemma sourceCenteredBody_setIntegral_id_eq_zero {n : ℕ}
     (K : CenteredBody n) :
     (∫ p in K.carrier, p
       ∂(volume : Measure (Space n))) = 0 := by
@@ -4879,7 +4879,7 @@ def sourcePairingContinuousLinear {n : ℕ}
   LinearMap.toContinuousLinearMap
     (BergmanAsymptotics.pairingLinear x)
 
-theorem sourcePairingContinuousLinear_apply {n : ℕ}
+lemma sourcePairingContinuousLinear_apply {n : ℕ}
     (x p : Space n) :
     sourcePairingContinuousLinear x p =
       SupportFunction.pairing p x := by
@@ -4887,7 +4887,7 @@ theorem sourcePairingContinuousLinear_apply {n : ℕ}
     SupportFunction.pairing p x
   simp [SupportFunction.pairing, mul_comm]
 
-theorem sourceCenteredBody_pairing_integrableOn {n : ℕ}
+lemma sourceCenteredBody_pairing_integrableOn {n : ℕ}
     (K : CenteredBody n)
     (x : Space n) :
     IntegrableOn
@@ -4898,7 +4898,7 @@ theorem sourceCenteredBody_pairing_integrableOn {n : ℕ}
     (sourcePairingContinuousLinear x).continuous.continuousOn.integrableOn_compact
       K.compact
 
-theorem sourceCenteredBody_setIntegral_pairing_eq_zero {n : ℕ}
+lemma sourceCenteredBody_setIntegral_pairing_eq_zero {n : ℕ}
     (K : CenteredBody n)
     (x : Space n) :
     (∫ p in K.carrier,
@@ -4934,7 +4934,7 @@ def minimumNormalizedSourceBodyDual {n : ℕ}
       (sourceMomentMinimumPoint D) +
     D.potential (sourceMomentMinimumPoint D)
 
-theorem minimumNormalizedSource_phase {n : ℕ}
+lemma minimumNormalizedSource_phase {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K)
     (p x : Space n) :
@@ -4957,7 +4957,7 @@ theorem minimumNormalizedSource_phase {n : ℕ}
   rw [MonomialDivergence.pairing_add_right]
   ring
 
-theorem minimumNormalizedSourcePhase_bddAbove {n : ℕ}
+lemma minimumNormalizedSourcePhase_bddAbove {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K)
     {p : Space n}
@@ -4973,7 +4973,7 @@ theorem minimumNormalizedSourcePhase_bddAbove {n : ℕ}
   linarith [sourceMomentPhase_le_supportError D hp
     (x + sourceMomentMinimumPoint D)]
 
-theorem minimumNormalizedSourceBodyDual_eq_legendre {n : ℕ}
+lemma minimumNormalizedSourceBodyDual_eq_legendre {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K)
     {p : Space n}
@@ -5024,7 +5024,7 @@ theorem minimumNormalizedSourceBodyDual_eq_legendre {n : ℕ}
     unfold minimumNormalizedSourceBodyDual
     linarith
 
-theorem minimumNormalizedSourceBodyDual_nonneg {n : ℕ}
+lemma minimumNormalizedSourceBodyDual_nonneg {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K)
     {p : Space n}
@@ -5035,7 +5035,7 @@ theorem minimumNormalizedSourceBodyDual_nonneg {n : ℕ}
   unfold minimumNormalizedSourceBodyDual
   linarith
 
-theorem minimumNormalizedSourceBodyDual_integrableOn {n : ℕ}
+lemma minimumNormalizedSourceBodyDual_integrableOn {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     IntegrableOn (minimumNormalizedSourceBodyDual D)
@@ -5050,7 +5050,7 @@ theorem minimumNormalizedSourceBodyDual_integrableOn {n : ℕ}
     MeasureTheory.integrableOn_const K.compact.measure_ne_top
   exact (hleg.sub hpair).add hconst
 
-theorem minimumNormalizedSourceBodyDual_setIntegral {n : ℕ}
+lemma minimumNormalizedSourceBodyDual_setIntegral {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     (∫ p in K.carrier, minimumNormalizedSourceBodyDual D p
@@ -5090,7 +5090,7 @@ theorem minimumNormalizedSourceBodyDual_setIntegral {n : ℕ}
             simp [normalizedVolume, measureReal_def,
               smul_eq_mul]
 
-theorem minimumNormalizedSourceBodyDual_energy {n : ℕ}
+lemma minimumNormalizedSourceBodyDual_energy {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     (normalizedVolume K.carrier)⁻¹ *
@@ -5103,7 +5103,7 @@ theorem minimumNormalizedSourceBodyDual_energy {n : ℕ}
   have hvol := K.volume_pos.ne'
   field_simp
 
-theorem sourceMomentBodyEnergy_add_minimum_nonneg {n : ℕ}
+lemma sourceMomentBodyEnergy_add_minimum_nonneg {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     0 ≤ sourceMomentBodyEnergy D +
@@ -5130,7 +5130,7 @@ def sourceExtendedBodyLegendre {n : ℕ}
     ENNReal.ofReal
       (phase p f (TopologicalSpace.denseSeq (Space n) j))
 
-theorem measurable_sourceExtendedBodyLegendre {n : ℕ}
+lemma measurable_sourceExtendedBodyLegendre {n : ℕ}
     (f : C(Space n, ℝ)) :
     Measurable (sourceExtendedBodyLegendre f) := by
   unfold sourceExtendedBodyLegendre
@@ -5146,7 +5146,7 @@ theorem measurable_sourceExtendedBodyLegendre {n : ℕ}
         continuous_const
   exact hcontinuous.measurable.ennreal_ofReal
 
-theorem ofReal_phase_le_sourceExtendedBodyLegendre {n : ℕ}
+lemma ofReal_phase_le_sourceExtendedBodyLegendre {n : ℕ}
     (f : C(Space n, ℝ))
     (p x : Space n) :
     ENNReal.ofReal (phase p f x) ≤
@@ -5164,7 +5164,7 @@ theorem ofReal_phase_le_sourceExtendedBodyLegendre {n : ℕ}
           (phase p f
             (TopologicalSpace.denseSeq (Space n) k))) j
 
-theorem sourceExtendedBodyLegendre_eq_of_bddAbove {n : ℕ}
+lemma sourceExtendedBodyLegendre_eq_of_bddAbove {n : ℕ}
     (f : C(Space n, ℝ))
     (p : Space n)
     (hbdd : BddAbove (Set.range (phase p f))) :
@@ -5192,7 +5192,7 @@ theorem sourceExtendedBodyLegendre_eq_of_bddAbove {n : ℕ}
       simpa [ENNReal.ofReal_toReal htop] using
         ENNReal.ofReal_le_ofReal hreal
 
-theorem sourceExtendedBodyLegendre_limit_le_liminf {n : ℕ}
+lemma sourceExtendedBodyLegendre_limit_le_liminf {n : ℕ}
     {K : CenteredBody n}
     (D : ℕ → SourceMomentPotential K)
     (φ : ℕ → ℕ)
@@ -5262,7 +5262,7 @@ theorem sourceExtendedBodyLegendre_limit_le_liminf {n : ℕ}
     exact Filter.liminf_le_liminf (Eventually.of_forall hpointle)
   simpa only [q, hphaseENN.liminf_eq] using hmono
 
-theorem sourceExtendedBodyLegendre_lintegral_le_liminf {n : ℕ}
+lemma sourceExtendedBodyLegendre_lintegral_le_liminf {n : ℕ}
     {K : CenteredBody n}
     (D : ℕ → SourceMomentPotential K)
     (φ : ℕ → ℕ)
@@ -5307,7 +5307,7 @@ theorem sourceExtendedBodyLegendre_lintegral_le_liminf {n : ℕ}
             (minimumNormalizedSourceBodyDual_integrableOn
               (D (φ j))).aestronglyMeasurable.aemeasurable.ennreal_ofReal
 
-theorem minimumNormalizedSourceBodyDual_lintegral {n : ℕ}
+lemma minimumNormalizedSourceBodyDual_lintegral {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     (∫⁻ p in K.carrier,
@@ -5324,7 +5324,7 @@ theorem minimumNormalizedSourceBodyDual_lintegral {n : ℕ}
     with p hp
   exact minimumNormalizedSourceBodyDual_nonneg D hp
 
-theorem sourceExtendedBodyLegendre_lintegral_le_of_uniformEnergy
+lemma sourceExtendedBodyLegendre_lintegral_le_of_uniformEnergy
     {n : ℕ}
     {K : CenteredBody n}
     (D : ℕ → SourceMomentPotential K)
@@ -5402,7 +5402,7 @@ theorem sourceExtendedBodyLegendre_lintegral_le_of_uniformEnergy
         tendsto_const_nhds
       simpa only [hconst.liminf_eq] using hmono
 
-theorem exists_minimumNormalizedSourceFiniteEnergy_subsequence
+lemma exists_minimumNormalizedSourceFiniteEnergy_subsequence
     {n : ℕ}
     {K : CenteredBody n}
     (D : ℕ → SourceMomentPotential K)
@@ -5441,7 +5441,7 @@ open Set Function Filter MeasureTheory
 open LaplaceAsymptotics MomentExistence MomentPotentialExistence MomentCoercivityCompactness
 open scoped BigOperators ENNReal NNReal Topology
 
-theorem exists_uniform_inner_supportBall {n : ℕ}
+lemma exists_uniform_inner_supportBall {n : ℕ}
     (K : CenteredBody n) :
     ∃ ρ δ : ℝ, 0 < ρ ∧ 0 < δ ∧
       ∀ x : Space n,
@@ -5547,7 +5547,7 @@ theorem exists_uniform_inner_supportBall {n : ℕ}
     norm_num
     nlinarith [mul_nonneg hd.le (norm_nonneg x)]
 
-theorem realVolume_uniformInnerBall {n : ℕ}
+lemma realVolume_uniformInnerBall {n : ℕ}
     (c : Space n)
     {ρ : ℝ}
     (hρ : 0 < ρ) :
@@ -5560,7 +5560,7 @@ theorem realVolume_uniformInnerBall {n : ℕ}
   simpa [measureReal_def, htwo,
     ENNReal.toReal_ofReal (pow_nonneg hρ.le n)] using h
 
-theorem minimumNormalizedSourceBodyFenchel_le {n : ℕ}
+lemma minimumNormalizedSourceBodyFenchel_le {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K)
     {p : Space n}
@@ -5581,7 +5581,7 @@ theorem minimumNormalizedSourceBodyFenchel_le {n : ℕ}
       legendreTransform (minimumNormalizedSourceContinuousMap D) p at h
   rwa [← minimumNormalizedSourceBodyDual_eq_legendre D hp] at h
 
-theorem exists_minimumNormalizedSource_linear_coercivity {n : ℕ}
+lemma exists_minimumNormalizedSource_linear_coercivity {n : ℕ}
     (K : CenteredBody n) :
     ∃ δ B : ℝ, 0 < δ ∧ 0 < B ∧
       ∀ (D : SourceMomentPotential K)
@@ -5688,7 +5688,7 @@ theorem exists_minimumNormalizedSource_linear_coercivity {n : ℕ}
               D.potential (sourceMomentMinimumPoint D)) := by
           ring
 
-theorem exists_minimumNormalizedSource_gibbs_decay {n : ℕ}
+lemma exists_minimumNormalizedSource_gibbs_decay {n : ℕ}
     (K : CenteredBody n) :
     ∃ δ B : ℝ, 0 < δ ∧ 0 < B ∧
       ∀ (D : SourceMomentPotential K)
@@ -5715,7 +5715,7 @@ open Set Function Filter MeasureTheory
 open MomentExistence MomentPotentialExistence MomentCoercivityCompactness MomentNonlinearTightness
 open scoped BigOperators ENNReal NNReal Topology
 
-theorem integrable_exp_neg_mul_norm_all {n : ℕ} {a : ℝ}
+lemma integrable_exp_neg_mul_norm_all {n : ℕ} {a : ℝ}
     (ha : 0 < a) :
     Integrable (fun x : Space n => Real.exp (-a * ‖x‖))
       (volume : Measure (Space n)) := by
@@ -5741,7 +5741,7 @@ def minimumNormalizedSourcePartition {n : ℕ}
     Real.exp (-minimumNormalizedSourceContinuousMap D x)
     ∂(volume : Measure (Space n))
 
-theorem minimumNormalizedSourceDensity_integrable {n : ℕ}
+lemma minimumNormalizedSourceDensity_integrable {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     Integrable
@@ -5758,7 +5758,7 @@ theorem minimumNormalizedSourceDensity_integrable {n : ℕ}
   rw [Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)]
   exact hdecay D x
 
-theorem minimumNormalizedSourcePartition_eq {n : ℕ}
+lemma minimumNormalizedSourcePartition_eq {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     minimumNormalizedSourcePartition D =
@@ -5797,7 +5797,7 @@ theorem minimumNormalizedSourcePartition_eq {n : ℕ}
           (sourceMomentMinimumPoint D)]
         rfl
 
-theorem minimumNormalizedSourcePartition_pos {n : ℕ}
+lemma minimumNormalizedSourcePartition_pos {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     0 < minimumNormalizedSourcePartition D := by
@@ -5811,7 +5811,7 @@ def minimumNormalizedSourceBermanFunctional {n : ℕ}
   Real.log (minimumNormalizedSourcePartition D) -
     minimumNormalizedSourceBodyEnergy D
 
-theorem minimumNormalizedSourceBermanFunctional_eq {n : ℕ}
+lemma minimumNormalizedSourceBermanFunctional_eq {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     minimumNormalizedSourceBermanFunctional D =
@@ -5824,13 +5824,13 @@ theorem minimumNormalizedSourceBermanFunctional_eq {n : ℕ}
     Real.log_exp]
   ring
 
-theorem minimumNormalizedSourceBodyEnergy_nonneg {n : ℕ}
+lemma minimumNormalizedSourceBodyEnergy_nonneg {n : ℕ}
     {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     0 ≤ minimumNormalizedSourceBodyEnergy D :=
   sourceMomentBodyEnergy_add_minimum_nonneg D
 
-theorem exists_minimumNormalizedSource_strong_moser_trudinger
+lemma exists_minimumNormalizedSource_strong_moser_trudinger
     {n : ℕ} (K : CenteredBody n)
     (ε : ℝ) (hε : 0 < ε) :
     ∃ A : ℝ,
@@ -5917,7 +5917,7 @@ theorem exists_minimumNormalizedSource_strong_moser_trudinger
         (mul_le_mul_of_nonneg_right htB henergy)
         (le_refl _)
 
-theorem sourceMomentBermanFunctional_bddAbove {n : ℕ}
+lemma sourceMomentBermanFunctional_bddAbove {n : ℕ}
     (K : CenteredBody n) :
     BddAbove
       (Set.range
@@ -5933,7 +5933,7 @@ theorem sourceMomentBermanFunctional_bddAbove {n : ℕ}
   unfold minimumNormalizedSourceBermanFunctional
   linarith [hA D, minimumNormalizedSourceBodyEnergy_nonneg D]
 
-theorem exists_sourceMomentBerman_superlevel_uniformEnergy
+lemma exists_sourceMomentBerman_superlevel_uniformEnergy
     {n : ℕ} (K : CenteredBody n) (L : ℝ) :
     ∃ C : ℝ,
       ∀ D : SourceMomentPotential K,
@@ -5948,7 +5948,7 @@ theorem exists_sourceMomentBerman_superlevel_uniformEnergy
   unfold minimumNormalizedSourceBermanFunctional at hfunctional
   nlinarith [hA D]
 
-theorem exists_sourceMomentBerman_maximizingSequence_uniformEnergy
+lemma exists_sourceMomentBerman_maximizingSequence_uniformEnergy
     {n : ℕ} (K : CenteredBody n) :
     ∃ (D : ℕ → SourceMomentPotential K) (C : ℝ),
       (∀ j : ℕ, minimumNormalizedSourceBodyEnergy (D j) ≤ C) ∧
@@ -5998,7 +5998,7 @@ open MomentExistence MomentPotentialExistence MomentMinimizer MomentCoercivityCo
 open MomentFunctionalCoercivity MomentNonlinearTightness MomentMoserTrudinger
 open scoped BigOperators ENNReal NNReal Topology
 
-theorem exists_minimumNormalizedSource_uniform_gibbs_majorant_all
+lemma exists_minimumNormalizedSource_uniform_gibbs_majorant_all
     {n : ℕ} (K : CenteredBody n) (C : ℝ) :
     ∃ δ B : ℝ, 0 < δ ∧ 0 < B ∧
       Integrable
@@ -6026,7 +6026,7 @@ theorem exists_minimumNormalizedSource_uniform_gibbs_majorant_all
           (mul_le_mul_of_nonneg_left henergy hB.le))
         (Real.exp_pos _).le
 
-theorem tendsto_minimumNormalizedSourcePartition_of_uniformEnergy_all
+lemma tendsto_minimumNormalizedSourcePartition_of_uniformEnergy_all
     {n : ℕ} {K : CenteredBody n}
     (D : ℕ → SourceMomentPotential K)
     (φ : ℕ → ℕ)
@@ -6085,7 +6085,7 @@ def finiteEnergySourcePartition {n : ℕ}
   ∫ x : Space n, Real.exp (-F.potential x)
     ∂(volume : Measure (Space n))
 
-theorem finiteEnergySourcePartition_pos {n : ℕ}
+lemma finiteEnergySourcePartition_pos {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     0 < finiteEnergySourcePartition F :=
@@ -6104,7 +6104,7 @@ def finiteEnergySourceBermanFunctional {n : ℕ}
   Real.log (finiteEnergySourcePartition F) -
     finiteEnergySourceBodyEnergy F
 
-theorem integrable_limit_gibbs_of_uniformEnergy_all
+lemma integrable_limit_gibbs_of_uniformEnergy_all
     {n : ℕ} {K : CenteredBody n}
     (D : ℕ → SourceMomentPotential K)
     (φ : ℕ → ℕ)
@@ -6136,7 +6136,7 @@ theorem integrable_limit_gibbs_of_uniformEnergy_all
     (Eventually.of_forall fun j =>
       hmajor (D (φ j)) (henergy (φ j)) x)
 
-theorem minimumNormalizedSourceBodyDual_lintegral_eq_volume_mul_energy
+lemma minimumNormalizedSourceBodyDual_lintegral_eq_volume_mul_energy
     {n : ℕ} {K : CenteredBody n}
     (D : SourceMomentPotential K) :
     (∫⁻ p in K.carrier,
@@ -6157,7 +6157,7 @@ theorem minimumNormalizedSourceBodyDual_lintegral_eq_volume_mul_energy
   field_simp at h
   linarith
 
-theorem exists_finiteEnergySourceBerman_optimizer {n : ℕ}
+lemma exists_finiteEnergySourceBerman_optimizer {n : ℕ}
     (K : CenteredBody n) :
     ∃ (F : SourceFiniteEnergyPotential K)
       (D : ℕ → SourceMomentPotential K)
@@ -6337,13 +6337,13 @@ namespace WeightedBochner
 open Set MeasureTheory Matrix Filter
 open scoped BigOperators ENNReal InnerProductSpace
 
-theorem continuous_normalizedDensity {n : ℕ}
+lemma continuous_normalizedDensity {n : ℕ}
     {a : Space n → ℝ} (ha : Continuous a) :
     Continuous (WeightedPoincare.normalizedDensity a) := by
   unfold WeightedPoincare.normalizedDensity
   exact (Real.continuous_exp.comp ha.neg).div_const _
 
-theorem integral_normalizedMeasure {n : ℕ}
+lemma integral_normalizedMeasure {n : ℕ}
     {a : Space n → ℝ}
     (ha : Continuous a)
     (hpart : Integrable
@@ -6384,7 +6384,7 @@ theorem integral_normalizedMeasure {n : ℕ}
             ring
     _ = _ := MeasureTheory.integral_div _ _
 
-theorem fderiv_coordinate_eval {n : ℕ}
+lemma fderiv_coordinate_eval {n : ℕ}
     {f : Space n → ℝ}
     (hf : ContDiff ℝ 2 f)
     (x v w : Space n) :
@@ -6414,14 +6414,14 @@ def finiteEnergySourceGibbsProbability {n : ℕ}
     Measure (Space n) :=
   WeightedPoincare.normalizedMeasure F.potential
 
-theorem finiteEnergySourceGibbsProbability_isProbability {n : ℕ}
+lemma finiteEnergySourceGibbsProbability_isProbability {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     IsProbabilityMeasure (finiteEnergySourceGibbsProbability F) :=
   WeightedPoincare.normalizedMeasure_isProbability
     F.densityIntegrable
 
-theorem integral_finiteEnergySourceGibbsProbability {n : ℕ}
+lemma integral_finiteEnergySourceGibbsProbability {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : Space n → ℝ) :
@@ -6456,7 +6456,7 @@ def sourceSupportClipping {n : ℕ}
   max (F.potential x)
     (SupportFunction.supportFunction K.carrier x - R)
 
-theorem continuous_sourceSupportClipping {n : ℕ}
+lemma continuous_sourceSupportClipping {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) (R : ℝ) :
     Continuous (sourceSupportClipping F R) := by
@@ -6465,7 +6465,7 @@ theorem continuous_sourceSupportClipping {n : ℕ}
     ((continuous_supportFunction K.compact
       (K.fullDimensional.mono interior_subset)).sub continuous_const)
 
-theorem convexOn_sourceSupportClipping {n : ℕ}
+lemma convexOn_sourceSupportClipping {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) (R : ℝ) :
     ConvexOn ℝ Set.univ (sourceSupportClipping F R) := by
@@ -6534,14 +6534,14 @@ theorem convexOn_sourceSupportClipping {n : ℕ}
           (mul_le_mul_of_nonneg_left (le_max_right _ _) ha)
           (mul_le_mul_of_nonneg_left (le_max_right _ _) hb)
 
-theorem sourceSupportClipping_ge {n : ℕ}
+lemma sourceSupportClipping_ge {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (R : ℝ) (x : Space n) :
     F.potential x ≤ sourceSupportClipping F R x :=
   le_max_left _ _
 
-theorem sourceSupportClipping_le_support {n : ℕ}
+lemma sourceSupportClipping_le_support {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     {R : ℝ} (hR : 0 ≤ R)
@@ -6551,7 +6551,7 @@ theorem sourceSupportClipping_le_support {n : ℕ}
   unfold sourceSupportClipping
   exact max_le (F.supportUpper x) (sub_le_self _ hR)
 
-theorem sourceSupportClipping_supportBound {n : ℕ}
+lemma sourceSupportClipping_supportBound {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     {R : ℝ} (hR : 0 ≤ R)
@@ -6565,7 +6565,7 @@ theorem sourceSupportClipping_supportBound {n : ℕ}
     le_max_right _ _
   exact abs_le.mpr ⟨by linarith, by linarith⟩
 
-theorem sourceSupportClipping_lipschitz {n : ℕ}
+lemma sourceSupportClipping_lipschitz {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     {R : ℝ} (hR : 0 ≤ R) :
@@ -6583,7 +6583,7 @@ def mollifiedSourceSupportClipping {n : ℕ}
   ρ.normed (volume : Measure (Space n)) ⋆
     sourceSupportClipping F R
 
-theorem contDiff_mollifiedSourceSupportClipping {n : ℕ}
+lemma contDiff_mollifiedSourceSupportClipping {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (R : ℝ) (ρ : ContDiffBump (0 : Space n)) :
@@ -6594,7 +6594,7 @@ theorem contDiff_mollifiedSourceSupportClipping {n : ℕ}
     ρ.contDiff_normed
     (continuous_sourceSupportClipping F R).locallyIntegrable
 
-theorem convexOn_mollifiedSourceSupportClipping {n : ℕ}
+lemma convexOn_mollifiedSourceSupportClipping {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (R : ℝ) (ρ : ContDiffBump (0 : Space n)) :
@@ -6625,7 +6625,7 @@ theorem convexOn_mollifiedSourceSupportClipping {n : ℕ}
         (continuous_sourceSupportClipping F R).locallyIntegrable
         x).integrable
 
-theorem dist_mollifiedSourceSupportClipping_le {n : ℕ}
+lemma dist_mollifiedSourceSupportClipping_le {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     {R : ℝ} (hR : 0 ≤ R)
@@ -6653,7 +6653,7 @@ theorem dist_mollifiedSourceSupportClipping_le {n : ℕ}
       (mul_nonneg (Nat.cast_nonneg n)
         (LaurentJetSeparatedness.bodyRadius_pos K).le))
 
-theorem mollifiedSourceSupportClipping_supportBound {n : ℕ}
+lemma mollifiedSourceSupportClipping_supportBound {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     {R : ℝ} (hR : 0 ≤ R)
@@ -6700,7 +6700,7 @@ def sourceClippedMollificationMoment {n : ℕ}
       ρ.rOut
   supportBound := mollifiedSourceSupportClipping_supportBound F hR ρ
 
-theorem sourceSupportClippingDensity_integrable {n : ℕ}
+lemma sourceSupportClippingDensity_integrable {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (R : ℝ) :
@@ -6717,7 +6717,7 @@ theorem sourceSupportClippingDensity_integrable {n : ℕ}
   exact Real.exp_le_exp.mpr
     (neg_le_neg (sourceSupportClipping_ge F R x))
 
-theorem eventually_sourceSupportClipping_nat_eq {n : ℕ}
+lemma eventually_sourceSupportClipping_nat_eq {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (x : Space n) :
@@ -6735,7 +6735,7 @@ theorem eventually_sourceSupportClipping_nat_eq {n : ℕ}
   unfold sourceSupportClipping
   exact max_eq_left (by linarith)
 
-theorem tendsto_sourceSupportClippingPartition {n : ℕ}
+lemma tendsto_sourceSupportClippingPartition {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     Tendsto
@@ -6766,7 +6766,7 @@ theorem tendsto_sourceSupportClippingPartition {n : ℕ}
             Real.exp (-sourceSupportClipping F (j : ℝ) x)
         rw [hj])
 
-theorem finiteEnergySourceExtendedLegendre_integrableOn {n : ℕ}
+lemma finiteEnergySourceExtendedLegendre_integrableOn {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     IntegrableOn
@@ -6778,7 +6778,7 @@ theorem finiteEnergySourceExtendedLegendre_integrableOn {n : ℕ}
       F.potential).aemeasurable
   · exact F.legendreFinite.ne
 
-theorem finiteEnergySourceBodyEnergy_eq_setIntegral {n : ℕ}
+lemma finiteEnergySourceBodyEnergy_eq_setIntegral {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     finiteEnergySourceBodyEnergy F =
@@ -6795,7 +6795,7 @@ theorem finiteEnergySourceBodyEnergy_eq_setIntegral {n : ℕ}
     (measurable_sourceExtendedBodyLegendre F.potential).aemeasurable
     F.legendreFinite.ne
 
-theorem recoveryLegendre_le_extended {n : ℕ}
+lemma recoveryLegendre_le_extended {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (D : SourceMomentPotential K)
@@ -6823,7 +6823,7 @@ theorem recoveryLegendre_le_extended {n : ℕ}
       (sourceExtendedBodyLegendre F.potential p).toReal + ε
   linarith [hlower x]
 
-theorem sourceMomentBodyEnergy_le_finiteEnergy_add {n : ℕ}
+lemma sourceMomentBodyEnergy_le_finiteEnergy_add {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (D : SourceMomentPotential K)
@@ -6876,7 +6876,7 @@ theorem sourceMomentBodyEnergy_le_finiteEnergy_add {n : ℕ}
         simpa [normalizedVolume] using K.volume_pos.ne'
       field_simp [hvol]
 
-theorem exists_smooth_sourceSupportClipping_recovery {n : ℕ}
+lemma exists_smooth_sourceSupportClipping_recovery {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     {R : ℝ} (hR : 0 ≤ R)
@@ -6914,7 +6914,7 @@ theorem exists_smooth_sourceSupportClipping_recovery {n : ℕ}
   have hnear := (abs_lt.mp (hclose x)).1
   linarith
 
-theorem sourceClippingRecovery_partition_bounds {n : ℕ}
+lemma sourceClippingRecovery_partition_bounds {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (D : SourceMomentPotential K)
@@ -6985,7 +6985,7 @@ theorem sourceClippingRecovery_partition_bounds {n : ℕ}
             ∂(volume : Measure (Space n))) :=
           MeasureTheory.integral_const_mul _ _
 
-theorem exists_smooth_finiteEnergySource_recovery_sequence {n : ℕ}
+lemma exists_smooth_finiteEnergySource_recovery_sequence {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     ∃ D : ℕ → SourceMomentPotential K,
@@ -7070,7 +7070,7 @@ theorem exists_smooth_finiteEnergySource_recovery_sequence {n : ℕ}
   · intro j
     exact henergy j
 
-theorem finiteEnergySourceBermanFunctional_le_sSup {n : ℕ}
+lemma finiteEnergySourceBermanFunctional_le_sSup {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     finiteEnergySourceBermanFunctional F ≤
@@ -7115,7 +7115,7 @@ theorem finiteEnergySourceBermanFunctional_le_sSup {n : ℕ}
   unfold sourceMomentBermanFunctional at hsup
   linarith [henergy j]
 
-theorem exists_finiteEnergySourceBerman_exact_optimizer {n : ℕ}
+lemma exists_finiteEnergySourceBerman_exact_optimizer {n : ℕ}
     (K : CenteredBody n) :
     ∃ F : SourceFiniteEnergyPotential K,
       finiteEnergySourceBermanFunctional F =
@@ -7143,7 +7143,7 @@ open Set Function Filter MeasureTheory
 open LaplaceAsymptotics MomentFunctionalCoercivity MomentOptimizer MomentWeakFirstVariation
 open scoped BigOperators ENNReal NNReal Topology
 
-theorem finiteEnergySourcePhase_actualGradient_le
+lemma finiteEnergySourcePhase_actualGradient_le
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (x : Space n)
@@ -7199,7 +7199,7 @@ theorem finiteEnergySourcePhase_actualGradient_le
   rw [hpair] at htangent
   linarith
 
-theorem finiteEnergySourceGradient_pairing_le_support
+lemma finiteEnergySourceGradient_pairing_le_support
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (x : Space n)
@@ -7258,7 +7258,7 @@ theorem finiteEnergySourceGradient_pairing_le_support
     field_simp
   linarith
 
-theorem finiteEnergySourceGradient_mem_carrier
+lemma finiteEnergySourceGradient_mem_carrier
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (x : Space n)
@@ -7286,7 +7286,7 @@ theorem finiteEnergySourceGradient_mem_carrier
   rw [MonomialDivergence.dual_apply_eq_pairing] at hpoint
   exact (not_lt_of_ge (hgradient.trans hsupport)) hpoint
 
-theorem ae_differentiableAt_finiteEnergySource
+lemma ae_differentiableAt_finiteEnergySource
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     ∀ᵐ x : Space n
@@ -7295,7 +7295,7 @@ theorem ae_differentiableAt_finiteEnergySource
         (F.potential : Space n → ℝ) x := by
   exact F.lipschitz.ae_differentiableAt
 
-theorem measurable_finiteEnergySourceGradient
+lemma measurable_finiteEnergySourceGradient
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     Measurable
@@ -7307,7 +7307,7 @@ theorem measurable_finiteEnergySourceGradient
     (F.potential : Space n → ℝ)
     (Pi.single i (1 : ℝ))
 
-theorem finiteEnergySourceGibbs_ae_of_volume
+lemma finiteEnergySourceGibbs_ae_of_volume
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (P : Space n → Prop)
@@ -7333,7 +7333,7 @@ def finiteEnergySourceGradientPushforward
       (F.potential : Space n → ℝ))
     (finiteEnergySourceGibbsProbability F)
 
-theorem finiteEnergySourceGradientPushforward_univ
+lemma finiteEnergySourceGradientPushforward_univ
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     finiteEnergySourceGradientPushforward F Set.univ = 1 := by
@@ -7345,14 +7345,14 @@ theorem finiteEnergySourceGradientPushforward_univ
     MeasurableSet.univ]
   simp
 
-theorem finiteEnergySourceGradientPushforward_isProbability
+lemma finiteEnergySourceGradientPushforward_isProbability
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     IsProbabilityMeasure
       (finiteEnergySourceGradientPushforward F) :=
   ⟨finiteEnergySourceGradientPushforward_univ F⟩
 
-theorem finiteEnergySourceExtendedLegendre_actualGradient
+lemma finiteEnergySourceExtendedLegendre_actualGradient
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (x : Space n)
@@ -7386,7 +7386,7 @@ theorem finiteEnergySourceExtendedLegendre_actualGradient
     exact hmax z
   · exact le_csSup hbdd ⟨x, rfl⟩
 
-theorem finiteEnergySourcePhase_actualGradient_nonneg
+lemma finiteEnergySourcePhase_actualGradient_nonneg
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (x : Space n)
@@ -7401,7 +7401,7 @@ theorem finiteEnergySourcePhase_actualGradient_nonneg
   simpa [phase, SupportFunction.pairing,
     F.normalized] using h
 
-theorem finiteEnergySourceExtendedLegendre_actualGradient_toReal
+lemma finiteEnergySourceExtendedLegendre_actualGradient_toReal
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (x : Space n)
@@ -7432,7 +7432,7 @@ def normalizedTargetBodyMeasure {n : ℕ}
   ((volume : Measure (Space n)) K.carrier)⁻¹ •
     ((volume : Measure (Space n)).restrict K.carrier)
 
-theorem centeredBody_volume_ne_zero_top {n : ℕ}
+lemma centeredBody_volume_ne_zero_top {n : ℕ}
     (K : CenteredBody n) :
     (volume : Measure (Space n)) K.carrier ≠ 0 ∧
       (volume : Measure (Space n)) K.carrier ≠ ⊤ := by
@@ -7441,7 +7441,7 @@ theorem centeredBody_volume_ne_zero_top {n : ℕ}
   have hpos := K.volume_pos
   simp [normalizedVolume, hzero] at hpos
 
-theorem normalizedTargetBodyMeasure_univ {n : ℕ}
+lemma normalizedTargetBodyMeasure_univ {n : ℕ}
     (K : CenteredBody n) :
     normalizedTargetBodyMeasure K Set.univ = 1 := by
   unfold normalizedTargetBodyMeasure
@@ -7450,12 +7450,12 @@ theorem normalizedTargetBodyMeasure_univ {n : ℕ}
     (centeredBody_volume_ne_zero_top K).1
     (centeredBody_volume_ne_zero_top K).2
 
-theorem normalizedTargetBodyMeasure_isProbability {n : ℕ}
+lemma normalizedTargetBodyMeasure_isProbability {n : ℕ}
     (K : CenteredBody n) :
     IsProbabilityMeasure (normalizedTargetBodyMeasure K) :=
   ⟨normalizedTargetBodyMeasure_univ K⟩
 
-theorem integral_normalizedTargetBodyMeasure {n : ℕ}
+lemma integral_normalizedTargetBodyMeasure {n : ℕ}
     (K : CenteredBody n)
     (v : Space n → ℝ) :
     (∫ p : Space n, v p
@@ -7467,7 +7467,7 @@ theorem integral_normalizedTargetBodyMeasure {n : ℕ}
   rw [MeasureTheory.integral_smul_measure]
   simp [normalizedVolume, smul_eq_mul]
 
-theorem integral_finiteEnergySourceGradientPushforward {n : ℕ}
+lemma integral_finiteEnergySourceGradientPushforward {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ)) :
@@ -7482,7 +7482,7 @@ theorem integral_finiteEnergySourceGradientPushforward {n : ℕ}
     (measurable_finiteEnergySourceGradient F).aemeasurable
     v.continuous.aestronglyMeasurable
 
-theorem finiteEnergySourceExtendedLegendre_zero {n : ℕ}
+lemma finiteEnergySourceExtendedLegendre_zero {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     sourceExtendedBodyLegendre F.potential
@@ -7508,7 +7508,7 @@ def finiteEnergyFiniteTargetSet {n : ℕ}
   {p | p ∈ K.carrier ∧
     sourceExtendedBodyLegendre F.potential p ≠ ⊤}
 
-theorem zero_mem_finiteEnergyFiniteTargetSet {n : ℕ}
+lemma zero_mem_finiteEnergyFiniteTargetSet {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     (0 : Space n) ∈ finiteEnergyFiniteTargetSet F := by
@@ -7517,13 +7517,13 @@ theorem zero_mem_finiteEnergyFiniteTargetSet {n : ℕ}
   rw [finiteEnergySourceExtendedLegendre_zero F]
   exact ENNReal.zero_ne_top
 
-theorem finiteEnergyFiniteTargetSet_nonempty {n : ℕ}
+lemma finiteEnergyFiniteTargetSet_nonempty {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     (finiteEnergyFiniteTargetSet F).Nonempty :=
   ⟨0, zero_mem_finiteEnergyFiniteTargetSet F⟩
 
-theorem ae_mem_finiteEnergyFiniteTargetSet {n : ℕ}
+lemma ae_mem_finiteEnergyFiniteTargetSet {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     ∀ᵐ p : Space n
@@ -7537,7 +7537,7 @@ theorem ae_mem_finiteEnergyFiniteTargetSet {n : ℕ}
     with p hp htop
   exact ⟨hp, ne_of_lt htop⟩
 
-theorem finiteEnergyFiniteTarget_fenchel {n : ℕ}
+lemma finiteEnergyFiniteTarget_fenchel {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     {p : Space n}
@@ -7561,13 +7561,13 @@ def finiteEnergyTargetTestBound {n : ℕ}
     (v : C(Space n, ℝ)) : ℝ :=
   max 0 (sSup ((fun p : Space n => |v p|) '' K.carrier))
 
-theorem finiteEnergyTargetTestBound_nonneg {n : ℕ}
+lemma finiteEnergyTargetTestBound_nonneg {n : ℕ}
     (K : CenteredBody n)
     (v : C(Space n, ℝ)) :
     0 ≤ finiteEnergyTargetTestBound K v :=
   le_max_left _ _
 
-theorem abs_targetTest_le_finiteEnergyTargetTestBound {n : ℕ}
+lemma abs_targetTest_le_finiteEnergyTargetTestBound {n : ℕ}
     (K : CenteredBody n)
     (v : C(Space n, ℝ))
     {p : Space n} (hp : p ∈ K.carrier) :
@@ -7586,7 +7586,7 @@ def finiteEnergyTargetDualPhase {n : ℕ}
   SupportFunction.pairing p x -
     (sourceExtendedBodyLegendre F.potential p).toReal - t * v p
 
-theorem finiteEnergyTargetDualPhase_le {n : ℕ}
+lemma finiteEnergyTargetDualPhase_le {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -7622,7 +7622,7 @@ def finiteEnergyTargetGeodesic {n : ℕ}
       finiteEnergyTargetDualPhase F v t p x) ''
         finiteEnergyFiniteTargetSet F)
 
-theorem finiteEnergyTargetDualPhase_bddAbove {n : ℕ}
+lemma finiteEnergyTargetDualPhase_bddAbove {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -7636,7 +7636,7 @@ theorem finiteEnergyTargetDualPhase_bddAbove {n : ℕ}
   rintro _ ⟨p, hp, rfl⟩
   exact finiteEnergyTargetDualPhase_le F v t hp x
 
-theorem finiteEnergyTargetDualPhase_le_geodesic {n : ℕ}
+lemma finiteEnergyTargetDualPhase_le_geodesic {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -7649,7 +7649,7 @@ theorem finiteEnergyTargetDualPhase_le_geodesic {n : ℕ}
     (finiteEnergyTargetDualPhase_bddAbove F v t x)
     ⟨p, hp, rfl⟩
 
-theorem finiteEnergyTargetGeodesic_zero_le {n : ℕ}
+lemma finiteEnergyTargetGeodesic_zero_le {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -7662,7 +7662,7 @@ theorem finiteEnergyTargetGeodesic_zero_le {n : ℕ}
   simpa [finiteEnergyTargetDualPhase] using
     finiteEnergyFiniteTarget_fenchel F hp x
 
-theorem finiteEnergyTargetGeodesic_lipschitz {n : ℕ}
+lemma finiteEnergyTargetGeodesic_lipschitz {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -7715,7 +7715,7 @@ theorem finiteEnergyTargetGeodesic_lipschitz {n : ℕ}
   unfold finiteEnergyTargetDualPhase at hy ⊢
   linarith
 
-theorem continuous_finiteEnergyTargetGeodesic {n : ℕ}
+lemma continuous_finiteEnergyTargetGeodesic {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -7723,7 +7723,7 @@ theorem continuous_finiteEnergyTargetGeodesic {n : ℕ}
     Continuous (finiteEnergyTargetGeodesic F v t) :=
   (finiteEnergyTargetGeodesic_lipschitz F v t).continuous
 
-theorem convexOn_finiteEnergyTargetGeodesic {n : ℕ}
+lemma convexOn_finiteEnergyTargetGeodesic {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -7773,7 +7773,7 @@ theorem convexOn_finiteEnergyTargetGeodesic {n : ℕ}
     (mul_le_mul_of_nonneg_left hpx ha)
     (mul_le_mul_of_nonneg_left hpy hb)
 
-theorem finiteEnergyTargetGeodesic_zero_eq_of_differentiableAt
+lemma finiteEnergyTargetGeodesic_zero_eq_of_differentiableAt
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -7806,7 +7806,7 @@ theorem finiteEnergyTargetGeodesic_zero_eq_of_differentiableAt
       SupportFunction.pairing p x - F.potential x at hleg
   linarith
 
-theorem finiteEnergyTargetGeodesic_zero_eq {n : ℕ}
+lemma finiteEnergyTargetGeodesic_zero_eq {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -7836,7 +7836,7 @@ theorem finiteEnergyTargetGeodesic_zero_eq {n : ℕ}
         F v y hy).symm
   exact (closure_minimal hsubset hclosed) (hdense x)
 
-theorem finiteEnergyTargetGeodesic_uniform_error {n : ℕ}
+lemma finiteEnergyTargetGeodesic_uniform_error {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -7902,7 +7902,7 @@ theorem finiteEnergyTargetGeodesic_uniform_error {n : ℕ}
       linarith
     linarith
 
-theorem finiteEnergyTargetGeodesic_densityIntegrable {n : ℕ}
+lemma finiteEnergyTargetGeodesic_densityIntegrable {n : ℕ}
     {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -7939,7 +7939,7 @@ open MomentCoercivityCompactness MomentFunctionalCoercivity MomentNonlinearTight
 open MomentConvexRecovery MomentTargetGeodesic
 open scoped BigOperators ENNReal NNReal Topology
 
-theorem exists_finiteEnergySource_linear_coercivity
+lemma exists_finiteEnergySource_linear_coercivity
     {n : ℕ} (K : CenteredBody n) :
     ∃ δ B : ℝ, 0 < δ ∧ 0 < B ∧
       ∀ (F : SourceFiniteEnergyPotential K)
@@ -8039,7 +8039,7 @@ theorem exists_finiteEnergySource_linear_coercivity
           finiteEnergySourceBodyEnergy F := by
           ring
 
-theorem exists_finiteEnergyTargetGeodesic_linear_coercivity
+lemma exists_finiteEnergyTargetGeodesic_linear_coercivity
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8059,7 +8059,7 @@ theorem exists_finiteEnergyTargetGeodesic_linear_coercivity
     (finiteEnergyTargetGeodesic_uniform_error F v t x)).1
   linarith
 
-theorem exists_finiteEnergyTargetGeodesic_minimum
+lemma exists_finiteEnergyTargetGeodesic_minimum
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8111,7 +8111,7 @@ def finiteEnergyTargetGeodesicMinimumPoint
     (t : ℝ) : Space n :=
   (exists_finiteEnergyTargetGeodesic_minimum F v t).choose
 
-theorem finiteEnergyTargetGeodesicMinimumPoint_le
+lemma finiteEnergyTargetGeodesicMinimumPoint_le
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8121,7 +8121,7 @@ theorem finiteEnergyTargetGeodesicMinimumPoint_le
       finiteEnergyTargetGeodesic F v t x :=
   (exists_finiteEnergyTargetGeodesic_minimum F v t).choose_spec x
 
-theorem finiteEnergyTargetGeodesic_sub_le_support
+lemma finiteEnergyTargetGeodesic_sub_le_support
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8175,7 +8175,7 @@ def minimumNormalizedTargetGeodesicContinuousMap
     ((continuous_finiteEnergyTargetGeodesic F v t).comp
       (continuous_id.add continuous_const)).sub continuous_const
 
-theorem minimumNormalizedTargetGeodesicContinuousMap_zero
+lemma minimumNormalizedTargetGeodesicContinuousMap_zero
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8183,7 +8183,7 @@ theorem minimumNormalizedTargetGeodesicContinuousMap_zero
     minimumNormalizedTargetGeodesicContinuousMap F v t 0 = 0 := by
   simp [minimumNormalizedTargetGeodesicContinuousMap]
 
-theorem minimumNormalizedTargetGeodesicContinuousMap_nonneg
+lemma minimumNormalizedTargetGeodesicContinuousMap_nonneg
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8198,7 +8198,7 @@ theorem minimumNormalizedTargetGeodesicContinuousMap_nonneg
     (finiteEnergyTargetGeodesicMinimumPoint_le
       F v t (x + finiteEnergyTargetGeodesicMinimumPoint F v t))
 
-theorem minimumNormalizedTargetGeodesicContinuousMap_le_support
+lemma minimumNormalizedTargetGeodesicContinuousMap_le_support
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8208,7 +8208,7 @@ theorem minimumNormalizedTargetGeodesicContinuousMap_le_support
   exact finiteEnergyTargetGeodesic_sub_le_support F v t x
     (finiteEnergyTargetGeodesicMinimumPoint F v t)
 
-theorem minimumNormalizedTargetGeodesicContinuousMap_lipschitz
+lemma minimumNormalizedTargetGeodesicContinuousMap_lipschitz
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8224,7 +8224,7 @@ theorem minimumNormalizedTargetGeodesicContinuousMap_lipschitz
   simpa [minimumNormalizedTargetGeodesicContinuousMap,
     Real.dist_eq] using h
 
-theorem convexOn_minimumNormalizedTargetGeodesicContinuousMap
+lemma convexOn_minimumNormalizedTargetGeodesicContinuousMap
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8262,7 +8262,7 @@ theorem convexOn_minimumNormalizedTargetGeodesicContinuousMap
     _ = a * (g (x + z) - g z) +
         b * (g (y + z) - g z) := by ring
 
-theorem minimumNormalizedTargetGeodesic_densityIntegrable
+lemma minimumNormalizedTargetGeodesic_densityIntegrable
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8308,7 +8308,7 @@ def minimumNormalizedTargetGeodesicDualMajorant
     finiteEnergyTargetGeodesic F v t
       (finiteEnergyTargetGeodesicMinimumPoint F v t)
 
-theorem minimumNormalizedTargetGeodesicDualMajorant_nonneg
+lemma minimumNormalizedTargetGeodesicDualMajorant_nonneg
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8321,7 +8321,7 @@ theorem minimumNormalizedTargetGeodesicDualMajorant_nonneg
   unfold minimumNormalizedTargetGeodesicDualMajorant
   linarith
 
-theorem minimumNormalizedTargetGeodesic_phase_le_majorant
+lemma minimumNormalizedTargetGeodesic_phase_le_majorant
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8345,7 +8345,7 @@ theorem minimumNormalizedTargetGeodesic_phase_le_majorant
   rw [MonomialDivergence.pairing_add_right] at hphase
   linarith
 
-theorem minimumNormalizedTargetGeodesic_extendedLegendre_le
+lemma minimumNormalizedTargetGeodesic_extendedLegendre_le
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8362,7 +8362,7 @@ theorem minimumNormalizedTargetGeodesic_extendedLegendre_le
     (minimumNormalizedTargetGeodesic_phase_le_majorant
       F v t hp (TopologicalSpace.denseSeq (Space n) j))
 
-theorem minimumNormalizedTargetGeodesicDualMajorant_integrableOn
+lemma minimumNormalizedTargetGeodesicDualMajorant_integrableOn
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8385,7 +8385,7 @@ theorem minimumNormalizedTargetGeodesicDualMajorant_integrableOn
     MeasureTheory.integrableOn_const K.compact.measure_ne_top
   exact ((hdual.add (hv.const_mul t)).sub hpair).add hconst
 
-theorem minimumNormalizedTargetGeodesic_legendreFinite
+lemma minimumNormalizedTargetGeodesic_legendreFinite
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8452,7 +8452,7 @@ def finiteEnergyTargetGeodesicPartition
     Real.exp (-finiteEnergyTargetGeodesic F v t x)
     ∂(volume : Measure (Space n))
 
-theorem finiteEnergyTargetGeodesicPartition_pos
+lemma finiteEnergyTargetGeodesicPartition_pos
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8461,7 +8461,7 @@ theorem finiteEnergyTargetGeodesicPartition_pos
   exact MeasureTheory.integral_exp_pos
     (finiteEnergyTargetGeodesic_densityIntegrable F v t)
 
-theorem finiteEnergySourcePartition_ofTargetGeodesic
+lemma finiteEnergySourcePartition_ofTargetGeodesic
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8510,7 +8510,7 @@ theorem finiteEnergySourcePartition_ofTargetGeodesic
           Real.exp (-finiteEnergyTargetGeodesic F v t x)) m]
       rfl
 
-theorem minimumNormalizedTargetGeodesic_extendedLegendre_toReal_le
+lemma minimumNormalizedTargetGeodesic_extendedLegendre_toReal_le
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8531,7 +8531,7 @@ theorem minimumNormalizedTargetGeodesic_extendedLegendre_toReal_le
       ENNReal.toReal_ofReal
         (minimumNormalizedTargetGeodesicDualMajorant_nonneg F v t hp)
 
-theorem setIntegral_minimumNormalizedTargetGeodesicDualMajorant
+lemma setIntegral_minimumNormalizedTargetGeodesicDualMajorant
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8613,7 +8613,7 @@ theorem setIntegral_minimumNormalizedTargetGeodesicDualMajorant
       simp [normalizedVolume, measureReal_def,
         smul_eq_mul, m]
 
-theorem finiteEnergySourceBodyEnergy_ofTargetGeodesic_le
+lemma finiteEnergySourceBodyEnergy_ofTargetGeodesic_le
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8668,7 +8668,7 @@ theorem finiteEnergySourceBodyEnergy_ofTargetGeodesic_le
         have hvol := K.volume_pos.ne'
         field_simp
 
-theorem exists_exact_optimizer_targetGeodesic_logPartition_le
+lemma exists_exact_optimizer_targetGeodesic_logPartition_le
     {n : ℕ} (K : CenteredBody n) :
     ∃ F : SourceFiniteEnergyPotential K,
       finiteEnergySourceBermanFunctional F =
@@ -8730,7 +8730,7 @@ open MomentOptimizer MomentWeakFirstVariation MomentFirstVariation MomentTargetG
 open MomentTargetGeodesicVariation
 open scoped BigOperators ENNReal NNReal Topology
 
-theorem finiteEnergySourceGradient_eq_of_phase_maximizer
+lemma finiteEnergySourceGradient_eq_of_phase_maximizer
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (p x : Space n)
@@ -8794,7 +8794,7 @@ theorem finiteEnergySourceGradient_eq_of_phase_maximizer
   simpa [w, SupportFunction.pairing, Pi.single_apply]
     using hpairing
 
-theorem exists_finiteEnergyTargetGeodesic_approximateMaximizer
+lemma exists_finiteEnergyTargetGeodesic_approximateMaximizer
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8828,7 +8828,7 @@ def finiteEnergyTargetQuadraticApproximateMaximizer
     (exists_finiteEnergyTargetGeodesic_approximateMaximizer
       F v x t (t ^ 2) (sq_pos_of_ne_zero ht)).choose
 
-theorem finiteEnergyTargetQuadraticApproximateMaximizer_mem
+lemma finiteEnergyTargetQuadraticApproximateMaximizer_mem
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8844,7 +8844,7 @@ theorem finiteEnergyTargetQuadraticApproximateMaximizer_mem
       (exists_finiteEnergyTargetGeodesic_approximateMaximizer
         F v x t (t ^ 2) (sq_pos_of_ne_zero ht)).choose_spec.1
 
-theorem finiteEnergyTargetQuadraticApproximateMaximizer_phase
+lemma finiteEnergyTargetQuadraticApproximateMaximizer_phase
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8861,7 +8861,7 @@ theorem finiteEnergyTargetQuadraticApproximateMaximizer_phase
     (exists_finiteEnergyTargetGeodesic_approximateMaximizer
       F v x t (t ^ 2) (sq_pos_of_ne_zero ht)).choose_spec.2
 
-theorem finiteEnergyTargetQuadraticApproximateMaximizer_phase_defect
+lemma finiteEnergyTargetQuadraticApproximateMaximizer_phase_defect
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -8912,7 +8912,7 @@ theorem finiteEnergyTargetQuadraticApproximateMaximizer_phase_defect
           t * v p at happrox
   linarith
 
-theorem tendsto_finiteEnergyTargetQuadraticApproximateMaximizer
+lemma tendsto_finiteEnergyTargetQuadraticApproximateMaximizer
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -9004,7 +9004,7 @@ theorem tendsto_finiteEnergyTargetQuadraticApproximateMaximizer
       (hmap.filter_mono inf_le_right)
     linarith
 
-theorem finiteEnergyTargetGeodesic_gradient_support
+lemma finiteEnergyTargetGeodesic_gradient_support
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -9035,7 +9035,7 @@ theorem finiteEnergyTargetGeodesic_gradient_support
       SupportFunction.pairing p x - F.potential x at hleg
   linarith
 
-theorem finiteEnergyTargetGeodesic_le_quadraticApproximate
+lemma finiteEnergyTargetGeodesic_le_quadraticApproximate
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -9066,7 +9066,7 @@ theorem finiteEnergyTargetGeodesic_le_quadraticApproximate
           t * v p at happrox
   linarith
 
-theorem finiteEnergyTargetGeodesic_differenceQuotient_error
+lemma finiteEnergyTargetGeodesic_differenceQuotient_error
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -9116,7 +9116,7 @@ theorem finiteEnergyTargetGeodesic_differenceQuotient_error
   exact (div_le_iff₀ (abs_pos.mpr ht)).mpr (by
     simpa [p, q, mul_comm] using hnumupper)
 
-theorem hasDerivAt_finiteEnergyTargetGeodesic
+lemma hasDerivAt_finiteEnergyTargetGeodesic
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -9176,7 +9176,7 @@ theorem hasDerivAt_finiteEnergyTargetGeodesic
   simpa [Real.dist_eq, smul_eq_mul, inv_mul_eq_div,
     sub_neg_eq_add, q] using herr
 
-theorem abs_exp_sub_one_le_mul_exp_abs (z : ℝ) :
+lemma abs_exp_sub_one_le_mul_exp_abs (z : ℝ) :
     |Real.exp z - 1| ≤ |z| * Real.exp |z| := by
   by_cases hz : 0 ≤ z
   · have he : 0 < Real.exp z := Real.exp_pos z
@@ -9211,7 +9211,7 @@ def finiteEnergyTargetDensityDifferenceQuotient
   (Real.exp (-finiteEnergyTargetGeodesic F v t x) -
     Real.exp (-F.potential x)) / t
 
-theorem finiteEnergyTargetDensityDifferenceQuotient_le
+lemma finiteEnergyTargetDensityDifferenceQuotient_le
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -9268,7 +9268,7 @@ theorem finiteEnergyTargetDensityDifferenceQuotient_le
       dsimp [M]
       field_simp [abs_ne_zero.mpr ht]
 
-theorem finiteEnergyTargetGeodesicPartition_zero
+lemma finiteEnergyTargetGeodesicPartition_zero
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ)) :
@@ -9280,7 +9280,7 @@ theorem finiteEnergyTargetGeodesicPartition_zero
   filter_upwards with x
   rw [finiteEnergyTargetGeodesic_zero_eq F v x]
 
-theorem tendsto_finiteEnergyTargetDensityDifferenceQuotient
+lemma tendsto_finiteEnergyTargetDensityDifferenceQuotient
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ))
@@ -9307,7 +9307,7 @@ theorem tendsto_finiteEnergyTargetDensityDifferenceQuotient
     finiteEnergyTargetGeodesic_zero_eq F v x,
     smul_eq_mul, inv_mul_eq_div] using hd.tendsto_slope_zero
 
-theorem hasDerivAt_finiteEnergyTargetGeodesicPartition
+lemma hasDerivAt_finiteEnergyTargetGeodesicPartition
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ)) :
@@ -9417,7 +9417,7 @@ theorem hasDerivAt_finiteEnergyTargetGeodesicPartition
   simpa [finiteEnergyTargetGeodesicPartition_zero F v,
     smul_eq_mul, inv_mul_eq_div] using hslope
 
-theorem hasDerivAt_finiteEnergyTargetGeodesicLogPartition
+lemma hasDerivAt_finiteEnergyTargetGeodesicLogPartition
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (v : C(Space n, ℝ)) :
@@ -9451,7 +9451,7 @@ theorem hasDerivAt_finiteEnergyTargetGeodesicLogPartition
   rw [← hmoment]
   simpa [finiteEnergyTargetGeodesicPartition_zero F v] using hlog
 
-theorem exists_exact_optimizer_gradientPushforward_integral_eq
+lemma exists_exact_optimizer_gradientPushforward_integral_eq
     {n : ℕ} (K : CenteredBody n) :
     ∃ F : SourceFiniteEnergyPotential K,
       finiteEnergySourceBermanFunctional F =
@@ -9505,7 +9505,7 @@ theorem exists_exact_optimizer_gradientPushforward_integral_eq
       ∂(finiteEnergySourceGradientPushforward F)) = A
   linarith
 
-theorem exists_exact_optimizer_gradientPushforward_eq
+lemma exists_exact_optimizer_gradientPushforward_eq
     {n : ℕ} (K : CenteredBody n) :
     ∃ F : SourceFiniteEnergyPotential K,
       finiteEnergySourceBermanFunctional F =
@@ -9545,7 +9545,7 @@ open Set Function Filter MeasureTheory
 open MomentOptimizer MomentWeakFirstVariation MomentFirstVariation MomentTargetGeodesic
 open scoped ENNReal Topology
 
-theorem finiteEnergySourceGradient_mem_carrier_everywhere
+lemma finiteEnergySourceGradient_mem_carrier_everywhere
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (x : Space n) :
@@ -9566,7 +9566,7 @@ theorem finiteEnergySourceGradient_mem_carrier_everywhere
     rw [hzero]
     exact interior_subset (LatticeAsymptotics.zero_mem_interior K)
 
-theorem normalizedTargetBodyMeasure_eq_interior_restrict
+lemma normalizedTargetBodyMeasure_eq_interior_restrict
     {n : ℕ} (K : CenteredBody n) :
     normalizedTargetBodyMeasure K =
       ((volume : Measure (Space n)) K.carrier)⁻¹ •
@@ -9583,7 +9583,7 @@ theorem normalizedTargetBodyMeasure_eq_interior_restrict
   unfold normalizedTargetBodyMeasure
   rw [hrestrict]
 
-theorem ae_normalizedTargetBodyMeasure_mem_interior
+lemma ae_normalizedTargetBodyMeasure_mem_interior
     {n : ℕ} (K : CenteredBody n) :
     ∀ᵐ p : Space n
       ∂(normalizedTargetBodyMeasure K),
@@ -9594,7 +9594,7 @@ theorem ae_normalizedTargetBodyMeasure_mem_interior
       isOpen_interior.measurableSet)
     (((volume : Measure (Space n)) K.carrier)⁻¹)
 
-theorem volume_absolutelyContinuous_finiteEnergySourceGibbs
+lemma volume_absolutelyContinuous_finiteEnergySourceGibbs
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     (volume : Measure (Space n)) ≪
@@ -9616,7 +9616,7 @@ theorem volume_absolutelyContinuous_finiteEnergySourceGibbs
         (WeightedPoincare.normalizedDensity_pos
           F.densityIntegrable x)).ne'
 
-theorem ae_finiteEnergySourceGradient_mem_interior_gibbs
+lemma ae_finiteEnergySourceGradient_mem_interior_gibbs
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport :
@@ -9638,7 +9638,7 @@ theorem ae_finiteEnergySourceGradient_mem_interior_gibbs
       (measurable_finiteEnergySourceGradient F).aemeasurable
       isOpen_interior.measurableSet).mp htarget
 
-theorem ae_finiteEnergySourceGradient_mem_interior_volume
+lemma ae_finiteEnergySourceGradient_mem_interior_volume
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport :
@@ -9652,7 +9652,7 @@ theorem ae_finiteEnergySourceGradient_mem_interior_volume
     (volume_absolutelyContinuous_finiteEnergySourceGibbs F).ae_le
       (ae_finiteEnergySourceGradient_mem_interior_gibbs F htransport)
 
-theorem normalizedTargetBodyMeasure_open_pos_of_inter_interior
+lemma normalizedTargetBodyMeasure_open_pos_of_inter_interior
     {n : ℕ} (K : CenteredBody n)
     {U : Set (Space n)} (hU : IsOpen U)
     (hinter : (U ∩ interior K.carrier).Nonempty) :
@@ -9685,7 +9685,7 @@ def momentNormalizedPotential
       (finiteEnergySourcePartition F /
         normalizedVolume K.carrier)
 
-theorem exp_neg_momentNormalizedPotential
+lemma exp_neg_momentNormalizedPotential
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (x : Space n) :
@@ -9718,7 +9718,7 @@ theorem exp_neg_momentNormalizedPotential
             Real.exp (-F.potential x) := by
           rw [Real.exp_neg, Real.exp_log hratio, inv_div]
 
-theorem integral_exp_neg_momentNormalizedPotential
+lemma integral_exp_neg_momentNormalizedPotential
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     (∫ x : Space n,
@@ -9762,7 +9762,7 @@ def finiteEnergyDifferentiableGradientImage
       DifferentiableAt ℝ
         (F.potential : Space n → ℝ) x}
 
-theorem interior_subset_closure_finiteEnergyDifferentiableGradientImage
+lemma interior_subset_closure_finiteEnergyDifferentiableGradientImage
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport :
@@ -9816,7 +9816,7 @@ theorem interior_subset_closure_finiteEnergyDifferentiableGradientImage
       (normalizedTargetBodyMeasure_open_pos_of_inter_interior
         K hU ⟨p, hpU, hp⟩)) htarget
 
-theorem closure_finiteEnergyDifferentiableGradientImage_eq_carrier
+lemma closure_finiteEnergyDifferentiableGradientImage_eq_carrier
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport :
@@ -9848,7 +9848,7 @@ open LaplaceAsymptotics MomentFunctionalCoercivity MomentOptimizer MomentFirstVa
 open MomentTargetGeodesic MomentMonotoneTransport
 open scoped BigOperators ENNReal Topology
 
-theorem finiteEnergySourcePhase_affine_target
+lemma finiteEnergySourcePhase_affine_target
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (p q x : Space n) (a b : ℝ)
@@ -9860,7 +9860,7 @@ theorem finiteEnergySourcePhase_affine_target
     SupportFunction.pairing_smul_left]
   linear_combination F.potential x * hab
 
-theorem convex_finiteEnergyFiniteTargetSet
+lemma convex_finiteEnergyFiniteTargetSet
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     Convex ℝ (finiteEnergyFiniteTargetSet F) := by
@@ -9893,7 +9893,7 @@ theorem convex_finiteEnergyFiniteTargetSet
     F.potential (a • p + b • q) hbdd]
   exact ENNReal.ofReal_ne_top
 
-theorem finiteEnergyDifferentiableGradientImage_subset_finiteTarget
+lemma finiteEnergyDifferentiableGradientImage_subset_finiteTarget
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     finiteEnergyDifferentiableGradientImage F ⊆
@@ -9903,7 +9903,7 @@ theorem finiteEnergyDifferentiableGradientImage_subset_finiteTarget
   rw [finiteEnergySourceExtendedLegendre_actualGradient F x hx]
   exact ENNReal.ofReal_ne_top
 
-theorem closure_finiteEnergyFiniteTargetSet_eq_carrier
+lemma closure_finiteEnergyFiniteTargetSet_eq_carrier
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport :
@@ -9921,7 +9921,7 @@ theorem closure_finiteEnergyFiniteTargetSet_eq_carrier
       F htransport] at hsubset
     exact hsubset
 
-theorem affineSpan_finiteEnergyFiniteTargetSet_eq_top
+lemma affineSpan_finiteEnergyFiniteTargetSet_eq_top
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport :
@@ -9942,7 +9942,7 @@ theorem affineSpan_finiteEnergyFiniteTargetSet_eq_top
   rw [← isOpen_interior.affineSpan_eq_top K.fullDimensional]
   exact affineSpan_le.mpr (interior_subset.trans hbody)
 
-theorem interior_finiteEnergyFiniteTargetSet_eq
+lemma interior_finiteEnergyFiniteTargetSet_eq
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport :
@@ -9963,7 +9963,7 @@ theorem interior_finiteEnergyFiniteTargetSet_eq
     F htransport] at hinter
   exact hinter.symm
 
-theorem finiteEnergySourceExtendedLegendre_ne_top_of_mem_interior
+lemma finiteEnergySourceExtendedLegendre_ne_top_of_mem_interior
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport :
@@ -9977,7 +9977,7 @@ theorem finiteEnergySourceExtendedLegendre_ne_top_of_mem_interior
     exact hp
   exact (interior_subset hinter).2
 
-theorem finiteEnergySourcePhase_bddAbove_of_mem_interior
+lemma finiteEnergySourcePhase_bddAbove_of_mem_interior
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport :
@@ -9995,7 +9995,7 @@ theorem finiteEnergySourcePhase_bddAbove_of_mem_interior
   unfold phase
   linarith
 
-theorem convexOn_finiteEnergySourceLegendre_interior
+lemma convexOn_finiteEnergySourceLegendre_interior
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport :
@@ -10028,7 +10028,7 @@ theorem convexOn_finiteEnergySourceLegendre_interior
       (mul_le_mul_of_nonneg_left hpmax ha)
       (mul_le_mul_of_nonneg_left hqmax hb)
 
-theorem locallyLipschitzOn_finiteEnergySourceLegendre_interior
+lemma locallyLipschitzOn_finiteEnergySourceLegendre_interior
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport :
@@ -10039,7 +10039,7 @@ theorem locallyLipschitzOn_finiteEnergySourceLegendre_interior
   (convexOn_finiteEnergySourceLegendre_interior F htransport)
     |>.locallyLipschitzOn isOpen_interior
 
-theorem continuousOn_finiteEnergySourceLegendre_interior
+lemma continuousOn_finiteEnergySourceLegendre_interior
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport :
@@ -10060,13 +10060,13 @@ open MomentFirstVariation MomentTargetGeodesic MomentRegularity MomentInteriorLe
 open MomentMoserTrudinger
 open scoped BigOperators ENNReal InnerProductSpace Topology
 
-theorem continuous_momentNormalizedPotential
+lemma continuous_momentNormalizedPotential
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     Continuous (momentNormalizedPotential F) := by
   exact F.potential.continuous.add continuous_const
 
-theorem convexOn_momentNormalizedPotential
+lemma convexOn_momentNormalizedPotential
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     ConvexOn ℝ Set.univ (momentNormalizedPotential F) := by
@@ -10085,7 +10085,7 @@ theorem convexOn_momentNormalizedPotential
       (finiteEnergySourcePartition F /
         normalizedVolume K.carrier))
 
-theorem momentNormalizedPotential_le_support_add
+lemma momentNormalizedPotential_le_support_add
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (x : Space n) :
@@ -10097,7 +10097,7 @@ theorem momentNormalizedPotential_le_support_add
   unfold momentNormalizedPotential
   linarith [F.supportUpper x]
 
-theorem exists_finiteEnergySource_interior_phase_linear_coercivity
+lemma exists_finiteEnergySource_interior_phase_linear_coercivity
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10155,7 +10155,7 @@ theorem exists_finiteEnergySource_interior_phase_linear_coercivity
   have hscaled := mul_le_mul_of_nonneg_left hnorm hδ.le
   linarith
 
-theorem integrable_monomialWeight_finiteEnergySource_of_mem_interior
+lemma integrable_monomialWeight_finiteEnergySource_of_mem_interior
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10184,7 +10184,7 @@ theorem integrable_monomialWeight_finiteEnergySource_of_mem_interior
   have h := hcoerc x
   nlinarith
 
-theorem monomialWeight_momentNormalizedPotential_eq
+lemma monomialWeight_momentNormalizedPotential_eq
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (k : ℝ) (u x : Space n) :
@@ -10199,7 +10199,7 @@ theorem monomialWeight_momentNormalizedPotential_eq
   congr 1
   ring
 
-theorem integrable_monomialWeight_momentNormalized_of_mem_interior
+lemma integrable_monomialWeight_momentNormalized_of_mem_interior
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10220,7 +10220,7 @@ theorem integrable_monomialWeight_momentNormalized_of_mem_interior
   exact (monomialWeight_momentNormalizedPotential_eq
     F k u x).symm
 
-theorem monomialIntegral_momentNormalized_pos
+lemma monomialIntegral_momentNormalized_pos
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10233,7 +10233,7 @@ theorem monomialIntegral_momentNormalized_pos
     (integrable_monomialWeight_momentNormalized_of_mem_interior
       F htransport hu hk)
 
-theorem radial_exp_integrable_momentNormalized
+lemma radial_exp_integrable_momentNormalized
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10261,7 +10261,7 @@ theorem radial_exp_integrable_momentNormalized
     (radialWeight_mul_exp_pairing k
       (momentNormalizedPotential F) m u hm x).symm
 
-theorem torusMonomial_sq_integrable_momentNormalized
+lemma torusMonomial_sq_integrable_momentNormalized
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10283,7 +10283,7 @@ theorem torusMonomial_sq_integrable_momentNormalized
   funext z
   simp [torusMonomial_norm_sq]
 
-theorem torusMonomial_memLp_momentNormalized
+lemma torusMonomial_memLp_momentNormalized
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10320,7 +10320,7 @@ def momentIndexedMonomialLp
     u.property.1 (integerPoint_integerExponent K hk u)).toLp
       (torusMonomial (integerExponent K hk u))
 
-theorem momentIndexedMonomialLp_ae
+lemma momentIndexedMonomialLp_ae
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10333,7 +10333,7 @@ theorem momentIndexedMonomialLp_ae
   unfold momentIndexedMonomialLp
   exact MeasureTheory.MemLp.coeFn_toLp _
 
-theorem momentMonomialNormSquared_pos
+lemma momentMonomialNormSquared_pos
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10345,7 +10345,7 @@ theorem momentMonomialNormSquared_pos
   exact monomialIntegral_momentNormalized_pos
     F htransport u.property.1 hkreal
 
-theorem inner_momentIndexedMonomialLp
+lemma inner_momentIndexedMonomialLp
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10428,7 +10428,7 @@ def momentNormalizedMonomialLp
       (momentNormalizedPotential F)) : ℂ)⁻¹) •
     momentIndexedMonomialLp K hk F htransport u
 
-theorem momentNormalizedMonomialLp_orthonormal
+lemma momentNormalizedMonomialLp_orthonormal
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10471,7 +10471,7 @@ def momentMonomialSpan
   Submodule.span ℂ
     (Set.range (momentNormalizedMonomialLp K hk F htransport))
 
-theorem finrank_momentMonomialSpan
+lemma finrank_momentMonomialSpan
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10504,7 +10504,7 @@ def momentLatticeMonomialBasis
     (momentNormalizedMonomialLp_orthonormal
       K hk F htransport).linearIndependent
 
-theorem momentLatticeMonomialBasis_apply
+lemma momentLatticeMonomialBasis_apply
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10518,7 +10518,7 @@ theorem momentLatticeMonomialBasis_apply
     (momentNormalizedMonomialLp_orthonormal
       K hk F htransport).linearIndependent u
 
-theorem momentLatticeMonomialBasis_orthonormal
+lemma momentLatticeMonomialBasis_orthonormal
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10557,7 +10557,7 @@ def momentMonomialOrthonormalBasis
       K hk F htransport)).reindex
         (monomialIndexEquivFin K hk)
 
-theorem momentMonomialOrthonormalBasis_apply
+lemma momentMonomialOrthonormalBasis_apply
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10574,7 +10574,7 @@ theorem momentMonomialOrthonormalBasis_apply
     OrthonormalBasis.reindex_apply] using
       momentLatticeMonomialBasis_apply K hk F htransport u
 
-theorem finiteDimensional_momentMonomialSpan
+lemma finiteDimensional_momentMonomialSpan
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10599,7 +10599,7 @@ def momentHolomorphicRepresentative
         (momentLatticeMonomialBasis
           K hk F htransport).repr.toLinearMap
 
-theorem momentHolomorphicRepresentative_latticeMonomialBasis
+lemma momentHolomorphicRepresentative_latticeMonomialBasis
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10613,7 +10613,7 @@ theorem momentHolomorphicRepresentative_latticeMonomialBasis
   simp [momentHolomorphicRepresentative,
     Finsupp.linearCombination_single]
 
-theorem differentiable_momentHolomorphicRepresentative
+lemma differentiable_momentHolomorphicRepresentative
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10655,7 +10655,7 @@ def momentJetFiltration
   LinearMap.ker
     (momentHolomorphicJetMap K hk F htransport p j)
 
-theorem bergmanDimension_le_momentJetFiltration_add_jetCount
+lemma bergmanDimension_le_momentJetFiltration_add_jetCount
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10674,7 +10674,7 @@ theorem bergmanDimension_le_momentJetFiltration_add_jetCount
   rw [← finrank_momentMonomialSpan K hk F htransport]
   exact h
 
-theorem momentJetFiltration_finrank_ge
+lemma momentJetFiltration_finrank_ge
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10698,7 +10698,7 @@ open MomentOptimizer MomentFirstVariation MomentTargetGeodesic MomentRegularity 
 open BergmanJetBasis GlobalBergmanKernelBound
 open scoped BigOperators ENNReal InnerProductSpace NNReal Topology
 
-theorem lipschitz_momentNormalizedPotential
+lemma lipschitz_momentNormalizedPotential
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     LipschitzWith (sourceBodyLipschitzConstant K)
@@ -10708,7 +10708,7 @@ theorem lipschitz_momentNormalizedPotential
   simpa only [momentNormalizedPotential, dist_add_right] using
     F.lipschitz.dist_le_mul x y
 
-theorem monomialNormSquared_momentNormalized_global_lower_bound
+lemma monomialNormSquared_momentNormalized_global_lower_bound
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10798,7 +10798,7 @@ theorem monomialNormSquared_momentNormalized_global_lower_bound
           exact Filter.Eventually.of_forall
             (fun _ => (Real.exp_pos _).le)
 
-theorem normalizedMonomialDensity_momentNormalized_global_upper_bound
+lemma normalizedMonomialDensity_momentNormalized_global_upper_bound
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10866,7 +10866,7 @@ theorem normalizedMonomialDensity_momentNormalized_global_upper_bound
           (momentNormalizedPotential F) :=
       mul_le_mul_of_nonneg_left hlower (by positivity)
 
-theorem weightedDiagonalKernel_momentNormalized_global_upper_bound
+lemma weightedDiagonalKernel_momentNormalized_global_upper_bound
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10892,7 +10892,7 @@ theorem weightedDiagonalKernel_momentNormalized_global_upper_bound
         (Real.exp (bodyPhaseSlopeBound K) * ((k : ℝ) / 2) ^ n) := by
           simp [bergmanDimension, Nat.card_eq_fintype_card]
 
-theorem weightedDiagonalKernel_momentNormalized_pos
+lemma weightedDiagonalKernel_momentNormalized_pos
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10911,7 +10911,7 @@ theorem weightedDiagonalKernel_momentNormalized_pos
   · exact ⟨⟨0, zero_mem_monomialIndex K hk⟩,
       Finset.mem_univ _⟩
 
-theorem diagonalKernel_momentNormalized_pos
+lemma diagonalKernel_momentNormalized_pos
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10925,7 +10925,7 @@ theorem diagonalKernel_momentNormalized_pos
       K hk (momentNormalizedPotential F) x] at hweighted
   exact (mul_pos_iff_of_pos_left (Real.exp_pos _)).mp hweighted
 
-theorem eventually_momentNormalized_weightedDiagonalKernel_le_polynomial
+lemma eventually_momentNormalized_weightedDiagonalKernel_le_polynomial
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10951,7 +10951,7 @@ theorem eventually_momentNormalized_weightedDiagonalKernel_le_polynomial
       rw [show 2 * n = n + n by omega, pow_add, div_pow]
       ring
 
-theorem eventually_momentNormalized_diagonalKernel_le_polynomial
+lemma eventually_momentNormalized_diagonalKernel_le_polynomial
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -10979,7 +10979,7 @@ theorem eventually_momentNormalized_diagonalKernel_le_polynomial
   rw [← mul_assoc, hcancel, one_mul] at hscaled
   simpa only [mul_assoc] using hscaled
 
-theorem eventually_log_momentNormalized_diagonalKernel_div_le
+lemma eventually_log_momentNormalized_diagonalKernel_div_le
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11029,7 +11029,7 @@ theorem eventually_log_momentNormalized_diagonalKernel_div_le
       field_simp
       ring_nf
 
-theorem eventually_log_momentNormalized_diagonalKernel_div_le_add
+lemma eventually_log_momentNormalized_diagonalKernel_div_le_add
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11057,7 +11057,7 @@ open GenuineJetAdaptedBasisCounting
 open scoped BigOperators ComplexConjugate ENNReal InnerProductSpace
   Topology
 
-theorem momentJetFiltration_zero
+lemma momentJetFiltration_zero
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11070,7 +11070,7 @@ theorem momentJetFiltration_zero
   funext α
   exact (Nat.not_lt_zero _ α.property).elim
 
-theorem momentJetFiltration_antitone
+lemma momentJetFiltration_antitone
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11092,7 +11092,7 @@ theorem momentJetFiltration_antitone
   simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul] at hβ ⊢
   exact hβ
 
-theorem exists_momentSimultaneousJetBasis
+lemma exists_momentSimultaneousJetBasis
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11127,7 +11127,7 @@ def momentSimultaneousJetBasis
   Classical.choose
     (exists_momentSimultaneousJetBasis K hk F htransport p)
 
-theorem momentSimultaneousJetBasis_adapted
+lemma momentSimultaneousJetBasis_adapted
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11151,7 +11151,7 @@ def momentUpperJetBasisIndices
   adaptedIndices (momentSimultaneousJetBasis K hk F htransport p)
     (momentJetFiltration K hk F htransport p j)
 
-theorem card_momentUpperJetBasisIndices_eq_finrank
+lemma card_momentUpperJetBasisIndices_eq_finrank
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11178,7 +11178,7 @@ def momentTruncatedJetOrder
     momentSimultaneousJetBasis K hk F htransport p i ∈
       momentJetFiltration K hk F htransport p (j + 1))).card
 
-theorem momentTruncatedJetOrder_le
+lemma momentTruncatedJetOrder_le
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11193,7 +11193,7 @@ theorem momentTruncatedJetOrder_le
       momentSimultaneousJetBasis K hk F htransport p i ∈
         momentJetFiltration K hk F htransport p (j + 1))
 
-theorem sum_momentTruncatedJetOrder_eq_sum_upper_card
+lemma sum_momentTruncatedJetOrder_eq_sum_upper_card
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11247,7 +11247,7 @@ theorem sum_momentTruncatedJetOrder_eq_sum_upper_card
             momentJetFiltration
               K hk F htransport p (j + 1)) Finset.univ).symm
 
-theorem sum_momentTruncatedJetOrder_eq_sum_jetFiltration_finrank
+lemma sum_momentTruncatedJetOrder_eq_sum_jetFiltration_finrank
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11265,7 +11265,7 @@ theorem sum_momentTruncatedJetOrder_eq_sum_jetFiltration_finrank
   exact card_momentUpperJetBasisIndices_eq_finrank
     K hk F htransport p (j + 1)
 
-theorem sum_momentJetFiltration_finrank_ge
+lemma sum_momentJetFiltration_finrank_ge
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11282,7 +11282,7 @@ theorem sum_momentJetFiltration_finrank_ge
   simpa using momentJetFiltration_finrank_ge
     K hk F htransport p (Nat.zero_lt_succ j)
 
-theorem real_jetLayercake_le_sum_momentTruncatedJetOrder
+lemma real_jetLayercake_le_sum_momentTruncatedJetOrder
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11326,7 +11326,7 @@ def momentHolomorphicBasisWeight
     (momentHolomorphicRepresentative
       K hk F htransport (b i) z)
 
-theorem momentHolomorphicBasisWeight_nonneg
+lemma momentHolomorphicBasisWeight_nonneg
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11339,7 +11339,7 @@ theorem momentHolomorphicBasisWeight_nonneg
       K hk F htransport b z i :=
   Complex.normSq_nonneg _
 
-theorem exists_positive_momentHolomorphicBasisWeight
+lemma exists_positive_momentHolomorphicBasisWeight
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11393,7 +11393,7 @@ def momentJointJetSection
     q.2 ^ (momentTruncatedJetOrder
       K hk F htransport p N i)
 
-theorem differentiable_momentJointJetSection
+lemma differentiable_momentJointJetSection
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11423,7 +11423,7 @@ def momentJointJetSectionVector
     (fun i => momentJointJetSection
       K hk F htransport p N i q)
 
-theorem differentiable_momentJointJetSectionVector
+lemma differentiable_momentJointJetSectionVector
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11447,7 +11447,7 @@ def momentJointJetDiagonal
     Complex.normSq
       (momentJointJetSection K hk F htransport p N i q)
 
-theorem momentJointJetSectionVector_norm_sq
+lemma momentJointJetSectionVector_norm_sq
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11467,7 +11467,7 @@ theorem momentJointJetSectionVector_norm_sq
   exact Finset.sum_congr rfl
     (fun i _ => (Complex.normSq_eq_norm_sq _).symm)
 
-theorem momentJointJetDiagonal_pos
+lemma momentJointJetDiagonal_pos
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11513,7 +11513,7 @@ open BergmanJetGeodesic BergmanDiagonalBasisIndependence
 open scoped BigOperators ComplexConjugate ENNReal InnerProductSpace
   Topology
 
-theorem normSq_momentHolomorphicMonomial_realLogSlice_eq_diagonalTerm
+lemma normSq_momentHolomorphicMonomial_realLogSlice_eq_diagonalTerm
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11552,7 +11552,7 @@ theorem normSq_momentHolomorphicMonomial_realLogSlice_eq_diagonalTerm
     hpair]
   simp [diagonalTerm, div_eq_mul_inv, mul_comm]
 
-theorem normSq_momentHolomorphicMonomial_eq_diagonalTerm
+lemma normSq_momentHolomorphicMonomial_eq_diagonalTerm
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11581,7 +11581,7 @@ theorem normSq_momentHolomorphicMonomial_eq_diagonalTerm
       normSq_momentHolomorphicMonomial_realLogSlice_eq_diagonalTerm
         K hk F htransport u (realLogCoordinate z)
 
-theorem momentHolomorphicRepresentative_monomialOrthonormalBasis
+lemma momentHolomorphicRepresentative_monomialOrthonormalBasis
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11619,7 +11619,7 @@ def momentHolomorphicEvaluationRepresenter
     (momentHolomorphicRepresentative
       K hk F htransport (b i) z) • b i
 
-theorem momentHolomorphicEvaluationRepresenter_inner
+lemma momentHolomorphicEvaluationRepresenter_inner
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11661,7 +11661,7 @@ theorem momentHolomorphicEvaluationRepresenter_inner
           simpa [map_sum, map_smul, Pi.smul_apply, smul_eq_mul]
             using hrepr
 
-theorem sum_normSq_momentHolomorphicRepresentative_eq_representer_norm_sq
+lemma sum_normSq_momentHolomorphicRepresentative_eq_representer_norm_sq
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11690,7 +11690,7 @@ theorem sum_normSq_momentHolomorphicRepresentative_eq_representer_norm_sq
         K hk F htransport b₀ z‖ ^ 2 :=
       b.sum_sq_norm_inner_left _
 
-theorem sum_momentHolomorphicBasisWeight_eq_of_orthonormalBases
+lemma sum_momentHolomorphicBasisWeight_eq_of_orthonormalBases
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11717,7 +11717,7 @@ theorem sum_momentHolomorphicBasisWeight_eq_of_orthonormalBases
       (sum_normSq_momentHolomorphicRepresentative_eq_representer_norm_sq
         K hk F htransport b' b z).symm
 
-theorem sum_momentMonomialHolomorphicBasisWeight_eq_diagonalKernel
+lemma sum_momentMonomialHolomorphicBasisWeight_eq_diagonalKernel
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11766,7 +11766,7 @@ theorem sum_momentMonomialHolomorphicBasisWeight_eq_diagonalKernel
         unfold diagonalKernel
         rw [tsum_fintype]
 
-theorem sum_momentHolomorphicBasisWeight_eq_diagonalKernel
+lemma sum_momentHolomorphicBasisWeight_eq_diagonalKernel
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11794,7 +11794,7 @@ theorem sum_momentHolomorphicBasisWeight_eq_diagonalKernel
       sum_momentMonomialHolomorphicBasisWeight_eq_diagonalKernel
         K hk F htransport z
 
-theorem momentJointJetDiagonal_one_eq_diagonalKernel
+lemma momentJointJetDiagonal_one_eq_diagonalKernel
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11824,7 +11824,7 @@ def normalizedMomentTruncatedJetOrderProfile
       ((k : ℝ) * (bergmanDimension K k : ℝ))
   else 0
 
-theorem normalizedMomentTruncatedJetOrderProfile_ge
+lemma normalizedMomentTruncatedJetOrderProfile_ge
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11843,7 +11843,7 @@ theorem normalizedMomentTruncatedJetOrderProfile_ge
       K hk F htransport p (Nat.floor (t * (k : ℝ)))
   · positivity
 
-theorem eventually_normalizedMomentTruncatedJetOrderProfile_ge
+lemma eventually_normalizedMomentTruncatedJetOrderProfile_ge
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11872,7 +11872,7 @@ theorem eventually_normalizedMomentTruncatedJetOrderProfile_ge
     (normalizedMomentTruncatedJetOrderProfile_ge K
       (lt_of_lt_of_le Nat.zero_lt_one hk) F htransport p t)
 
-theorem eventually_normalizedMomentTruncatedJetOrderProfile_ge_sharp
+lemma eventually_normalizedMomentTruncatedJetOrderProfile_ge_sharp
     {n : ℕ} (hn : 0 < n) (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11914,7 +11914,7 @@ def momentJetGeodesic
     (momentTruncatedJetOrder K hk F htransport p N)
     (k : ℝ) t
 
-theorem momentJointJetDiagonal_realTime
+lemma momentJointJetDiagonal_realTime
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11942,7 +11942,7 @@ theorem momentJointJetDiagonal_realTime
   congr 2
   ring
 
-theorem momentJetGeodesic_eq_log_jointJetDiagonal
+lemma momentJetGeodesic_eq_log_jointJetDiagonal
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11955,7 +11955,7 @@ theorem momentJetGeodesic_eq_log_jointJetDiagonal
   unfold momentJetGeodesic logarithmicPotential
   rw [momentJointJetDiagonal_realTime]
 
-theorem momentJetGeodesic_zero_eq_log_diagonalKernel
+lemma momentJetGeodesic_zero_eq_log_diagonalKernel
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11968,7 +11968,7 @@ theorem momentJetGeodesic_zero_eq_log_diagonalKernel
   norm_num
   rw [momentJointJetDiagonal_one_eq_diagonalKernel]
 
-theorem convexOn_momentJetGeodesic
+lemma convexOn_momentJetGeodesic
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -11987,7 +11987,7 @@ theorem convexOn_momentJetGeodesic
       (momentSimultaneousJetBasis K hk F htransport p) z
   · exact_mod_cast hk
 
-theorem momentJetGeodesic_deriv_nonneg
+lemma momentJetGeodesic_deriv_nonneg
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12006,7 +12006,7 @@ theorem momentJetGeodesic_deriv_nonneg
       (momentSimultaneousJetBasis K hk F htransport p) z
   · exact_mod_cast hk
 
-theorem momentJetGeodesic_deriv_le_cutoff
+lemma momentJetGeodesic_deriv_le_cutoff
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12027,7 +12027,7 @@ theorem momentJetGeodesic_deriv_le_cutoff
   · exact_mod_cast hk
   · exact momentTruncatedJetOrder_le K hk F htransport p N
 
-theorem momentJetGeodesic_deriv_le_floor_cutoff
+lemma momentJetGeodesic_deriv_le_floor_cutoff
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12048,7 +12048,7 @@ theorem momentJetGeodesic_deriv_le_floor_cutoff
       (div_le_iff₀ hkreal).mpr
         (Nat.floor_le (mul_nonneg ha hkreal.le))
 
-theorem momentJetGeodesic_le_zero_add_linear
+lemma momentJetGeodesic_le_zero_add_linear
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12109,7 +12109,7 @@ theorem momentJetGeodesic_le_zero_add_linear
       field_simp
       ring
 
-theorem eventually_momentJetGeodesic_zero_le_potential_add
+lemma eventually_momentJetGeodesic_zero_le_potential_add
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12127,7 +12127,7 @@ theorem eventually_momentJetGeodesic_zero_le_potential_add
   rw [momentJetGeodesic_zero_eq_log_diagonalKernel]
   exact hupper (realLogCoordinate z)
 
-theorem eventually_momentJetGeodesic_le_potential_add_linear
+lemma eventually_momentJetGeodesic_le_potential_add_linear
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12175,7 +12175,7 @@ open Set Metric Filter Function MeasureTheory
 open ActualJetUpperEnvelope
 open scoped BigOperators Topology ENNReal
 
-theorem exists_mem_ball_sub_lt_upperRegularization
+lemma exists_mem_ball_sub_lt_upperRegularization
     {X : Type*} [PseudoMetricSpace X]
     (f : X → ℝ) (x : X) {ε δ : ℝ}
     (hε : 0 < ε) (hδ : 0 < δ) :
@@ -12191,7 +12191,7 @@ theorem exists_mem_ball_sub_lt_upperRegularization
     upperRegularization_le_of_eventually f x hev
   linarith
 
-theorem exists_mem_ball_family_sub_lt_upperRegularization
+lemma exists_mem_ball_family_sub_lt_upperRegularization
     {X : Type*} [PseudoMetricSpace X]
     {ι : Type*} [Nonempty ι]
     (F : ι → X → ℝ) (x : X) {ε δ : ℝ}
@@ -12212,19 +12212,19 @@ theorem exists_mem_ball_family_sub_lt_upperRegularization
 def regularizationApproximationRadius (m : ℕ) : ℝ :=
   1 / ((m + 1 : ℕ) : ℝ)
 
-theorem regularizationApproximationRadius_pos (m : ℕ) :
+lemma regularizationApproximationRadius_pos (m : ℕ) :
     0 < regularizationApproximationRadius m := by
   unfold regularizationApproximationRadius
   positivity
 
-theorem tendsto_regularizationApproximationRadius :
+lemma tendsto_regularizationApproximationRadius :
     Tendsto regularizationApproximationRadius atTop (𝓝 0) := by
   change Tendsto
     (fun m : ℕ => 1 / ((m + 1 : ℕ) : ℝ)) atTop (𝓝 0)
   simpa [Nat.cast_add, Nat.cast_one] using
     (tendsto_one_div_add_atTop_nhds_zero_nat (𝕜 := ℝ))
 
-theorem exists_upperRegularizationFamilyApproximant
+lemma exists_upperRegularizationFamilyApproximant
     {X : Type*} [PseudoMetricSpace X]
     {ι : Type*} [Nonempty ι]
     (F : ι → X → ℝ) (x : X) (m : ℕ) :
@@ -12246,7 +12246,7 @@ def upperRegularizationFamilyApproximant
   Classical.choose
     (exists_upperRegularizationFamilyApproximant F x m)
 
-theorem upperRegularizationFamilyApproximant_mem_ball
+lemma upperRegularizationFamilyApproximant_mem_ball
     {X : Type*} [PseudoMetricSpace X]
     {ι : Type*} [Nonempty ι]
     (F : ι → X → ℝ) (x : X) (m : ℕ) :
@@ -12255,7 +12255,7 @@ theorem upperRegularizationFamilyApproximant_mem_ball
   exact (Classical.choose_spec
     (exists_upperRegularizationFamilyApproximant F x m)).1
 
-theorem upperRegularizationFamilyApproximant_sub_lt
+lemma upperRegularizationFamilyApproximant_sub_lt
     {X : Type*} [PseudoMetricSpace X]
     {ι : Type*} [Nonempty ι]
     (F : ι → X → ℝ) (x : X) (m : ℕ) :
@@ -12267,7 +12267,7 @@ theorem upperRegularizationFamilyApproximant_sub_lt
   exact (Classical.choose_spec
     (exists_upperRegularizationFamilyApproximant F x m)).2
 
-theorem tendsto_upperRegularizationFamilyApproximant_center
+lemma tendsto_upperRegularizationFamilyApproximant_center
     {X : Type*} [PseudoMetricSpace X]
     {ι : Type*} [Nonempty ι]
     (F : ι → X → ℝ) (x : X) :
@@ -12287,7 +12287,7 @@ theorem tendsto_upperRegularizationFamilyApproximant_center
     (Metric.mem_ball.mp
       (upperRegularizationFamilyApproximant_mem_ball F x m)) hm
 
-theorem tendsto_upperRegularizationFamilyApproximant_value
+lemma tendsto_upperRegularizationFamilyApproximant_value
     {X : Type*} [PseudoMetricSpace X]
     {ι : Type*} [Nonempty ι]
     (F : ι → X → ℝ) (x : X)
@@ -12339,7 +12339,7 @@ theorem tendsto_upperRegularizationFamilyApproximant_value
       le_upperRegularization f y (hlocal y)
     exact (hfamily.trans hupper).trans_lt hm
 
-theorem limsup_integral_le_of_nonnegative_bounded
+lemma limsup_integral_le_of_nonnegative_bounded
     {α : Type*} [MeasurableSpace α]
     (μ : Measure α) [IsFiniteMeasure μ]
     (F : ℕ → α → ℝ) (g : α → ℝ) (C : ℝ)
@@ -12423,7 +12423,7 @@ theorem limsup_integral_le_of_nonnegative_bounded
     _ = ENNReal.ofReal (∫ a, g a ∂μ) :=
       (ofReal_integral_eq_lintegral_ofReal hgint hgnonneg).symm
 
-theorem limsup_le_of_upperSemicontinuous_of_tendsto
+lemma limsup_le_of_upperSemicontinuous_of_tendsto
     {X : Type*} [TopologicalSpace X]
     (u : X → ℝ) (hu : UpperSemicontinuous u)
     (x : ℕ → X) (p : X)
@@ -12445,7 +12445,7 @@ theorem limsup_le_of_upperSemicontinuous_of_tendsto
   intro b hb
   exact hx (hu p b hb)
 
-theorem limsup_integral_sub_const_le_of_upperSemicontinuous
+lemma limsup_integral_sub_const_le_of_upperSemicontinuous
     {X : Type*} [TopologicalSpace X]
     {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
     [OpensMeasurableSpace α]
@@ -12507,7 +12507,7 @@ open MomentOptimizer MomentFirstVariation MomentTargetGeodesic MomentRegularity 
 open BergmanJetGeodesic BergmanJetRealGeodesic ActualJetUpperEnvelope
 open scoped BigOperators ENNReal InnerProductSpace Topology
 
-theorem continuous_momentJointJetDiagonal
+lemma continuous_momentJointJetDiagonal
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12525,7 +12525,7 @@ theorem continuous_momentJointJetDiagonal
   exact (differentiable_momentJointJetSectionVector
     K hk F htransport p N).continuous.norm.pow 2
 
-theorem momentJointJetDiagonal_eq_radial
+lemma momentJointJetDiagonal_eq_radial
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12565,7 +12565,7 @@ def momentPositiveJointGeodesic
         ((k + 1 : ℕ) : ℝ))) q.val) /
       ((k + 1 : ℕ) : ℝ)
 
-theorem momentPositiveJointGeodesic_eq_momentJetGeodesic
+lemma momentPositiveJointGeodesic_eq_momentJetGeodesic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12600,7 +12600,7 @@ def momentJointMajorant
   momentNormalizedPotential F (jointRealCoordinate q) +
     BodyScale.canonicalScale K * jointLogTime q
 
-theorem continuous_momentJointMajorant
+lemma continuous_momentJointMajorant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K) :
     Continuous (momentJointMajorant K F) := by
@@ -12609,7 +12609,7 @@ theorem continuous_momentJointMajorant
       (continuous_jointRealCoordinate n) |>.add
         (continuous_const.mul (continuous_jointLogTime n))
 
-theorem eventually_momentPositiveJointGeodesic_le_majorant_add
+lemma eventually_momentPositiveJointGeodesic_le_majorant_add
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12642,7 +12642,7 @@ def momentJointTailStart
     (eventually_momentPositiveJointGeodesic_le_majorant_add
       K F htransport p (by norm_num : (0 : ℝ) < 1)))
 
-theorem momentPositiveJointGeodesic_le_majorant_add_one_of_tail
+lemma momentPositiveJointGeodesic_le_majorant_add_one_of_tail
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12667,7 +12667,7 @@ def momentJointTailSup
     momentPositiveJointGeodesic K F htransport p
       (momentJointTailStart K F htransport p + r + j) q)
 
-theorem momentJointTailSup_range_bddAbove
+lemma momentJointTailSup_range_bddAbove
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12682,7 +12682,7 @@ theorem momentJointTailSup_range_bddAbove
   exact momentPositiveJointGeodesic_le_majorant_add_one_of_tail
     K F htransport p _ (by omega) q
 
-theorem momentJointTailSup_le_majorant_add_one
+lemma momentJointTailSup_le_majorant_add_one
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12706,7 +12706,7 @@ def momentJointTailUpperEnvelope
     (r : ℕ) : PositiveJointLogSpace n → ℝ :=
   upperRegularization (momentJointTailSup K F htransport p r)
 
-theorem momentJointTailSup_localUpperBounds_nonempty
+lemma momentJointTailSup_localUpperBounds_nonempty
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12722,7 +12722,7 @@ theorem momentJointTailSup_localUpperBounds_nonempty
     (momentJointTailSup_le_majorant_add_one
       K F htransport p r) q
 
-theorem upperSemicontinuous_momentJointTailUpperEnvelope
+lemma upperSemicontinuous_momentJointTailUpperEnvelope
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12736,7 +12736,7 @@ theorem upperSemicontinuous_momentJointTailUpperEnvelope
     (momentJointTailSup_localUpperBounds_nonempty
       K F htransport p r)
 
-theorem momentJointTailUpperEnvelope_le_majorant_add_one
+lemma momentJointTailUpperEnvelope_le_majorant_add_one
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12752,7 +12752,7 @@ theorem momentJointTailUpperEnvelope_le_majorant_add_one
     (momentJointTailSup_le_majorant_add_one
       K F htransport p r) q
 
-theorem momentJointTailSup_antitone
+lemma momentJointTailSup_antitone
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12782,7 +12782,7 @@ theorem momentJointTailSup_antitone
       (momentJointTailStart K F htransport p + s + j) q
   rw [hindex]
 
-theorem momentJointTailUpperEnvelope_antitone
+lemma momentJointTailUpperEnvelope_antitone
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12799,7 +12799,7 @@ theorem momentJointTailUpperEnvelope_antitone
     (momentJointTailSup_localUpperBounds_nonempty
       K F htransport p r q)
 
-theorem eventually_momentJointTailSup_le_majorant_add
+lemma eventually_momentJointTailSup_le_majorant_add
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12818,7 +12818,7 @@ theorem eventually_momentJointTailSup_le_majorant_add
   rintro _ ⟨j, rfl⟩
   exact hN _ (by omega) q
 
-theorem eventually_momentJointTailUpperEnvelope_le_majorant_add
+lemma eventually_momentJointTailUpperEnvelope_le_majorant_add
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12848,7 +12848,7 @@ open BergmanJetGeodesic BergmanJetRealGeodesic BergmanJetUpperEnvelope BergmanGe
 open BergmanDiagonalBasisIndependence ActualJetUpperEnvelope
 open scoped BigOperators ENNReal InnerProductSpace Topology
 
-theorem momentZeroMonomialNorm_le_partition
+lemma momentZeroMonomialNorm_le_partition
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12912,7 +12912,7 @@ def momentJointGlobalLowerBound
       normalizedVolume K.carrier) -
     |Real.log (finiteEnergySourcePartition F)|
 
-theorem momentJointGlobalLowerBound_le_zeroMonomial
+lemma momentJointGlobalLowerBound_le_zeroMonomial
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12948,7 +12948,7 @@ theorem momentJointGlobalLowerBound_le_zeroMonomial
   apply (le_div_iff₀ hkreal).mpr
   nlinarith
 
-theorem inv_momentZeroMonomialNorm_le_diagonalKernel
+lemma inv_momentZeroMonomialNorm_le_diagonalKernel
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -12980,7 +12980,7 @@ theorem inv_momentZeroMonomialNorm_le_diagonalKernel
         K hk F htransport u).le
   exact Finset.single_le_sum hnonneg (Finset.mem_univ u₀)
 
-theorem momentJointGlobalLowerBound_le_log_diagonalKernel
+lemma momentJointGlobalLowerBound_le_log_diagonalKernel
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -13011,7 +13011,7 @@ theorem momentJointGlobalLowerBound_le_log_diagonalKernel
         (momentNormalizedPotential F) x) / (k : ℝ) :=
       (div_le_div_iff_of_pos_right hkreal).mpr hlog
 
-theorem monotone_momentJetGeodesic
+lemma monotone_momentJetGeodesic
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -13037,7 +13037,7 @@ theorem monotone_momentJetGeodesic
   · exact momentJetGeodesic_deriv_nonneg
       K hk F htransport p N z
 
-theorem momentJointGlobalLowerBound_le_positiveJointGeodesic
+lemma momentJointGlobalLowerBound_le_positiveJointGeodesic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -13072,7 +13072,7 @@ theorem momentJointGlobalLowerBound_le_positiveJointGeodesic
       (momentPositiveJointGeodesic_eq_momentJetGeodesic
         K F htransport p k q).symm
 
-theorem momentJointGlobalLowerBound_le_tailSup
+lemma momentJointGlobalLowerBound_le_tailSup
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -13095,7 +13095,7 @@ theorem momentJointGlobalLowerBound_le_tailSup
           K F htransport p r q)
       exact ⟨0, by simp⟩
 
-theorem momentJointGlobalLowerBound_le_tailUpperEnvelope
+lemma momentJointGlobalLowerBound_le_tailUpperEnvelope
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -13126,7 +13126,7 @@ open MomentOptimizer MomentFirstVariation MomentTargetGeodesic BergmanJetUpperEn
 open BergmanJetEnvelopePlurisubharmonic ActualJetUpperEnvelope
 open scoped BigOperators ENNReal InnerProductSpace Topology
 
-theorem momentJointTailUpperEnvelope_bddBelow
+lemma momentJointTailUpperEnvelope_bddBelow
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -13151,7 +13151,7 @@ def momentJointUpperEnvelope
   ⨅ r : ℕ, momentJointTailUpperEnvelope
     K F htransport p r q
 
-theorem upperSemicontinuous_momentJointUpperEnvelope
+lemma upperSemicontinuous_momentJointUpperEnvelope
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -13165,7 +13165,7 @@ theorem upperSemicontinuous_momentJointUpperEnvelope
     (upperSemicontinuous_momentJointTailUpperEnvelope
       K F htransport p)
 
-theorem tendsto_momentJointTailUpperEnvelope
+lemma tendsto_momentJointTailUpperEnvelope
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -13183,7 +13183,7 @@ theorem tendsto_momentJointTailUpperEnvelope
     (momentJointTailUpperEnvelope_bddBelow
       K F htransport p q)
 
-theorem momentJointUpperEnvelope_le_majorant
+lemma momentJointUpperEnvelope_le_majorant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -13213,7 +13213,7 @@ open Set Filter MeasureTheory Metric
 open JetEnvelopeSlopeConvergence
 open scoped ENNReal Topology
 
-theorem sourceTorusBaseMeasure_neZero (n : ℕ) :
+lemma sourceTorusBaseMeasure_neZero (n : ℕ) :
     NeZero (sourceTorusBaseMeasure n) := by
   refine ⟨?_⟩
   intro hzero
@@ -13309,7 +13309,7 @@ def euclideanGradient {n : ℕ}
     EuclideanSpace ℝ (Fin n) :=
   WithLp.toLp 2 (coordinateGradient f x)
 
-theorem continuous_euclideanGradient {n : ℕ}
+lemma continuous_euclideanGradient {n : ℕ}
     {f : Space n → ℝ}
     (hf : ContDiff ℝ 1 f) : Continuous (euclideanGradient f) := by
   unfold euclideanGradient
@@ -13338,12 +13338,12 @@ def unitBump {n : ℕ} : ContDiffBump (0 : Space n) where
   rIn_pos := by norm_num
   rIn_lt_rOut := by norm_num
 
-theorem growingBump_apply_eq_unit {n : ℕ} (k : ℕ) (x : Space n) :
+lemma growingBump_apply_eq_unit {n : ℕ} (k : ℕ) (x : Space n) :
     growingBump (n := n) k x = unitBump (n := n) (((k : ℝ) + 1)⁻¹ • x) := by
   have hk : (k : ℝ) + 1 ≠ 0 := by positivity
   simp [ContDiffBump.apply, growingBump, unitBump, hk]
 
-theorem growingBump_eventually_one {n : ℕ} (x : Space n) :
+lemma growingBump_eventually_one {n : ℕ} (x : Space n) :
     ∀ᶠ k : ℕ in atTop, growingBump k x = 1 := by
   obtain ⟨N, hN⟩ := exists_nat_gt ‖x‖
   filter_upwards [eventually_ge_atTop N] with k hk
@@ -13353,7 +13353,7 @@ theorem growingBump_eventually_one {n : ℕ} (x : Space n) :
   have hNk : (N : ℝ) ≤ (k : ℝ) := by exact_mod_cast hk
   linarith
 
-theorem growingBump_fderiv {n : ℕ} (k : ℕ) (x : Space n) :
+lemma growingBump_fderiv {n : ℕ} (k : ℕ) (x : Space n) :
     fderiv ℝ (fun y : Space n => growingBump k y) x =
       ((k : ℝ) + 1)⁻¹ •
         fderiv ℝ (fun y : Space n => unitBump y)
@@ -13365,7 +13365,7 @@ theorem growingBump_fderiv {n : ℕ} (k : ℕ) (x : Space n) :
     funext (growingBump_apply_eq_unit k)
   rw [hfun, fderiv_comp_smul]
 
-theorem unitBump_euclideanGradient_hasCompactSupport {n : ℕ} :
+lemma unitBump_euclideanGradient_hasCompactSupport {n : ℕ} :
     HasCompactSupport
       (euclideanGradient (fun x : Space n => unitBump x)) := by
   refine ((unitBump (n := n)).hasCompactSupport.fderiv ℝ).mono ?_
@@ -13374,7 +13374,7 @@ theorem unitBump_euclideanGradient_hasCompactSupport {n : ℕ} :
     ext i
     simp [euclideanGradient, coordinateGradient, hx])
 
-theorem unitBump_euclideanGradient_bound {n : ℕ} :
+lemma unitBump_euclideanGradient_bound {n : ℕ} :
     ∃ C : ℝ, 0 ≤ C ∧
       ∀ x : Space n,
         ‖euclideanGradient (fun y : Space n => unitBump y) x‖ ≤ C := by
@@ -13387,7 +13387,7 @@ theorem unitBump_euclideanGradient_bound {n : ℕ} :
   exact ⟨max C 0, le_max_right C 0,
     fun x => (hC x).trans (le_max_left C 0)⟩
 
-theorem growingBump_euclideanGradient {n : ℕ}
+lemma growingBump_euclideanGradient {n : ℕ}
     (k : ℕ) (x : Space n) :
     euclideanGradient (fun y : Space n => growingBump k y) x =
       ((k : ℝ) + 1)⁻¹ •
@@ -13403,7 +13403,7 @@ theorem growingBump_euclideanGradient {n : ℕ}
   rw [growingBump_fderiv]
   rfl
 
-theorem growingBump_euclideanGradient_norm_le {n : ℕ}
+lemma growingBump_euclideanGradient_norm_le {n : ℕ}
     {C : ℝ}
     (hC : ∀ x : Space n,
       ‖euclideanGradient (fun y : Space n => unitBump y) x‖ ≤ C)
@@ -13414,7 +13414,7 @@ theorem growingBump_euclideanGradient_norm_le {n : ℕ}
     abs_of_pos (by positivity : 0 < ((k : ℝ) + 1)⁻¹)]
   exact mul_le_mul_of_nonneg_left (hC _) (by positivity)
 
-theorem inv_nat_add_one_tendsto_zero :
+lemma inv_nat_add_one_tendsto_zero :
     Tendsto (fun k : ℕ => ((k : ℝ) + 1)⁻¹)
       atTop (nhds 0) := by
   have hcast : Tendsto (fun k : ℕ => (k : ℝ)) atTop atTop :=
@@ -13453,7 +13453,7 @@ local instance : IsProbabilityMeasure
 
 def logarithmicPeriod : ℂ := 2 * (Real.pi : ℂ) * Complex.I
 
-theorem periodic_holomorphic_vertical_integral_eq
+lemma periodic_holomorphic_vertical_integral_eq
     {f : ℂ → ℂ} (hf : Differentiable ℂ f)
     (hperiod : Function.Periodic f logarithmicPeriod)
     (a b : ℝ) :
@@ -13502,7 +13502,7 @@ def angularFourierCoefficient {n k : ℕ}
     (fun θ : TorusCharacters.AngularTorus n =>
       f (x, θ)) m
 
-theorem angularSlice_sq_integrable_ae {n k : ℕ}
+lemma angularSlice_sq_integrable_ae {n k : ℕ}
     (φ : Space n → ℝ)
     (f : WeightedTorusHilbert.weightedHilbert k φ) :
     ∀ᵐ x ∂(WeightedTorusHilbert.radialMeasure k φ),
@@ -13520,7 +13520,7 @@ theorem angularSlice_sq_integrable_ae {n k : ℕ}
   unfold WeightedTorusHilbert.weightedTorusMeasure at hsquare
   exact hsquare.prod_right_ae
 
-theorem angularSlice_memLp_ae {n k : ℕ}
+lemma angularSlice_memLp_ae {n k : ℕ}
     (φ : Space n → ℝ)
     (f : WeightedTorusHilbert.weightedHilbert k φ) :
     ∀ᵐ x ∂(WeightedTorusHilbert.radialMeasure k φ),
@@ -13541,7 +13541,7 @@ theorem angularSlice_memLp_ae {n k : ℕ}
     with x hx hsquare
   exact (MeasureTheory.memLp_two_iff_integrable_sq_norm hx).mpr hsquare
 
-theorem angularFourierCoefficient_aestronglyMeasurable {n k : ℕ}
+lemma angularFourierCoefficient_aestronglyMeasurable {n k : ℕ}
     (φ : Space n → ℝ)
     (f : WeightedTorusHilbert.weightedHilbert k φ)
     (m : Fin n → ℤ) :
@@ -13567,7 +13567,7 @@ theorem angularFourierCoefficient_aestronglyMeasurable {n k : ℕ}
   simp [angularFourierCoefficient, UnitAddTorus.mFourierCoeff,
     WeightedTorusHilbert.angularMeasure, smul_eq_mul]
 
-theorem angularFourierCoefficient_sq_le_slice_energy_ae {n k : ℕ}
+lemma angularFourierCoefficient_sq_le_slice_energy_ae {n k : ℕ}
     (φ : Space n → ℝ)
     (f : WeightedTorusHilbert.weightedHilbert k φ)
     (m : Fin n → ℤ) :
@@ -13608,7 +13608,7 @@ theorem angularFourierCoefficient_sq_le_slice_energy_ae {n k : ℕ}
   rw [← hcoeff, ← henergy]
   exact hle
 
-theorem angularFourierCoefficient_sq_integrable {n k : ℕ}
+lemma angularFourierCoefficient_sq_integrable {n k : ℕ}
     (φ : Space n → ℝ)
     (f : WeightedTorusHilbert.weightedHilbert k φ)
     (m : Fin n → ℤ) :
@@ -13637,7 +13637,7 @@ def coordinateHolomorphicSlice {n : ℕ}
     (i : Fin n) : ℂ → ℂ :=
   fun w => F (fun j => if j = i then w else ζ j)
 
-theorem differentiable_coordinateHolomorphicSlice {n : ℕ}
+lemma differentiable_coordinateHolomorphicSlice {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℂ F)
     (ζ : TorusCharacters.LogSpace n)
@@ -13653,7 +13653,7 @@ theorem differentiable_coordinateHolomorphicSlice {n : ℕ}
   · simp [hji]
   · simp [hji]
 
-theorem periodic_coordinateHolomorphicSlice {n : ℕ}
+lemma periodic_coordinateHolomorphicSlice {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hperiod : ∀ q : Fin n → ℤ,
       Function.Periodic F (TorusCharacters.imaginaryShift q))
@@ -13680,7 +13680,7 @@ theorem periodic_coordinateHolomorphicSlice {n : ℕ}
   rw [hshift]
   exact hperiod (Pi.single i (1 : ℤ)) _
 
-theorem mFourierCoefficient_torusMonomial {n : ℕ}
+lemma mFourierCoefficient_torusMonomial {n : ℕ}
     (m q : Fin n → ℤ) (x : Space n) :
     UnitAddTorus.mFourierCoeff
       (fun θ : TorusCharacters.AngularTorus n =>
@@ -13720,7 +13720,7 @@ theorem mFourierCoefficient_torusMonomial {n : ℕ}
       rw [hinner]
       split_ifs <;> simp
 
-theorem radialCharacter_sq_integrable_iff_monomialWeight
+lemma radialCharacter_sq_integrable_iff_monomialWeight
     {n : ℕ} (k : ℕ)
     {φ : Space n → ℝ} (hφ : Continuous φ)
     (m : Fin n → ℤ) (u : Space n)
@@ -13753,7 +13753,7 @@ theorem radialCharacter_sq_integrable_iff_monomialWeight
     WeightedTorusHilbert.radialWeight_mul_exp_pairing
       k φ m u hm x
 
-theorem forbidden_angularFourierCoefficient_constant_eq_zero
+lemma forbidden_angularFourierCoefficient_constant_eq_zero
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     {φ : Space n → ℝ} (hφ : Continuous φ)
     {C : ℝ}
@@ -13801,7 +13801,7 @@ theorem forbidden_angularFourierCoefficient_constant_eq_zero
   exact MonomialDivergence.not_integrable_monomialWeight_of_centeredBody_not_mem_interior
     K hu hupper hkreal hmono
 
-theorem weightedHilbert_eq_zero_of_angularFourierCoefficients
+lemma weightedHilbert_eq_zero_of_angularFourierCoefficients
     {n k : ℕ} (φ : Space n → ℝ)
     (f : WeightedTorusHilbert.weightedHilbert k φ)
     (hcoeff : ∀ m : Fin n → ℤ,
@@ -13924,13 +13924,13 @@ def angularBoxMeasure (n : ℕ) : Measure (Space n) :=
   Measure.pi fun _ : Fin n =>
     (volume : Measure ℝ).restrict (Set.Ioc (0 : ℝ) 1)
 
-theorem angularBoxMeasure_eq_restrict (n : ℕ) :
+lemma angularBoxMeasure_eq_restrict (n : ℕ) :
     angularBoxMeasure n =
       (volume : Measure (Space n)).restrict (angularBox n) := by
   unfold angularBoxMeasure angularBox
   rw [MeasureTheory.volume_pi, MeasureTheory.Measure.restrict_pi_pi]
 
-theorem continuous_integrable_angularBox {n : ℕ}
+lemma continuous_integrable_angularBox {n : ℕ}
     {g : Space n → ℂ} (hg : Continuous g) :
     Integrable g (angularBoxMeasure n) := by
   rw [angularBoxMeasure_eq_restrict]
@@ -13957,7 +13957,7 @@ def coverRepresentative {n : ℕ}
     (2 * (Real.pi : ℂ) * Complex.I) *
       ((AddCircle.equivIoc 1 0 (θ i)).1 : ℂ))
 
-theorem coverRepresentative_coe {n : ℕ}
+lemma coverRepresentative_coe {n : ℕ}
     (F : TorusCharacters.LogSpace n → ℂ)
     (x t : Space n) (ht : t ∈ angularBox n) :
     coverRepresentative F x (fun i => (t i : UnitAddCircle)) =
@@ -13976,14 +13976,14 @@ def globalLaurentTwist {n : ℕ}
   fun ζ => Complex.exp
       (-(TorusCharacters.characterExponent m ζ)) * F ζ
 
-theorem differentiable_globalLaurentTwist {n : ℕ}
+lemma differentiable_globalLaurentTwist {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℂ F) (m : Fin n → ℤ) :
     Differentiable ℂ (globalLaurentTwist F m) := by
   unfold globalLaurentTwist TorusCharacters.characterExponent
   fun_prop
 
-theorem periodic_globalLaurentTwist {n : ℕ}
+lemma periodic_globalLaurentTwist {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hperiod : ∀ q : Fin n → ℤ,
       Function.Periodic F (TorusCharacters.imaginaryShift q))
@@ -14011,7 +14011,7 @@ def twistedAngularIntegrand {n : ℕ}
     Space n → ℂ :=
   fun t => globalLaurentTwist F m (logarithmicPoint x t)
 
-theorem continuous_twistedAngularIntegrand {n : ℕ}
+lemma continuous_twistedAngularIntegrand {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℂ F) (m : Fin n → ℤ)
     (x : Space n) :
@@ -14020,7 +14020,7 @@ theorem continuous_twistedAngularIntegrand {n : ℕ}
   apply (differentiable_globalLaurentTwist hF m).continuous.comp
   fun_prop
 
-theorem unit_interval_vertical_integral_eq
+lemma unit_interval_vertical_integral_eq
     {f : ℂ → ℂ} (hf : Differentiable ℂ f)
     (hperiod : Function.Periodic f
       HolomorphicLaurentFourierCompletenessBridge.logarithmicPeriod)
@@ -14064,7 +14064,7 @@ theorem unit_interval_vertical_integral_eq
       _ = _ := by simp only [mul_zero, mul_one]
   rw [hscale b, hscale a, hcg]
 
-theorem coordinate_unit_interval_twist_integral_eq {n : ℕ}
+lemma coordinate_unit_interval_twist_integral_eq {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℂ F)
     (hperiod : ∀ q : Fin n → ℤ,
@@ -14090,7 +14090,7 @@ theorem coordinate_unit_interval_twist_integral_eq {n : ℕ}
     (HolomorphicLaurentFourierCompletenessBridge.periodic_coordinateHolomorphicSlice
       (fun q => periodic_globalLaurentTwist hperiod m q) ζ i)
 
-theorem angularBoxIntegral_eq_of_coordinate_slice
+lemma angularBoxIntegral_eq_of_coordinate_slice
     {n : ℕ} {g h : Space (n + 1) → ℂ}
     (hg : Continuous g) (hh : Continuous h)
     (i : Fin (n + 1))
@@ -14163,7 +14163,7 @@ theorem angularBoxIntegral_eq_of_coordinate_slice
           simpa [e, MeasurableEquiv.piFinSuccAbove_symm_apply,
             Fin.insertNthEquiv] using (he.integral_comp' h)
 
-theorem logarithmicPoint_insertNth {n : ℕ}
+lemma logarithmicPoint_insertNth {n : ℕ}
     (x : Space (n + 1))
     (i : Fin (n + 1)) (y : Fin n → ℝ) (t : ℝ) :
     logarithmicPoint x (i.insertNth t y) =
@@ -14178,7 +14178,7 @@ theorem logarithmicPoint_insertNth {n : ℕ}
   · intro j
     simp [logarithmicPoint, i.succAbove_ne]
 
-theorem logarithmicPoint_update_insertNth {n : ℕ}
+lemma logarithmicPoint_update_insertNth {n : ℕ}
     (x : Space (n + 1))
     (i : Fin (n + 1)) (a : ℝ)
     (y : Fin n → ℝ) (t : ℝ) :
@@ -14194,7 +14194,7 @@ theorem logarithmicPoint_update_insertNth {n : ℕ}
   · intro j
     simp [logarithmicPoint, i.succAbove_ne]
 
-theorem twistedAngularIntegral_coordinate_update {n : ℕ}
+lemma twistedAngularIntegral_coordinate_update {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℂ F)
     (hperiod : ∀ q : Fin n → ℤ,
@@ -14261,7 +14261,7 @@ def twistedAngularAverage {n : ℕ}
   ∫ t : Space n,
     twistedAngularIntegrand F m x t ∂(angularBoxMeasure n)
 
-theorem twistedAngularAverage_coordinate_update {n : ℕ}
+lemma twistedAngularAverage_coordinate_update {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℂ F)
     (hperiod : ∀ q : Fin n → ℤ,
@@ -14273,7 +14273,7 @@ theorem twistedAngularAverage_coordinate_update {n : ℕ}
   exact twistedAngularIntegral_coordinate_update
     hF hperiod m x i a
 
-theorem twistedAngularAverage_eq_zero {n : ℕ}
+lemma twistedAngularAverage_eq_zero {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℂ F)
     (hperiod : ∀ q : Fin n → ℤ,
@@ -14317,7 +14317,7 @@ theorem twistedAngularAverage_eq_zero {n : ℕ}
       funext i
       simp
 
-theorem mFourier_neg_coe_eq_exp {n : ℕ}
+lemma mFourier_neg_coe_eq_exp {n : ℕ}
     (m : Fin n → ℤ) (t : Space n) :
     UnitAddTorus.mFourier (-m)
         (fun i => (t i : UnitAddCircle)) =
@@ -14337,7 +14337,7 @@ theorem mFourier_neg_coe_eq_exp {n : ℕ}
   push_cast
   ring
 
-theorem logarithmicPoint_eq_add {n : ℕ}
+lemma logarithmicPoint_eq_add {n : ℕ}
     (x t : Space n) :
     logarithmicPoint x t =
       TorusCharacters.realLogSlice x +
@@ -14346,7 +14346,7 @@ theorem logarithmicPoint_eq_add {n : ℕ}
   simp [logarithmicPoint,
     TorusCharacters.realLogSlice]
 
-theorem characterExponent_logarithmicPoint {n : ℕ}
+lemma characterExponent_logarithmicPoint {n : ℕ}
     (m : Fin n → ℤ) (x t : Space n) :
     TorusCharacters.characterExponent m
         (logarithmicPoint x t) =
@@ -14357,7 +14357,7 @@ theorem characterExponent_logarithmicPoint {n : ℕ}
   rw [logarithmicPoint_eq_add,
     TorusCharacters.characterExponent_add]
 
-theorem fourier_times_cover_eq_radial_twist {n : ℕ}
+lemma fourier_times_cover_eq_radial_twist {n : ℕ}
     (F : TorusCharacters.LogSpace n → ℂ)
     (m : Fin n → ℤ) (x t : Space n) :
     UnitAddTorus.mFourier (-m)
@@ -14375,18 +14375,18 @@ theorem fourier_times_cover_eq_radial_twist {n : ℕ}
   congr 1
   ring
 
-theorem measurableSet_angularBox (n : ℕ) :
+lemma measurableSet_angularBox (n : ℕ) :
     MeasurableSet (angularBox n) := by
   unfold angularBox
   exact MeasurableSet.univ_pi fun _ => measurableSet_Ioc
 
-theorem angularBox_eq_setOf (n : ℕ) :
+lemma angularBox_eq_setOf (n : ℕ) :
     angularBox n =
       {t : Space n | ∀ i, t i ∈ Set.Ioc (0 : ℝ) 1} := by
   ext t
   simp [angularBox]
 
-theorem mFourierCoefficient_coverRepresentative_eq_twistedAverage
+lemma mFourierCoefficient_coverRepresentative_eq_twistedAverage
     {n : ℕ}
     (F : TorusCharacters.LogSpace n → ℂ)
     (m : Fin n → ℤ) (x : Space n) :
@@ -14419,7 +14419,7 @@ theorem mFourierCoefficient_coverRepresentative_eq_twistedAverage
         twistedAngularAverage F m x := by
           exact MeasureTheory.integral_const_mul _ _
 
-theorem mFourierCoefficient_coverRepresentative_eq_radial
+lemma mFourierCoefficient_coverRepresentative_eq_radial
     {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℂ F)
@@ -14456,7 +14456,7 @@ theorem mFourierCoefficient_coverRepresentative_eq_radial
       rw [hzero]
       ring
 
-theorem angularFourierCoefficient_of_holomorphic_representative_ae
+lemma angularFourierCoefficient_of_holomorphic_representative_ae
     {n k : ℕ}
     {φ : Space n → ℝ}
     (f : WeightedTorusHilbert.weightedHilbert k φ)
@@ -14503,7 +14503,7 @@ theorem angularFourierCoefficient_of_holomorphic_representative_ae
       mFourierCoefficient_coverRepresentative_eq_radial
         hF hperiod m x
 
-theorem forbidden_coefficient_of_holomorphic_representative_eq_zero
+lemma forbidden_coefficient_of_holomorphic_representative_eq_zero
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     {φ : Space n → ℝ} (hφ : Continuous φ)
     {C : ℝ}
@@ -14530,7 +14530,7 @@ theorem forbidden_coefficient_of_holomorphic_representative_eq_zero
       (angularFourierCoefficient_of_holomorphic_representative_ae
         f hF hperiod hrepresentative m)
 
-theorem angularCharacter_mul_slice_integrable {n : ℕ}
+lemma angularCharacter_mul_slice_integrable {n : ℕ}
     {g : TorusCharacters.AngularTorus n → ℂ}
     (hg : MemLp g 2
       (WeightedTorusHilbert.angularMeasure n))
@@ -14544,7 +14544,7 @@ theorem angularCharacter_mul_slice_integrable {n : ℕ}
   exact Filter.Eventually.of_forall fun θ => by
     rw [WeightedTorusHilbert.angularCharacter_norm]
 
-theorem angularFourierCoefficient_sub_ae
+lemma angularFourierCoefficient_sub_ae
     {n k : ℕ} (φ : Space n → ℝ)
     (f g : WeightedTorusHilbert.weightedHilbert k φ)
     (m : Fin n → ℤ) :
@@ -14588,7 +14588,7 @@ theorem angularFourierCoefficient_sub_ae
       (angularCharacter_mul_slice_integrable hfx m)
       (angularCharacter_mul_slice_integrable hgx m)
 
-theorem indexedMonomial_finite_sum_ae
+lemma indexedMonomial_finite_sum_ae
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     {φ : Space n → ℝ} (hφ : Continuous φ)
     {C : ℝ}
@@ -14648,7 +14648,7 @@ theorem indexedMonomial_finite_sum_ae
           K hk hφ hbounded u z + _ = _
     rw [hzmono]
 
-theorem torusMonomial_angular_memLp {n : ℕ}
+lemma torusMonomial_angular_memLp {n : ℕ}
     (m : Fin n → ℤ) (x : Space n) :
     MemLp
       (fun θ : TorusCharacters.AngularTorus n =>
@@ -14662,7 +14662,7 @@ theorem torusMonomial_angular_memLp {n : ℕ}
     simp [WeightedTorusHilbert.torusMonomial,
       WeightedTorusHilbert.angularCharacter_norm]
 
-theorem angularFourierCoefficient_indexed_finite_sum_ae
+lemma angularFourierCoefficient_indexed_finite_sum_ae
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     {φ : Space n → ℝ} (hφ : Continuous φ)
     {C : ℝ}
@@ -14773,7 +14773,7 @@ def scaledExponent {n : ℕ}
     (k : ℕ) (m : Fin n → ℤ) : Space n :=
   (k : ℝ)⁻¹ • integerPoint n m
 
-theorem integerPoint_eq_smul_scaledExponent
+lemma integerPoint_eq_smul_scaledExponent
     {n k : ℕ} (hk : 0 < k) (m : Fin n → ℤ) :
     integerPoint n m =
       (k : ℝ) • scaledExponent k m := by
@@ -14783,7 +14783,7 @@ theorem integerPoint_eq_smul_scaledExponent
   rw [smul_smul]
   simp [hkreal]
 
-theorem scaledExponent_mem_monomialIndex_iff
+lemma scaledExponent_mem_monomialIndex_iff
     {n k : ℕ} (K : CenteredBody n)
     (hk : 0 < k) (m : Fin n → ℤ) :
     scaledExponent k m ∈
@@ -14800,7 +14800,7 @@ theorem scaledExponent_mem_monomialIndex_iff
       congrFun (integerPoint_eq_smul_scaledExponent hk m) i
     simpa [integerPoint] using h
 
-theorem scaledExponent_integerExponent
+lemma scaledExponent_integerExponent
     {n k : ℕ} (K : CenteredBody n)
     (hk : 0 < k)
     (u : LatticeAsymptotics.monomialIndex K k) :
@@ -14814,7 +14814,7 @@ theorem scaledExponent_integerExponent
   rw [smul_smul]
   simp [hkreal]
 
-theorem integerExponent_eq_of_integerPoint
+lemma integerExponent_eq_of_integerPoint
     {n k : ℕ} (K : CenteredBody n)
     (hk : 0 < k)
     (u : LatticeAsymptotics.monomialIndex K k)
@@ -14839,7 +14839,7 @@ def laurentCoefficient {n : ℕ}
     (m : Fin n → ℤ) : ℂ :=
   UnitAddTorus.mFourierCoeff (coverRepresentative F 0) m
 
-theorem finiteLaurentCoefficient_sum_eq
+lemma finiteLaurentCoefficient_sum_eq
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     {φ : Space n → ℝ} (hφ : Continuous φ)
     {C : ℝ}
@@ -14921,7 +14921,7 @@ theorem finiteLaurentCoefficient_sum_eq
       exact u.property.1
     simp [hnone, hcoefficient]
 
-theorem holomorphic_representative_eq_finite_laurent_sum
+lemma holomorphic_representative_eq_finite_laurent_sum
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     {φ : Space n → ℝ} (hφ : Continuous φ)
     {C : ℝ}
@@ -15070,7 +15070,7 @@ def complexContinuousOfCoordinateCR {n : ℕ}
       _ = a • D x := by
             rw [← map_sum, Finset.univ_sum_single]
 
-theorem complexContinuousOfCoordinateCR_restrictScalars {n : ℕ}
+lemma complexContinuousOfCoordinateCR_restrictScalars {n : ℕ}
     (D : TorusCharacters.LogSpace n →L[ℝ] ℂ)
     (hI : ∀ j : Fin n,
       D (Pi.single j Complex.I) =
@@ -15079,7 +15079,7 @@ theorem complexContinuousOfCoordinateCR_restrictScalars {n : ℕ}
   ext x
   rfl
 
-theorem differentiableAt_complex_of_barPartialCoordinate_eq_zero
+lemma differentiableAt_complex_of_barPartialCoordinate_eq_zero
     {n : ℕ} {F : TorusCharacters.LogSpace n → ℂ}
     {z : TorusCharacters.LogSpace n}
     (hF : DifferentiableAt ℝ F z)
@@ -15113,11 +15113,11 @@ theorem differentiableAt_complex_of_barPartialCoordinate_eq_zero
 def complexRealMultiplication : ℂ →L[ℝ] ℝ →L[ℝ] ℂ :=
   (ContinuousLinearMap.lsmul ℝ ℝ).flip
 
-theorem complexRealMultiplication_apply (z : ℂ) (r : ℝ) :
+lemma complexRealMultiplication_apply (z : ℂ) (r : ℝ) :
     complexRealMultiplication z r = (r : ℂ) * z := by
   simp [complexRealMultiplication, Complex.real_smul]
 
-theorem translatedRealKernel_contDiff {n : ℕ}
+lemma translatedRealKernel_contDiff {n : ℕ}
     {κ : TorusCharacters.LogSpace n → ℝ}
     (hκ : ContDiff ℝ 1 κ)
     (x : TorusCharacters.LogSpace n) :
@@ -15127,7 +15127,7 @@ theorem translatedRealKernel_contDiff {n : ℕ}
     (κ ∘ (fun t : TorusCharacters.LogSpace n => x - t))
   exact hκ.comp (contDiff_const.sub contDiff_id)
 
-theorem translatedRealKernel_hasCompactSupport {n : ℕ}
+lemma translatedRealKernel_hasCompactSupport {n : ℕ}
     {κ : TorusCharacters.LogSpace n → ℝ}
     (hκ : HasCompactSupport κ)
     (x : TorusCharacters.LogSpace n) :
@@ -15136,7 +15136,7 @@ theorem translatedRealKernel_hasCompactSupport {n : ℕ}
   simpa [Function.comp_def, Equiv.subLeft_apply] using
     hκ.comp_homeomorph (Homeomorph.subLeft x)
 
-theorem translatedRealKernel_fderiv {n : ℕ}
+lemma translatedRealKernel_fderiv {n : ℕ}
     {κ : TorusCharacters.LogSpace n → ℝ}
     (hκ : ContDiff ℝ 1 κ)
     (x t v : TorusCharacters.LogSpace n) :
@@ -15159,7 +15159,7 @@ theorem translatedRealKernel_fderiv {n : ℕ}
       hchain.fderiv
   simpa [Function.comp_def] using heval
 
-theorem weak_barPartial_convolution_barPartial_eq_zero {n : ℕ}
+lemma weak_barPartial_convolution_barPartial_eq_zero {n : ℕ}
     {g : TorusCharacters.LogSpace n → ℂ}
     {κ : TorusCharacters.LogSpace n → ℝ}
     (hg : LocallyIntegrable g
@@ -15273,7 +15273,7 @@ theorem weak_barPartial_convolution_barPartial_eq_zero {n : ℕ}
   rw [hgoal]
   simp
 
-theorem differentiable_complex_of_weak_barPartial_convolution {n : ℕ}
+lemma differentiable_complex_of_weak_barPartial_convolution {n : ℕ}
     {g : TorusCharacters.LogSpace n → ℂ}
     {κ : TorusCharacters.LogSpace n → ℝ}
     (hg : LocallyIntegrable g
@@ -15308,20 +15308,20 @@ def complexShrinkingBump {n : ℕ} (k : ℕ) :
     have h : 0 < 1 / ((k : ℝ) + 1) := by positivity
     exact half_lt_self h
 
-theorem complexShrinkingBump_rOut_tendsto {n : ℕ} :
+lemma complexShrinkingBump_rOut_tendsto {n : ℕ} :
     Tendsto (fun k : ℕ => (complexShrinkingBump (n := n) k).rOut)
       Filter.atTop (nhds 0) := by
   simpa [complexShrinkingBump] using
     (tendsto_one_div_add_atTop_nhds_zero_nat (𝕜 := ℝ))
 
-theorem complexShrinkingBump_radius_ratio {n : ℕ} (k : ℕ) :
+lemma complexShrinkingBump_radius_ratio {n : ℕ} (k : ℕ) :
     (complexShrinkingBump (n := n) k).rOut ≤
       2 * (complexShrinkingBump (n := n) k).rIn := by
   dsimp [complexShrinkingBump]
   ring_nf
   exact le_rfl
 
-theorem complex_convolution_flip {n : ℕ}
+lemma complex_convolution_flip {n : ℕ}
     (g : TorusCharacters.LogSpace n → ℂ)
     (κ : TorusCharacters.LogSpace n → ℝ) :
     (g ⋆[complexRealMultiplication,
@@ -15332,7 +15332,7 @@ theorem complex_convolution_flip {n : ℕ}
     (μ := (volume : Measure (TorusCharacters.LogSpace n)))
     (f := κ) (g := g) (ContinuousLinearMap.lsmul ℝ ℝ)
 
-theorem differentiable_complex_normalizedShrinkingConvolution
+lemma differentiable_complex_normalizedShrinkingConvolution
     {n : ℕ} {g : TorusCharacters.LogSpace n → ℂ}
     (hg : LocallyIntegrable g
       (volume : Measure (TorusCharacters.LogSpace n)))
@@ -15361,7 +15361,7 @@ theorem differentiable_complex_normalizedShrinkingConvolution
   rw [complex_convolution_flip] at hhol
   exact hhol
 
-theorem ae_tendsto_normalized_holomorphic_mollifications {n : ℕ}
+lemma ae_tendsto_normalized_holomorphic_mollifications {n : ℕ}
     {g : TorusCharacters.LogSpace n → ℂ}
     (hg : LocallyIntegrable g
       (volume : Measure (TorusCharacters.LogSpace n))) :
@@ -15456,7 +15456,7 @@ open Set Function MeasureTheory Filter
 open EqualitySaturatingKillingPaths DolbeaultRegularity
 open scoped BigOperators ENNReal InnerProductSpace Topology Convolution
 
-theorem compactSupport_complexOfReal {n : ℕ}
+lemma compactSupport_complexOfReal {n : ℕ}
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (hψ : HasCompactSupport ψ) :
     HasCompactSupport
@@ -15465,7 +15465,7 @@ theorem compactSupport_complexOfReal {n : ℕ}
   intro z hz
   exact Complex.ofReal_ne_zero.mp hz
 
-theorem fderiv_complexOfReal {n : ℕ}
+lemma fderiv_complexOfReal {n : ℕ}
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (hψ : Differentiable ℝ ψ)
     (z v : TorusCharacters.LogSpace n) :
@@ -15477,7 +15477,7 @@ theorem fderiv_complexOfReal {n : ℕ}
   exact congrArg
     (fun D : TorusCharacters.LogSpace n →L[ℝ] ℂ => D v) h
 
-theorem complex_compact_integration_by_parts {n : ℕ}
+lemma complex_compact_integration_by_parts {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (hF : ContDiff ℝ 1 F)
@@ -15536,7 +15536,7 @@ def coverBarPartialTest {n : ℕ}
     Complex.I *
       ((fderiv ℝ ψ z) (Pi.single j Complex.I) : ℂ)
 
-theorem complex_compact_barPartial_green {n : ℕ}
+lemma complex_compact_barPartial_green {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (hF : ContDiff ℝ 1 F)
@@ -15651,7 +15651,7 @@ theorem complex_compact_barPartial_green {n : ℕ}
   rw [hip₀, hip₁]
   ring
 
-theorem complexReal_convolution_periodic {n : ℕ}
+lemma complexReal_convolution_periodic {n : ℕ}
     {g : TorusCharacters.LogSpace n → ℂ}
     (κ : TorusCharacters.LogSpace n → ℝ)
     {d : TorusCharacters.LogSpace n}
@@ -15684,7 +15684,7 @@ theorem complexReal_convolution_periodic {n : ℕ}
         (integral_add_right_eq_self H (-d))
     _ = _ := rfl
 
-theorem normalizedShrinkingConvolution_periodic {n : ℕ}
+lemma normalizedShrinkingConvolution_periodic {n : ℕ}
     {g : TorusCharacters.LogSpace n → ℂ}
     (hperiod : ∀ q : Fin n → ℤ,
       Function.Periodic g (TorusCharacters.imaginaryShift q))
@@ -15716,7 +15716,7 @@ def coverAdjointVectorTest {n : ℕ}
     EuclideanSpace ℂ (Fin n) :=
   EuclideanSpace.single j ((2 : ℂ) * (ψ z : ℂ))
 
-theorem continuous_coverBarPartialTest {n : ℕ}
+lemma continuous_coverBarPartialTest {n : ℕ}
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (hψ : ContDiff ℝ 1 ψ) (j : Fin n) :
     Continuous (coverBarPartialTest ψ j) := by
@@ -15730,7 +15730,7 @@ theorem continuous_coverBarPartialTest {n : ℕ}
           ((hψ.continuous_fderiv (by simp)).clm_apply
             continuous_const)))
 
-theorem compactSupport_coverBarPartialTest {n : ℕ}
+lemma compactSupport_coverBarPartialTest {n : ℕ}
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (hψ : HasCompactSupport ψ) (j : Fin n) :
     HasCompactSupport (coverBarPartialTest ψ j) := by
@@ -15741,7 +15741,7 @@ theorem compactSupport_coverBarPartialTest {n : ℕ}
       (compactSupport_complexOfReal
         (hψ.fderiv_apply ℝ (Pi.single j Complex.I))).mul_left
 
-theorem continuous_coverAdjointScalarTest {n : ℕ}
+lemma continuous_coverAdjointScalarTest {n : ℕ}
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (hψ : ContDiff ℝ 1 ψ) (j : Fin n) :
     Continuous (coverAdjointScalarTest ψ j) := by
@@ -15750,7 +15750,7 @@ theorem continuous_coverAdjointScalarTest {n : ℕ}
   exact Complex.continuous_conj.comp
     (continuous_coverBarPartialTest hψ j)
 
-theorem compactSupport_coverAdjointScalarTest {n : ℕ}
+lemma compactSupport_coverAdjointScalarTest {n : ℕ}
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (hψ : HasCompactSupport ψ) (j : Fin n) :
     HasCompactSupport (coverAdjointScalarTest ψ j) := by
@@ -15758,7 +15758,7 @@ theorem compactSupport_coverAdjointScalarTest {n : ℕ}
   intro z hz
   exact mt (fun h => by simp [coverAdjointScalarTest, h]) hz
 
-theorem continuous_coverAdjointVectorTest {n : ℕ}
+lemma continuous_coverAdjointVectorTest {n : ℕ}
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (hψ : Continuous ψ) (j : Fin n) :
     Continuous (coverAdjointVectorTest ψ j) := by
@@ -15804,12 +15804,12 @@ def coverWeightedMeasure {n : ℕ}
   (volume : Measure (TorusCharacters.LogSpace n)).withDensity
     (fun z => ENNReal.ofReal (coverWeight a z))
 
-theorem continuous_coverWeight {n : ℕ}
+lemma continuous_coverWeight {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     (ha : Continuous a) : Continuous (coverWeight a) := by
   exact Real.continuous_exp.comp ha.neg
 
-theorem coverWeightedMeasure_isLocallyFinite {n : ℕ}
+lemma coverWeightedMeasure_isLocallyFinite {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     (ha : Continuous a) :
     IsLocallyFiniteMeasure (coverWeightedMeasure a) := by
@@ -15817,13 +15817,13 @@ theorem coverWeightedMeasure_isLocallyFinite {n : ℕ}
   exact IsLocallyFiniteMeasure.withDensity_ofReal
     (continuous_coverWeight ha)
 
-theorem coverWeight_pos {n : ℕ}
+lemma coverWeight_pos {n : ℕ}
     (a : TorusCharacters.LogSpace n → ℝ)
     (z : TorusCharacters.LogSpace n) :
     0 < coverWeight a z :=
   Real.exp_pos _
 
-theorem contDiff_coverWeight {n : ℕ}
+lemma contDiff_coverWeight {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     (ha : ContDiff ℝ 1 a) : ContDiff ℝ 1 (coverWeight a) := by
   exact ha.neg.exp
@@ -15833,13 +15833,13 @@ def complexCoverWeight {n : ℕ}
     (z : TorusCharacters.LogSpace n) : ℂ :=
   (coverWeight a z : ℂ)
 
-theorem contDiff_complexCoverWeight {n : ℕ}
+lemma contDiff_complexCoverWeight {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     (ha : ContDiff ℝ 1 a) :
     ContDiff ℝ 1 (complexCoverWeight a) := by
   exact Complex.ofRealCLM.contDiff.comp (contDiff_coverWeight ha)
 
-theorem integral_coverWeightedMeasure {n : ℕ}
+lemma integral_coverWeightedMeasure {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     (ha : Continuous a)
     (F : TorusCharacters.LogSpace n → ℂ) :
@@ -15904,7 +15904,7 @@ def complexHessian {n : ℕ}
   barPartialCoordinate
     (fun w => holomorphicCoordinate (fun ξ => (a ξ : ℂ)) w i) z j
 
-theorem fderiv_complexCoverWeight {n : ℕ}
+lemma fderiv_complexCoverWeight {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     (ha : ContDiff ℝ 1 a)
     (z v : TorusCharacters.LogSpace n) :
@@ -15936,7 +15936,7 @@ theorem fderiv_complexCoverWeight {n : ℕ}
   simp only [Pi.neg_apply, Complex.ofReal_neg]
   ring
 
-theorem weighted_complex_coordinate_integration_by_parts_volume
+lemma weighted_complex_coordinate_integration_by_parts_volume
     {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     {F G : TorusCharacters.LogSpace n → ℂ}
@@ -16028,7 +16028,7 @@ theorem weighted_complex_coordinate_integration_by_parts_volume
       linear_combination hip
     _ = _ := congrArg Neg.neg hleft
 
-theorem weighted_complex_coordinate_integration_by_parts
+lemma weighted_complex_coordinate_integration_by_parts
     {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     {F G : TorusCharacters.LogSpace n → ℂ}
@@ -16056,7 +16056,7 @@ theorem weighted_complex_coordinate_integration_by_parts
     _ = _ := congrArg Neg.neg
       (integral_coverWeightedMeasure ha.continuous _).symm
 
-theorem fderiv_potential_complex {n : ℕ}
+lemma fderiv_potential_complex {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     (ha : ContDiff ℝ 1 a)
     (z v : TorusCharacters.LogSpace n) :
@@ -16065,7 +16065,7 @@ theorem fderiv_potential_complex {n : ℕ}
   DolbeaultGraphDistributionBridge.fderiv_complexOfReal
     (ha.differentiable (by simp)) z v
 
-theorem weightedAntiholomorphicDerivative_eq_real {n : ℕ}
+lemma weightedAntiholomorphicDerivative_eq_real {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (ha : ContDiff ℝ 1 a)
@@ -16082,7 +16082,7 @@ theorem weightedAntiholomorphicDerivative_eq_real {n : ℕ}
     fderiv_potential_complex ha z (Pi.single j Complex.I)]
   ring
 
-theorem weightedHolomorphicDerivative_eq_real {n : ℕ}
+lemma weightedHolomorphicDerivative_eq_real {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (ha : ContDiff ℝ 1 a)
@@ -16099,7 +16099,7 @@ theorem weightedHolomorphicDerivative_eq_real {n : ℕ}
     fderiv_potential_complex ha z (Pi.single j Complex.I)]
   ring
 
-theorem continuous_weightedRealDerivative {n : ℕ}
+lemma continuous_weightedRealDerivative {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (ha : ContDiff ℝ 1 a)
@@ -16114,7 +16114,7 @@ theorem continuous_weightedRealDerivative {n : ℕ}
           ((ha.continuous_fderiv (by simp)).clm_apply
             continuous_const)))
 
-theorem compactSupport_weightedRealDerivative {n : ℕ}
+lemma compactSupport_weightedRealDerivative {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : HasCompactSupport F)
@@ -16123,7 +16123,7 @@ theorem compactSupport_weightedRealDerivative {n : ℕ}
   unfold weightedRealDerivative
   exact (hF.fderiv_apply ℝ v).sub hF.mul_right
 
-theorem integrable_fderiv_mul_coverWeightedMeasure {n : ℕ}
+lemma integrable_fderiv_mul_coverWeightedMeasure {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     {F G : TorusCharacters.LogSpace n → ℂ}
     (ha : ContDiff ℝ 1 a)
@@ -16141,7 +16141,7 @@ theorem integrable_fderiv_mul_coverWeightedMeasure {n : ℕ}
     continuous_const).mul hG.continuous).integrable_of_hasCompactSupport
   exact hGcompact.mul_left
 
-theorem integrable_mul_weightedRealDerivative_coverWeightedMeasure
+lemma integrable_mul_weightedRealDerivative_coverWeightedMeasure
     {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     {F G : TorusCharacters.LogSpace n → ℂ}
@@ -16160,7 +16160,7 @@ theorem integrable_mul_weightedRealDerivative_coverWeightedMeasure
     (continuous_weightedRealDerivative ha hG v)).integrable_of_hasCompactSupport
       (compactSupport_weightedRealDerivative hGcompact v).mul_left
 
-theorem weighted_barPartial_integration_by_parts
+lemma weighted_barPartial_integration_by_parts
     {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     {F G : TorusCharacters.LogSpace n → ℂ}
@@ -16262,7 +16262,7 @@ theorem weighted_barPartial_integration_by_parts
       ring
     _ = _ := congrArg Neg.neg hright.symm
 
-theorem fderiv_conj {n : ℕ}
+lemma fderiv_conj {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℝ F)
     (z v : TorusCharacters.LogSpace n) :
@@ -16280,7 +16280,7 @@ theorem fderiv_conj {n : ℕ}
       simpa only [ContinuousLinearMap.comp_apply] using hp
     _ = conj ((fderiv ℝ F z) v) := rfl
 
-theorem barPartial_conj_eq_conj_holomorphic {n : ℕ}
+lemma barPartial_conj_eq_conj_holomorphic {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : ContDiff ℝ 1 F)
     (z : TorusCharacters.LogSpace n)
@@ -16296,7 +16296,7 @@ theorem barPartial_conj_eq_conj_holomorphic {n : ℕ}
     Complex.conj_I, map_ofNat]
   ring
 
-theorem barPartial_potential_eq_conj_holomorphic {n : ℕ}
+lemma barPartial_potential_eq_conj_holomorphic {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     (ha : ContDiff ℝ 1 a)
     (z : TorusCharacters.LogSpace n)
@@ -16308,7 +16308,7 @@ theorem barPartial_potential_eq_conj_holomorphic {n : ℕ}
   have h := barPartial_conj_eq_conj_holomorphic hcomplex z j
   simpa only [Complex.conj_ofReal] using h
 
-theorem weightedAntiholomorphicDerivative_conj {n : ℕ}
+lemma weightedAntiholomorphicDerivative_conj {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (ha : ContDiff ℝ 1 a)
@@ -16322,7 +16322,7 @@ theorem weightedAntiholomorphicDerivative_conj {n : ℕ}
     barPartial_potential_eq_conj_holomorphic ha z j]
   simp only [map_sub, map_mul]
 
-theorem compactSupport_conj {n : ℕ}
+lemma compactSupport_conj {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : HasCompactSupport F) :
     HasCompactSupport (fun z => conj (F z)) := by
@@ -16334,7 +16334,7 @@ theorem compactSupport_conj {n : ℕ}
   apply hz
   rw [hzero, map_zero]
 
-theorem weighted_barPartial_hermitian_integration_by_parts
+lemma weighted_barPartial_hermitian_integration_by_parts
     {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     {F G : TorusCharacters.LogSpace n → ℂ}
@@ -16365,7 +16365,7 @@ theorem weighted_barPartial_hermitian_integration_by_parts
       filter_upwards [] with z
       rw [weightedAntiholomorphicDerivative_conj ha hG z j]
 
-theorem contDiff_directional {n : ℕ}
+lemma contDiff_directional {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : ContDiff ℝ 2 F)
     (v : TorusCharacters.LogSpace n) :
@@ -16382,7 +16382,7 @@ theorem contDiff_directional {n : ℕ}
     contDiff_id.prodMk contDiff_const
   exact hd.comp hp
 
-theorem fderiv_directional {n : ℕ}
+lemma fderiv_directional {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : ContDiff ℝ 2 F)
     (z v w : TorusCharacters.LogSpace n) :
@@ -16399,7 +16399,7 @@ theorem fderiv_directional {n : ℕ}
     (fun D : TorusCharacters.LogSpace n →L[ℝ] ℂ => D w) he
   simpa [ContinuousLinearMap.flip_apply] using hp
 
-theorem fderiv_directional_commute {n : ℕ}
+lemma fderiv_directional_commute {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : ContDiff ℝ 2 F)
     (z v w : TorusCharacters.LogSpace n) :
@@ -16413,7 +16413,7 @@ theorem fderiv_directional_commute {n : ℕ}
     fderiv_directional hF z w v]
   exact (hF.contDiffAt.isSymmSndFDerivAt (by simp)).eq w v
 
-theorem contDiff_holomorphicCoordinate {n : ℕ}
+lemma contDiff_holomorphicCoordinate {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : ContDiff ℝ 2 F)
     (j : Fin n) :
@@ -16423,7 +16423,7 @@ theorem contDiff_holomorphicCoordinate {n : ℕ}
     (contDiff_const.mul
       (contDiff_directional hF (Pi.single j Complex.I)))).div_const 2
 
-theorem contDiff_barPartialCoordinate {n : ℕ}
+lemma contDiff_barPartialCoordinate {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : ContDiff ℝ 2 F)
     (j : Fin n) :
@@ -16433,7 +16433,7 @@ theorem contDiff_barPartialCoordinate {n : ℕ}
     (contDiff_const.mul
       (contDiff_directional hF (Pi.single j Complex.I)))).div_const 2
 
-theorem contDiff_weightedHolomorphicDerivative {n : ℕ}
+lemma contDiff_weightedHolomorphicDerivative {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (ha : ContDiff ℝ 2 a)
@@ -16447,7 +16447,7 @@ theorem contDiff_weightedHolomorphicDerivative {n : ℕ}
     ((hF.of_le (by norm_num)).mul
       (contDiff_holomorphicCoordinate hac j))
 
-theorem compactSupport_barPartialCoordinate {n : ℕ}
+lemma compactSupport_barPartialCoordinate {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : HasCompactSupport F)
     (j : Fin n) :
@@ -16471,7 +16471,7 @@ theorem compactSupport_barPartialCoordinate {n : ℕ}
       fun _ : TorusCharacters.LogSpace n => (2 : ℂ)⁻¹)
   exact hp
 
-theorem fderiv_holomorphicCoordinate {n : ℕ}
+lemma fderiv_holomorphicCoordinate {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : ContDiff ℝ 2 F)
     (z v : TorusCharacters.LogSpace n)
@@ -16504,7 +16504,7 @@ theorem fderiv_holomorphicCoordinate {n : ℕ}
     _root_.sub_apply,
     _root_.smul_apply, smul_eq_mul, mul_comm] using hp
 
-theorem fderiv_barPartialCoordinate {n : ℕ}
+lemma fderiv_barPartialCoordinate {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : ContDiff ℝ 2 F)
     (z v : TorusCharacters.LogSpace n)
@@ -16536,7 +16536,7 @@ theorem fderiv_barPartialCoordinate {n : ℕ}
     _root_.add_apply,
     _root_.smul_apply, smul_eq_mul, mul_comm] using hp
 
-theorem barPartial_holomorphic_commute {n : ℕ}
+lemma barPartial_holomorphic_commute {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : ContDiff ℝ 2 F)
     (z : TorusCharacters.LogSpace n)
@@ -16570,7 +16570,7 @@ theorem barPartial_holomorphic_commute {n : ℕ}
     fderiv_directional_commute hF z eᵢ₁ eⱼ₁]
   ring
 
-theorem barPartial_mul {n : ℕ}
+lemma barPartial_mul {n : ℕ}
     {F G : TorusCharacters.LogSpace n → ℂ}
     (hF : ContDiff ℝ 1 F)
     (hG : ContDiff ℝ 1 G)
@@ -16592,7 +16592,7 @@ theorem barPartial_mul {n : ℕ}
     _root_.smul_apply, smul_eq_mul]
   ring
 
-theorem barPartial_sub {n : ℕ}
+lemma barPartial_sub {n : ℕ}
     {F G : TorusCharacters.LogSpace n → ℂ}
     (hF : ContDiff ℝ 1 F)
     (hG : ContDiff ℝ 1 G)
@@ -16613,7 +16613,7 @@ theorem barPartial_sub {n : ℕ}
   simp only [_root_.sub_apply]
   ring
 
-theorem barPartial_weightedHolomorphicDerivative_commutator
+lemma barPartial_weightedHolomorphicDerivative_commutator
     {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     {F : TorusCharacters.LogSpace n → ℂ}
@@ -16643,7 +16643,7 @@ theorem barPartial_weightedHolomorphicDerivative_commutator
   unfold weightedHolomorphicDerivative complexHessian
   ring
 
-theorem continuous_barPartialCoordinate {n : ℕ}
+lemma continuous_barPartialCoordinate {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : ContDiff ℝ 1 F)
     (j : Fin n) :
@@ -16655,7 +16655,7 @@ theorem continuous_barPartialCoordinate {n : ℕ}
       ((hF.continuous_fderiv (by simp)).clm_apply
         continuous_const))).div_const 2
 
-theorem continuous_holomorphicCoordinate {n : ℕ}
+lemma continuous_holomorphicCoordinate {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : ContDiff ℝ 1 F)
     (j : Fin n) :
@@ -16667,7 +16667,7 @@ theorem continuous_holomorphicCoordinate {n : ℕ}
       ((hF.continuous_fderiv (by simp)).clm_apply
         continuous_const))).div_const 2
 
-theorem continuous_weightedHolomorphicDerivative {n : ℕ}
+lemma continuous_weightedHolomorphicDerivative {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (ha : ContDiff ℝ 1 a)
@@ -16680,7 +16680,7 @@ theorem continuous_weightedHolomorphicDerivative {n : ℕ}
   exact (continuous_holomorphicCoordinate hF j).sub
     (hF.continuous.mul (continuous_holomorphicCoordinate hac j))
 
-theorem continuous_complexHessian {n : ℕ}
+lemma continuous_complexHessian {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     (ha : ContDiff ℝ 2 a)
     (i j : Fin n) :
@@ -16690,7 +16690,7 @@ theorem continuous_complexHessian {n : ℕ}
   exact continuous_barPartialCoordinate
     (contDiff_holomorphicCoordinate hac i) j
 
-theorem integrable_of_continuous_compact_cover {n : ℕ}
+lemma integrable_of_continuous_compact_cover {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (ha : Continuous a)
@@ -16708,7 +16708,7 @@ def coverFormAdjoint {n : ℕ}
   ∑ i : Fin n,
     weightedHolomorphicDerivative a (fun w => W w i) i z
 
-theorem antisymmetric_matrix_energy_add_cross {n : ℕ}
+lemma antisymmetric_matrix_energy_add_cross {n : ℕ}
     (A : Fin n → Fin n → ℂ) :
     (∑ i : Fin n, ∑ j : Fin n,
       (A i j - A j i) * conj (A i j - A j i)) / 2 +
@@ -16772,7 +16772,7 @@ def complexSchurColumn {n : ℕ} (b : Fin n → ℂ) :
 def complexSchurScalar (c : ℝ) : Matrix (Fin 1) (Fin 1) ℂ :=
   fun _ _ => (c : ℂ)
 
-theorem complexSchurColumn_mul_apply {n : ℕ}
+lemma complexSchurColumn_mul_apply {n : ℕ}
     (A : Matrix (Fin n) (Fin n) ℂ)
     (b : Fin n → ℂ) :
     ((complexSchurColumn b)ᴴ * A * complexSchurColumn b)
@@ -16793,13 +16793,13 @@ def complexSchurEnergyDensity {n : ℕ}
     (b : Fin n → ℂ) : ℝ :=
   (star b ⬝ᵥ (A⁻¹ *ᵥ b)).re
 
-theorem complexSchurEnergyDensity_nonneg {n : ℕ}
+lemma complexSchurEnergyDensity_nonneg {n : ℕ}
     {A : Matrix (Fin n) (Fin n) ℂ}
     (hA : A.PosDef) (b : Fin n → ℂ) :
     0 ≤ complexSchurEnergyDensity A b := by
   exact hA.inv.posSemidef.re_dotProduct_nonneg b
 
-theorem complex_schur_energy_le {n : ℕ}
+lemma complex_schur_energy_le {n : ℕ}
     {A : Matrix (Fin n) (Fin n) ℂ}
     (hA : A.PosDef)
     (b : Fin n → ℂ) (c : ℝ)
@@ -16847,7 +16847,7 @@ def sourceTorusCoverPoint {n : ℕ}
   JointHolomorphicLaurentFourierCompatibility.logarithmicPoint
     q.1 (fun i => (AddCircle.equivIoc 1 0 (q.2 i)).1)
 
-theorem realLogCoordinate_sourceTorusCoverPoint {n : ℕ}
+lemma realLogCoordinate_sourceTorusCoverPoint {n : ℕ}
     (q : WeightedTorusHilbert.LogTorus n) :
     BergmanDiagonalBasisIndependence.realLogCoordinate
         (sourceTorusCoverPoint q) = q.1 := by
@@ -16858,7 +16858,7 @@ theorem realLogCoordinate_sourceTorusCoverPoint {n : ℕ}
     Complex.add_re, Complex.mul_re]
   ring
 
-theorem sourceTorusFundamentalAngularRepresentative {n : ℕ}
+lemma sourceTorusFundamentalAngularRepresentative {n : ℕ}
     (q : WeightedTorusHilbert.LogTorus n) :
     (fun i : Fin n =>
       (((AddCircle.equivIoc 1 0 (q.2 i)).1 : ℝ) : UnitAddCircle)) =
@@ -16866,7 +16866,7 @@ theorem sourceTorusFundamentalAngularRepresentative {n : ℕ}
   funext i
   exact (AddCircle.equivIoc 1 0).symm_apply_apply (q.2 i)
 
-theorem torusCharacter_sourceTorusCoverPoint {n : ℕ}
+lemma torusCharacter_sourceTorusCoverPoint {n : ℕ}
     (m : Fin n → ℤ)
     (q : WeightedTorusHilbert.LogTorus n) :
     TorusCharacters.torusCharacter m
@@ -16921,7 +16921,7 @@ def sourcePositiveJointTimePoint {n : ℕ}
     simpa using (Real.exp_lt_exp.mpr (half_pos ht))
   nlinarith
 
-theorem jointLogTime_sourcePositiveJointTimePoint {n : ℕ}
+lemma jointLogTime_sourcePositiveJointTimePoint {n : ℕ}
     (z : TorusCharacters.LogSpace n)
     (t : ℝ) (ht : 0 < t) :
     ActualJetUpperEnvelope.jointLogTime
@@ -16932,7 +16932,7 @@ theorem jointLogTime_sourcePositiveJointTimePoint {n : ℕ}
   have hadd : t / 2 + t / 2 = t := by ring
   rw [hadd, Real.log_exp]
 
-theorem jointRealCoordinate_sourcePositiveJointTimePoint
+lemma jointRealCoordinate_sourcePositiveJointTimePoint
     {n : ℕ}
     (z : TorusCharacters.LogSpace n)
     (t : ℝ) (ht : 0 < t) :
@@ -16941,7 +16941,7 @@ theorem jointRealCoordinate_sourcePositiveJointTimePoint
       BergmanDiagonalBasisIndependence.realLogCoordinate z := by
   rfl
 
-theorem measurable_sourceTorusCoverPoint {n : ℕ} :
+lemma measurable_sourceTorusCoverPoint {n : ℕ} :
     Measurable
       (sourceTorusCoverPoint (n := n)) := by
   apply measurable_pi_lambda
@@ -16970,7 +16970,7 @@ open scoped BigOperators Topology ENNReal InnerProductSpace
 
 universe u v
 
-theorem isLittleO_norm_pow_of_iteratedFDeriv_zero
+lemma isLittleO_norm_pow_of_iteratedFDeriv_zero
     {E : Type u} {F : Type (max u v)}
     [NormedAddCommGroup E] [NormedSpace ℂ E]
     [NormedAddCommGroup F] [NormedSpace ℂ F]
@@ -17011,7 +17011,7 @@ theorem isLittleO_norm_pow_of_iteratedFDeriv_zero
           (by simpa using hsmall)
       simpa using hmean
 
-theorem sourceLocalSchwarzRatio_sq_mul_exp_le_one
+lemma sourceLocalSchwarzRatio_sq_mul_exp_le_one
     {d R t : ℝ} (hd : 0 ≤ d) (hR : 0 < R)
     (hshrinking : d < R * Real.exp (-t / 2)) :
     (d / R) ^ 2 * Real.exp t ≤ 1 := by
@@ -17040,7 +17040,7 @@ def sourceLocalPolynomialConstant {n : ℕ}
   GlobalBergmanKernelBound.globalKernelPolynomialConstant K *
     (normalizedVolume K.carrier + 1)
 
-theorem sourceLocalPolynomialConstant_pos
+lemma sourceLocalPolynomialConstant_pos
     {n : ℕ} (K : CenteredBody n) :
     0 < sourceLocalPolynomialConstant K := by
   unfold sourceLocalPolynomialConstant
@@ -17053,7 +17053,7 @@ def sourceLocalKernelLogError {n : ℕ}
   (Real.log (sourceLocalPolynomialConstant K) +
     3 * (n : ℝ) * Real.log (k : ℝ)) / (k : ℝ)
 
-theorem tendsto_sourceLocalKernelLogError
+lemma tendsto_sourceLocalKernelLogError
     {n : ℕ} (K : CenteredBody n) :
     Tendsto (sourceLocalKernelLogError K) atTop (𝓝 0) := by
   have hnat : Tendsto (fun k : ℕ => (k : ℝ)) atTop atTop :=
@@ -17087,7 +17087,7 @@ def sourceLocalJointRegion {n : ℕ}
   {w | dist w.val.1 p <
     R * Real.exp (-jointLogTime w / 2)}
 
-theorem isOpen_sourceLocalJointRegion {n : ℕ}
+lemma isOpen_sourceLocalJointRegion {n : ℕ}
     (p : TorusCharacters.LogSpace n) (R : ℝ) :
     IsOpen (sourceLocalJointRegion p R) := by
   unfold sourceLocalJointRegion
@@ -17095,7 +17095,7 @@ theorem isOpen_sourceLocalJointRegion {n : ℕ}
     continuous_jointLogTime n
   exact isOpen_lt (by fun_prop) (by fun_prop)
 
-theorem sourceUnitAngularHaar_eq_volume :
+lemma sourceUnitAngularHaar_eq_volume :
     (AddCircle.haarAddCircle : Measure UnitAddCircle) =
       (volume : Measure UnitAddCircle) := by
   simpa using
@@ -17104,7 +17104,7 @@ theorem sourceUnitAngularHaar_eq_volume :
 def sourcePositiveAngularArc (δ : ℝ) : Set UnitAddCircle :=
   {θ | ((AddCircle.equivIoc 1 0 θ).1 : ℝ) < δ}
 
-theorem measurableSet_sourcePositiveAngularArc (δ : ℝ) :
+lemma measurableSet_sourcePositiveAngularArc (δ : ℝ) :
     MeasurableSet (sourcePositiveAngularArc δ) := by
   have hrepr : Measurable
       (fun θ : UnitAddCircle =>
@@ -17113,7 +17113,7 @@ theorem measurableSet_sourcePositiveAngularArc (δ : ℝ) :
       (AddCircle.measurableEquivIoc 1 0).measurable
   exact hrepr measurableSet_Iio
 
-theorem sourcePositiveAngularArc_haarMeasure
+lemma sourcePositiveAngularArc_haarMeasure
     {δ : ℝ} (hδ : δ ≤ 1) :
     AddCircle.haarAddCircle (sourcePositiveAngularArc δ) =
       ENNReal.ofReal δ := by
@@ -17158,22 +17158,22 @@ def sourceLocalTorusBox (n : ℕ) (δ : ℝ) :
     Set (WeightedTorusHilbert.LogTorus n) :=
   sourceLocalRadialBox n δ ×ˢ sourceLocalAngularBox n δ
 
-theorem measurableSet_sourceLocalRadialBox (n : ℕ) (δ : ℝ) :
+lemma measurableSet_sourceLocalRadialBox (n : ℕ) (δ : ℝ) :
     MeasurableSet (sourceLocalRadialBox n δ) := by
   exact MeasurableSet.pi Set.countable_univ
     (fun _ _ => measurableSet_Ioo)
 
-theorem measurableSet_sourceLocalAngularBox (n : ℕ) (δ : ℝ) :
+lemma measurableSet_sourceLocalAngularBox (n : ℕ) (δ : ℝ) :
     MeasurableSet (sourceLocalAngularBox n δ) := by
   exact MeasurableSet.pi Set.countable_univ
     (fun _ _ => measurableSet_sourcePositiveAngularArc δ)
 
-theorem measurableSet_sourceLocalTorusBox (n : ℕ) (δ : ℝ) :
+lemma measurableSet_sourceLocalTorusBox (n : ℕ) (δ : ℝ) :
     MeasurableSet (sourceLocalTorusBox n δ) :=
   (measurableSet_sourceLocalRadialBox n δ).prod
     (measurableSet_sourceLocalAngularBox n δ)
 
-theorem sourceLocalRadialBox_volume (n : ℕ) (δ : ℝ) :
+lemma sourceLocalRadialBox_volume (n : ℕ) (δ : ℝ) :
     (volume : Measure (Space n))
       (sourceLocalRadialBox n δ) =
         (ENNReal.ofReal (2 * δ)) ^ n := by
@@ -17181,7 +17181,7 @@ theorem sourceLocalRadialBox_volume (n : ℕ) (δ : ℝ) :
   rw [Real.volume_pi_Ioo]
   simp [sub_neg_eq_add, two_mul]
 
-theorem sourceLocalAngularBox_volume
+lemma sourceLocalAngularBox_volume
     (n : ℕ) {δ : ℝ} (hδ : δ ≤ 1) :
     WeightedTorusHilbert.angularMeasure n
       (sourceLocalAngularBox n δ) =
@@ -17192,7 +17192,7 @@ theorem sourceLocalAngularBox_volume
   rw [Measure.pi_pi]
   simp [sourcePositiveAngularArc_haarMeasure hδ]
 
-theorem sourceLocalTorusBox_volume
+lemma sourceLocalTorusBox_volume
     (n : ℕ) {δ : ℝ} (hδ : δ ≤ 1) :
     sourceTorusBaseMeasure n (sourceLocalTorusBox n δ) =
       (ENNReal.ofReal (2 * δ)) ^ n *
@@ -17208,19 +17208,19 @@ def sourceLocalBoxScale (R : ℝ) : ℝ :=
 def sourceLocalBoxRadius (R t : ℝ) : ℝ :=
   sourceLocalBoxScale R * Real.exp (-t / 2)
 
-theorem sourceLocalBoxScale_pos {R : ℝ} (hR : 0 < R) :
+lemma sourceLocalBoxScale_pos {R : ℝ} (hR : 0 < R) :
     0 < sourceLocalBoxScale R := by
   unfold sourceLocalBoxScale
   exact lt_min (by norm_num)
     (div_pos hR (by positivity))
 
-theorem sourceLocalBoxRadius_pos {R : ℝ} (hR : 0 < R)
+lemma sourceLocalBoxRadius_pos {R : ℝ} (hR : 0 < R)
     (t : ℝ) :
     0 < sourceLocalBoxRadius R t := by
   unfold sourceLocalBoxRadius
   exact mul_pos (sourceLocalBoxScale_pos hR) (Real.exp_pos _)
 
-theorem sourceLocalBoxRadius_le_one {R t : ℝ}
+lemma sourceLocalBoxRadius_le_one {R t : ℝ}
     (hR : 0 < R) (ht : 0 ≤ t) :
     sourceLocalBoxRadius R t ≤ 1 := by
   unfold sourceLocalBoxRadius
@@ -17233,7 +17233,7 @@ theorem sourceLocalBoxRadius_le_one {R t : ℝ}
     _ ≤ 1 := by
       simp [sourceLocalBoxScale]
 
-theorem sourceTorusCoverPoint_mem_shrinkingBall_of_mem_box
+lemma sourceTorusCoverPoint_mem_shrinkingBall_of_mem_box
     {n : ℕ} {R t : ℝ}
     (hR : 0 < R)
     (q : WeightedTorusHilbert.LogTorus n)
@@ -17315,7 +17315,7 @@ theorem sourceTorusCoverPoint_mem_shrinkingBall_of_mem_box
     dist_zero_right] using
       lt_of_le_of_lt htriangle (hstrict.trans hradius)
 
-theorem sourceLocalTorusBox_realVolume
+lemma sourceLocalTorusBox_realVolume
     (n : ℕ) {δ : ℝ} (hδnonneg : 0 ≤ δ) (hδ : δ ≤ 1) :
     (sourceTorusBaseMeasure n).real (sourceLocalTorusBox n δ) =
       (2 * δ) ^ n * δ ^ n := by
@@ -17330,14 +17330,14 @@ theorem sourceLocalTorusBox_realVolume
 def sourceLocalBallVolumeConstant (n : ℕ) (R : ℝ) : ℝ :=
   (2 : ℝ) ^ n * sourceLocalBoxScale R ^ (2 * n)
 
-theorem sourceLocalBallVolumeConstant_pos
+lemma sourceLocalBallVolumeConstant_pos
     (n : ℕ) {R : ℝ} (hR : 0 < R) :
     0 < sourceLocalBallVolumeConstant n R := by
   unfold sourceLocalBallVolumeConstant
   exact mul_pos (pow_pos (by norm_num) n)
     (pow_pos (sourceLocalBoxScale_pos hR) (2 * n))
 
-theorem sourceLocalTorusBox_realVolume_at_time
+lemma sourceLocalTorusBox_realVolume_at_time
     (n : ℕ) {R t : ℝ}
     (hR : 0 < R) (ht : 0 ≤ t) :
     (sourceTorusBaseMeasure n).real
@@ -17366,7 +17366,7 @@ theorem sourceLocalTorusBox_realVolume_at_time
     _ = 2 ^ n * sourceLocalBoxScale R ^ (2 * n) *
         Real.exp (-(n : ℝ) * t) := by rw [hexp]
 
-theorem sourceLocalTorusBox_measure_ne_top
+lemma sourceLocalTorusBox_measure_ne_top
     (n : ℕ) {δ : ℝ} (hδ : δ ≤ 1) :
     sourceTorusBaseMeasure n (sourceLocalTorusBox n δ) ≠ ⊤ := by
   rw [sourceLocalTorusBox_volume n hδ]
@@ -17387,12 +17387,12 @@ def sourceJointCoverTime {n : ℕ}
     (q : SourceJointComplexCover n) : ℝ :=
   2 * q.2.re
 
-theorem continuous_sourceJointCoverTime (n : ℕ) :
+lemma continuous_sourceJointCoverTime (n : ℕ) :
     Continuous (sourceJointCoverTime (n := n)) := by
   unfold sourceJointCoverTime
   fun_prop
 
-theorem normSq_mul_of_norm_one
+lemma normSq_mul_of_norm_one
     (u : ℂ) (hu : ‖u‖ = 1) (z : ℂ) :
     Complex.normSq (u * z) = Complex.normSq z := by
   rw [Complex.normSq_mul, Complex.normSq_eq_norm_sq, hu]
@@ -17415,13 +17415,13 @@ def sourceJointPhaseHomeomorph {n : ℕ}
         (1 : ℝ) < Complex.normSq (u * q.2)
     rw [normSq_mul_of_norm_one u hu]
 
-theorem sourceJointPhaseHomeomorph_spatial {n : ℕ}
+lemma sourceJointPhaseHomeomorph_spatial {n : ℕ}
     (u : ℂ) (hu : ‖u‖ = 1)
     (q : PositiveJointLogSpace n) :
     (sourceJointPhaseHomeomorph u hu q).val.1 = q.val.1 := by
   rfl
 
-theorem jointLogTime_sourceJointPhaseHomeomorph {n : ℕ}
+lemma jointLogTime_sourceJointPhaseHomeomorph {n : ℕ}
     (u : ℂ) (hu : ‖u‖ = 1)
     (q : PositiveJointLogSpace n) :
     jointLogTime (sourceJointPhaseHomeomorph u hu q) =
@@ -17430,7 +17430,7 @@ theorem jointLogTime_sourceJointPhaseHomeomorph {n : ℕ}
     Real.log (Complex.normSq q.val.2)
   rw [normSq_mul_of_norm_one u hu]
 
-theorem upperRegularization_comp_homeomorph
+lemma upperRegularization_comp_homeomorph
     {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (f : Y → ℝ) (h : X ≃ₜ Y) (x : X) :
     upperRegularization (fun y : X => f (h y)) x =
@@ -17448,16 +17448,16 @@ def sourceJointCoverExp {n : ℕ}
     TorusCharacters.LogSpace n × ℂ :=
   (q.1, Complex.exp q.2)
 
-theorem differentiable_sourceJointCoverExp (n : ℕ) :
+lemma differentiable_sourceJointCoverExp (n : ℕ) :
     Differentiable ℂ (sourceJointCoverExp (n := n)) := by
   unfold sourceJointCoverExp
   fun_prop
 
-theorem continuous_sourceJointCoverExp (n : ℕ) :
+lemma continuous_sourceJointCoverExp (n : ℕ) :
     Continuous (sourceJointCoverExp (n := n)) :=
   (differentiable_sourceJointCoverExp n).continuous
 
-theorem normSq_sourceJointCoverExp
+lemma normSq_sourceJointCoverExp
     {n : ℕ} (q : SourceJointComplexCover n) :
     Complex.normSq (sourceJointCoverExp q).2 =
       Real.exp (sourceJointCoverTime q) := by
@@ -17477,7 +17477,7 @@ def sourceJointExpPositiveLift {n : ℕ}
   rw [normSq_sourceJointCoverExp]
   simpa using (Real.exp_lt_exp.mpr hq)
 
-theorem jointLogTime_sourceJointExpPositiveLift
+lemma jointLogTime_sourceJointExpPositiveLift
     {n : ℕ}
     (q : SourceJointComplexCover n)
     (hq : 0 < sourceJointCoverTime q) :
@@ -17486,13 +17486,13 @@ theorem jointLogTime_sourceJointExpPositiveLift
   unfold jointLogTime sourceJointExpPositiveLift
   rw [normSq_sourceJointCoverExp, Real.log_exp]
 
-theorem sourceJointAuxiliaryPhase_norm
+lemma sourceJointAuxiliaryPhase_norm
     (η : ℂ) :
     ‖Complex.exp ((η.im : ℂ) * Complex.I)‖ = 1 := by
   rw [Complex.norm_exp]
   simp [Complex.mul_re]
 
-theorem sourceJointExpPositiveLift_eq_phase_radialLift
+lemma sourceJointExpPositiveLift_eq_phase_radialLift
     {n : ℕ}
     (q : SourceJointComplexCover n)
     (hq : 0 < sourceJointCoverTime q) :
@@ -17521,7 +17521,7 @@ def sourceRealLogCoordinateCLM (n : ℕ) :
     (2 : ℝ) • (Complex.reCLM.comp
       (ContinuousLinearMap.proj i))
 
-theorem sourceJointCircleAverage_eq_setAverage
+lemma sourceJointCircleAverage_eq_setAverage
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : ℂ → E) (R : ℝ) :
     (⨍ θ in Set.Ioc 0 (2 * Real.pi), f (circleMap 0 R θ)) =
@@ -17531,7 +17531,7 @@ theorem sourceJointCircleAverage_eq_setAverage
   simp [MeasureTheory.measureReal_def, Real.volume_Ioc,
     Real.pi_pos.le]
 
-theorem sourceJointSpatialLine_circleAverage
+lemma sourceJointSpatialLine_circleAverage
     {n : ℕ} (q v : SourceJointComplexCover n) (R : ℝ) :
     Real.circleAverage
       (fun w : ℂ => (q + w • v).1) 0 R = q.1 := by
@@ -17573,7 +17573,7 @@ def sourceJointTimeEmbedding {n : ℕ}
     SourceJointComplexCover n :=
   (z, (t / 2 : ℂ))
 
-theorem sourceJointCoverTime_timeEmbedding {n : ℕ}
+lemma sourceJointCoverTime_timeEmbedding {n : ℕ}
     (z : TorusCharacters.LogSpace n) (t : ℝ) :
     sourceJointCoverTime (sourceJointTimeEmbedding z t) = t := by
   simp [sourceJointCoverTime, sourceJointTimeEmbedding]
@@ -17597,21 +17597,21 @@ def sourceJointSpatialDeckHomeomorph {n : ℕ}
       (Homeomorph.refl ℂ)
   exact h.subtype fun _ => Iff.rfl
 
-theorem sourceJointSpatialDeckHomeomorph_spatial
+lemma sourceJointSpatialDeckHomeomorph_spatial
     {n : ℕ} (m : Fin n → ℤ)
     (q : PositiveJointLogSpace n) :
     (sourceJointSpatialDeckHomeomorph m q).val.1 =
       q.val.1 + TorusCharacters.imaginaryShift m := by
   rfl
 
-theorem jointLogTime_sourceJointSpatialDeckHomeomorph
+lemma jointLogTime_sourceJointSpatialDeckHomeomorph
     {n : ℕ} (m : Fin n → ℤ)
     (q : PositiveJointLogSpace n) :
     jointLogTime (sourceJointSpatialDeckHomeomorph m q) =
       jointLogTime q := by
   rfl
 
-theorem sourcePositiveJointTimePoint_spatial_translate
+lemma sourcePositiveJointTimePoint_spatial_translate
     {n : ℕ}
     (z : TorusCharacters.LogSpace n)
     (t : ℝ) (ht : 0 < t)
@@ -17634,7 +17634,7 @@ open BergmanJetUpperEnvelope ActualJetUpperEnvelope JetEnvelopeGlobalPlurisubhar
 open EnvelopeSpatialPeriodicity
 open scoped BigOperators Topology
 
-theorem momentHolomorphicRepresentative_spatial_periodic
+lemma momentHolomorphicRepresentative_spatial_periodic
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -17651,7 +17651,7 @@ theorem momentHolomorphicRepresentative_spatial_periodic
     normalizedHolomorphicMonomial,
     TorusCharacters.torusCharacter_imaginaryShift]
 
-theorem momentJointJetSection_spatial_periodic
+lemma momentJointJetSection_spatial_periodic
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -17676,7 +17676,7 @@ theorem momentJointJetSection_spatial_periodic
     K hk F htransport
     (momentSimultaneousJetBasis K hk F htransport p i) m z]
 
-theorem momentJointJetDiagonal_spatial_periodic
+lemma momentJointJetDiagonal_spatial_periodic
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -17695,7 +17695,7 @@ theorem momentJointJetDiagonal_spatial_periodic
   exact momentJointJetSection_spatial_periodic
     K hk F htransport p N i τ m z
 
-theorem momentJetGeodesic_spatial_periodic
+lemma momentJetGeodesic_spatial_periodic
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -17722,7 +17722,7 @@ theorem momentJetGeodesic_spatial_periodic
         (z, (Real.exp (t / 2) : ℂ)) at hdiag
   rw [hdiag]
 
-theorem momentPositiveJointGeodesic_spatial_invariant
+lemma momentPositiveJointGeodesic_spatial_invariant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -17741,7 +17741,7 @@ theorem momentPositiveJointGeodesic_spatial_invariant
     (Nat.floor (BodyScale.canonicalScale K *
       ((k + 1 : ℕ) : ℝ))) (jointLogTime q) m q.val.1
 
-theorem momentJointTailSup_spatial_invariant
+lemma momentJointTailSup_spatial_invariant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -17765,7 +17765,7 @@ theorem momentJointTailSup_spatial_invariant
       K F htransport p _ m q
   rw [hfun]
 
-theorem momentJointTailUpperEnvelope_spatial_invariant
+lemma momentJointTailUpperEnvelope_spatial_invariant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -17812,7 +17812,7 @@ def momentEnvelopeTimeSlice
   else
     momentNormalizedPotential F (realLogCoordinate z)
 
-@[simp] theorem momentEnvelopeTimeSlice_zero
+@[simp] lemma momentEnvelopeTimeSlice_zero
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -17822,7 +17822,7 @@ def momentEnvelopeTimeSlice
       momentNormalizedPotential F (realLogCoordinate z) := by
   simp [momentEnvelopeTimeSlice]
 
-theorem momentEnvelopeTimeSlice_of_nonpositive
+lemma momentEnvelopeTimeSlice_of_nonpositive
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -17832,7 +17832,7 @@ theorem momentEnvelopeTimeSlice_of_nonpositive
       momentNormalizedPotential F (realLogCoordinate z) := by
   simp [momentEnvelopeTimeSlice, not_lt.mpr ht]
 
-theorem momentEnvelopeTimeSlice_of_positive
+lemma momentEnvelopeTimeSlice_of_positive
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -17843,7 +17843,7 @@ theorem momentEnvelopeTimeSlice_of_positive
         (sourcePositiveJointTimePoint z t ht) := by
   simp [momentEnvelopeTimeSlice, ht]
 
-theorem momentEnvelopeTimeSlice_le_normalized_add
+lemma momentEnvelopeTimeSlice_le_normalized_add
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -17868,7 +17868,7 @@ def momentTorusEnvelopeTimeSlice
   momentEnvelopeTimeSlice K F htransport p
     (sourceTorusCoverPoint q) t
 
-@[simp] theorem momentTorusEnvelopeTimeSlice_zero
+@[simp] lemma momentTorusEnvelopeTimeSlice_zero
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -17880,7 +17880,7 @@ def momentTorusEnvelopeTimeSlice
   rw [momentEnvelopeTimeSlice_zero,
     realLogCoordinate_sourceTorusCoverPoint]
 
-theorem momentTorusEnvelopeTimeSlice_le_normalized_add
+lemma momentTorusEnvelopeTimeSlice_le_normalized_add
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -17894,7 +17894,7 @@ theorem momentTorusEnvelopeTimeSlice_le_normalized_add
     momentEnvelopeTimeSlice_le_normalized_add
       K F htransport p (sourceTorusCoverPoint q) ht
 
-theorem measurable_momentTorusEnvelopeTimeSlice
+lemma measurable_momentTorusEnvelopeTimeSlice
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -17948,7 +17948,7 @@ open SupportFunction LaplaceAsymptotics MonomialIntegrability MomentOptimizer Mo
 open MomentTargetGeodesic MomentRegularity MomentWeakBergman
 open scoped BigOperators ENNReal Topology
 
-theorem exists_momentNormalized_phase_linear_coercivity
+lemma exists_momentNormalized_phase_linear_coercivity
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -17978,7 +17978,7 @@ theorem exists_momentNormalized_phase_linear_coercivity
   dsimp [c]
   linarith
 
-theorem exists_momentNormalizedPhaseMaximizer
+lemma exists_momentNormalizedPhaseMaximizer
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18012,7 +18012,7 @@ theorem exists_momentNormalizedPhaseMaximizer
   change phase u φ x ≤ C - δ * ‖x‖ at hbound
   nlinarith
 
-theorem momentNormalized_monomialIntegral_le_exp_mul_base
+lemma momentNormalized_monomialIntegral_le_exp_mul_base
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18064,7 +18064,7 @@ theorem momentNormalized_monomialIntegral_le_exp_mul_base
           ∂(volume : Measure (Space n))) :=
       integral_const_mul _ _
 
-theorem momentNormalized_log_monomialIntegral_div_le
+lemma momentNormalized_log_monomialIntegral_div_le
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18136,7 +18136,7 @@ theorem momentNormalized_log_monomialIntegral_div_le
               (monomialIntegral 1 u
                 (momentNormalizedPotential F))|) * k := by ring
 
-theorem exists_momentNormalized_log_monomialIntegral_uniform_bound
+lemma exists_momentNormalized_log_monomialIntegral_uniform_bound
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18205,7 +18205,7 @@ def repeatedMomentMonomialIndex
   rw [hm']
   ring
 
-theorem moment_diagonalTerm_le_diagonalKernel
+lemma moment_diagonalTerm_le_diagonalKernel
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18237,7 +18237,7 @@ theorem moment_diagonalTerm_le_diagonalKernel
       (fun v _ => hnonneg v)
       (Finset.mem_univ u))
 
-theorem moment_pairing_sub_log_monomialNorm_le_log_diagonal
+lemma moment_pairing_sub_log_monomialNorm_le_log_diagonal
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18284,7 +18284,7 @@ theorem moment_pairing_sub_log_monomialNorm_le_log_diagonal
           (momentNormalizedPotential F) x) / (k : ℝ) :=
       (div_le_div_iff_of_pos_right hkreal).mpr hlog
 
-theorem moment_fixedMonomial_pairing_sub_le_log_diagonal
+lemma moment_fixedMonomial_pairing_sub_le_log_diagonal
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18322,7 +18322,7 @@ theorem moment_fixedMonomial_pairing_sub_le_log_diagonal
             ((s * k : ℕ) : ℝ) at hdiag
   linarith
 
-theorem moment_fixedMonomial_pairing_sub_le_positiveJointGeodesic
+lemma moment_fixedMonomial_pairing_sub_le_positiveJointGeodesic
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18382,7 +18382,7 @@ theorem moment_fixedMonomial_pairing_sub_le_positiveJointGeodesic
       exact momentPositiveJointGeodesic_eq_momentJetGeodesic
         K F htransport p l q
 
-theorem moment_fixedMonomial_pairing_sub_le_tailSup
+lemma moment_fixedMonomial_pairing_sub_le_tailSup
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18433,7 +18433,7 @@ theorem moment_fixedMonomial_pairing_sub_le_tailSup
           (a + j) q
       rfl
 
-theorem moment_fixedMonomial_pairing_sub_le_tailUpperEnvelope
+lemma moment_fixedMonomial_pairing_sub_le_tailUpperEnvelope
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18463,7 +18463,7 @@ theorem moment_fixedMonomial_pairing_sub_le_tailUpperEnvelope
         (momentJointTailSup_localUpperBounds_nonempty
           K F htransport p r q)
 
-theorem moment_fixedMonomial_pairing_sub_le_upperEnvelope
+lemma moment_fixedMonomial_pairing_sub_le_upperEnvelope
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18487,7 +18487,7 @@ theorem moment_fixedMonomial_pairing_sub_le_upperEnvelope
   exact moment_fixedMonomial_pairing_sub_le_tailUpperEnvelope
     K hk F htransport u hC p r q
 
-theorem moment_fixedMonomial_pairing_sub_le_torusEnvelope
+lemma moment_fixedMonomial_pairing_sub_le_torusEnvelope
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18515,7 +18515,7 @@ theorem moment_fixedMonomial_pairing_sub_le_torusEnvelope
   simpa [sourcePositiveJointTimePoint,
     realLogCoordinate_sourceTorusCoverPoint] using h
 
-theorem exists_moment_fixedMonomial_torusEnvelope_lower
+lemma exists_moment_fixedMonomial_torusEnvelope_lower
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18545,7 +18545,7 @@ open MomentWeakGlobalKernel BergmanJetPhaseLaplace BergmanJetMonomialEnvelopeLow
 open MomentMoserTrudinger SpatialBergmanPointwiseAsymptotics
 open scoped BigOperators ENNReal Topology
 
-theorem exists_eventual_momentNormalized_uniform_moving_phase_coercivity
+lemma exists_eventual_momentNormalized_uniform_moving_phase_coercivity
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18594,7 +18594,7 @@ theorem exists_eventual_momentNormalized_uniform_moving_phase_coercivity
   rw [hsplit]
   linarith [hcoerce z]
 
-theorem exists_eventual_momentNormalized_moving_base_integral_bound
+lemma exists_eventual_momentNormalized_moving_base_integral_bound
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18648,7 +18648,7 @@ theorem exists_eventual_momentNormalized_moving_base_integral_bound
       rw [MeasureTheory.integral_const_mul]
     _ ≤ B := le_max_right _ _
 
-theorem eventually_momentNormalized_moving_phase_le_max_add
+lemma eventually_momentNormalized_moving_phase_le_max_add
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18720,7 +18720,7 @@ theorem eventually_momentNormalized_moving_phase_le_max_add
     exact (hk z).trans
       (hdecay.trans (by dsimp [M]; linarith))
 
-theorem eventually_log_momentNormalized_moving_monomialIntegral_div_le
+lemma eventually_log_momentNormalized_moving_monomialIntegral_div_le
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18798,7 +18798,7 @@ theorem eventually_log_momentNormalized_moving_monomialIntegral_div_le
       dsimp [M] at *
       linarith
 
-theorem eventually_log_momentNormalized_diagonalKernel_div_ge_sub
+lemma eventually_log_momentNormalized_diagonalKernel_div_ge_sub
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18850,7 +18850,7 @@ theorem eventually_log_momentNormalized_diagonalKernel_div_ge_sub
   unfold phase at hphasek
   linarith
 
-theorem tendsto_log_momentNormalized_diagonalKernel_div
+lemma tendsto_log_momentNormalized_diagonalKernel_div
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -18910,19 +18910,19 @@ def unweightedTorusMeasure (n : ℕ) :
   (volume : Measure (Space n)).prod
     (WeightedTorusHilbert.angularMeasure n)
 
-theorem radialWeight_pos {n k : ℕ}
+lemma radialWeight_pos {n k : ℕ}
     (φ : Space n → ℝ) (x : Space n) :
     0 < WeightedTorusHilbert.radialWeight k φ x := by
   unfold WeightedTorusHilbert.radialWeight
   exact ENNReal.ofReal_pos.mpr (Real.exp_pos _)
 
-theorem radialWeight_lt_top {n k : ℕ}
+lemma radialWeight_lt_top {n k : ℕ}
     (φ : Space n → ℝ) (x : Space n) :
     WeightedTorusHilbert.radialWeight k φ x < ⊤ := by
   unfold WeightedTorusHilbert.radialWeight
   exact ENNReal.ofReal_lt_top
 
-theorem weightedTorusMeasure_eq_unweighted_withDensity {n k : ℕ}
+lemma weightedTorusMeasure_eq_unweighted_withDensity {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ) :
     WeightedTorusHilbert.weightedTorusMeasure k φ =
       (unweightedTorusMeasure n).withDensity
@@ -18931,7 +18931,7 @@ theorem weightedTorusMeasure_eq_unweighted_withDensity {n k : ℕ}
   exact WeightedTorusHilbert.weightedTorusMeasure_eq_withDensity
     k hφ
 
-theorem continuous_realRadialWeight {n k : ℕ}
+lemma continuous_realRadialWeight {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ) :
     Continuous
       (fun z : WeightedTorusHilbert.LogTorus n =>
@@ -18939,12 +18939,12 @@ theorem continuous_realRadialWeight {n k : ℕ}
   Real.continuous_exp.comp
     (continuous_const.mul (hφ.comp continuous_fst))
 
-theorem unweightedTorusMeasure_isLocallyFinite (n : ℕ) :
+lemma unweightedTorusMeasure_isLocallyFinite (n : ℕ) :
     IsLocallyFiniteMeasure (unweightedTorusMeasure n) := by
   unfold unweightedTorusMeasure
   infer_instance
 
-theorem weightedTorusMeasure_isLocallyFinite {n k : ℕ}
+lemma weightedTorusMeasure_isLocallyFinite {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ) :
     IsLocallyFiniteMeasure
       (WeightedTorusHilbert.weightedTorusMeasure k φ) := by
@@ -18954,7 +18954,7 @@ theorem weightedTorusMeasure_isLocallyFinite {n k : ℕ}
   exact IsLocallyFiniteMeasure.withDensity_ofReal
     (continuous_realRadialWeight hφ)
 
-theorem weightedScalarL2_locallyIntegrable_weighted {n k : ℕ}
+lemma weightedScalarL2_locallyIntegrable_weighted {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ)
     (f : WeightedTorusHilbert.weightedHilbert k φ) :
     LocallyIntegrable
@@ -18965,7 +18965,7 @@ theorem weightedScalarL2_locallyIntegrable_weighted {n k : ℕ}
     weightedTorusMeasure_isLocallyFinite hφ
   exact (MeasureTheory.Lp.memLp f).locallyIntegrable (by norm_num)
 
-theorem weightedScalarL2_locallyIntegrable_unweighted {n k : ℕ}
+lemma weightedScalarL2_locallyIntegrable_unweighted {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ)
     (f : WeightedTorusHilbert.weightedHilbert k φ) :
     LocallyIntegrable
@@ -19045,7 +19045,7 @@ def angularFundamentalEquiv (n : ℕ) :
       angularFundamentalCell n :=
   UnitAddTorus.measurableEquivPiIoc (fun _ : Fin n => 0)
 
-theorem angularFundamentalEquiv_measurePreserving (n : ℕ) :
+lemma angularFundamentalEquiv_measurePreserving (n : ℕ) :
     MeasurePreserving (angularFundamentalEquiv n)
       (WeightedTorusHilbert.angularMeasure n)
       (angularFundamentalMeasure n) := by
@@ -19066,7 +19066,7 @@ def unweightedFundamentalMeasure (n : ℕ) :
   (volume : Measure (Space n)).prod
     (angularFundamentalMeasure n)
 
-theorem unweightedTorusFundamental_measurePreserving (n : ℕ) :
+lemma unweightedTorusFundamental_measurePreserving (n : ℕ) :
     MeasurePreserving (torusFundamentalMeasurableEquiv n)
       (unweightedTorusMeasure n)
       (unweightedFundamentalMeasure n) := by
@@ -19080,13 +19080,13 @@ theorem unweightedTorusFundamental_measurePreserving (n : ℕ) :
     (volume : Measure (Space n))).prod
       (angularFundamentalEquiv_measurePreserving n)
 
-theorem angularFundamentalEquiv_symm_apply {n : ℕ}
+lemma angularFundamentalEquiv_symm_apply {n : ℕ}
     (t : angularFundamentalCell n) :
     (angularFundamentalEquiv n).symm t =
       (fun i : Fin n => (t.1 i : UnitAddCircle)) := by
   rfl
 
-theorem coverRepresentative_fundamentalCell {n : ℕ}
+lemma coverRepresentative_fundamentalCell {n : ℕ}
     (F : TorusCharacters.LogSpace n → ℂ)
     (x : Space n)
     (t : angularFundamentalCell n) :
@@ -19155,7 +19155,7 @@ def logarithmicCoordinatesEquiv (n : ℕ) :
       intro i
       fun_prop
 
-@[simp] theorem logarithmicCoordinatesEquiv_apply {n : ℕ}
+@[simp] lemma logarithmicCoordinatesEquiv_apply {n : ℕ}
     (x t : Space n) :
     logarithmicCoordinatesEquiv n (x, t) =
       JointHolomorphicLaurentFourierCompatibility.logarithmicPoint
@@ -19166,7 +19166,7 @@ def logarithmicCoverPushforward (n : ℕ) :
   (volume : Measure (Space n × Space n)).map
     (logarithmicCoordinatesEquiv n)
 
-theorem logarithmicCoverPushforward_isAddHaar (n : ℕ) :
+lemma logarithmicCoverPushforward_isAddHaar (n : ℕ) :
     (logarithmicCoverPushforward n).IsAddHaarMeasure := by
   let :
       (volume : Measure (Space n × Space n)).IsAddHaarMeasure := by
@@ -19182,7 +19182,7 @@ def logarithmicCoverJacobianFactor (n : ℕ) : NNReal := by
   exact (logarithmicCoverPushforward n).addHaarScalarFactor
     (volume : Measure (TorusCharacters.LogSpace n))
 
-theorem logarithmicCoverJacobianFactor_pos (n : ℕ) :
+lemma logarithmicCoverJacobianFactor_pos (n : ℕ) :
     0 < logarithmicCoverJacobianFactor n := by
   let : (logarithmicCoverPushforward n).IsAddHaarMeasure :=
     logarithmicCoverPushforward_isAddHaar n
@@ -19190,7 +19190,7 @@ theorem logarithmicCoverJacobianFactor_pos (n : ℕ) :
     (logarithmicCoverPushforward n)
     (volume : Measure (TorusCharacters.LogSpace n))
 
-theorem logarithmicCoverPushforward_eq_smul_volume (n : ℕ) :
+lemma logarithmicCoverPushforward_eq_smul_volume (n : ℕ) :
     logarithmicCoverPushforward n =
       logarithmicCoverJacobianFactor n •
         (volume : Measure (TorusCharacters.LogSpace n)) := by
@@ -19200,14 +19200,14 @@ theorem logarithmicCoverPushforward_eq_smul_volume (n : ℕ) :
     (logarithmicCoverPushforward n)
     (volume : Measure (TorusCharacters.LogSpace n))
 
-theorem logarithmicCoordinates_measurePreserving (n : ℕ) :
+lemma logarithmicCoordinates_measurePreserving (n : ℕ) :
     MeasurePreserving (logarithmicCoordinatesEquiv n)
       (volume : Measure (Space n × Space n))
       (logarithmicCoverPushforward n) := by
   exact (logarithmicCoordinatesEquiv n).toHomeomorph.measurable.measurePreserving
       (volume : Measure (Space n × Space n))
 
-theorem integral_logarithmicCoordinates_eq_pushforward {n : ℕ}
+lemma integral_logarithmicCoordinates_eq_pushforward {n : ℕ}
     (g : TorusCharacters.LogSpace n → ℂ) :
     (∫ p : Space n × Space n,
       g (JointHolomorphicLaurentFourierCompatibility.logarithmicPoint
@@ -19230,7 +19230,7 @@ theorem integral_logarithmicCoordinates_eq_pushforward {n : ℕ}
       (logarithmicCoordinates_measurePreserving n).integral_comp
         (logarithmicCoordinatesEquiv n).toHomeomorph.measurableEmbedding g
 
-theorem integral_logarithmicCoordinates_eq_jacobian {n : ℕ}
+lemma integral_logarithmicCoordinates_eq_jacobian {n : ℕ}
     (g : TorusCharacters.LogSpace n → ℂ) :
     (∫ p : Space n × Space n,
       g (JointHolomorphicLaurentFourierCompatibility.logarithmicPoint
@@ -19251,7 +19251,7 @@ def angularCoverProjection (n : ℕ) :
     Space n → TorusCharacters.AngularTorus n :=
   fun t i => (t i : UnitAddCircle)
 
-theorem angularCoverProjection_integer_add {n : ℕ}
+lemma angularCoverProjection_integer_add {n : ℕ}
     (t : Space n) (q : Fin n → ℤ) :
     angularCoverProjection n (fun i => t i + (q i : ℝ)) =
       angularCoverProjection n t := by
@@ -19264,7 +19264,7 @@ theorem angularCoverProjection_integer_add {n : ℕ}
     exact ⟨q i, by simp⟩
   rw [hq, add_zero]
 
-theorem angularCoverProjection_measurePreserving {n : ℕ}
+lemma angularCoverProjection_measurePreserving {n : ℕ}
     (b : Space n) :
     MeasurePreserving (angularCoverProjection n)
       ((volume : Measure (Space n)).restrict
@@ -19300,7 +19300,7 @@ def realTorusCoverProjection (n : ℕ) :
       WeightedTorusHilbert.LogTorus n :=
   fun p => (p.1, angularCoverProjection n p.2)
 
-theorem realTorusCoverProjection_measurePreserving {n : ℕ}
+lemma realTorusCoverProjection_measurePreserving {n : ℕ}
     (μ : Measure (Space n)) [SFinite μ]
     (b : Space n) :
     MeasurePreserving (realTorusCoverProjection n)
@@ -19317,7 +19317,7 @@ theorem realTorusCoverProjection_measurePreserving {n : ℕ}
   exact (MeasurePreserving.id μ).prod
     (angularCoverProjection_measurePreserving b)
 
-theorem weightedRealTorusCoverProjection_measurePreserving {n k : ℕ}
+lemma weightedRealTorusCoverProjection_measurePreserving {n k : ℕ}
     (φ : Space n → ℝ) (b : Space n) :
     MeasurePreserving (realTorusCoverProjection n)
       ((WeightedTorusHilbert.radialMeasure k φ).prod
@@ -19333,7 +19333,7 @@ def realTorusCoverLift {n : ℕ}
     Space n × Space n → ℂ :=
   fun p => g (realTorusCoverProjection n p)
 
-theorem realTorusCoverLift_integrableOn_fundamental {n : ℕ}
+lemma realTorusCoverLift_integrableOn_fundamental {n : ℕ}
     {g : WeightedTorusHilbert.LogTorus n → ℂ}
     (hg : LocallyIntegrable g (unweightedTorusMeasure n))
     {s : Set (Space n)} (hs : IsCompact s)
@@ -19365,7 +19365,7 @@ theorem realTorusCoverLift_integrableOn_fundamental {n : ℕ}
         (angularFundamentalBox b)))
   exact hlift
 
-theorem angularFundamentalBox_mem_nhds {n : ℕ}
+lemma angularFundamentalBox_mem_nhds {n : ℕ}
     (t : Space n) :
     angularFundamentalBox
         (fun i : Fin n => t i - (1 / 2 : ℝ)) ∈ 𝓝 t := by
@@ -19379,7 +19379,7 @@ theorem angularFundamentalBox_mem_nhds {n : ℕ}
     apply Ioc_mem_nhds <;> linarith
   simpa [angularFundamentalBox, Set.pi] using h
 
-theorem realTorusCoverLift_locallyIntegrable {n : ℕ}
+lemma realTorusCoverLift_locallyIntegrable {n : ℕ}
     {g : WeightedTorusHilbert.LogTorus n → ℂ}
     (hg : LocallyIntegrable g (unweightedTorusMeasure n)) :
     LocallyIntegrable (realTorusCoverLift g)
@@ -19401,7 +19401,7 @@ def complexTorusCoverProjection (n : ℕ) :
   fun z => realTorusCoverProjection n
     ((logarithmicCoordinatesEquiv n).symm z)
 
-@[simp] theorem complexTorusCoverProjection_logarithmicPoint {n : ℕ}
+@[simp] lemma complexTorusCoverProjection_logarithmicPoint {n : ℕ}
     (x t : Space n) :
     complexTorusCoverProjection n
       (JointHolomorphicLaurentFourierCompatibility.logarithmicPoint
@@ -19416,7 +19416,7 @@ def complexTorusCoverProjection (n : ℕ) :
   rw [← logarithmicCoordinatesEquiv_apply,
     ContinuousLinearEquiv.symm_apply_apply]
 
-theorem logarithmicPoint_integer_add {n : ℕ}
+lemma logarithmicPoint_integer_add {n : ℕ}
     (x t : Space n) (q : Fin n → ℤ) :
     JointHolomorphicLaurentFourierCompatibility.logarithmicPoint
       x (fun i => t i + (q i : ℝ)) =
@@ -19428,7 +19428,7 @@ theorem logarithmicPoint_integer_add {n : ℕ}
     Complex.ofReal_add, Complex.ofReal_intCast]
   ring
 
-theorem complexTorusCoverProjection_imaginaryShift {n : ℕ}
+lemma complexTorusCoverProjection_imaginaryShift {n : ℕ}
     (z : TorusCharacters.LogSpace n)
     (q : Fin n → ℤ) :
     complexTorusCoverProjection n
@@ -19454,7 +19454,7 @@ def complexTorusCoverLift {n : ℕ}
     TorusCharacters.LogSpace n → ℂ :=
   fun z => g (complexTorusCoverProjection n z)
 
-theorem complexTorusCoverLift_periodic {n : ℕ}
+lemma complexTorusCoverLift_periodic {n : ℕ}
     (g : WeightedTorusHilbert.LogTorus n → ℂ)
     (q : Fin n → ℤ) :
     Function.Periodic (complexTorusCoverLift g)
@@ -19463,7 +19463,7 @@ theorem complexTorusCoverLift_periodic {n : ℕ}
   unfold complexTorusCoverLift
   rw [complexTorusCoverProjection_imaginaryShift]
 
-@[simp] theorem complexTorusCoverLift_logarithmicPoint {n : ℕ}
+@[simp] lemma complexTorusCoverLift_logarithmicPoint {n : ℕ}
     (g : WeightedTorusHilbert.LogTorus n → ℂ)
     (x t : Space n) :
     complexTorusCoverLift g
@@ -19479,7 +19479,7 @@ theorem complexTorusCoverLift_periodic {n : ℕ}
   rw [← logarithmicCoordinatesEquiv_apply,
     ContinuousLinearEquiv.symm_apply_apply]
 
-theorem locallyIntegrable_logarithmicCoverPushforward_iff {n : ℕ}
+lemma locallyIntegrable_logarithmicCoverPushforward_iff {n : ℕ}
     (g : TorusCharacters.LogSpace n → ℂ) :
     LocallyIntegrable g (logarithmicCoverPushforward n) ↔
       LocallyIntegrable g
@@ -19505,7 +19505,7 @@ theorem locallyIntegrable_logarithmicCoverPushforward_iff {n : ℕ}
     simpa [IntegrableOn, Measure.restrict_smul] using
       (integrable_smul_measure hc ENNReal.coe_ne_top).mpr hg
 
-theorem complexTorusCoverLift_locallyIntegrable {n : ℕ}
+lemma complexTorusCoverLift_locallyIntegrable {n : ℕ}
     {g : WeightedTorusHilbert.LogTorus n → ℂ}
     (hg : LocallyIntegrable g (unweightedTorusMeasure n)) :
     LocallyIntegrable (complexTorusCoverLift g)
@@ -19518,7 +19518,7 @@ theorem complexTorusCoverLift_locallyIntegrable {n : ℕ}
   simp [complexTorusCoverLift,
     complexTorusCoverProjection, realTorusCoverLift]
 
-theorem weightedScalarL2_complexTorusCoverLift_locallyIntegrable
+lemma weightedScalarL2_complexTorusCoverLift_locallyIntegrable
     {n k : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     (f : WeightedTorusHilbert.weightedHilbert k φ) :
@@ -19538,7 +19538,7 @@ open EqualitySaturatingKillingPaths ComplexKillingSaturationBridge DolbeaultGrap
 open WeightedTorusDistributionBridge
 open scoped BigOperators ENNReal InnerProductSpace Topology Convolution
 
-theorem weightedTorus_ae_iff_unweighted {n k : ℕ}
+lemma weightedTorus_ae_iff_unweighted {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ)
     (P : WeightedTorusHilbert.LogTorus n → Prop) :
     (∀ᵐ z ∂(WeightedTorusHilbert.weightedTorusMeasure k φ), P z) ↔
@@ -19558,21 +19558,21 @@ theorem weightedTorus_ae_iff_unweighted {n k : ℕ}
     filter_upwards [h] with z hz _
     exact hz
 
-theorem weightedTorus_ae_eq_unweighted {n k : ℕ}
+lemma weightedTorus_ae_eq_unweighted {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ)
     {f g : WeightedTorusHilbert.LogTorus n → ℂ}
     (h : f =ᵐ[WeightedTorusHilbert.weightedTorusMeasure k φ] g) :
     f =ᵐ[unweightedTorusMeasure n] g :=
   (weightedTorus_ae_iff_unweighted hφ (fun z => f z = g z)).mp h
 
-theorem unweightedTorus_ae_eq_weighted {n k : ℕ}
+lemma unweightedTorus_ae_eq_weighted {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ)
     {f g : WeightedTorusHilbert.LogTorus n → ℂ}
     (h : f =ᵐ[unweightedTorusMeasure n] g) :
     f =ᵐ[WeightedTorusHilbert.weightedTorusMeasure k φ] g :=
   (weightedTorus_ae_iff_unweighted hφ (fun z => f z = g z)).mpr h
 
-theorem exists_integer_angularFundamentalBox {n : ℕ}
+lemma exists_integer_angularFundamentalBox {n : ℕ}
     (t : Space n) :
     ∃ q : Fin n → ℤ,
       t ∈ angularFundamentalBox (fun i => (q i : ℝ)) := by
@@ -19586,7 +19586,7 @@ theorem exists_integer_angularFundamentalBox {n : ℕ}
     have h := Int.le_ceil (t i)
     linarith
 
-theorem integer_angularFundamentalBoxes_cover (n : ℕ) :
+lemma integer_angularFundamentalBoxes_cover (n : ℕ) :
     (⋃ q : Fin n → ℤ,
       (Set.univ : Set (Space n)) ×ˢ
         angularFundamentalBox (fun i => (q i : ℝ))) =
@@ -19596,7 +19596,7 @@ theorem integer_angularFundamentalBoxes_cover (n : ℕ) :
   obtain ⟨q, hq⟩ := exists_integer_angularFundamentalBox p.2
   exact ⟨q, ⟨Set.mem_univ p.1, hq⟩⟩
 
-theorem realTorusCoverLift_ae_eq_fundamental {n : ℕ}
+lemma realTorusCoverLift_ae_eq_fundamental {n : ℕ}
     {f g : WeightedTorusHilbert.LogTorus n → ℂ}
     (h : f =ᵐ[unweightedTorusMeasure n] g)
     (q : Fin n → ℤ) :
@@ -19616,7 +19616,7 @@ theorem realTorusCoverLift_ae_eq_fundamental {n : ℕ}
     g (realTorusCoverProjection n x)
   exact hx
 
-theorem realTorusCoverLift_ae_eq {n : ℕ}
+lemma realTorusCoverLift_ae_eq {n : ℕ}
     {f g : WeightedTorusHilbert.LogTorus n → ℂ}
     (h : f =ᵐ[unweightedTorusMeasure n] g) :
     realTorusCoverLift f =ᵐ[
@@ -19632,7 +19632,7 @@ theorem realTorusCoverLift_ae_eq {n : ℕ}
         (fun q => realTorusCoverLift_ae_eq_fundamental h q)
   simpa [integer_angularFundamentalBoxes_cover] using hc
 
-theorem complexTorusCoverLift_ae_eq {n : ℕ}
+lemma complexTorusCoverLift_ae_eq {n : ℕ}
     {f g : WeightedTorusHilbert.LogTorus n → ℂ}
     (h : f =ᵐ[unweightedTorusMeasure n] g) :
     complexTorusCoverLift f =ᵐ[
@@ -19662,7 +19662,7 @@ theorem complexTorusCoverLift_ae_eq {n : ℕ}
       ((logarithmicCoordinatesEquiv n).symm z))
   exact hz
 
-theorem weightedTorus_complexCoverLift_ae_eq {n k : ℕ}
+lemma weightedTorus_complexCoverLift_ae_eq {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ)
     {f g : WeightedTorusHilbert.LogTorus n → ℂ}
     (h : f =ᵐ[WeightedTorusHilbert.weightedTorusMeasure k φ] g) :
@@ -19671,7 +19671,7 @@ theorem weightedTorus_complexCoverLift_ae_eq {n k : ℕ}
       complexTorusCoverLift g :=
   complexTorusCoverLift_ae_eq (weightedTorus_ae_eq_unweighted hφ h)
 
-theorem exists_integer_translate_of_angularCoverProjection_eq
+lemma exists_integer_translate_of_angularCoverProjection_eq
     {n : ℕ} {s t : Space n}
     (h : angularCoverProjection n s = angularCoverProjection n t) :
     ∃ q : Fin n → ℤ, s = fun i => t i + (q i : ℝ) := by
@@ -19691,7 +19691,7 @@ theorem exists_integer_translate_of_angularCoverProjection_eq
   choose q hq using hi
   exact ⟨q, funext hq⟩
 
-theorem angularCoverProjection_fundamentalRepresentative
+lemma angularCoverProjection_fundamentalRepresentative
     {n : ℕ} (t : Space n) :
     angularCoverProjection n
       (fun i : Fin n =>
@@ -19705,7 +19705,7 @@ theorem angularCoverProjection_fundamentalRepresentative
   exact (AddCircle.equivIoc 1 0).symm_apply_apply
     ((t i : ℝ) : UnitAddCircle)
 
-theorem periodic_torusScalarRepresentative_logarithmicPoint {n : ℕ}
+lemma periodic_torusScalarRepresentative_logarithmicPoint {n : ℕ}
     (F : TorusCharacters.LogSpace n → ℂ)
     (hperiod : ∀ q : Fin n → ℤ,
       Function.Periodic F (TorusCharacters.imaginaryShift q))
@@ -19727,7 +19727,7 @@ theorem periodic_torusScalarRepresentative_logarithmicPoint {n : ℕ}
   rw [hq, logarithmicPoint_integer_add]
   exact hperiod q _
 
-theorem complexTorusCoverLift_torusScalarRepresentative_eq {n : ℕ}
+lemma complexTorusCoverLift_torusScalarRepresentative_eq {n : ℕ}
     (F : TorusCharacters.LogSpace n → ℂ)
     (hperiod : ∀ q : Fin n → ℤ,
       Function.Periodic F (TorusCharacters.imaginaryShift q)) :
@@ -19744,7 +19744,7 @@ theorem complexTorusCoverLift_torusScalarRepresentative_eq {n : ℕ}
   exact periodic_torusScalarRepresentative_logarithmicPoint
     F hperiod p.1 p.2
 
-theorem barPartialCoordinate_periodic {n : ℕ}
+lemma barPartialCoordinate_periodic {n : ℕ}
     (F : TorusCharacters.LogSpace n → ℂ)
     (hperiod : ∀ q : Fin n → ℤ,
       Function.Periodic F (TorusCharacters.imaginaryShift q))
@@ -19776,7 +19776,7 @@ theorem barPartialCoordinate_periodic {n : ℕ}
         Complex.I * (fderiv ℝ F z) (Pi.single j Complex.I)) / 2
   rw [hd]
 
-theorem complexTorusCoverLift_barPartialRepresentative_eq {n : ℕ}
+lemma complexTorusCoverLift_barPartialRepresentative_eq {n : ℕ}
     (F : TorusCharacters.LogSpace n → ℂ)
     (hperiod : ∀ q : Fin n → ℤ,
       Function.Periodic F (TorusCharacters.imaginaryShift q))
@@ -19796,7 +19796,7 @@ theorem complexTorusCoverLift_barPartialRepresentative_eq {n : ℕ}
     (fun z => barPartialCoordinate F z j)
     (fun q => barPartialCoordinate_periodic F hperiod j q)
 
-theorem weightedScalarGraphGenerator_complexCoverLift_ae_eq
+lemma weightedScalarGraphGenerator_complexCoverLift_ae_eq
     {n k : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     (F : TorusCharacters.LogSpace n → ℂ)
@@ -19819,7 +19819,7 @@ theorem weightedScalarGraphGenerator_complexCoverLift_ae_eq
   simpa [complexTorusCoverLift_torusScalarRepresentative_eq F hperiod]
     using h
 
-theorem weightedFormGraphGenerator_complexCoverLift_ae_eq
+lemma weightedFormGraphGenerator_complexCoverLift_ae_eq
     {n k : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     (F : TorusCharacters.LogSpace n → ℂ)
@@ -19849,7 +19849,7 @@ theorem weightedFormGraphGenerator_complexCoverLift_ae_eq
   rw [complexTorusCoverLift_barPartialRepresentative_eq F hperiod j] at h
   exact h
 
-theorem weightedSmoothGraphGenerator_compact_barPartial_green
+lemma weightedSmoothGraphGenerator_compact_barPartial_green
     {n k : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     (F : TorusCharacters.LogSpace n → ℂ)
@@ -19931,7 +19931,7 @@ abbrev weightedCellFormL2 {n : ℕ} (k : ℕ)
   MeasureTheory.Lp (EuclideanSpace ℂ (Fin n)) 2
     (realWeightedFundamentalCellMeasure k φ b)
 
-theorem realWeightedFundamentalCell_measurePreserving {n k : ℕ}
+lemma realWeightedFundamentalCell_measurePreserving {n k : ℕ}
     (φ : Space n → ℝ) (b : Space n) :
     MeasurePreserving (realTorusCoverProjection n)
       (realWeightedFundamentalCellMeasure k φ b)
@@ -19952,7 +19952,7 @@ def weightedFormFundamentalLiftLI {n : ℕ} (k : ℕ)
     (realTorusCoverProjection n)
     (realWeightedFundamentalCell_measurePreserving φ b)
 
-theorem weightedScalarFundamentalLiftLI_ae_eq {n k : ℕ}
+lemma weightedScalarFundamentalLiftLI_ae_eq {n k : ℕ}
     (φ : Space n → ℝ) (b : Space n)
     (f : weightedTorusScalarL2 k φ) :
     (fun p : Space n × Space n =>
@@ -19962,7 +19962,7 @@ theorem weightedScalarFundamentalLiftLI_ae_eq {n k : ℕ}
   exact MeasureTheory.Lp.coeFn_compMeasurePreserving f
     (realWeightedFundamentalCell_measurePreserving φ b)
 
-theorem weightedFormFundamentalLiftLI_ae_eq {n k : ℕ}
+lemma weightedFormFundamentalLiftLI_ae_eq {n k : ℕ}
     (φ : Space n → ℝ) (b : Space n)
     (f : weightedTorusFormL2 k φ) :
     (fun p : Space n × Space n =>
@@ -19990,7 +19990,7 @@ def weightedCellFormAdjointFunctional {n : ℕ} (k : ℕ)
       (WithLp.sndL 2 ℂ (weightedTorusScalarL2 k φ)
         (weightedTorusFormL2 k φ))
 
-theorem realWeightedFundamentalCellMeasure_eq_withDensity {n k : ℕ}
+lemma realWeightedFundamentalCellMeasure_eq_withDensity {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ)
     (b : Space n) :
     realWeightedFundamentalCellMeasure k φ b =
@@ -20002,13 +20002,13 @@ theorem realWeightedFundamentalCellMeasure_eq_withDensity {n k : ℕ}
   exact MeasureTheory.prod_withDensity_left
     (radialWeight_measurable k hφ)
 
-theorem realFundamentalCellMeasure_isLocallyFinite {n : ℕ}
+lemma realFundamentalCellMeasure_isLocallyFinite {n : ℕ}
     (b : Space n) :
     IsLocallyFiniteMeasure (realFundamentalCellMeasure b) := by
   unfold realFundamentalCellMeasure
   infer_instance
 
-theorem realWeightedFundamentalCellMeasure_isLocallyFinite {n k : ℕ}
+lemma realWeightedFundamentalCellMeasure_isLocallyFinite {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ)
     (b : Space n) :
     IsLocallyFiniteMeasure (realWeightedFundamentalCellMeasure k φ b) := by
@@ -20024,7 +20024,7 @@ def inverseRealCoverWeight {n : ℕ} (k : ℕ)
     (p : Space n × Space n) : ℂ :=
   (Real.exp ((k : ℝ) * φ p.1) : ℂ)
 
-theorem continuous_inverseRealCoverWeight {n k : ℕ}
+lemma continuous_inverseRealCoverWeight {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ) :
     Continuous (inverseRealCoverWeight k φ) := by
   exact Complex.continuous_ofReal.comp
@@ -20046,7 +20046,7 @@ def weightedCellAdjointVectorTest {n : ℕ} (k : ℕ)
   inverseRealCoverWeight k φ p •
     coverAdjointVectorTest ψ j (logarithmicCoordinatesEquiv n p)
 
-theorem continuous_weightedCellAdjointScalarTest {n k : ℕ}
+lemma continuous_weightedCellAdjointScalarTest {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ)
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (hψ : ContDiff ℝ 1 ψ) (j : Fin n) :
@@ -20055,7 +20055,7 @@ theorem continuous_weightedCellAdjointScalarTest {n k : ℕ}
     ((continuous_coverAdjointScalarTest hψ j).comp
       (logarithmicCoordinatesEquiv n).continuous)
 
-theorem continuous_weightedCellAdjointVectorTest {n k : ℕ}
+lemma continuous_weightedCellAdjointVectorTest {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ)
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (hψ : ContDiff ℝ 1 ψ) (j : Fin n) :
@@ -20064,7 +20064,7 @@ theorem continuous_weightedCellAdjointVectorTest {n k : ℕ}
     ((continuous_coverAdjointVectorTest hψ.continuous j).comp
       (logarithmicCoordinatesEquiv n).continuous)
 
-theorem compactSupport_weightedCellAdjointScalarTest {n k : ℕ}
+lemma compactSupport_weightedCellAdjointScalarTest {n k : ℕ}
     (φ : Space n → ℝ)
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (hψcompact : HasCompactSupport ψ) (j : Fin n) :
@@ -20078,7 +20078,7 @@ theorem compactSupport_weightedCellAdjointScalarTest {n k : ℕ}
         (logarithmicCoordinatesEquiv n).toHomeomorph
   exact hcomp.mul_left
 
-theorem compactSupport_weightedCellAdjointVectorTest {n k : ℕ}
+lemma compactSupport_weightedCellAdjointVectorTest {n k : ℕ}
     (φ : Space n → ℝ)
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (hψcompact : HasCompactSupport ψ) (j : Fin n) :
@@ -20136,7 +20136,7 @@ def weightedCellWeakAdjointFunctional {n k : ℕ}
   weightedCellFormAdjointFunctional k φ b
     (weightedCellAdjointVectorL2 hφ b hψ hψcompact j)
 
-theorem weightedCellWeakAdjointFunctional_apply {n k : ℕ}
+lemma weightedCellWeakAdjointFunctional_apply {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ)
     (b : Space n)
     {ψ : TorusCharacters.LogSpace n → ℝ}
@@ -20152,7 +20152,7 @@ theorem weightedCellWeakAdjointFunctional_apply {n k : ℕ}
         (weightedFormFundamentalLiftLI k φ b (WithLp.snd v)) := by
   rfl
 
-theorem realFundamentalCellMeasure_eq_restrict {n : ℕ}
+lemma realFundamentalCellMeasure_eq_restrict {n : ℕ}
     (b : Space n) :
     realFundamentalCellMeasure b =
       (volume : Measure (Space n × Space n)).restrict
@@ -20165,7 +20165,7 @@ theorem realFundamentalCellMeasure_eq_restrict {n : ℕ}
       (Set.univ : Set (Space n))
       (angularFundamentalBox b))
 
-theorem weightedCellAdjointScalarL2_ae_eq {n k : ℕ}
+lemma weightedCellAdjointScalarL2_ae_eq {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ)
     (b : Space n)
     {ψ : TorusCharacters.LogSpace n → ℝ}
@@ -20184,7 +20184,7 @@ theorem weightedCellAdjointScalarL2_ae_eq {n k : ℕ}
           (μ := realWeightedFundamentalCellMeasure k φ b)
           (compactSupport_weightedCellAdjointScalarTest φ hψcompact j)))
 
-theorem weightedCellAdjointVectorL2_ae_eq {n k : ℕ}
+lemma weightedCellAdjointVectorL2_ae_eq {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ)
     (b : Space n)
     {ψ : TorusCharacters.LogSpace n → ℝ}
@@ -20203,7 +20203,7 @@ theorem weightedCellAdjointVectorL2_ae_eq {n k : ℕ}
           (μ := realWeightedFundamentalCellMeasure k φ b)
           (compactSupport_weightedCellAdjointVectorTest φ hψcompact j)))
 
-theorem radialWeight_mul_inverseRealCoverWeight {n k : ℕ}
+lemma radialWeight_mul_inverseRealCoverWeight {n k : ℕ}
     (φ : Space n → ℝ)
     (p : Space n × Space n) :
     ((radialWeight k φ p.1).toReal : ℂ) *
@@ -20216,7 +20216,7 @@ theorem radialWeight_mul_inverseRealCoverWeight {n k : ℕ}
   rw [h]
   simp
 
-theorem weightedCellScalar_inner_eq_unweighted {n k : ℕ}
+lemma weightedCellScalar_inner_eq_unweighted {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ)
     (b : Space n)
     {ψ : TorusCharacters.LogSpace n → ℝ}
@@ -20278,7 +20278,7 @@ theorem weightedCellScalar_inner_eq_unweighted {n k : ℕ}
               f (realTorusCoverProjection n p)) := by ring
         _ = _ := by rw [hc, one_mul]; ring
 
-theorem weightedCellVector_inner_eq_unweighted {n k : ℕ}
+lemma weightedCellVector_inner_eq_unweighted {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ)
     (b : Space n)
     {ψ : TorusCharacters.LogSpace n → ℝ}
@@ -20340,7 +20340,7 @@ def coverFundamentalCell {n : ℕ} (b : Space n) :
     Set (TorusCharacters.LogSpace n) :=
   {z | ((logarithmicCoordinatesEquiv n).symm z).2 ∈ angularFundamentalBox b}
 
-theorem coverBarPartialTest_eq_zero_of_notMem_tsupport {n : ℕ}
+lemma coverBarPartialTest_eq_zero_of_notMem_tsupport {n : ℕ}
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (j : Fin n) {z : TorusCharacters.LogSpace n}
     (hz : z ∉ tsupport ψ) :
@@ -20349,7 +20349,7 @@ theorem coverBarPartialTest_eq_zero_of_notMem_tsupport {n : ℕ}
   rw [fderiv_of_notMem_tsupport ℝ hz]
   simp
 
-theorem coverRealTest_eq_zero_of_notMem_tsupport {n : ℕ}
+lemma coverRealTest_eq_zero_of_notMem_tsupport {n : ℕ}
     {ψ : TorusCharacters.LogSpace n → ℝ}
     {z : TorusCharacters.LogSpace n}
     (hz : z ∉ tsupport ψ) :
@@ -20358,7 +20358,7 @@ theorem coverRealTest_eq_zero_of_notMem_tsupport {n : ℕ}
   apply hz
   exact subset_closure hn
 
-theorem realFundamentalCell_integral_eq_coverJacobian {n : ℕ}
+lemma realFundamentalCell_integral_eq_coverJacobian {n : ℕ}
     (b : Space n)
     (g : TorusCharacters.LogSpace n → ℂ)
     (hsupport : ∀ p : Space n × Space n,
@@ -20389,7 +20389,7 @@ theorem realFundamentalCell_integral_eq_coverJacobian {n : ℕ}
         congrArg g (logarithmicCoordinatesEquiv_apply p.1 p.2)
     _ = _ := integral_logarithmicCoordinates_eq_jacobian g
 
-theorem coverTest_zero_outside_fundamentalCell {n : ℕ}
+lemma coverTest_zero_outside_fundamentalCell {n : ℕ}
     {b : Space n}
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (hcell : tsupport ψ ⊆ coverFundamentalCell b)
@@ -20409,7 +20409,7 @@ theorem coverTest_zero_outside_fundamentalCell {n : ℕ}
   exact ⟨coverRealTest_eq_zero_of_notMem_tsupport hz,
     fun j => coverBarPartialTest_eq_zero_of_notMem_tsupport j hz⟩
 
-theorem weightedCellScalar_inner_eq_jacobian_cover {n k : ℕ}
+lemma weightedCellScalar_inner_eq_jacobian_cover {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ)
     (b : Space n)
     {ψ : TorusCharacters.LogSpace n → ℝ}
@@ -20454,7 +20454,7 @@ theorem weightedCellScalar_inner_eq_jacobian_cover {n k : ℕ}
       rw [(coverTest_zero_outside_fundamentalCell hcell p hp).2 j,
         mul_zero]
 
-theorem weightedCellVector_inner_eq_jacobian_cover {n k : ℕ}
+lemma weightedCellVector_inner_eq_jacobian_cover {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ)
     (b : Space n)
     {ψ : TorusCharacters.LogSpace n → ℝ}
@@ -20507,7 +20507,7 @@ theorem weightedCellVector_inner_eq_jacobian_cover {n k : ℕ}
       rw [(coverTest_zero_outside_fundamentalCell hcell p hp).1]
       simp
 
-theorem weightedCellWeakAdjointFunctional_smoothGraph_zero
+lemma weightedCellWeakAdjointFunctional_smoothGraph_zero
     {n k : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ) (b : Space n)
     {ψ : TorusCharacters.LogSpace n → ℝ}
@@ -20546,7 +20546,7 @@ theorem weightedCellWeakAdjointFunctional_smoothGraph_zero
       hφ F hF₁ hperiod hF hD hψ hψcompact j]
   simp
 
-theorem weightedCellWeakAdjointFunctional_closedGraph_zero
+lemma weightedCellWeakAdjointFunctional_closedGraph_zero
     {n k : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ) (b : Space n)
     {ψ : TorusCharacters.LogSpace n → ℝ}
@@ -20579,7 +20579,7 @@ theorem weightedCellWeakAdjointFunctional_closedGraph_zero
       hspan L.isClosed_ker
   exact hgraph hv
 
-theorem weightedZeroGraph_compact_barPartial_zero_of_fundamentalCell
+lemma weightedZeroGraph_compact_barPartial_zero_of_fundamentalCell
     {n k : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     (f : weightedTorusScalarL2 k φ)
@@ -20618,7 +20618,7 @@ def angularFundamentalInterior {n : ℕ} (b : Space n) :
     Set (Space n) :=
   {t | ∀ i : Fin n, t i ∈ Set.Ioo (b i) (b i + 1)}
 
-theorem angularFundamentalInterior_isOpen {n : ℕ}
+lemma angularFundamentalInterior_isOpen {n : ℕ}
     (b : Space n) :
     IsOpen (angularFundamentalInterior b) := by
   simpa [angularFundamentalInterior, Set.pi] using
@@ -20631,7 +20631,7 @@ def coverFundamentalInterior {n : ℕ}
   {z | ((logarithmicCoordinatesEquiv n).symm z).2 ∈
     angularFundamentalInterior b}
 
-theorem coverFundamentalInterior_isOpen {n : ℕ}
+lemma coverFundamentalInterior_isOpen {n : ℕ}
     (b : Space n) :
     IsOpen (coverFundamentalInterior b) := by
   exact (angularFundamentalInterior_isOpen b).preimage
@@ -20641,7 +20641,7 @@ def coverCenteredFundamentalBase {n : ℕ}
     (z : TorusCharacters.LogSpace n) : Space n :=
   fun i => ((logarithmicCoordinatesEquiv n).symm z).2 i - (1 / 2 : ℝ)
 
-theorem self_mem_coverFundamentalInterior {n : ℕ}
+lemma self_mem_coverFundamentalInterior {n : ℕ}
     (z : TorusCharacters.LogSpace n) :
     z ∈ coverFundamentalInterior (coverCenteredFundamentalBase z) := by
   intro i
@@ -20654,7 +20654,7 @@ theorem self_mem_coverFundamentalInterior {n : ℕ}
           (1 / 2 : ℝ) + 1)
   constructor <;> linarith
 
-theorem coverTestWithinFundamentalCell_of_tsupport_subset_interior
+lemma coverTestWithinFundamentalCell_of_tsupport_subset_interior
     {n : ℕ} (b : Space n)
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (hψ : tsupport ψ ⊆ coverFundamentalInterior b) :
@@ -20664,7 +20664,7 @@ theorem coverTestWithinFundamentalCell_of_tsupport_subset_interior
   intro i
   exact ⟨h i |>.1, (h i).2.le⟩
 
-theorem exists_finite_fundamental_test_partition {n : ℕ}
+lemma exists_finite_fundamental_test_partition {n : ℕ}
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (hψcompact : HasCompactSupport ψ) :
     ∃ (s : Finset (TorusCharacters.LogSpace n))
@@ -20709,7 +20709,7 @@ theorem exists_finite_fundamental_test_partition {n : ℕ}
     · rw [coverRealTest_eq_zero_of_notMem_tsupport hz]
       simp
 
-theorem coverBarPartialTest_finset_sum {n : ℕ}
+lemma coverBarPartialTest_finset_sum {n : ℕ}
     {ι : Type*} (s : Finset ι)
     (ψ : ι → TorusCharacters.LogSpace n → ℝ)
     (hψ : ∀ i ∈ s, ContDiff ℝ 1 (ψ i))
@@ -20721,7 +20721,7 @@ theorem coverBarPartialTest_finset_sum {n : ℕ}
     (fun i hi => (hψ i hi).differentiable (by simp) z)]
   simp [Finset.mul_sum, Finset.sum_add_distrib]
 
-theorem weightedZeroGraph_hasWeakBarPartialZero {n k : ℕ}
+lemma weightedZeroGraph_hasWeakBarPartialZero {n k : ℕ}
     {φ : Space n → ℝ} (hφ : Continuous φ)
     (f : weightedTorusScalarL2 k φ)
     (hf : WithLp.toLp 2 (f, (0 : weightedTorusFormL2 k φ)) ∈
@@ -20817,7 +20817,7 @@ open scoped BigOperators ContDiff Convolution ENNReal Topology
 
 open DolbeaultRegularity DolbeaultGraphDistributionBridge
 
-theorem polarInterval_holomorphic_circle_mean
+lemma polarInterval_holomorphic_circle_mean
     {f : ℂ → ℂ} (hf : Differentiable ℂ f)
     (c : ℂ) (r : ℝ) :
     (∫ θ : ℝ in -Real.pi..Real.pi,
@@ -20870,7 +20870,7 @@ theorem polarInterval_holomorphic_circle_mean
 def radialCoordinateKernel (w : ℂ) : ℝ :=
   Real.smoothTransition (1 - Complex.normSq w)
 
-theorem contDiff_radialCoordinateKernel :
+lemma contDiff_radialCoordinateKernel :
     ContDiff ℝ ∞ radialCoordinateKernel := by
   unfold radialCoordinateKernel
   apply Real.smoothTransition.contDiff.comp
@@ -20881,15 +20881,15 @@ theorem contDiff_radialCoordinateKernel :
     Complex.imCLM.contDiff
   exact contDiff_const.sub ((hre.mul hre).add (him.mul him))
 
-theorem radialCoordinateKernel_eq_zero_iff (w : ℂ) :
+lemma radialCoordinateKernel_eq_zero_iff (w : ℂ) :
     radialCoordinateKernel w = 0 ↔ 1 ≤ ‖w‖ := by
   simp [radialCoordinateKernel, Complex.one_le_normSq_iff]
 
-theorem radialCoordinateKernel_nonneg (w : ℂ) :
+lemma radialCoordinateKernel_nonneg (w : ℂ) :
     0 ≤ radialCoordinateKernel w :=
   Real.smoothTransition.nonneg _
 
-theorem radialCoordinateKernel_polar (r θ : ℝ) :
+lemma radialCoordinateKernel_polar (r θ : ℝ) :
     radialCoordinateKernel
       (Complex.polarCoord.symm (r, θ)) =
       Real.smoothTransition (1 - r ^ 2) := by
@@ -20900,7 +20900,7 @@ def productRadialKernel {n : ℕ}
     (w : TorusCharacters.LogSpace n) : ℝ :=
   ∏ i : Fin n, radialCoordinateKernel (w i)
 
-theorem contDiff_productRadialKernel (n : ℕ) :
+lemma contDiff_productRadialKernel (n : ℕ) :
     ContDiff ℝ ∞
       (productRadialKernel (n := n)) := by
   unfold productRadialKernel
@@ -20909,13 +20909,13 @@ theorem contDiff_productRadialKernel (n : ℕ) :
   apply contDiff_radialCoordinateKernel.comp
   fun_prop
 
-theorem productRadialKernel_nonneg {n : ℕ}
+lemma productRadialKernel_nonneg {n : ℕ}
     (w : TorusCharacters.LogSpace n) :
     0 ≤ productRadialKernel w := by
   unfold productRadialKernel
   exact Finset.prod_nonneg fun i hi => radialCoordinateKernel_nonneg _
 
-theorem support_productRadialKernel_subset_closedBall (n : ℕ) :
+lemma support_productRadialKernel_subset_closedBall (n : ℕ) :
     Function.support (productRadialKernel (n := n)) ⊆
       Metric.closedBall
         (0 : TorusCharacters.LogSpace n) 1 := by
@@ -20930,7 +20930,7 @@ theorem support_productRadialKernel_subset_closedBall (n : ℕ) :
   change (∏ j : Fin n, radialCoordinateKernel (w j)) ≠ 0 at hw
   exact hw (Finset.prod_eq_zero (Finset.mem_univ i) hzero)
 
-theorem hasCompactSupport_productRadialKernel (n : ℕ) :
+lemma hasCompactSupport_productRadialKernel (n : ℕ) :
     HasCompactSupport
       (productRadialKernel (n := n)) :=
   HasCompactSupport.of_support_subset_isCompact
@@ -20942,7 +20942,7 @@ def productRadialKernelMass (n : ℕ) : ℝ :=
   ∫ w : TorusCharacters.LogSpace n,
     productRadialKernel w
 
-theorem productRadialKernelMass_pos (n : ℕ) :
+lemma productRadialKernelMass_pos (n : ℕ) :
     0 < productRadialKernelMass n := by
   unfold productRadialKernelMass
   apply (contDiff_productRadialKernel n).continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
@@ -20955,13 +20955,13 @@ def normalizedProductRadialKernel {n : ℕ}
     (w : TorusCharacters.LogSpace n) : ℝ :=
   productRadialKernel w / productRadialKernelMass n
 
-theorem contDiff_normalizedProductRadialKernel (n : ℕ) :
+lemma contDiff_normalizedProductRadialKernel (n : ℕ) :
     ContDiff ℝ ∞
       (normalizedProductRadialKernel (n := n)) := by
   unfold normalizedProductRadialKernel
   exact (contDiff_productRadialKernel n).div_const _
 
-theorem hasCompactSupport_normalizedProductRadialKernel (n : ℕ) :
+lemma hasCompactSupport_normalizedProductRadialKernel (n : ℕ) :
     HasCompactSupport
       (normalizedProductRadialKernel (n := n)) := by
   apply HasCompactSupport.of_support_subset_isCompact
@@ -20980,7 +20980,7 @@ def productRadialHolomorphicMollification {n : ℕ}
     ⋆[ContinuousLinearMap.lsmul ℝ ℝ,
       (volume : Measure (TorusCharacters.LogSpace n))] g
 
-theorem differentiable_productRadialHolomorphicMollification
+lemma differentiable_productRadialHolomorphicMollification
     {n : ℕ}
     {g : TorusCharacters.LogSpace n → ℂ}
     (hg : LocallyIntegrable g
@@ -20997,7 +20997,7 @@ theorem differentiable_productRadialHolomorphicMollification
   · exact hasCompactSupport_normalizedProductRadialKernel n
   · exact hweak
 
-theorem productRadialHolomorphicMollification_periodic
+lemma productRadialHolomorphicMollification_periodic
     {n : ℕ}
     {g : TorusCharacters.LogSpace n → ℂ}
     {d : TorusCharacters.LogSpace n}
@@ -21023,12 +21023,12 @@ def radialPolarIntegrand
     ((radialCoordinateKernel (Complex.polarCoord.symm p) : ℂ) *
       f (c - Complex.polarCoord.symm p))
 
-theorem continuous_complexPolarSymm :
+lemma continuous_complexPolarSymm :
     Continuous (fun p : ℝ × ℝ => Complex.polarCoord.symm p) := by
   simp only [Complex.polarCoord_symm_apply]
   fun_prop
 
-theorem continuous_radialPolarIntegrand
+lemma continuous_radialPolarIntegrand
     {f : ℂ → ℂ} (hf : Differentiable ℂ f) (c : ℂ) :
     Continuous (radialPolarIntegrand f c) := by
   unfold radialPolarIntegrand
@@ -21040,7 +21040,7 @@ theorem continuous_radialPolarIntegrand
   exact hf.continuous.comp
     (continuous_const.sub continuous_complexPolarSymm)
 
-theorem radialCoordinateKernel_integral_eq_polar
+lemma radialCoordinateKernel_integral_eq_polar
     (f : ℂ → ℂ) (c : ℂ) :
     (∫ w : ℂ, radialCoordinateKernel w • f (c - w)) =
       ∫ p : ℝ × ℝ in Complex.polarCoord.target,
@@ -21062,13 +21062,13 @@ theorem radialCoordinateKernel_integral_eq_polar
 def compactPolarDomain : Set (ℝ × ℝ) :=
   Set.Ioc (0 : ℝ) 1 ×ˢ Set.Ioo (-Real.pi) Real.pi
 
-theorem compactPolarDomain_subset_polarTarget :
+lemma compactPolarDomain_subset_polarTarget :
     compactPolarDomain ⊆ Complex.polarCoord.target := by
   rw [Complex.polarCoord_target]
   intro p hp
   exact ⟨hp.1.1, hp.2⟩
 
-theorem radialPolarIntegrand_eq_zero_outside_compactDomain
+lemma radialPolarIntegrand_eq_zero_outside_compactDomain
     (f : ℂ → ℂ) (c : ℂ)
     (p : ℝ × ℝ)
     (hp : p ∈ Complex.polarCoord.target)
@@ -21093,7 +21093,7 @@ theorem radialPolarIntegrand_eq_zero_outside_compactDomain
   rw [hzero]
   simp
 
-theorem radialPolarIntegral_eq_compactDomain
+lemma radialPolarIntegral_eq_compactDomain
     (f : ℂ → ℂ) (c : ℂ) :
     (∫ p : ℝ × ℝ in Complex.polarCoord.target,
       radialPolarIntegrand f c p) =
@@ -21106,7 +21106,7 @@ theorem radialPolarIntegral_eq_compactDomain
   exact radialPolarIntegrand_eq_zero_outside_compactDomain
     f c p hp.1 hp.2
 
-theorem radialPolarIntegrand_integrableOn_compactDomain
+lemma radialPolarIntegrand_integrableOn_compactDomain
     {f : ℂ → ℂ} (hf : Differentiable ℂ f) (c : ℂ) :
     IntegrableOn (radialPolarIntegrand f c)
       compactPolarDomain (volume : Measure (ℝ × ℝ)) := by
@@ -21125,7 +21125,7 @@ theorem radialPolarIntegrand_integrableOn_compactDomain
   exact ⟨⟨hp.1.1.le, hp.1.2⟩,
     ⟨hp.2.1.le, hp.2.2.le⟩⟩
 
-theorem compactPolarDomain_volume :
+lemma compactPolarDomain_volume :
     (volume : Measure (ℝ × ℝ)).restrict compactPolarDomain =
       ((volume : Measure ℝ).restrict (Set.Ioc (0 : ℝ) 1)).prod
         ((volume : Measure ℝ).restrict
@@ -21137,7 +21137,7 @@ theorem compactPolarDomain_volume :
   exact (MeasureTheory.Measure.prod_restrict
     (Set.Ioc (0 : ℝ) 1) (Set.Ioo (-Real.pi) Real.pi)).symm
 
-theorem radialPolar_compact_integral_eq_iterated
+lemma radialPolar_compact_integral_eq_iterated
     {f : ℂ → ℂ} (hf : Differentiable ℂ f) (c : ℂ) :
     (∫ p : ℝ × ℝ in compactPolarDomain,
       radialPolarIntegrand f c p) =
@@ -21166,12 +21166,12 @@ theorem radialPolar_compact_integral_eq_iterated
       ∫ θ : ℝ in Set.Ioo (-Real.pi) Real.pi,
         radialPolarIntegrand f c (r, θ) := rfl
 
-theorem complexPolarSymm_eq_circleMap_zero (r θ : ℝ) :
+lemma complexPolarSymm_eq_circleMap_zero (r θ : ℝ) :
     Complex.polarCoord.symm (r, θ) = circleMap 0 r θ := by
   simp [Complex.polarCoord_symm_apply, circleMap,
     Complex.exp_mul_I]
 
-theorem complexPolar_center_sub_eq_circleMap
+lemma complexPolar_center_sub_eq_circleMap
     (c : ℂ) (r θ : ℝ) :
     c - Complex.polarCoord.symm (r, θ) =
       circleMap c (-r) θ := by
@@ -21179,7 +21179,7 @@ theorem complexPolar_center_sub_eq_circleMap
   simp [circleMap]
   ring
 
-theorem radialPolar_angle_integral
+lemma radialPolar_angle_integral
     {f : ℂ → ℂ} (hf : Differentiable ℂ f)
     (c : ℂ) (r : ℝ) :
     (∫ θ : ℝ in Set.Ioo (-Real.pi) Real.pi,
@@ -21231,7 +21231,7 @@ theorem radialPolar_angle_integral
           ((2 * Real.pi : ℝ) • f c)) := by
         rw [hcircle]
 
-theorem radialPolar_angle_integral_eq_one_mul_center
+lemma radialPolar_angle_integral_eq_one_mul_center
     {f : ℂ → ℂ} (hf : Differentiable ℂ f)
     (c : ℂ) (r : ℝ) :
     (∫ θ : ℝ in Set.Ioo (-Real.pi) Real.pi,
@@ -21246,7 +21246,7 @@ theorem radialPolar_angle_integral_eq_one_mul_center
   simp only [Complex.real_smul, mul_one]
   ring
 
-theorem radialCoordinateKernel_holomorphic_integral
+lemma radialCoordinateKernel_holomorphic_integral
     {f : ℂ → ℂ} (hf : Differentiable ℂ f)
     (c : ℂ) :
     (∫ w : ℂ,
@@ -21296,7 +21296,7 @@ theorem radialCoordinateKernel_holomorphic_integral
       exact congrArg (fun w : ℂ => w * f c)
         (integral_complex_ofReal (f := radialCoordinateKernel))
 
-theorem radialCoordinateKernel_holomorphic_integral_at_zero
+lemma radialCoordinateKernel_holomorphic_integral_at_zero
     {f : ℂ → ℂ} (hf : Differentiable ℂ f) :
     (∫ w : ℂ, radialCoordinateKernel w • f w) =
       (∫ w : ℂ, radialCoordinateKernel w) • f 0 := by
@@ -21306,7 +21306,7 @@ theorem radialCoordinateKernel_holomorphic_integral_at_zero
   simpa only [zero_sub, neg_neg, neg_zero] using
     radialCoordinateKernel_holomorphic_integral hneg 0
 
-theorem productRadialKernel_insertNth {n : ℕ}
+lemma productRadialKernel_insertNth {n : ℕ}
     (i : Fin (n + 1)) (w : ℂ)
     (y : Fin n → ℂ) :
     productRadialKernel (i.insertNth w y) =
@@ -21334,7 +21334,7 @@ def productRadialWeightedIntegrand {n : ℕ}
     (w : TorusCharacters.LogSpace n) : ℂ :=
   (productRadialKernel w : ℂ) * F w
 
-theorem continuous_productRadialWeightedIntegrand {n : ℕ}
+lemma continuous_productRadialWeightedIntegrand {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Continuous F) :
     Continuous (productRadialWeightedIntegrand F) := by
@@ -21342,7 +21342,7 @@ theorem continuous_productRadialWeightedIntegrand {n : ℕ}
   exact (Complex.continuous_ofReal.comp
     (contDiff_productRadialKernel n).continuous).mul hF
 
-theorem hasCompactSupport_productRadialWeightedIntegrand
+lemma hasCompactSupport_productRadialWeightedIntegrand
     {n : ℕ}
     (F : TorusCharacters.LogSpace n → ℂ) :
     HasCompactSupport (productRadialWeightedIntegrand F) := by
@@ -21353,7 +21353,7 @@ theorem hasCompactSupport_productRadialWeightedIntegrand
   apply hw
   simp [productRadialWeightedIntegrand, hzero]
 
-theorem integrable_productRadialWeightedIntegrand {n : ℕ}
+lemma integrable_productRadialWeightedIntegrand {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Continuous F) :
     Integrable (productRadialWeightedIntegrand F)
@@ -21362,7 +21362,7 @@ theorem integrable_productRadialWeightedIntegrand {n : ℕ}
   (continuous_productRadialWeightedIntegrand hF).integrable_of_hasCompactSupport
     (hasCompactSupport_productRadialWeightedIntegrand F)
 
-theorem productRadialWeighted_integral_eq_coordinateFubini
+lemma productRadialWeighted_integral_eq_coordinateFubini
     {n : ℕ}
     {F : TorusCharacters.LogSpace (n + 1) → ℂ}
     (hF : Continuous F)
@@ -21426,7 +21426,7 @@ def holomorphicCoordinateReset {n : ℕ}
     TorusCharacters.LogSpace n → ℂ :=
   fun w => F (Function.update w i 0)
 
-theorem differentiable_holomorphicCoordinateReset {n : ℕ}
+lemma differentiable_holomorphicCoordinateReset {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℂ F) (i : Fin n) :
     Differentiable ℂ (holomorphicCoordinateReset F i) := by
@@ -21450,7 +21450,7 @@ theorem differentiable_holomorphicCoordinateReset {n : ℕ}
     exact (ContinuousLinearMap.proj j :
       TorusCharacters.LogSpace n →L[ℂ] ℂ).differentiable
 
-theorem differentiable_insertNth_holomorphicSlice {n : ℕ}
+lemma differentiable_insertNth_holomorphicSlice {n : ℕ}
     {F : TorusCharacters.LogSpace (n + 1) → ℂ}
     (hF : Differentiable ℂ F)
     (i : Fin (n + 1))
@@ -21475,7 +21475,7 @@ theorem differentiable_insertNth_holomorphicSlice {n : ℕ}
   rw [heq]
   exact hslice
 
-theorem update_insertNth_zero {n : ℕ}
+lemma update_insertNth_zero {n : ℕ}
     (i : Fin (n + 1)) (x : ℂ)
     (y : TorusCharacters.LogSpace n) :
     Function.update
@@ -21488,7 +21488,7 @@ theorem update_insertNth_zero {n : ℕ}
   · intro j
     simp [i.succAbove_ne]
 
-theorem productRadialWeighted_slice_integral_reset
+lemma productRadialWeighted_slice_integral_reset
     {n : ℕ}
     {F : TorusCharacters.LogSpace (n + 1) → ℂ}
     (hF : Differentiable ℂ F)
@@ -21571,7 +21571,7 @@ theorem productRadialWeighted_slice_integral_reset
       filter_upwards [] with x
       exact (hreset x).symm
 
-theorem productRadialWeighted_integral_coordinate_reset
+lemma productRadialWeighted_integral_coordinate_reset
     {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℂ F)
@@ -21614,7 +21614,7 @@ def holomorphicFinsetReset {n : ℕ}
     TorusCharacters.LogSpace n → ℂ :=
   fun w => F (fun i => if i ∈ s then 0 else w i)
 
-theorem differentiable_holomorphicFinsetReset {n : ℕ}
+lemma differentiable_holomorphicFinsetReset {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℂ F)
     (s : Finset (Fin n)) :
@@ -21635,7 +21635,7 @@ theorem differentiable_holomorphicFinsetReset {n : ℕ}
     exact (ContinuousLinearMap.proj i :
       TorusCharacters.LogSpace n →L[ℂ] ℂ).differentiable
 
-theorem holomorphicCoordinateReset_finsetReset
+lemma holomorphicCoordinateReset_finsetReset
     {n : ℕ}
     (F : TorusCharacters.LogSpace n → ℂ)
     (s : Finset (Fin n)) (i : Fin n) :
@@ -21650,7 +21650,7 @@ theorem holomorphicCoordinateReset_finsetReset
     simp
   · simp [hji]
 
-theorem productRadialWeighted_integral_finset_reset
+lemma productRadialWeighted_integral_finset_reset
     {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℂ F)
@@ -21681,7 +21681,7 @@ theorem productRadialWeighted_integral_finset_reset
             (holomorphicFinsetReset F (insert i s)) w := by
         rw [holomorphicCoordinateReset_finsetReset]
 
-theorem productRadialWeighted_holomorphic_integral
+lemma productRadialWeighted_holomorphic_integral
     {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℂ F) :
@@ -21717,7 +21717,7 @@ theorem productRadialWeighted_holomorphic_integral
     _ = productRadialKernelMass n • F 0 := by
       rw [Complex.real_smul]
 
-theorem normalizedProductRadial_holomorphic_integral
+lemma normalizedProductRadial_holomorphic_integral
     {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℂ F)
@@ -21762,7 +21762,7 @@ theorem normalizedProductRadial_holomorphic_integral
         dsimp [G]
         simp [hmass]
 
-theorem productRadialHolomorphicMollification_eq_of_differentiable
+lemma productRadialHolomorphicMollification_eq_of_differentiable
     {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℂ F) :
@@ -21787,7 +21787,7 @@ open DolbeaultGraphDistributionBridge WeightedTorusDistributionBridge
 open WeightedTorusClosedGraphWeakBridge WeightedTorusWeylRepresentativeBridge
 open WeightedTorusWeylRadialIntegrationBridge
 
-theorem complexCover_hasCompactSupport_norm {n : ℕ}
+lemma complexCover_hasCompactSupport_norm {n : ℕ}
     {κ : TorusCharacters.LogSpace n → ℝ}
     (hκ : HasCompactSupport κ) :
     HasCompactSupport (fun z => ‖κ z‖) := by
@@ -21799,7 +21799,7 @@ theorem complexCover_hasCompactSupport_norm {n : ℕ}
   apply hz
   simp [hzero]
 
-theorem complexCover_locallyIntegrable_norm {n : ℕ}
+lemma complexCover_locallyIntegrable_norm {n : ℕ}
     {g : TorusCharacters.LogSpace n → ℂ}
     (hg : LocallyIntegrable g
       (volume : Measure (TorusCharacters.LogSpace n))) :
@@ -21808,7 +21808,7 @@ theorem complexCover_locallyIntegrable_norm {n : ℕ}
   exact locallyIntegrableOn_univ.mp
     ((hg.locallyIntegrableOn Set.univ).norm)
 
-theorem complexCover_hasCompactSupport_normConvolution {n : ℕ}
+lemma complexCover_hasCompactSupport_normConvolution {n : ℕ}
     {κ η : TorusCharacters.LogSpace n → ℝ}
     (hκ : HasCompactSupport κ) (hη : HasCompactSupport η) :
     HasCompactSupport
@@ -21820,7 +21820,7 @@ theorem complexCover_hasCompactSupport_normConvolution {n : ℕ}
     (ContinuousLinearMap.mul ℝ ℝ)
     (complexCover_hasCompactSupport_norm hη)
 
-theorem complexCover_continuous_normConvolution {n : ℕ}
+lemma complexCover_continuous_normConvolution {n : ℕ}
     {κ η : TorusCharacters.LogSpace n → ℝ}
     (hκcont : Continuous κ) (hκcompact : HasCompactSupport κ)
     (hηcont : Continuous η) (hηcompact : HasCompactSupport η) :
@@ -21836,7 +21836,7 @@ theorem complexCover_continuous_normConvolution {n : ℕ}
     (ContinuousLinearMap.mul ℝ ℝ)
     hκint.norm.locallyIntegrable hηcont.norm
 
-theorem complexReal_compactKernel_convolution_assoc {n : ℕ}
+lemma complexReal_compactKernel_convolution_assoc {n : ℕ}
     {g : TorusCharacters.LogSpace n → ℂ}
     (hg : LocallyIntegrable g
       (volume : Measure (TorusCharacters.LogSpace n)))
@@ -21880,7 +21880,7 @@ theorem complexReal_compactKernel_convolution_assoc {n : ℕ}
         (complexCover_continuous_normConvolution
           hκcont hκcompact hηcont hηcompact) z
 
-theorem complexCover_real_convolution_comm {n : ℕ}
+lemma complexCover_real_convolution_comm {n : ℕ}
     (κ η : TorusCharacters.LogSpace n → ℝ) :
     (κ ⋆[ContinuousLinearMap.mul ℝ ℝ,
       (volume : Measure (TorusCharacters.LogSpace n))] η) =
@@ -21892,7 +21892,7 @@ theorem complexCover_real_convolution_comm {n : ℕ}
   rw [ContinuousLinearMap.flip_mul] at h
   exact h
 
-theorem complexReal_compactKernel_convolution_commute {n : ℕ}
+lemma complexReal_compactKernel_convolution_commute {n : ℕ}
     {g : TorusCharacters.LogSpace n → ℂ}
     (hg : LocallyIntegrable g
       (volume : Measure (TorusCharacters.LogSpace n)))
@@ -21923,7 +21923,7 @@ theorem complexReal_compactKernel_convolution_commute {n : ℕ}
     _ = _ := (complexReal_compactKernel_convolution_assoc hg
       hηcont hηcompact hκcont hκcompact z).symm
 
-theorem normalizedShrinkingConvolution_eq_radialRepresentativeConvolution
+lemma normalizedShrinkingConvolution_eq_radialRepresentativeConvolution
     {n : ℕ}
     {g : TorusCharacters.LogSpace n → ℂ}
     (hg : LocallyIntegrable g
@@ -22002,7 +22002,7 @@ theorem normalizedShrinkingConvolution_eq_radialRepresentativeConvolution
       hcomm'
     _ = _ := rfl
 
-theorem productRadialHolomorphicMollification_ae_eq_of_weak
+lemma productRadialHolomorphicMollification_ae_eq_of_weak
     {n : ℕ}
     {g : TorusCharacters.LogSpace n → ℂ}
     (hg : LocallyIntegrable g
@@ -22040,7 +22040,7 @@ theorem productRadialHolomorphicMollification_ae_eq_of_weak
         hg hweak m z)
   exact tendsto_nhds_unique hradial hto_g
 
-theorem exists_periodic_holomorphic_representative_of_weak_barPartial
+lemma exists_periodic_holomorphic_representative_of_weak_barPartial
     {n : ℕ}
     {g : TorusCharacters.LogSpace n → ℂ}
     (hg : LocallyIntegrable g
@@ -22064,7 +22064,7 @@ theorem exists_periodic_holomorphic_representative_of_weak_barPartial
   intro q
   exact productRadialHolomorphicMollification_periodic (hperiod q)
 
-theorem weightedZeroGraph_exists_periodic_holomorphic_representative
+lemma weightedZeroGraph_exists_periodic_holomorphic_representative
     {n k : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     (f : weightedTorusScalarL2 k φ)
@@ -22113,20 +22113,20 @@ open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
 def angularSmoothPartitionBump (t : ℝ) : ℝ :=
   Real.smoothTransition (t + 1) - Real.smoothTransition t
 
-theorem contDiff_angularSmoothPartitionBump {m : ℕ∞} :
+lemma contDiff_angularSmoothPartitionBump {m : ℕ∞} :
     ContDiff ℝ m angularSmoothPartitionBump := by
   unfold angularSmoothPartitionBump
   exact (Real.smoothTransition.contDiff.comp
     (contDiff_id.add contDiff_const)).sub
       Real.smoothTransition.contDiff
 
-theorem angularSmoothPartitionBump_nonneg (t : ℝ) :
+lemma angularSmoothPartitionBump_nonneg (t : ℝ) :
     0 ≤ angularSmoothPartitionBump t := by
   unfold angularSmoothPartitionBump
   exact sub_nonneg.mpr
     (Real.smoothTransition.monotone (by linarith))
 
-theorem angularSmoothPartitionBump_zero_of_le
+lemma angularSmoothPartitionBump_zero_of_le
     {t : ℝ} (ht : t ≤ -1) :
     angularSmoothPartitionBump t = 0 := by
   unfold angularSmoothPartitionBump
@@ -22134,7 +22134,7 @@ theorem angularSmoothPartitionBump_zero_of_le
     Real.smoothTransition.zero_of_nonpos (by linarith),
     sub_zero]
 
-theorem angularSmoothPartitionBump_zero_of_ge
+lemma angularSmoothPartitionBump_zero_of_ge
     {t : ℝ} (ht : 1 ≤ t) :
     angularSmoothPartitionBump t = 0 := by
   unfold angularSmoothPartitionBump
@@ -22142,7 +22142,7 @@ theorem angularSmoothPartitionBump_zero_of_ge
     Real.smoothTransition.one_of_one_le ht,
     sub_self]
 
-theorem angularSmoothPartitionBump_add_translate
+lemma angularSmoothPartitionBump_add_translate
     {t : ℝ} (hzero : 0 ≤ t) (hone : t ≤ 1) :
     angularSmoothPartitionBump t +
       angularSmoothPartitionBump (t - 1) = 1 := by
@@ -22158,7 +22158,7 @@ theorem angularSmoothPartitionBump_add_translate
 def angularSmoothPartition {n : ℕ} (t : Space n) : ℝ :=
   ∏ i : Fin n, angularSmoothPartitionBump (t i)
 
-theorem contDiff_angularSmoothPartition
+lemma contDiff_angularSmoothPartition
     {n : ℕ} {m : ℕ∞} :
     ContDiff ℝ m (angularSmoothPartition (n := n)) := by
   unfold angularSmoothPartition
@@ -22167,14 +22167,14 @@ theorem contDiff_angularSmoothPartition
   apply contDiff_angularSmoothPartitionBump.comp
   fun_prop
 
-theorem angularSmoothPartition_nonneg
+lemma angularSmoothPartition_nonneg
     {n : ℕ} (t : Space n) :
     0 ≤ angularSmoothPartition t := by
   unfold angularSmoothPartition
   exact Finset.prod_nonneg
     (fun i _ => angularSmoothPartitionBump_nonneg (t i))
 
-theorem hasCompactSupport_angularSmoothPartition
+lemma hasCompactSupport_angularSmoothPartition
     {n : ℕ} :
     HasCompactSupport (angularSmoothPartition (n := n)) := by
   let Q : Set (Space n) :=
@@ -22201,7 +22201,7 @@ theorem hasCompactSupport_angularSmoothPartition
         (le_of_lt (lt_of_not_ge hn)))
   · exact hQ.isClosed
 
-theorem angularSmoothPartition_binary_sum
+lemma angularSmoothPartition_binary_sum
     {n : ℕ} (t : Space n)
     (hzero : ∀ i : Fin n, 0 ≤ t i)
     (hone : ∀ i : Fin n, t i ≤ 1) :
@@ -22228,7 +22228,7 @@ theorem angularSmoothPartition_binary_sum
         angularSmoothPartitionBump_add_translate
           (hzero i) (hone i)
 
-theorem continuous_angularCoverProjection
+lemma continuous_angularCoverProjection
     (n : ℕ) :
     Continuous (angularCoverProjection n) := by
   unfold angularCoverProjection
@@ -22238,14 +22238,14 @@ def binaryAngularFundamentalBase {n : ℕ}
     (q : Fin n → Bool) : Space n :=
   fun i => if q i then (-1 : ℝ) else 0
 
-theorem measurableSet_angularFundamentalBox
+lemma measurableSet_angularFundamentalBox
     {n : ℕ} (b : Space n) :
     MeasurableSet (angularFundamentalBox b) := by
   unfold angularFundamentalBox
   exact MeasurableSet.univ_pi'
     (fun i : Fin n => measurableSet_Ioc)
 
-theorem iUnion_binaryAngularFundamentalBox
+lemma iUnion_binaryAngularFundamentalBox
     (n : ℕ) :
     (⋃ q : Fin n → Bool,
       angularFundamentalBox (binaryAngularFundamentalBase q)) =
@@ -22290,7 +22290,7 @@ theorem iUnion_binaryAngularFundamentalBox
         (show 0 < t i ∧ t i ≤ (1 : ℝ) from
           ⟨lt_of_not_ge hzero, hi.2⟩)
 
-theorem pairwiseDisjoint_binaryAngularFundamentalBox
+lemma pairwiseDisjoint_binaryAngularFundamentalBox
     (n : ℕ) :
     Pairwise
       (Disjoint on
@@ -22314,7 +22314,7 @@ theorem pairwiseDisjoint_binaryAngularFundamentalBox
   cases hqval : q i <;> cases hrval : r i <;>
     simp_all [Set.mem_Ioc] <;> linarith
 
-theorem binaryAngularFundamentalBox_eq_translate
+lemma binaryAngularFundamentalBox_eq_translate
     {n : ℕ} (q : Fin n → Bool) :
     (fun t : Space n =>
       binaryAngularFundamentalBase q + t) ''
@@ -22350,7 +22350,7 @@ theorem binaryAngularFundamentalBox_eq_translate
           (t i - binaryAngularFundamentalBase q i) = t i
       ring
 
-theorem integral_angularSmoothPartition_eq_fundamental
+lemma integral_angularSmoothPartition_eq_fundamental
     {n : ℕ} {g : Space n → ℂ}
     (hg : Continuous g)
     (hperiod : ∀ (q : Fin n → Bool) (t : Space n),
@@ -22515,7 +22515,7 @@ theorem integral_angularSmoothPartition_eq_fundamental
       simp_rw [hperiod]
       rw [← Finset.sum_mul, hcomplex, one_mul]
 
-theorem angularFundamental_integral_eq_haar
+lemma angularFundamental_integral_eq_haar
     {n : ℕ}
     {g : TorusCharacters.AngularTorus n → ℂ}
     (hg : Continuous g) :
@@ -22541,7 +22541,7 @@ theorem angularFundamental_integral_eq_haar
         hg.aestronglyMeasurable).symm
     _ = _ := by rw [hp.map_eq]
 
-theorem integral_angularSmoothPartition_eq_angularHaar
+lemma integral_angularSmoothPartition_eq_angularHaar
     {n : ℕ}
     {g : TorusCharacters.AngularTorus n → ℂ}
     (hg : Continuous g) :
@@ -22580,7 +22580,7 @@ theorem integral_angularSmoothPartition_eq_angularHaar
       integral_angularSmoothPartition_eq_fundamental hcont hperiod
     _ = _ := angularFundamental_integral_eq_haar hg
 
-theorem weightedRealDerivative_integration_by_parts_compact_right
+lemma weightedRealDerivative_integration_by_parts_compact_right
     {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     {F G : TorusCharacters.LogSpace n → ℂ}
@@ -22648,7 +22648,7 @@ theorem weightedRealDerivative_integration_by_parts_compact_right
       unfold weightedRealDerivative
       ring
 
-theorem conj_barPartialCoordinate_eq_real_fderiv
+lemma conj_barPartialCoordinate_eq_real_fderiv
     {n : ℕ}
     {G : TorusCharacters.LogSpace n → ℂ}
     (hG : ContDiff ℝ 1 G)
@@ -22669,7 +22669,7 @@ theorem conj_barPartialCoordinate_eq_real_fderiv
     Complex.conj_I, map_ofNat]
   ring
 
-theorem weighted_holomorphic_hermitian_integration_by_parts_compact_right
+lemma weighted_holomorphic_hermitian_integration_by_parts_compact_right
     {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     {F G : TorusCharacters.LogSpace n → ℂ}
@@ -22807,7 +22807,7 @@ theorem weighted_holomorphic_hermitian_integration_by_parts_compact_right
       ring
     _ = _ := congrArg Neg.neg hright.symm
 
-theorem weighted_complex_bochner_coordinate_identity_compact_right
+lemma weighted_complex_bochner_coordinate_identity_compact_right
     {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     {F G : TorusCharacters.LogSpace n → ℂ}
@@ -22919,14 +22919,14 @@ def matrixSourceCoverPotential {n : ℕ}
     (z : TorusCharacters.LogSpace n) : ℝ :=
   φ ((logarithmicCoordinatesEquiv n).symm z).1
 
-theorem contDiff_matrixSourceCoverPotential
+lemma contDiff_matrixSourceCoverPotential
     {n : ℕ} {m : ℕ∞} {φ : Space n → ℝ}
     (hφ : ContDiff ℝ m φ) :
     ContDiff ℝ m (matrixSourceCoverPotential φ) := by
   unfold matrixSourceCoverPotential
   exact hφ.comp (by fun_prop)
 
-theorem continuous_matrixSourceCoverPotential
+lemma continuous_matrixSourceCoverPotential
     {n : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ) :
     Continuous (matrixSourceCoverPotential φ) := by
@@ -22934,7 +22934,7 @@ theorem continuous_matrixSourceCoverPotential
   exact hφ.comp
     (continuous_fst.comp (logarithmicCoordinatesEquiv n).symm.continuous)
 
-@[simp] theorem matrixSourceCoverPotential_logarithmicPoint
+@[simp] lemma matrixSourceCoverPotential_logarithmicPoint
     {n : ℕ} (φ : Space n → ℝ)
     (x t : Space n) :
     matrixSourceCoverPotential φ
@@ -22949,13 +22949,13 @@ def coverAngularSmoothPartition {n : ℕ}
   angularSmoothPartition
     ((logarithmicCoordinatesEquiv n).symm z).2
 
-theorem contDiff_coverAngularSmoothPartition
+lemma contDiff_coverAngularSmoothPartition
     {n : ℕ} {m : ℕ∞} :
     ContDiff ℝ m (coverAngularSmoothPartition (n := n)) := by
   unfold coverAngularSmoothPartition
   exact contDiff_angularSmoothPartition.comp (by fun_prop)
 
-@[simp] theorem coverAngularSmoothPartition_logarithmicPoint
+@[simp] lemma coverAngularSmoothPartition_logarithmicPoint
     {n : ℕ} (x t : Space n) :
     coverAngularSmoothPartition
       (JointHolomorphicLaurentFourierCompatibility.logarithmicPoint
@@ -22972,7 +22972,7 @@ def partitionedRealCoverIntegrand {n : ℕ}
     ((angularSmoothPartition p.2 : ℂ) *
       f (p.1, angularCoverProjection n p.2))
 
-theorem continuous_partitionedRealCoverIntegrand
+lemma continuous_partitionedRealCoverIntegrand
     {n : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
@@ -22989,7 +22989,7 @@ theorem continuous_partitionedRealCoverIntegrand
     (continuous_fst.prodMk
       ((continuous_angularCoverProjection n).comp continuous_snd))
 
-theorem hasCompactSupport_partitionedRealCoverIntegrand
+lemma hasCompactSupport_partitionedRealCoverIntegrand
     {n : ℕ} {φ : Space n → ℝ}
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
     (hfc : HasCompactSupport f) :
@@ -23016,7 +23016,7 @@ theorem hasCompactSupport_partitionedRealCoverIntegrand
   exact ⟨⟨(p.1, angularCoverProjection n p.2),
     subset_closure htest, rfl⟩, subset_closure hangular⟩
 
-theorem integrable_partitionedRealCoverIntegrand
+lemma integrable_partitionedRealCoverIntegrand
     {n : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
@@ -23033,7 +23033,7 @@ def unweightedSourceTorusIntegrand {n : ℕ}
     (p : WeightedTorusHilbert.LogTorus n) : ℂ :=
   (Real.exp (-φ p.1) : ℂ) * f p
 
-theorem continuous_unweightedSourceTorusIntegrand
+lemma continuous_unweightedSourceTorusIntegrand
     {n : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
@@ -23044,14 +23044,14 @@ theorem continuous_unweightedSourceTorusIntegrand
     (Real.continuous_exp.comp
       (hφ.comp continuous_fst).neg)).mul hf
 
-theorem hasCompactSupport_unweightedSourceTorusIntegrand
+lemma hasCompactSupport_unweightedSourceTorusIntegrand
     {n : ℕ} {φ : Space n → ℝ}
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
     (hfc : HasCompactSupport f) :
     HasCompactSupport (unweightedSourceTorusIntegrand φ f) := by
   exact hfc.mul_left
 
-theorem integrable_unweightedSourceTorusIntegrand
+lemma integrable_unweightedSourceTorusIntegrand
     {n : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
@@ -23067,7 +23067,7 @@ theorem integrable_unweightedSourceTorusIntegrand
   exact (continuous_unweightedSourceTorusIntegrand hφ hf).integrable_of_hasCompactSupport
     (hasCompactSupport_unweightedSourceTorusIntegrand hfc)
 
-theorem integral_partitionedRealCoverIntegrand_eq_unweightedSourceTorus
+lemma integral_partitionedRealCoverIntegrand_eq_unweightedSourceTorus
     {n : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
@@ -23147,7 +23147,7 @@ theorem integral_partitionedRealCoverIntegrand_eq_unweightedSourceTorus
       rw [hcovermul, htorusmul, hpartition]
     _ = _ := (MeasureTheory.integral_prod _ htorus).symm
 
-theorem integral_unweightedSourceTorusIntegrand_eq_weighted
+lemma integral_unweightedSourceTorusIntegrand_eq_weighted
     {n : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     (f : WeightedTorusHilbert.LogTorus n → ℂ) :
@@ -23173,7 +23173,7 @@ theorem integral_unweightedSourceTorusIntegrand_eq_weighted
     Complex.real_smul]
   norm_num
 
-theorem partitioned_coverWeighted_integral_eq_torus
+lemma partitioned_coverWeighted_integral_eq_torus
     {n : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
@@ -23237,7 +23237,7 @@ def binaryAngularPartitionSum (n : ℕ)
   ∑ q : Fin n → Bool,
     angularSmoothPartition (binaryAngularFundamentalBase q + t)
 
-theorem contDiff_binaryAngularPartitionSum
+lemma contDiff_binaryAngularPartitionSum
     {n : ℕ} {m : ℕ∞} :
     ContDiff ℝ m (binaryAngularPartitionSum n) := by
   unfold binaryAngularPartitionSum
@@ -23246,7 +23246,7 @@ theorem contDiff_binaryAngularPartitionSum
   exact contDiff_angularSmoothPartition.comp
     (contDiff_const.add contDiff_id)
 
-theorem binaryAngularPartitionSum_eq_one
+lemma binaryAngularPartitionSum_eq_one
     {n : ℕ} (t : Space n)
     (hzero : ∀ i : Fin n, 0 ≤ t i)
     (hone : ∀ i : Fin n, t i ≤ 1) :
@@ -23264,7 +23264,7 @@ theorem binaryAngularPartitionSum_eq_one
       split <;> ring
     _ = 1 := angularSmoothPartition_binary_sum t hzero hone
 
-theorem fderiv_binaryAngularPartitionSum_eq_zero_of_open
+lemma fderiv_binaryAngularPartitionSum_eq_zero_of_open
     {n : ℕ} (t : Space n)
     (hzero : ∀ i : Fin n, 0 < t i)
     (hone : ∀ i : Fin n, t i < 1) :
@@ -23285,7 +23285,7 @@ theorem fderiv_binaryAngularPartitionSum_eq_zero_of_open
       (fun i => (hs i (Set.mem_univ i)).2.le)
   simpa using (hevent.fderiv_eq (𝕜 := ℝ))
 
-theorem fderiv_binaryAngularPartitionSum_eq_zero
+lemma fderiv_binaryAngularPartitionSum_eq_zero
     {n : ℕ} (t : Space n)
     (hzero : ∀ i : Fin n, 0 ≤ t i)
     (hone : ∀ i : Fin n, t i ≤ 1) :
@@ -23315,7 +23315,7 @@ theorem fderiv_binaryAngularPartitionSum_eq_zero
     exact ⟨hzero i, hone i⟩
   exact (closure_minimal hsub hclosed) ht
 
-theorem fderiv_angularSmoothPartition_translate
+lemma fderiv_angularSmoothPartition_translate
     {n : ℕ} (b t : Space n) :
     fderiv ℝ (fun s : Space n =>
       angularSmoothPartition (b + s)) t =
@@ -23343,7 +23343,7 @@ theorem fderiv_angularSmoothPartition_translate
   rw [hinner, ContinuousLinearMap.comp_id] at hcomp
   exact hcomp
 
-theorem sum_fderiv_angularSmoothPartition_binary_eq_zero
+lemma sum_fderiv_angularSmoothPartition_binary_eq_zero
     {n : ℕ} (t v : Space n)
     (hzero : ∀ i : Fin n, 0 ≤ t i)
     (hone : ∀ i : Fin n, t i ≤ 1) :
@@ -23376,7 +23376,7 @@ theorem sum_fderiv_angularSmoothPartition_binary_eq_zero
   rw [hzeroDeriv] at happly
   simpa using happly.symm
 
-theorem fderiv_angularSmoothPartition_eq_zero_of_zero
+lemma fderiv_angularSmoothPartition_eq_zero_of_zero
     {n : ℕ} {t : Space n}
     (ht : angularSmoothPartition t = 0) :
     fderiv ℝ (angularSmoothPartition (n := n)) t = 0 := by
@@ -23388,7 +23388,7 @@ theorem fderiv_angularSmoothPartition_eq_zero_of_zero
       exact angularSmoothPartition_nonneg s)
   exact hmin.fderiv_eq_zero
 
-theorem integral_binaryPeriodic_cutoff_eq_zero
+lemma integral_binaryPeriodic_cutoff_eq_zero
     {n : ℕ} {κ : Space n → ℝ}
     (hκ : Continuous κ)
     (hκcompact : HasCompactSupport κ)
@@ -23529,7 +23529,7 @@ theorem integral_binaryPeriodic_cutoff_eq_zero
       rw [← Finset.sum_mul, hcomplex, zero_mul]
     _ = 0 := by simp
 
-theorem integral_fderiv_angularSmoothPartition_periodic_eq_zero
+lemma integral_fderiv_angularSmoothPartition_periodic_eq_zero
     {n : ℕ} (v : Space n)
     {g : Space n → ℂ}
     (hg : Continuous g)
@@ -23576,7 +23576,7 @@ theorem integral_fderiv_angularSmoothPartition_periodic_eq_zero
       sum_fderiv_angularSmoothPartition_binary_eq_zero t v ht0 ht1)
     hg hperiod
 
-theorem angularCoverProjection_binary_translate
+lemma angularCoverProjection_binary_translate
     {n : ℕ} (q : Fin n → Bool) (t : Space n) :
     angularCoverProjection n
       (binaryAngularFundamentalBase q + t) =
@@ -23600,7 +23600,7 @@ def derivativePartitionedRealCoverIntegrand {n : ℕ}
     (((fderiv ℝ (angularSmoothPartition (n := n)) p.2) v : ℂ) *
       f (p.1, angularCoverProjection n p.2))
 
-theorem continuous_derivativePartitionedRealCoverIntegrand
+lemma continuous_derivativePartitionedRealCoverIntegrand
     {n : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
@@ -23623,7 +23623,7 @@ theorem continuous_derivativePartitionedRealCoverIntegrand
     (continuous_fst.prodMk
       ((continuous_angularCoverProjection n).comp continuous_snd))
 
-theorem hasCompactSupport_derivativePartitionedRealCoverIntegrand
+lemma hasCompactSupport_derivativePartitionedRealCoverIntegrand
     {n : ℕ} {φ : Space n → ℝ}
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
     (hfc : HasCompactSupport f)
@@ -23655,7 +23655,7 @@ theorem hasCompactSupport_derivativePartitionedRealCoverIntegrand
   exact ⟨⟨(p.1, angularCoverProjection n p.2),
     subset_closure htest, rfl⟩, subset_closure hangular⟩
 
-theorem integrable_derivativePartitionedRealCoverIntegrand
+lemma integrable_derivativePartitionedRealCoverIntegrand
     {n : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
@@ -23668,7 +23668,7 @@ theorem integrable_derivativePartitionedRealCoverIntegrand
     hφ hf v).integrable_of_hasCompactSupport
       (hasCompactSupport_derivativePartitionedRealCoverIntegrand hfc v)
 
-theorem integral_derivativePartitionedRealCoverIntegrand_eq_zero
+lemma integral_derivativePartitionedRealCoverIntegrand_eq_zero
     {n : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
@@ -23736,7 +23736,7 @@ theorem integral_derivativePartitionedRealCoverIntegrand_eq_zero
       rw [hmul, hzero, mul_zero]
     _ = 0 := by simp
 
-theorem integral_sourceCoverAngularPartitionDerivative_mul_lift_eq_zero
+lemma integral_sourceCoverAngularPartitionDerivative_mul_lift_eq_zero
     {n : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
@@ -23799,7 +23799,7 @@ def sourceCoverAngularLinear (n : ℕ) :
     (Space n)).comp
       (logarithmicCoordinatesEquiv n).symm.toContinuousLinearMap
 
-theorem fderiv_coverAngularSmoothPartition_apply
+lemma fderiv_coverAngularSmoothPartition_apply
     {n : ℕ}
     (z v : TorusCharacters.LogSpace n) :
     (fderiv ℝ (coverAngularSmoothPartition (n := n)) z) v =
@@ -23833,7 +23833,7 @@ theorem fderiv_coverAngularSmoothPartition_apply
     (fun A : TorusCharacters.LogSpace n →L[ℝ] ℝ => A v) hc
   exact ha
 
-theorem integral_fderiv_coverAngularSmoothPartition_mul_lift_eq_zero
+lemma integral_fderiv_coverAngularSmoothPartition_mul_lift_eq_zero
     {n : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
@@ -23858,7 +23858,7 @@ theorem integral_fderiv_coverAngularSmoothPartition_mul_lift_eq_zero
       integral_sourceCoverAngularPartitionDerivative_mul_lift_eq_zero
         hφ hf hfc (((logarithmicCoordinatesEquiv n).symm v).2)
 
-theorem angularCoverProjection_isOpenQuotientMap (n : ℕ) :
+lemma angularCoverProjection_isOpenQuotientMap (n : ℕ) :
     IsOpenQuotientMap (angularCoverProjection n) := by
   change IsOpenQuotientMap
     (Pi.map (fun _ : Fin n =>
@@ -23866,7 +23866,7 @@ theorem angularCoverProjection_isOpenQuotientMap (n : ℕ) :
   exact IsOpenQuotientMap.piMap
     (fun _ => QuotientAddGroup.isOpenQuotientMap_mk)
 
-theorem realTorusCoverProjection_isOpenQuotientMap (n : ℕ) :
+lemma realTorusCoverProjection_isOpenQuotientMap (n : ℕ) :
     IsOpenQuotientMap (realTorusCoverProjection n) := by
   change IsOpenQuotientMap
     (Prod.map (id : Space n → Space n)
@@ -23874,7 +23874,7 @@ theorem realTorusCoverProjection_isOpenQuotientMap (n : ℕ) :
   exact IsOpenQuotientMap.id.prodMap
     (angularCoverProjection_isOpenQuotientMap n)
 
-theorem complexTorusCoverProjection_isOpenQuotientMap (n : ℕ) :
+lemma complexTorusCoverProjection_isOpenQuotientMap (n : ℕ) :
     IsOpenQuotientMap (complexTorusCoverProjection n) := by
   have h :=
     (realTorusCoverProjection_isOpenQuotientMap n).comp
@@ -23883,7 +23883,7 @@ theorem complexTorusCoverProjection_isOpenQuotientMap (n : ℕ) :
     (realTorusCoverProjection n ∘ (logarithmicCoordinatesEquiv n).symm)
   exact h
 
-theorem continuous_torusScalarRepresentative_of_periodic
+lemma continuous_torusScalarRepresentative_of_periodic
     {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : Continuous F)
@@ -23902,7 +23902,7 @@ theorem continuous_torusScalarRepresentative_of_periodic
   rw [hcomp]
   exact hF
 
-theorem continuous_complexTorusCoverProjection (n : ℕ) :
+lemma continuous_complexTorusCoverProjection (n : ℕ) :
     Continuous (complexTorusCoverProjection n) :=
   (complexTorusCoverProjection_isOpenQuotientMap n).continuous
 
@@ -23912,7 +23912,7 @@ def sourceAngularCutoffLift {n : ℕ}
   (coverAngularSmoothPartition z : ℂ) *
     f (complexTorusCoverProjection n z)
 
-theorem continuous_sourceAngularCutoffLift
+lemma continuous_sourceAngularCutoffLift
     {n : ℕ}
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
     (hf : Continuous f) :
@@ -23923,7 +23923,7 @@ theorem continuous_sourceAngularCutoffLift
       (n := n) (m := 1)).continuous).mul
         (hf.comp (continuous_complexTorusCoverProjection n))
 
-theorem hasCompactSupport_sourceAngularCutoffLift
+lemma hasCompactSupport_sourceAngularCutoffLift
     {n : ℕ}
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
     (hfc : HasCompactSupport f) :
@@ -23965,7 +23965,7 @@ theorem hasCompactSupport_sourceAngularCutoffLift
     subset_closure htest, ?_⟩
   rfl
 
-theorem contDiff_sourceAngularCutoffLift
+lemma contDiff_sourceAngularCutoffLift
     {n : ℕ} {m : ℕ∞}
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
     (hf : ContDiff ℝ m (complexTorusCoverLift f)) :
@@ -23985,7 +23985,7 @@ def sourceAngularDerivativeLift {n : ℕ}
   ((fderiv ℝ (coverAngularSmoothPartition (n := n)) z) v : ℂ) *
     f (complexTorusCoverProjection n z)
 
-theorem continuous_sourceAngularDerivativeLift
+lemma continuous_sourceAngularDerivativeLift
     {n : ℕ}
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
     (hf : Continuous f)
@@ -23998,7 +23998,7 @@ theorem continuous_sourceAngularDerivativeLift
         (by simp)).clm_apply continuous_const)).mul
   exact hf.comp (continuous_complexTorusCoverProjection n)
 
-theorem hasCompactSupport_sourceAngularDerivativeLift
+lemma hasCompactSupport_sourceAngularDerivativeLift
     {n : ℕ}
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
     (hfc : HasCompactSupport f)
@@ -24045,7 +24045,7 @@ theorem hasCompactSupport_sourceAngularDerivativeLift
     subset_closure htest, ?_⟩
   rfl
 
-theorem integrable_sourceAngularDerivativeLift
+lemma integrable_sourceAngularDerivativeLift
     {n : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
@@ -24062,7 +24062,7 @@ theorem integrable_sourceAngularDerivativeLift
     hf v).integrable_of_hasCompactSupport
       (hasCompactSupport_sourceAngularDerivativeLift hfc v)
 
-theorem fderiv_periodic
+lemma fderiv_periodic
     {n : ℕ}
     (F : TorusCharacters.LogSpace n → ℂ)
     (hperiod : ∀ q : Fin n → ℤ,
@@ -24087,7 +24087,7 @@ theorem fderiv_periodic
   rw [fderiv_comp_add_right] at hd
   exact hd
 
-theorem holomorphicCoordinate_periodic
+lemma holomorphicCoordinate_periodic
     {n : ℕ}
     (F : TorusCharacters.LogSpace n → ℂ)
     (hperiod : ∀ q : Fin n → ℤ,
@@ -24104,7 +24104,7 @@ theorem holomorphicCoordinate_periodic
   unfold holomorphicCoordinate
   rw [fderiv_periodic F hperiod q z]
 
-theorem matrixSourceCoverPotential_periodic
+lemma matrixSourceCoverPotential_periodic
     {n : ℕ} (φ : Space n → ℝ)
     (q : Fin n → ℤ) :
     Function.Periodic (matrixSourceCoverPotential φ)
@@ -24116,7 +24116,7 @@ theorem matrixSourceCoverPotential_periodic
     φ (complexTorusCoverProjection n z).1
   rw [complexTorusCoverProjection_imaginaryShift]
 
-theorem fderiv_complex_mul_apply
+lemma fderiv_complex_mul_apply
     {n : ℕ}
     {F G : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℝ F)
@@ -24130,7 +24130,7 @@ theorem fderiv_complex_mul_apply
     (fderiv_fun_mul (hF z) (hG z))
   simpa [smul_eq_mul] using h
 
-theorem barPartialCoordinate_mul
+lemma barPartialCoordinate_mul
     {n : ℕ}
     {F G : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℝ F)
@@ -24145,7 +24145,7 @@ theorem barPartialCoordinate_mul
     fderiv_complex_mul_apply hF hG z (Pi.single j Complex.I)]
   ring
 
-theorem holomorphicCoordinate_mul
+lemma holomorphicCoordinate_mul
     {n : ℕ}
     {F G : TorusCharacters.LogSpace n → ℂ}
     (hF : Differentiable ℝ F)
@@ -24160,7 +24160,7 @@ theorem holomorphicCoordinate_mul
     fderiv_complex_mul_apply hF hG z (Pi.single j Complex.I)]
   ring
 
-theorem weightedHolomorphicDerivative_mul
+lemma weightedHolomorphicDerivative_mul
     {n : ℕ}
     (a : TorusCharacters.LogSpace n → ℝ)
     {F G : TorusCharacters.LogSpace n → ℂ}
@@ -24176,7 +24176,7 @@ theorem weightedHolomorphicDerivative_mul
   rw [holomorphicCoordinate_mul hF hG z j]
   ring
 
-theorem integral_holomorphicCoordinate_coverAngularSmoothPartition_mul_lift_eq_zero
+lemma integral_holomorphicCoordinate_coverAngularSmoothPartition_mul_lift_eq_zero
     {n : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
@@ -24246,7 +24246,7 @@ theorem integral_holomorphicCoordinate_coverAngularSmoothPartition_mul_lift_eq_z
         hI]
     _ = 0 := by rw [hz₀, hz₁]; norm_num
 
-theorem integral_barPartialCoordinate_coverAngularSmoothPartition_mul_lift_eq_zero
+lemma integral_barPartialCoordinate_coverAngularSmoothPartition_mul_lift_eq_zero
     {n : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
@@ -24316,7 +24316,7 @@ theorem integral_barPartialCoordinate_coverAngularSmoothPartition_mul_lift_eq_ze
         hI]
     _ = 0 := by rw [hz₀, hz₁]; norm_num
 
-theorem conj_holomorphicCoordinate_real
+lemma conj_holomorphicCoordinate_real
     {n : ℕ}
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (hψ : Differentiable ℝ ψ)
@@ -24333,7 +24333,7 @@ theorem conj_holomorphicCoordinate_real
     Complex.conj_ofReal, map_ofNat]
   ring
 
-theorem conj_barPartialCoordinate_real
+lemma conj_barPartialCoordinate_real
     {n : ℕ}
     {ψ : TorusCharacters.LogSpace n → ℝ}
     (hψ : Differentiable ℝ ψ)
@@ -24344,7 +24344,7 @@ theorem conj_barPartialCoordinate_real
   have h := congrArg conj (conj_holomorphicCoordinate_real hψ z j)
   simpa using h.symm
 
-theorem directionalDerivative_periodic
+lemma directionalDerivative_periodic
     {n : ℕ}
     (F : TorusCharacters.LogSpace n → ℂ)
     (hperiod : ∀ q : Fin n → ℤ,
@@ -24370,7 +24370,7 @@ def torusDirectionalDerivativeRepresentative
     (fun z : TorusCharacters.LogSpace n =>
       (fderiv ℝ F z) v)
 
-theorem tsupport_torusDirectionalDerivativeRepresentative_subset
+lemma tsupport_torusDirectionalDerivativeRepresentative_subset
     {n : ℕ}
     (F : TorusCharacters.LogSpace n → ℂ)
     (hperiod : ∀ q : Fin n → ℤ,
@@ -24423,7 +24423,7 @@ theorem tsupport_torusDirectionalDerivativeRepresentative_subset
   rw [hrep, hderzero]
   simp
 
-theorem hasCompactSupport_torusDirectionalDerivativeRepresentative
+lemma hasCompactSupport_torusDirectionalDerivativeRepresentative
     {n : ℕ}
     (F : TorusCharacters.LogSpace n → ℂ)
     (hperiod : ∀ q : Fin n → ℤ,
@@ -24451,7 +24451,7 @@ def sourceTorusHolomorphicDerivative
   torusScalarRepresentative
     (fun z => holomorphicCoordinate F z j)
 
-theorem continuous_sourceTorusBarPartial
+lemma continuous_sourceTorusBarPartial
     {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : ContDiff ℝ 2 F)
@@ -24466,7 +24466,7 @@ theorem continuous_sourceTorusBarPartial
       (hF.of_le (by norm_num)) j)
     (fun q => barPartialCoordinate_periodic F hperiod j q)
 
-theorem hasCompactSupport_sourceTorusBarPartial
+lemma hasCompactSupport_sourceTorusBarPartial
     {n : ℕ}
     (F : TorusCharacters.LogSpace n → ℂ)
     (hperiod : ∀ q : Fin n → ℤ,
@@ -24512,7 +24512,7 @@ theorem hasCompactSupport_sourceTorusBarPartial
   rw [hfunction] at hp
   exact hp
 
-theorem hasCompactSupport_sourceTorusHolomorphicDerivative
+lemma hasCompactSupport_sourceTorusHolomorphicDerivative
     {n : ℕ}
     (F : TorusCharacters.LogSpace n → ℂ)
     (hperiod : ∀ q : Fin n → ℤ,
@@ -24558,7 +24558,7 @@ theorem hasCompactSupport_sourceTorusHolomorphicDerivative
   rw [hfunction] at hp
   exact hp
 
-theorem hasCompactSupport_sourceTorusConj
+lemma hasCompactSupport_sourceTorusConj
     {n : ℕ}
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
     (hf : HasCompactSupport f) :
@@ -24598,7 +24598,7 @@ def sourceTorusFormExteriorDerivativeDensity
         (sourceTorusBarPartial (fun z => W z i) j p -
           sourceTorusBarPartial (fun z => W z j) i p)) / 2
 
-theorem sourceTorusFormExterior_add_mixed_eq_full
+lemma sourceTorusFormExterior_add_mixed_eq_full
     {n : ℕ}
     (W : TorusCharacters.LogSpace n → Fin n → ℂ)
     (p : WeightedTorusHilbert.LogTorus n) :
@@ -24624,13 +24624,13 @@ def sourceCoverRadialLinear (n : ℕ) :
     (Space n) (Space n)).comp
     (logarithmicCoordinatesEquiv n).symm.toContinuousLinearMap
 
-@[simp] theorem sourceCoverRadialLinear_apply
+@[simp] lemma sourceCoverRadialLinear_apply
     {n : ℕ} (z : TorusCharacters.LogSpace n)
     (i : Fin n) :
     sourceCoverRadialLinear n z i = 2 * (z i).re := by
   rfl
 
-theorem sourceCoverRadialLinear_single_one
+lemma sourceCoverRadialLinear_single_one
     {n : ℕ} (j : Fin n) :
     sourceCoverRadialLinear n (Pi.single j (1 : ℂ)) =
       (2 : ℝ) • (Pi.single j (1 : ℝ) : Space n) := by
@@ -24640,7 +24640,7 @@ theorem sourceCoverRadialLinear_single_one
     simp [sourceCoverRadialLinear_apply]
   · simp [sourceCoverRadialLinear_apply, h]
 
-theorem sourceCoverRadialLinear_single_I
+lemma sourceCoverRadialLinear_single_I
     {n : ℕ} (j : Fin n) :
     sourceCoverRadialLinear n (Pi.single j Complex.I) = 0 := by
   funext i
@@ -24649,7 +24649,7 @@ theorem sourceCoverRadialLinear_single_I
     simp [sourceCoverRadialLinear_apply]
   · simp [sourceCoverRadialLinear_apply, h]
 
-theorem fderiv_sourceCoverRadialComp_apply
+lemma fderiv_sourceCoverRadialComp_apply
     {n : ℕ}
     {ψ : Space n → ℝ}
     (hψ : Differentiable ℝ ψ)
@@ -24666,7 +24666,7 @@ theorem fderiv_sourceCoverRadialComp_apply
     hd.fderiv
   simpa [Function.comp_def, ContinuousLinearMap.comp_apply] using hp
 
-theorem fderiv_matrixSourceCoverPotential_apply
+lemma fderiv_matrixSourceCoverPotential_apply
     {n : ℕ}
     {φ : Space n → ℝ}
     (hφ : Differentiable ℝ φ)
@@ -24676,7 +24676,7 @@ theorem fderiv_matrixSourceCoverPotential_apply
         (sourceCoverRadialLinear n v) := by
   exact fderiv_sourceCoverRadialComp_apply hφ z v
 
-theorem holomorphicCoordinate_matrixSourceCoverPotential
+lemma holomorphicCoordinate_matrixSourceCoverPotential
     {n : ℕ}
     {φ : Space n → ℝ}
     (hφ : Differentiable ℝ φ)
@@ -24700,7 +24700,7 @@ theorem holomorphicCoordinate_matrixSourceCoverPotential
     sourceCoverRadialLinear_single_I]
   simp
 
-theorem contDiff_sourceRealDirectional
+lemma contDiff_sourceRealDirectional
     {n : ℕ}
     {φ : Space n → ℝ}
     (hφ : ContDiff ℝ 2 φ)
@@ -24714,7 +24714,7 @@ theorem contDiff_sourceRealDirectional
     hφ.contDiff_fderiv_apply (by norm_num)
   exact hp.comp (contDiff_id.prodMk contDiff_const)
 
-theorem barPartialCoordinate_sourceCoverRadialComp
+lemma barPartialCoordinate_sourceCoverRadialComp
     {n : ℕ}
     {ψ : Space n → ℝ}
     (hψ : Differentiable ℝ ψ)
@@ -24740,7 +24740,7 @@ theorem barPartialCoordinate_sourceCoverRadialComp
     sourceCoverRadialLinear_single_I]
   simp
 
-theorem complexHessian_matrixSourceCoverPotential_eq_real_transpose
+lemma complexHessian_matrixSourceCoverPotential_eq_real_transpose
     {n : ℕ}
     {φ : Space n → ℝ}
     (hφ : ContDiff ℝ 2 φ)
@@ -24781,7 +24781,7 @@ theorem complexHessian_matrixSourceCoverPotential_eq_real_transpose
   rw [LinearMap.toMatrix₂'_apply]
   rfl
 
-theorem sourceMatrixHessian_entry_symm
+lemma sourceMatrixHessian_entry_symm
     {n : ℕ}
     {φ : Space n → ℝ}
     (hφ : ContDiff ℝ 2 φ)
@@ -24802,7 +24802,7 @@ theorem sourceMatrixHessian_entry_symm
     (by norm_num)).eq (Pi.single i (1 : ℝ))
       (Pi.single j (1 : ℝ))
 
-theorem complexHessian_matrixSourceCoverPotential_eq_real
+lemma complexHessian_matrixSourceCoverPotential_eq_real
     {n : ℕ}
     {φ : Space n → ℝ}
     (hφ : ContDiff ℝ 2 φ)
@@ -24816,7 +24816,7 @@ theorem complexHessian_matrixSourceCoverPotential_eq_real
     sourceMatrixHessian_entry_symm hφ
       (sourceCoverRadialLinear n z) j i]
 
-theorem sourceTorusFormFullDerivativeDensity_re_nonneg
+lemma sourceTorusFormFullDerivativeDensity_re_nonneg
     {n : ℕ}
     (W : TorusCharacters.LogSpace n → Fin n → ℂ)
     (p : WeightedTorusHilbert.LogTorus n) :
@@ -24845,7 +24845,7 @@ def sourceCoverRadialCutoff {n : ℕ} (m : ℕ)
     (z : TorusCharacters.LogSpace n) : ℝ :=
   growingBump m (sourceCoverRadialLinear n z)
 
-theorem sourceRadialCutoff_hasCompactSupport
+lemma sourceRadialCutoff_hasCompactSupport
     {n : ℕ} (m : ℕ) :
     HasCompactSupport (sourceRadialCutoff (n := n) m) := by
   let K : Set (WeightedTorusHilbert.LogTorus n) :=
@@ -24864,19 +24864,19 @@ theorem sourceRadialCutoff_hasCompactSupport
   change growingBump m p.1 = 0
   exact image_eq_zero_of_notMem_tsupport hrad
 
-theorem sourceRadialCutoff_eventually_one
+lemma sourceRadialCutoff_eventually_one
     {n : ℕ}
     (p : WeightedTorusHilbert.LogTorus n) :
     ∀ᶠ m : ℕ in atTop, sourceRadialCutoff m p = 1 :=
   growingBump_eventually_one p.1
 
-theorem contDiff_sourceCoverRadialCutoff
+lemma contDiff_sourceCoverRadialCutoff
     {n : ℕ} (m : ℕ) :
     ContDiff ℝ 2 (sourceCoverRadialCutoff (n := n) m) := by
   exact (growingBump (n := n) m).contDiff.comp
     (sourceCoverRadialLinear n).contDiff
 
-theorem sourceCoverRadialLinear_imaginaryShift
+lemma sourceCoverRadialLinear_imaginaryShift
     {n : ℕ}
     (z : TorusCharacters.LogSpace n)
     (q : Fin n → ℤ) :
@@ -24887,7 +24887,7 @@ theorem sourceCoverRadialLinear_imaginaryShift
   simp [sourceCoverRadialLinear_apply,
     TorusCharacters.imaginaryShift, Complex.mul_re]
 
-theorem sourceCoverRadialCutoff_periodic
+lemma sourceCoverRadialCutoff_periodic
     {n : ℕ} (m : ℕ) (q : Fin n → ℤ) :
     Function.Periodic (sourceCoverRadialCutoff (n := n) m)
       (TorusCharacters.imaginaryShift q) := by
@@ -24909,7 +24909,7 @@ def complexSourceCoverRadialCutoff {n : ℕ} (m : ℕ)
     (z : TorusCharacters.LogSpace n) : ℂ :=
   (sourceCoverRadialCutoff m z : ℂ)
 
-theorem contDiff_complexSourceCoverRadialCutoff
+lemma contDiff_complexSourceCoverRadialCutoff
     {n : ℕ} (m : ℕ) :
     ContDiff ℝ 2 (complexSourceCoverRadialCutoff (n := n) m) := by
   change ContDiff ℝ 2
@@ -24917,7 +24917,7 @@ theorem contDiff_complexSourceCoverRadialCutoff
   exact Complex.ofRealCLM.contDiff.comp
     (contDiff_sourceCoverRadialCutoff m)
 
-theorem complexSourceCoverRadialCutoff_periodic
+lemma complexSourceCoverRadialCutoff_periodic
     {n : ℕ} (m : ℕ) (q : Fin n → ℤ) :
     Function.Periodic (complexSourceCoverRadialCutoff (n := n) m)
       (TorusCharacters.imaginaryShift q) := by
@@ -24925,7 +24925,7 @@ theorem complexSourceCoverRadialCutoff_periodic
   exact congrArg Complex.ofReal
     (sourceCoverRadialCutoff_periodic m q z)
 
-theorem torusScalarRepresentative_complexSourceCoverRadialCutoff
+lemma torusScalarRepresentative_complexSourceCoverRadialCutoff
     {n : ℕ} (m : ℕ)
     (p : WeightedTorusHilbert.LogTorus n) :
     torusScalarRepresentative
@@ -24940,7 +24940,7 @@ theorem torusScalarRepresentative_complexSourceCoverRadialCutoff
   simp [sourceCoverRadialLinear_apply, Complex.mul_re]
   ring
 
-theorem complexSourceRadialCutoff_hasCompactSupport
+lemma complexSourceRadialCutoff_hasCompactSupport
     {n : ℕ} (m : ℕ) :
     HasCompactSupport
       (fun p : WeightedTorusHilbert.LogTorus n =>
@@ -24960,7 +24960,7 @@ def cutoffPhysicalField {n : ℕ} (m : ℕ)
     TorusCharacters.LogSpace n :=
   fun i => complexSourceCoverRadialCutoff m z * W z i
 
-theorem contDiff_cutoffPhysicalField {n : ℕ} (m : ℕ)
+lemma contDiff_cutoffPhysicalField {n : ℕ} (m : ℕ)
     {W : TorusCharacters.LogSpace n →
       TorusCharacters.LogSpace n}
     (hW : ContDiff ℝ 2 W) :
@@ -24970,7 +24970,7 @@ theorem contDiff_cutoffPhysicalField {n : ℕ} (m : ℕ)
   exact (contDiff_complexSourceCoverRadialCutoff m).mul
     (contDiff_pi.mp hW i)
 
-theorem cutoffPhysicalField_periodic {n : ℕ} (m : ℕ)
+lemma cutoffPhysicalField_periodic {n : ℕ} (m : ℕ)
     {W : TorusCharacters.LogSpace n →
       TorusCharacters.LogSpace n}
     (hW : ∀ q : Fin n → ℤ,
@@ -24985,7 +24985,7 @@ theorem cutoffPhysicalField_periodic {n : ℕ} (m : ℕ)
   rw [complexSourceCoverRadialCutoff_periodic m q z,
     congrFun (hW q z) i]
 
-theorem torusScalarRepresentative_cutoffPhysicalField
+lemma torusScalarRepresentative_cutoffPhysicalField
     {n : ℕ} (m : ℕ)
     (W : TorusCharacters.LogSpace n →
       TorusCharacters.LogSpace n)
@@ -24998,7 +24998,7 @@ theorem torusScalarRepresentative_cutoffPhysicalField
   rw [← torusScalarRepresentative_complexSourceCoverRadialCutoff m p]
   rfl
 
-theorem cutoffPhysicalField_coordinate_hasCompactSupport
+lemma cutoffPhysicalField_coordinate_hasCompactSupport
     {n : ℕ} (m : ℕ)
     (W : TorusCharacters.LogSpace n →
       TorusCharacters.LogSpace n)
@@ -25020,7 +25020,7 @@ theorem cutoffPhysicalField_coordinate_hasCompactSupport
   rw [hfunction]
   exact hcompact
 
-theorem torusFormRepresentative_cutoffPhysicalField
+lemma torusFormRepresentative_cutoffPhysicalField
     {n : ℕ} (m : ℕ)
     (W : TorusCharacters.LogSpace n →
       TorusCharacters.LogSpace n)
@@ -25035,7 +25035,7 @@ theorem torusFormRepresentative_cutoffPhysicalField
         torusScalarRepresentative (fun z => W z i) p
   exact torusScalarRepresentative_cutoffPhysicalField m W i p
 
-theorem continuous_torusFormRepresentative_of_smooth_periodic
+lemma continuous_torusFormRepresentative_of_smooth_periodic
     {n : ℕ}
     {W : TorusCharacters.LogSpace n →
       TorusCharacters.LogSpace n}
@@ -25060,25 +25060,25 @@ theorem continuous_torusFormRepresentative_of_smooth_periodic
     (fun _ : Fin n => ℂ)).comp
       (continuous_pi hcoordinate)
 
-theorem continuous_sourceRadialCutoff
+lemma continuous_sourceRadialCutoff
     {n : ℕ} (m : ℕ) :
     Continuous (sourceRadialCutoff (n := n) m) := by
   exact ((growingBump (n := n) m).contDiff
     (n := 2)).continuous.comp continuous_fst
 
-theorem sourceRadialCutoff_nonneg
+lemma sourceRadialCutoff_nonneg
     {n : ℕ} (m : ℕ)
     (p : WeightedTorusHilbert.LogTorus n) :
     0 ≤ sourceRadialCutoff m p :=
   (growingBump (n := n) m).nonneg
 
-theorem sourceRadialCutoff_le_one
+lemma sourceRadialCutoff_le_one
     {n : ℕ} (m : ℕ)
     (p : WeightedTorusHilbert.LogTorus n) :
     sourceRadialCutoff m p ≤ 1 :=
   (growingBump (n := n) m).le_one
 
-theorem complexLp_norm_sq_eq_integral
+lemma complexLp_norm_sq_eq_integral
     {X : Type*} [MeasurableSpace X]
     {μ : Measure X}
     {E : Type*} [NormedAddCommGroup E]
@@ -25101,7 +25101,7 @@ theorem complexLp_norm_sq_eq_integral
       filter_upwards [] with x
       exact (norm_sq_eq_re_inner (f x)).symm
 
-theorem barPartialCoordinate_complexSourceCoverRadialCutoff
+lemma barPartialCoordinate_complexSourceCoverRadialCutoff
     {n : ℕ} (m : ℕ)
     (z : TorusCharacters.LogSpace n)
     (j : Fin n) :
@@ -25115,7 +25115,7 @@ theorem barPartialCoordinate_complexSourceCoverRadialCutoff
     (((growingBump (n := n) m).contDiff
       (n := 1)).differentiable (by norm_num)) z j
 
-theorem sourceTorusBarPartial_complexSourceCoverRadialCutoff
+lemma sourceTorusBarPartial_complexSourceCoverRadialCutoff
     {n : ℕ} (m : ℕ)
     (j : Fin n)
     (p : WeightedTorusHilbert.LogTorus n) :
@@ -25147,7 +25147,7 @@ theorem sourceTorusBarPartial_complexSourceCoverRadialCutoff
     ring
   rw [hrad]
 
-theorem torusScalarRepresentative_mul
+lemma torusScalarRepresentative_mul
     {n : ℕ}
     (F G : TorusCharacters.LogSpace n → ℂ)
     (p : WeightedTorusHilbert.LogTorus n) :
@@ -25156,7 +25156,7 @@ theorem torusScalarRepresentative_mul
         torusScalarRepresentative G p := by
   rfl
 
-theorem torusScalarRepresentative_add
+lemma torusScalarRepresentative_add
     {n : ℕ}
     (F G : TorusCharacters.LogSpace n → ℂ)
     (p : WeightedTorusHilbert.LogTorus n) :
@@ -25165,7 +25165,7 @@ theorem torusScalarRepresentative_add
         torusScalarRepresentative G p := by
   rfl
 
-theorem sourceTorusBarPartial_cutoffPhysicalField
+lemma sourceTorusBarPartial_cutoffPhysicalField
     {n : ℕ} (m : ℕ)
     {W : TorusCharacters.LogSpace n →
       TorusCharacters.LogSpace n}
@@ -25223,7 +25223,7 @@ def complexEuclideanOuterProduct
     EuclideanSpace ℂ (ι × κ) :=
   WithLp.toLp 2 (fun ij : ι × κ => v ij.1 * w ij.2)
 
-theorem complexEuclideanOuterProduct_norm
+lemma complexEuclideanOuterProduct_norm
     {ι κ : Type*} [Fintype ι] [Fintype κ]
     (v : EuclideanSpace ℂ ι)
     (w : EuclideanSpace ℂ κ) :
@@ -25258,7 +25258,7 @@ def sourceCutoffBarGradient {n : ℕ} (m : ℕ)
     sourceTorusBarPartial
       (complexSourceCoverRadialCutoff m) j p)
 
-theorem sourceCutoffBarGradient_norm_eq
+lemma sourceCutoffBarGradient_norm_eq
     {n : ℕ} (m : ℕ)
     (p : WeightedTorusHilbert.LogTorus n) :
     ‖sourceCutoffBarGradient m p‖ =
@@ -25278,7 +25278,7 @@ theorem sourceCutoffBarGradient_norm_eq
   rw [sourceTorusBarPartial_complexSourceCoverRadialCutoff,
     Complex.norm_real]
 
-theorem sourceCutoffBarGradient_norm_le
+lemma sourceCutoffBarGradient_norm_le
     {n : ℕ} {C : ℝ}
     (hC : ∀ x : Space n,
       ‖euclideanGradient
@@ -25300,7 +25300,7 @@ def sourceCutoffDerivativeCommutator {n : ℕ} (m : ℕ)
       sourceTorusBarPartial
         (complexSourceCoverRadialCutoff m) ij.2 p)
 
-theorem sourceCutoffDerivativeCommutator_eq_outerProduct
+lemma sourceCutoffDerivativeCommutator_eq_outerProduct
     {n : ℕ} (m : ℕ)
     (W : TorusCharacters.LogSpace n →
       TorusCharacters.LogSpace n)
@@ -25312,7 +25312,7 @@ theorem sourceCutoffDerivativeCommutator_eq_outerProduct
   ext ij
   rfl
 
-theorem continuous_sourceCutoffBarGradient
+lemma continuous_sourceCutoffBarGradient
     {n : ℕ} (m : ℕ) :
     Continuous (sourceCutoffBarGradient (n := n) m) := by
   change Continuous
@@ -25328,7 +25328,7 @@ theorem continuous_sourceCutoffBarGradient
     (contDiff_complexSourceCoverRadialCutoff m)
     (complexSourceCoverRadialCutoff_periodic m) j
 
-theorem continuous_sourceCutoffDerivativeCommutator
+lemma continuous_sourceCutoffDerivativeCommutator
     {n : ℕ} (m : ℕ)
     {W : TorusCharacters.LogSpace n →
       TorusCharacters.LogSpace n}
@@ -25354,7 +25354,7 @@ theorem continuous_sourceCutoffDerivativeCommutator
     (contDiff_complexSourceCoverRadialCutoff m)
     (complexSourceCoverRadialCutoff_periodic m) ij.2
 
-theorem complexLp_norm_le_of_ae_norm_le
+lemma complexLp_norm_le_of_ae_norm_le
     {X : Type*} [MeasurableSpace X]
     {μ : Measure X}
     {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
@@ -25399,17 +25399,17 @@ def angularWeightedTorusMeasure {n : ℕ}
   (sourceTorusBaseMeasure n).withDensity
     (fun p => ENNReal.ofReal (angularWeightedTorusDensity a p))
 
-theorem angularWeightedTorusDensity_pos {n : ℕ}
+lemma angularWeightedTorusDensity_pos {n : ℕ}
     (a : LogTorus n → ℝ) (p : LogTorus n) :
     0 < angularWeightedTorusDensity a p :=
   Real.exp_pos _
 
-theorem continuous_angularWeightedTorusDensity {n : ℕ}
+lemma continuous_angularWeightedTorusDensity {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a) :
     Continuous (angularWeightedTorusDensity a) :=
   Real.continuous_exp.comp ha.neg
 
-theorem angularWeightedTorusMeasure_isLocallyFinite {n : ℕ}
+lemma angularWeightedTorusMeasure_isLocallyFinite {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a) :
     IsLocallyFiniteMeasure (angularWeightedTorusMeasure a) := by
   let : IsLocallyFiniteMeasure (sourceTorusBaseMeasure n) := by
@@ -25423,7 +25423,7 @@ def angularCoverPotential {n : ℕ}
     TorusCharacters.LogSpace n → ℝ :=
   fun z => a (complexTorusCoverProjection n z)
 
-theorem angularCoverPotential_periodic {n : ℕ}
+lemma angularCoverPotential_periodic {n : ℕ}
     (a : LogTorus n → ℝ) (q : Fin n → ℤ) :
     Function.Periodic (angularCoverPotential a)
       (TorusCharacters.imaginaryShift q) := by
@@ -25431,7 +25431,7 @@ theorem angularCoverPotential_periodic {n : ℕ}
   simp [angularCoverPotential,
     complexTorusCoverProjection_imaginaryShift]
 
-theorem continuous_angularCoverPotential {n : ℕ}
+lemma continuous_angularCoverPotential {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a) :
     Continuous (angularCoverPotential a) :=
   ha.comp (continuous_complexTorusCoverProjection n)
@@ -25485,7 +25485,7 @@ def angularDolbeaultGraph {n : ℕ}
     Submodule ℂ (angularDolbeaultGraphAmbient a) :=
   (Submodule.span ℂ (smoothAngularDolbeaultGraphSet a)).topologicalClosure
 
-theorem angularDolbeaultGraph_isClosed {n : ℕ}
+lemma angularDolbeaultGraph_isClosed {n : ℕ}
     (a : LogTorus n → ℝ) :
     IsClosed (angularDolbeaultGraph a :
       Set (angularDolbeaultGraphAmbient a)) :=
@@ -25497,7 +25497,7 @@ instance angularDolbeaultGraph_completeSpace {n : ℕ}
     CompleteSpace (angularDolbeaultGraph a) :=
   (angularDolbeaultGraph_isClosed a).completeSpace_coe
 
-theorem smoothAngularDolbeaultGraph_mem {n : ℕ}
+lemma smoothAngularDolbeaultGraph_mem {n : ℕ}
     (a : LogTorus n → ℝ)
     (F : TorusCharacters.LogSpace n → ℂ)
     (hcont : ContDiff ℝ 3 F)
@@ -25524,7 +25524,7 @@ def angularWeakDolbeaultResolvent {n : ℕ}
   (angularDolbeaultGraph a).orthogonalProjectionOnto
     (WithLp.toLp 2 (f, (0 : angularWeightedFormL2 a)))
 
-theorem angularWeakDolbeaultResolvent_moment {n : ℕ}
+lemma angularWeakDolbeaultResolvent_moment {n : ℕ}
     (a : LogTorus n → ℝ)
     (f : angularWeightedScalarL2 a)
     (v : angularDolbeaultGraph a) :
@@ -25537,7 +25537,7 @@ theorem angularWeakDolbeaultResolvent_moment {n : ℕ}
     (WithLp.toLp 2 (f, (0 : angularWeightedFormL2 a)))
     (v : angularDolbeaultGraphAmbient a) v.property
 
-theorem angularWeakDolbeaultResolvent_moment_components {n : ℕ}
+lemma angularWeakDolbeaultResolvent_moment_components {n : ℕ}
     (a : LogTorus n → ℝ)
     (f : angularWeightedScalarL2 a)
     (v : angularDolbeaultGraph a) :
@@ -25556,7 +25556,7 @@ theorem angularWeakDolbeaultResolvent_moment_components {n : ℕ}
   simp only [WithLp.prod_inner_apply, inner_zero_left, add_zero] at h
   exact (sub_eq_zero.mp h).symm
 
-theorem angularWeakDolbeaultResolvent_form_adjoint {n : ℕ}
+lemma angularWeakDolbeaultResolvent_form_adjoint {n : ℕ}
     (a : LogTorus n → ℝ)
     (f : angularWeightedScalarL2 a)
     (v : angularDolbeaultGraph a) :
@@ -25584,13 +25584,13 @@ open WeightedTorusDolbeault
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   Topology ContDiff
 
-theorem zeroSourceCoverWeightedMeasure {n : ℕ} :
+lemma zeroSourceCoverWeightedMeasure {n : ℕ} :
     coverWeightedMeasure
       (matrixSourceCoverPotential (fun _ : Space n => (0 : ℝ))) =
         (volume : Measure (TorusCharacters.LogSpace n)) := by
   simp [coverWeightedMeasure, coverWeight, matrixSourceCoverPotential]
 
-theorem zeroSourceWeightedTorusMeasure {n : ℕ} :
+lemma zeroSourceWeightedTorusMeasure {n : ℕ} :
     weightedTorusMeasure 1 (fun _ : Space n => (0 : ℝ)) =
       sourceTorusBaseMeasure n := by
   rw [weightedTorusMeasure_eq_withDensity 1 continuous_const]
@@ -25601,20 +25601,20 @@ def angularUnweightedTorusIntegrand {n : ℕ}
     (p : LogTorus n) : ℂ :=
   (angularWeightedTorusDensity a p : ℂ) * f p
 
-theorem continuous_angularUnweightedTorusIntegrand {n : ℕ}
+lemma continuous_angularUnweightedTorusIntegrand {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a)
     {f : LogTorus n → ℂ} (hf : Continuous f) :
     Continuous (angularUnweightedTorusIntegrand a f) :=
   (Complex.continuous_ofReal.comp
     (continuous_angularWeightedTorusDensity ha)).mul hf
 
-theorem hasCompactSupport_angularUnweightedTorusIntegrand {n : ℕ}
+lemma hasCompactSupport_angularUnweightedTorusIntegrand {n : ℕ}
     (a : LogTorus n → ℝ)
     {f : LogTorus n → ℂ} (hf : HasCompactSupport f) :
     HasCompactSupport (angularUnweightedTorusIntegrand a f) :=
   hf.mul_left
 
-theorem integral_angularUnweightedTorusIntegrand_eq_weighted
+lemma integral_angularUnweightedTorusIntegrand_eq_weighted
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (f : LogTorus n → ℂ) :
     (∫ p : LogTorus n,
@@ -25635,7 +25635,7 @@ theorem integral_angularUnweightedTorusIntegrand_eq_weighted
     angularWeightedTorusDensity, Complex.real_smul,
     ENNReal.toReal_ofReal (Real.exp_pos _).le]
 
-theorem angular_partitioned_coverWeighted_integral_eq_torus
+lemma angular_partitioned_coverWeighted_integral_eq_torus
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     {f : LogTorus n → ℂ} (hf : Continuous f)
     (hfc : HasCompactSupport f) :
@@ -25677,7 +25677,7 @@ theorem angular_partitioned_coverWeighted_integral_eq_torus
     _ = _ := integral_angularUnweightedTorusIntegrand_eq_weighted
       ha f
 
-theorem angular_integral_holomorphic_coverAngularSmoothPartition_eq_zero
+lemma angular_integral_holomorphic_coverAngularSmoothPartition_eq_zero
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     {f : LogTorus n → ℂ} (hf : Continuous f)
     (hfc : HasCompactSupport f) (j : Fin n) :
@@ -25712,7 +25712,7 @@ theorem angular_integral_holomorphic_coverAngularSmoothPartition_eq_zero
       ring
     _ = 0 := hz
 
-theorem angular_integral_barPartial_coverAngularSmoothPartition_eq_zero
+lemma angular_integral_barPartial_coverAngularSmoothPartition_eq_zero
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     {f : LogTorus n → ℂ} (hf : Continuous f)
     (hfc : HasCompactSupport f) (j : Fin n) :
@@ -25747,7 +25747,7 @@ theorem angular_integral_barPartial_coverAngularSmoothPartition_eq_zero
       ring
     _ = 0 := hz
 
-theorem complexAngularCoverPotential_periodic {n : ℕ}
+lemma complexAngularCoverPotential_periodic {n : ℕ}
     (a : LogTorus n → ℝ) (q : Fin n → ℤ) :
     Function.Periodic
       (fun z : TorusCharacters.LogSpace n =>
@@ -25760,7 +25760,7 @@ theorem complexAngularCoverPotential_periodic {n : ℕ}
       (angularCoverPotential a z : ℂ)
   rw [angularCoverPotential_periodic a q z]
 
-theorem angularWeightedHolomorphicDerivative_periodic {n : ℕ}
+lemma angularWeightedHolomorphicDerivative_periodic {n : ℕ}
     (a : LogTorus n → ℝ)
     (F : TorusCharacters.LogSpace n → ℂ)
     (hperiod : ∀ q : Fin n → ℤ,
@@ -25790,7 +25790,7 @@ theorem angularWeightedHolomorphicDerivative_periodic {n : ℕ}
   unfold weightedHolomorphicDerivative
   rw [hFhol, hperiod q z, hahol]
 
-theorem angularComplexHessian_periodic {n : ℕ}
+lemma angularComplexHessian_periodic {n : ℕ}
     (a : LogTorus n → ℝ) (i j : Fin n) (q : Fin n → ℤ) :
     Function.Periodic
       (fun z : TorusCharacters.LogSpace n =>
@@ -25820,7 +25820,7 @@ def angularTorusComplexHessian {n : ℕ}
   torusScalarRepresentative
     (fun z => complexHessian (angularCoverPotential a) z i j)
 
-theorem continuous_angularTorusWeightedHolomorphicDerivative {n : ℕ}
+lemma continuous_angularTorusWeightedHolomorphicDerivative {n : ℕ}
     {a : LogTorus n → ℝ}
     (ha : ContDiff ℝ 2 (angularCoverPotential a))
     {F : TorusCharacters.LogSpace n → ℂ}
@@ -25837,7 +25837,7 @@ theorem continuous_angularTorusWeightedHolomorphicDerivative {n : ℕ}
     (fun q => angularWeightedHolomorphicDerivative_periodic
       a F hperiod j q)
 
-theorem continuous_angularTorusComplexHessian {n : ℕ}
+lemma continuous_angularTorusComplexHessian {n : ℕ}
     {a : LogTorus n → ℝ}
     (ha : ContDiff ℝ 2 (angularCoverPotential a))
     (i j : Fin n) :
@@ -25847,7 +25847,7 @@ theorem continuous_angularTorusComplexHessian {n : ℕ}
     (continuous_complexHessian ha i j)
     (fun q => angularComplexHessian_periodic a i j q)
 
-theorem hasCompactSupport_angularTorusWeightedHolomorphicDerivative
+lemma hasCompactSupport_angularTorusWeightedHolomorphicDerivative
     {n : ℕ} (a : LogTorus n → ℝ)
     (F : TorusCharacters.LogSpace n → ℂ)
     (hperiod : ∀ q : Fin n → ℤ,
@@ -25882,7 +25882,7 @@ theorem hasCompactSupport_angularTorusWeightedHolomorphicDerivative
   rw [hfunction] at hs
   exact hs
 
-theorem integrable_angularSourceAngularDerivativeLift {n : ℕ}
+lemma integrable_angularSourceAngularDerivativeLift {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a)
     {f : LogTorus n → ℂ} (hf : Continuous f)
     (hfc : HasCompactSupport f)
@@ -25894,7 +25894,7 @@ theorem integrable_angularSourceAngularDerivativeLift {n : ℕ}
     (continuous_sourceAngularDerivativeLift hf v)
     (hasCompactSupport_sourceAngularDerivativeLift hfc v)
 
-theorem integrable_angularHolomorphicPartitionDerivativeLift {n : ℕ}
+lemma integrable_angularHolomorphicPartitionDerivativeLift {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a)
     {f : LogTorus n → ℂ} (hf : Continuous f)
     (hfc : HasCompactSupport f) (j : Fin n) :
@@ -25934,7 +25934,7 @@ theorem integrable_angularHolomorphicPartitionDerivativeLift {n : ℕ}
   dsimp [d₀, d₁, sourceAngularDerivativeLift]
   ring
 
-theorem integrable_angularBarPartialPartitionDerivativeLift {n : ℕ}
+lemma integrable_angularBarPartialPartitionDerivativeLift {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a)
     {f : LogTorus n → ℂ} (hf : Continuous f)
     (hfc : HasCompactSupport f) (j : Fin n) :
@@ -25974,7 +25974,7 @@ theorem integrable_angularBarPartialPartitionDerivativeLift {n : ℕ}
   dsimp [d₀, d₁, sourceAngularDerivativeLift]
   ring
 
-theorem angularTorus_weighted_complex_bochner_coordinate_identity
+lemma angularTorus_weighted_complex_bochner_coordinate_identity
     {n : ℕ} {a : LogTorus n → ℝ}
     {F G : TorusCharacters.LogSpace n → ℂ}
     (ha : Continuous a)
@@ -26325,7 +26325,7 @@ def angularTorusFormCurvatureDensity {n : ℕ}
       angularTorusComplexHessian a i j p) *
         conj (torusScalarRepresentative (fun z => W z j) p)
 
-theorem integrable_angularTorusWeightedHolomorphic_pair
+lemma integrable_angularTorusWeightedHolomorphic_pair
     {n : ℕ} {a : LogTorus n → ℝ}
     {F G : TorusCharacters.LogSpace n → ℂ}
     (ha : Continuous a)
@@ -26354,7 +26354,7 @@ theorem integrable_angularTorusWeightedHolomorphic_pair
     (hasCompactSupport_angularTorusWeightedHolomorphicDerivative
       a G hGp hGc j)).mul_left
 
-theorem integrable_angularTorusBarPartial_pair
+lemma integrable_angularTorusBarPartial_pair
     {n : ℕ} {a : LogTorus n → ℝ}
     {F G : TorusCharacters.LogSpace n → ℂ}
     (ha : Continuous a)
@@ -26379,7 +26379,7 @@ theorem integrable_angularTorusBarPartial_pair
   exact (hasCompactSupport_sourceTorusConj
     (hasCompactSupport_sourceTorusBarPartial G hGp hGc j)).mul_left
 
-theorem integrable_angularTorusComplexHessian_pair
+lemma integrable_angularTorusComplexHessian_pair
     {n : ℕ} {a : LogTorus n → ℝ}
     {F G : TorusCharacters.LogSpace n → ℂ}
     (ha : Continuous a)
@@ -26408,7 +26408,7 @@ theorem integrable_angularTorusComplexHessian_pair
     (Complex.continuous_conj.comp hGc')).integrable_of_hasCompactSupport
   exact (hasCompactSupport_sourceTorusConj hGc).mul_left
 
-theorem angularTorus_weighted_complex_bochner_form_coordinate_sum
+lemma angularTorus_weighted_complex_bochner_form_coordinate_sum
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : TorusCharacters.LogSpace n → Fin n → ℂ)
     (ha : Continuous a)
@@ -26441,7 +26441,7 @@ theorem angularTorus_weighted_complex_bochner_form_coordinate_sum
   exact angularTorus_weighted_complex_bochner_coordinate_identity
     ha ha2 (hW i) (hW j) (hWp i) (hWp j) (hWc j) i j
 
-theorem integral_angularTorusFormAdjoint_mul_conj_eq_coordinate_sum
+lemma integral_angularTorusFormAdjoint_mul_conj_eq_coordinate_sum
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : TorusCharacters.LogSpace n → Fin n → ℂ)
     (ha : Continuous a)
@@ -26509,7 +26509,7 @@ theorem integral_angularTorusFormAdjoint_mul_conj_eq_coordinate_sum
       exact MeasureTheory.integral_finsetSum Finset.univ
         (fun j _ => hp i j)
 
-theorem integral_angularTorusFormMixed_add_curvature_eq_coordinate_sum
+lemma integral_angularTorusFormMixed_add_curvature_eq_coordinate_sum
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : TorusCharacters.LogSpace n → Fin n → ℂ)
     (ha : Continuous a)
@@ -26585,7 +26585,7 @@ theorem integral_angularTorusFormMixed_add_curvature_eq_coordinate_sum
       exact MeasureTheory.integral_finsetSum Finset.univ
         (fun j _ => hp i j)
 
-theorem angularTorus_weighted_complex_bochner_form_cross_identity
+lemma angularTorus_weighted_complex_bochner_form_cross_identity
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : TorusCharacters.LogSpace n → Fin n → ℂ)
     (ha : Continuous a)
@@ -26628,7 +26628,7 @@ theorem angularTorus_weighted_complex_bochner_form_cross_identity
       (integral_angularTorusFormMixed_add_curvature_eq_coordinate_sum
         W ha ha2 hW hWp hWc).symm
 
-theorem integrable_angularTorusFormMixedDerivativeDensity
+lemma integrable_angularTorusFormMixedDerivativeDensity
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : TorusCharacters.LogSpace n → Fin n → ℂ)
     (ha : Continuous a)
@@ -26647,7 +26647,7 @@ theorem integrable_angularTorusFormMixedDerivativeDensity
         ha (hW i) (hW j)
         (hWp i) (hWp j) (hWc j) j i))
 
-theorem integrable_angularTorusFormCurvatureDensity
+lemma integrable_angularTorusFormCurvatureDensity
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : TorusCharacters.LogSpace n → Fin n → ℂ)
     (ha : Continuous a)
@@ -26667,7 +26667,7 @@ theorem integrable_angularTorusFormCurvatureDensity
         ha ha2 (hW i) (hW j)
         (hWp i) (hWp j) (hWc j) i j))
 
-theorem integrable_angularTorusFormFullDerivativeDensity
+lemma integrable_angularTorusFormFullDerivativeDensity
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : TorusCharacters.LogSpace n → Fin n → ℂ)
     (ha : Continuous a)
@@ -26686,7 +26686,7 @@ theorem integrable_angularTorusFormFullDerivativeDensity
         ha (hW i) (hW i)
         (hWp i) (hWp i) (hWc i) j j))
 
-theorem integrable_angularTorusFormExteriorDerivativeDensity
+lemma integrable_angularTorusFormExteriorDerivativeDensity
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : TorusCharacters.LogSpace n → Fin n → ℂ)
     (ha : Continuous a)
@@ -26711,7 +26711,7 @@ theorem integrable_angularTorusFormExteriorDerivativeDensity
         sourceTorusFormExteriorDerivativeDensity W p
   linear_combination -hp
 
-theorem angularTorus_weighted_complex_dolbeault_form_bochner_identity
+lemma angularTorus_weighted_complex_dolbeault_form_bochner_identity
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : TorusCharacters.LogSpace n → Fin n → ℂ)
     (ha : Continuous a)
@@ -26795,7 +26795,7 @@ open scoped BigOperators ContDiff Convolution ENNReal InnerProductSpace Topology
 open WeightedTorusHilbert WeightedTorusDistributionBridge WeightedTorusGraphWeakBridge
 open JointHolomorphicLaurentFourierCompatibility
 
-theorem angularFundamentalCell_set_measurable (n : ℕ) :
+lemma angularFundamentalCell_set_measurable (n : ℕ) :
     MeasurableSet
       {t : Space n |
         ∀ i : Fin n, t i ∈ Set.Ioc (0 : ℝ) ((0 : ℝ) + 1)} := by
@@ -26810,7 +26810,7 @@ def realFundamentalEmbedding (n : ℕ) :
       Space n × Space n :=
   fun p => (p.1, p.2.1)
 
-theorem realFundamentalEmbedding_measurePreserving (n : ℕ) :
+lemma realFundamentalEmbedding_measurePreserving (n : ℕ) :
     MeasurePreserving (realFundamentalEmbedding n)
       (unweightedFundamentalMeasure n)
       ((volume : Measure (Space n)).prod
@@ -26839,7 +26839,7 @@ theorem realFundamentalEmbedding_measurePreserving (n : ℕ) :
   exact (MeasurePreserving.id
     (volume : Measure (Space n))).prod hsub
 
-theorem unweightedTorus_representative_ae_of_complexCover
+lemma unweightedTorus_representative_ae_of_complexCover
     {n : ℕ}
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
     {F : TorusCharacters.LogSpace n → ℂ}
@@ -26916,7 +26916,7 @@ theorem unweightedTorus_representative_ae_of_complexCover
   rw [hangle] at hz
   exact hz.symm
 
-theorem weightedTorus_representative_ae_of_complexCover
+lemma weightedTorus_representative_ae_of_complexCover
     {n k : ℕ} {φ : Space n → ℝ}
     (hφ : Continuous φ)
     {f : WeightedTorusHilbert.LogTorus n → ℂ}
@@ -26936,7 +26936,7 @@ def weightOneZeroIndex {n : ℕ}
   ⟨0, (LatticeAsymptotics.mem_monomialIndex_one_iff
     K 0).mpr rfl⟩
 
-theorem weightOneIndex_eq_zeroIndex {n : ℕ}
+lemma weightOneIndex_eq_zeroIndex {n : ℕ}
     (K : CenteredBody n)
     (u : LatticeAsymptotics.monomialIndex K 1) :
     u = weightOneZeroIndex K := by
@@ -26944,7 +26944,7 @@ theorem weightOneIndex_eq_zeroIndex {n : ℕ}
   exact (LatticeAsymptotics.mem_monomialIndex_one_iff
     K (u : Space n)).mp u.property
 
-theorem weightOne_integerExponent_eq_zero {n : ℕ}
+lemma weightOne_integerExponent_eq_zero {n : ℕ}
     (K : CenteredBody n)
     (u : LatticeAsymptotics.monomialIndex K 1) :
     integerExponent K (by decide) u = (0 : Fin n → ℤ) := by
@@ -26956,7 +26956,7 @@ theorem weightOne_integerExponent_eq_zero {n : ℕ}
   funext i
   simp [integerPoint]
 
-theorem torusMonomial_zero {n : ℕ}
+lemma torusMonomial_zero {n : ℕ}
     (p : WeightedTorusHilbert.LogTorus n) :
     torusMonomial (0 : Fin n → ℤ) p = 1 := by
   simp [torusMonomial, radialCharacter,
@@ -26979,7 +26979,7 @@ def angularTorusComplexHessianMatrix {n : ℕ}
     Matrix (Fin n) (Fin n) ℂ :=
   fun i j => angularTorusComplexHessian a i j p
 
-theorem continuous_angularTorusComplexHessianMatrix {n : ℕ}
+lemma continuous_angularTorusComplexHessianMatrix {n : ℕ}
     {a : LogTorus n → ℝ}
     (ha : ContDiff ℝ 2 (angularCoverPotential a)) :
     Continuous (angularTorusComplexHessianMatrix a) := by
@@ -26989,7 +26989,7 @@ theorem continuous_angularTorusComplexHessianMatrix {n : ℕ}
   intro j
   exact continuous_angularTorusComplexHessian ha i j
 
-theorem radialZeroGraph_weightOne_eq_constantMonomial
+lemma radialZeroGraph_weightOne_eq_constantMonomial
     {n : ℕ} (K : CenteredBody n)
     {φ : Space n → ℝ} (hφ : Continuous φ)
     {B : ℝ}
@@ -27022,7 +27022,7 @@ theorem radialZeroGraph_weightOne_eq_constantMonomial
   simpa only [hsingleton, Finset.sum_singleton,
     weightOne_integerExponent_eq_zero] using hfinite
 
-theorem radialZeroGraph_weightOne_ae_constant
+lemma radialZeroGraph_weightOne_ae_constant
     {n : ℕ} (K : CenteredBody n)
     {φ : Space n → ℝ} (hφ : Continuous φ)
     {B : ℝ}
@@ -27053,7 +27053,7 @@ theorem radialZeroGraph_weightOne_ae_constant
         torusMonomial_zero]
       simp
 
-theorem integrable_angularTorusFormAdjoint_mul_conj
+lemma integrable_angularTorusFormAdjoint_mul_conj
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : TorusCharacters.LogSpace n → Fin n → ℂ)
     (ha : Continuous a)
@@ -27117,13 +27117,13 @@ def angularWeakScalarResolventCLM {n : ℕ}
       ((angularDolbeaultGraph a).starProjection.comp
         (angularScalarEmbeddingCLM a))
 
-@[simp] theorem angularWeakScalarResolventCLM_apply {n : ℕ}
+@[simp] lemma angularWeakScalarResolventCLM_apply {n : ℕ}
     (a : LogTorus n → ℝ) (f : angularWeightedScalarL2 a) :
     angularWeakScalarResolventCLM a f =
       WithLp.fst (angularWeakDolbeaultResolvent a f :
         angularDolbeaultGraphAmbient a) := rfl
 
-theorem angularWeakScalarResolventCLM_selfAdjoint {n : ℕ}
+lemma angularWeakScalarResolventCLM_selfAdjoint {n : ℕ}
     (a : LogTorus n → ℝ) (f g : angularWeightedScalarL2 a) :
     @inner ℂ (angularWeightedScalarL2 a) _
       (angularWeakScalarResolventCLM a f) g =
@@ -27144,7 +27144,7 @@ def angularWeakResolventFixedSpace {n : ℕ}
     Submodule ℂ (angularWeightedScalarL2 a) :=
   LinearMap.eqLocus (angularWeakScalarResolventCLM a).toLinearMap 1
 
-theorem angularWeakScalarResolventCLM_fixed_iff_graph_zero
+lemma angularWeakScalarResolventCLM_fixed_iff_graph_zero
     {n : ℕ} (a : LogTorus n → ℝ)
     (f : angularWeightedScalarL2 a) :
     angularWeakScalarResolventCLM a f = f ↔
@@ -27189,7 +27189,7 @@ theorem angularWeakScalarResolventCLM_fixed_iff_graph_zero
     rw [hproj]
     rfl
 
-theorem angularWeakScalarResolventCLM_defect_range_closure
+lemma angularWeakScalarResolventCLM_defect_range_closure
     {n : ℕ} (a : LogTorus n → ℝ) :
     ((ContinuousLinearMap.id ℂ (angularWeightedScalarL2 a) -
       angularWeakScalarResolventCLM a).range).topologicalClosure =
@@ -27234,7 +27234,7 @@ open ArbitraryBodySmoothConvexPotentialBridge
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   Topology ContDiff
 
-theorem radialWeightedTorusDensity_le_angular_of_upper
+lemma radialWeightedTorusDensity_le_angular_of_upper
     {n : ℕ} {a : LogTorus n → ℝ}
     {φ : Space n → ℝ} {C : ℝ}
     (hupper : ∀ q : LogTorus n, a q ≤ φ q.1 + C)
@@ -27251,7 +27251,7 @@ theorem radialWeightedTorusDensity_le_angular_of_upper
     ENNReal.ofReal_mul (Real.exp_pos C).le] using
     ENNReal.ofReal_le_ofReal hexp
 
-theorem radialWeightedTorusMeasure_le_angular_of_upper
+lemma radialWeightedTorusMeasure_le_angular_of_upper
     {n : ℕ} {a : LogTorus n → ℝ}
     {φ : Space n → ℝ} {C : ℝ}
     (hφ : Continuous φ)
@@ -27276,7 +27276,7 @@ theorem radialWeightedTorusMeasure_le_angular_of_upper
   simpa [Pi.smul_apply, smul_eq_mul] using
     radialWeightedTorusDensity_le_angular_of_upper hupper q
 
-theorem memLp_radial_of_angular_upper
+lemma memLp_radial_of_angular_upper
     {n : ℕ} {E : Type*} [NormedAddCommGroup E]
     {a : LogTorus n → ℝ}
     {φ : Space n → ℝ} {C : ℝ}
@@ -27299,7 +27299,7 @@ def angularToRadialLpOfUpper
   (memLp_radial_of_angular_upper hφ hupper
     (MeasureTheory.Lp.memLp f)).toLp f
 
-theorem angularToRadialLpOfUpper_ae_eq
+lemma angularToRadialLpOfUpper_ae_eq
     {n : ℕ} {E : Type*} [NormedAddCommGroup E]
     {a : LogTorus n → ℝ}
     {φ : Space n → ℝ} {C : ℝ}
@@ -27346,7 +27346,7 @@ def angularToRadialLpCLMOfUpper
   canonicalComplexLpTransfer ENNReal.ofReal_ne_top
     (radialWeightedTorusMeasure_le_angular_of_upper hφ hupper)
 
-@[simp] theorem angularToRadialLpCLMOfUpper_apply
+@[simp] lemma angularToRadialLpCLMOfUpper_apply
     {n : ℕ} {E : Type*}
     [NormedAddCommGroup E] [NormedSpace ℂ E]
     {a : LogTorus n → ℝ}
@@ -27357,7 +27357,7 @@ def angularToRadialLpCLMOfUpper
     angularToRadialLpCLMOfUpper hφ hupper f =
       angularToRadialLpOfUpper hφ hupper f := rfl
 
-@[simp] theorem angularToRadialLpOfUpper_zero
+@[simp] lemma angularToRadialLpOfUpper_zero
     {n : ℕ} {E : Type*}
     [NormedAddCommGroup E] [NormedSpace ℂ E]
     {a : LogTorus n → ℝ}
@@ -27388,7 +27388,7 @@ def angularToRadialGraphAmbientCLMOfUpper
         (angularWeightedScalarL2 a)
         (angularWeightedFormL2 a)).toContinuousLinearMap)
 
-@[simp] theorem angularToRadialGraphAmbientCLMOfUpper_pair
+@[simp] lemma angularToRadialGraphAmbientCLMOfUpper_pair
     {n : ℕ} {a : LogTorus n → ℝ}
     {φ : Space n → ℝ} {C : ℝ}
     (hφ : Continuous φ)
@@ -27403,7 +27403,7 @@ def angularToRadialGraphAmbientCLMOfUpper
   simp [angularToRadialGraphAmbientCLMOfUpper,
     angularToRadialLpCLMOfUpper_apply]
 
-theorem angularToRadialGraphAmbientCLMOfUpper_smooth_mem
+lemma angularToRadialGraphAmbientCLMOfUpper_smooth_mem
     {n : ℕ} {a : LogTorus n → ℝ}
     {φ : Space n → ℝ} {C : ℝ}
     (hφ : Continuous φ)
@@ -27440,7 +27440,7 @@ theorem angularToRadialGraphAmbientCLMOfUpper_smooth_mem
         with q htransfer hsource hradial
     exact htransfer.trans (hsource.trans hradial.symm)
 
-theorem angularToRadialGraphAmbientCLMOfUpper_graph_le
+lemma angularToRadialGraphAmbientCLMOfUpper_graph_le
     {n : ℕ} {a : LogTorus n → ℝ}
     {φ : Space n → ℝ} {C : ℝ}
     (hφ : Continuous φ)
@@ -27464,7 +27464,7 @@ theorem angularToRadialGraphAmbientCLMOfUpper_graph_le
   exact angularToRadialGraphAmbientCLMOfUpper_smooth_mem
     hφ hupper hv
 
-theorem angularZeroGraph_mem_radialZeroGraph_of_upper
+lemma angularZeroGraph_mem_radialZeroGraph_of_upper
     {n : ℕ} {a : LogTorus n → ℝ}
     {φ : Space n → ℝ} {C : ℝ}
     (hφ : Continuous φ)
@@ -27484,7 +27484,7 @@ theorem angularZeroGraph_mem_radialZeroGraph_of_upper
           hf, rfl⟩)
   simpa using hmap
 
-theorem radial_ae_iff_angular_of_continuous
+lemma radial_ae_iff_angular_of_continuous
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     {φ : Space n → ℝ}
@@ -27524,7 +27524,7 @@ theorem radial_ae_iff_angular_of_continuous
     exact (ENNReal.ofReal_pos.mpr
       (angularWeightedTorusDensity_pos a q)).ne'
 
-theorem smoothConvexPotential_upper_of_support_upper
+lemma smoothConvexPotential_upper_of_support_upper
     {n : ℕ} (K : CenteredBody n)
     {a : LogTorus n → ℝ} {C : ℝ}
     (hupper : ∀ q : LogTorus n,
@@ -27536,7 +27536,7 @@ theorem smoothConvexPotential_upper_of_support_upper
     (smoothConvexPotential_bounded K q.1)).1
   linarith [hupper q]
 
-theorem angularZeroGraph_ae_constant_of_support_upper
+lemma angularZeroGraph_ae_constant_of_support_upper
     {n : ℕ} (K : CenteredBody n)
     {a : LogTorus n → ℝ} (ha : Continuous a)
     {C : ℝ}
@@ -27576,7 +27576,7 @@ theorem angularZeroGraph_ae_constant_of_support_upper
       with q htransfer hconstant
   exact htransfer.symm.trans hconstant
 
-theorem angularWeakScalarResolventCLM_fixed_ae_eq_const_of_support_upper
+lemma angularWeakScalarResolventCLM_fixed_ae_eq_const_of_support_upper
     {n : ℕ} (K : CenteredBody n)
     {a : LogTorus n → ℝ} (ha : Continuous a)
     {C : ℝ}
@@ -27599,7 +27599,7 @@ open Set Function Filter MeasureTheory
 open TorusCharacters BergmanDiagonalBasisIndependence ArbitraryBodySmoothConvexPotentialBridge
 open scoped BigOperators Topology Convolution ContDiff
 
-theorem norm_realLogCoordinate_le {n : ℕ} (z : LogSpace n) :
+lemma norm_realLogCoordinate_le {n : ℕ} (z : LogSpace n) :
     ‖realLogCoordinate z‖ ≤ 2 * ‖z‖ := by
   apply (pi_norm_le_iff_of_nonneg
     (mul_nonneg (by norm_num) (norm_nonneg z))).2
@@ -27614,7 +27614,7 @@ theorem norm_realLogCoordinate_le {n : ℕ} (z : LogSpace n) :
       mul_le_mul_of_nonneg_left
         (norm_le_pi_norm z j) (by norm_num)
 
-theorem dist_realLogCoordinate_sub_le
+lemma dist_realLogCoordinate_sub_le
     {n : ℕ} (z y : LogSpace n) :
     dist (realLogCoordinate (z - y))
       (realLogCoordinate z) ≤ 2 * ‖y‖ := by
@@ -27627,7 +27627,7 @@ theorem dist_realLogCoordinate_sub_le
   rw [heq, norm_neg]
   exact norm_realLogCoordinate_le y
 
-theorem supportFunction_realLogCoordinate_sub_le
+lemma supportFunction_realLogCoordinate_sub_le
     {n : ℕ} (K : CenteredBody n)
     {R : ℝ} (hR₀ : 0 ≤ R)
     (hR : ∀ u ∈ K.carrier, ‖u‖ ≤ R)
@@ -27683,7 +27683,7 @@ open WeightedTorusBrascampLieb ArbitraryBodyOneSidedAngularWeightedKernel
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   Topology ContDiff
 
-theorem angularWeightedTorusMeasure_isFinite_of_integrable
+lemma angularWeightedTorusMeasure_isFinite_of_integrable
     {n : ℕ} {a : LogTorus n → ℝ}
     (hintegrable :
       Integrable (angularWeightedTorusDensity a)
@@ -27693,7 +27693,7 @@ theorem angularWeightedTorusMeasure_isFinite_of_integrable
   exact isFiniteMeasure_withDensity_ofReal
     hintegrable.hasFiniteIntegral
 
-theorem angularWeightedTorusDensity_integral_pos
+lemma angularWeightedTorusDensity_integral_pos
     {n : ℕ} {a : LogTorus n → ℝ}
     (hintegrable :
       Integrable (angularWeightedTorusDensity a)
@@ -27711,7 +27711,7 @@ def sourceFreeAngularConstantL2
     (c : ℂ) : angularWeightedScalarL2 a :=
   (memLp_const c).toLp (fun _ : LogTorus n => c)
 
-theorem sourceFreeAngularConstantL2_ae_eq
+lemma sourceFreeAngularConstantL2_ae_eq
     {n : ℕ} (a : LogTorus n → ℝ)
     [IsFiniteMeasure (angularWeightedTorusMeasure a)]
     (c : ℂ) :
@@ -27727,7 +27727,7 @@ def sourceFreeAngularWeightedConstantSubmodule
     Submodule ℂ (angularWeightedScalarL2 a) :=
   ℂ ∙ sourceFreeAngularConstantL2 a 1
 
-theorem angularWeakResolventFixedSpace_le_sourceFreeConstants
+lemma angularWeakResolventFixedSpace_le_sourceFreeConstants
     {n : ℕ} (K : CenteredBody n)
     {a : LogTorus n → ℝ}
     [IsFiniteMeasure (angularWeightedTorusMeasure a)]
@@ -27762,7 +27762,7 @@ def sourceFreeAngularWeightedMeanCLM
     angularWeightedScalarL2 a →L[ℂ] ℂ :=
   innerSL ℂ (sourceFreeAngularConstantL2 a 1)
 
-theorem sourceFreeAngularWeightedMeanCLM_apply
+lemma sourceFreeAngularWeightedMeanCLM_apply
     {n : ℕ} (a : LogTorus n → ℝ)
     [IsFiniteMeasure (angularWeightedTorusMeasure a)]
     (f : angularWeightedScalarL2 a) :
@@ -27784,7 +27784,7 @@ def sourceFreeAngularWeightedMeanZeroSubmodule
     Submodule ℂ (angularWeightedScalarL2 a) :=
   (sourceFreeAngularWeightedMeanCLM a).ker
 
-theorem mem_sourceFreeAngularWeightedMeanZeroSubmodule_iff
+lemma mem_sourceFreeAngularWeightedMeanZeroSubmodule_iff
     {n : ℕ} (a : LogTorus n → ℝ)
     [IsFiniteMeasure (angularWeightedTorusMeasure a)]
     (f : angularWeightedScalarL2 a) :
@@ -27794,7 +27794,7 @@ theorem mem_sourceFreeAngularWeightedMeanZeroSubmodule_iff
   change sourceFreeAngularWeightedMeanCLM a f = 0 ↔ _
   rw [sourceFreeAngularWeightedMeanCLM_apply]
 
-theorem sourceFreeAngularWeightedMeanZero_eq_constant_orthogonal
+lemma sourceFreeAngularWeightedMeanZero_eq_constant_orthogonal
     {n : ℕ} (a : LogTorus n → ℝ)
     [IsFiniteMeasure (angularWeightedTorusMeasure a)] :
     sourceFreeAngularWeightedMeanZeroSubmodule a =
@@ -27809,7 +27809,7 @@ theorem sourceFreeAngularWeightedMeanZero_eq_constant_orthogonal
   rw [← sourceFreeAngularWeightedMeanCLM_apply]
   rfl
 
-theorem sourceFreeAngularWeightedMeanZero_le_resolventDefect_range_closure
+lemma sourceFreeAngularWeightedMeanZero_le_resolventDefect_range_closure
     {n : ℕ} (K : CenteredBody n)
     {a : LogTorus n → ℝ}
     [IsFiniteMeasure (angularWeightedTorusMeasure a)]
@@ -27827,7 +27827,7 @@ theorem sourceFreeAngularWeightedMeanZero_le_resolventDefect_range_closure
     (angularWeakResolventFixedSpace_le_sourceFreeConstants
       K ha hupper)
 
-theorem sourceFreeAngularCentered_mem_resolventDefect_range_closure
+lemma sourceFreeAngularCentered_mem_resolventDefect_range_closure
     {n : ℕ} (K : CenteredBody n)
     {a : LogTorus n → ℝ}
     [IsFiniteMeasure (angularWeightedTorusMeasure a)]
@@ -27863,7 +27863,7 @@ def momentSignedUnitVector
   fun i =>
     (if σ i = true then (1 : ℝ) else -1) / (k : ℝ)
 
-theorem norm_momentSignedUnitVector_le
+lemma norm_momentSignedUnitVector_le
     {n : ℕ} {k : ℕ} (hk : 0 < k)
     (σ : Fin n → Bool) :
     ‖momentSignedUnitVector k σ‖ ≤
@@ -27875,7 +27875,7 @@ theorem norm_momentSignedUnitVector_le
   unfold momentSignedUnitVector
   split_ifs <;> simp [div_eq_mul_inv]
 
-theorem exists_momentSignedUnitMonomialDegree
+lemma exists_momentSignedUnitMonomialDegree
     {n : ℕ} (K : CenteredBody n) :
     ∃ k : ℕ, 0 < k ∧
       ∀ σ : Fin n → Bool,
@@ -27910,12 +27910,12 @@ def momentCoerciveMonomialDegree
     {n : ℕ} (K : CenteredBody n) : ℕ :=
   (exists_momentSignedUnitMonomialDegree K).choose
 
-theorem momentCoerciveMonomialDegree_pos
+lemma momentCoerciveMonomialDegree_pos
     {n : ℕ} (K : CenteredBody n) :
     0 < momentCoerciveMonomialDegree K :=
   (exists_momentSignedUnitMonomialDegree K).choose_spec.1
 
-theorem momentSignedUnitVector_mem_monomialIndex
+lemma momentSignedUnitVector_mem_monomialIndex
     {n : ℕ} (K : CenteredBody n)
     (σ : Fin n → Bool) :
     momentSignedUnitVector
@@ -27942,7 +27942,7 @@ def momentSignedMonomialLowerConstant
     F htransport
     (momentCoerciveSignedMonomial K σ)).choose
 
-theorem momentSignedMonomialLowerConstant_spec
+lemma momentSignedMonomialLowerConstant_spec
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -27972,7 +27972,7 @@ def momentTorusEnvelopeCoercivityConstant
     |momentSignedMonomialLowerConstant
       K F htransport σ|
 
-theorem momentSignedMonomialLowerConstant_le_coercivityConstant
+lemma momentSignedMonomialLowerConstant_le_coercivityConstant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -28002,7 +28002,7 @@ def momentSpatialSign
     {n : ℕ} (x : Space n) : Fin n → Bool :=
   fun i => decide (0 ≤ x i)
 
-theorem pairing_momentSignedUnitVector_spatialSign
+lemma pairing_momentSignedUnitVector_spatialSign
     {n k : ℕ} (x : Space n) :
     pairing
       (momentSignedUnitVector k
@@ -28018,7 +28018,7 @@ theorem pairing_momentSignedUnitVector_spatialSign
   · have hnonpos : x i ≤ 0 := le_of_not_ge h
     simp [h, abs_of_nonpos hnonpos, div_eq_mul_inv]
 
-theorem momentTorusEnvelope_norm_coercivity
+lemma momentTorusEnvelope_norm_coercivity
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -28051,7 +28051,7 @@ theorem momentTorusEnvelope_norm_coercivity
   rw [hpair] at hsign
   exact (sub_le_sub hnorm hconstant).trans hsign
 
-theorem integrable_exp_neg_momentTorusEnvelopeTimeSlice_of_pos
+lemma integrable_exp_neg_momentTorusEnvelopeTimeSlice_of_pos
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -28123,7 +28123,7 @@ theorem integrable_exp_neg_momentTorusEnvelopeTimeSlice_of_pos
   simpa only [sub_eq_add_neg, neg_add_rev, neg_mul, neg_neg] using
     (neg_le_neg hcoerce)
 
-theorem integrable_exp_neg_momentTorusEnvelopeTimeSlice
+lemma integrable_exp_neg_momentTorusEnvelopeTimeSlice
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -28183,7 +28183,7 @@ theorem integrable_exp_neg_momentTorusEnvelopeTimeSlice
     rw [heq]
     simpa [sourceTorusBaseMeasure] using hprod
 
-theorem integrable_angularWeightedTorusDensity_momentEnvelope
+lemma integrable_angularWeightedTorusDensity_momentEnvelope
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -28199,7 +28199,7 @@ theorem integrable_angularWeightedTorusDensity_momentEnvelope
   exact integrable_exp_neg_momentTorusEnvelopeTimeSlice
     K F htransport p t
 
-theorem momentTorusEnvelopePartition_pos
+lemma momentTorusEnvelopePartition_pos
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -28224,7 +28224,7 @@ open ActualJetUpperEnvelope ActualJetPlurisubharmonicEnvelope ActualJetPlurisubh
 open JetEnvelopeGlobalPlurisubharmonic
 open scoped BigOperators Topology ENNReal InnerProductSpace
 
-theorem upperRegularization_comp_isOpenMap
+lemma upperRegularization_comp_isOpenMap
     {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (f : Y → ℝ) (g : X → Y)
     (hg : Continuous g) (ho : IsOpenMap g) (x : X) :
@@ -28238,7 +28238,7 @@ theorem upperRegularization_comp_isOpenMap
       ∀ᶠ z : Y in 𝓝 (g x), f z ≤ c
   rw [← ho.map_nhds_eq hg.continuousAt, Filter.eventually_map]
 
-theorem isOpenMap_sourceJointCoverExp (n : ℕ) :
+lemma isOpenMap_sourceJointCoverExp (n : ℕ) :
     IsOpenMap (sourceJointCoverExp (n := n)) := by
   have hid : IsOpenMap
       (fun z : TorusCharacters.LogSpace n => z) := by
@@ -28256,18 +28256,18 @@ def sourcePositiveCoverExp {n : ℕ}
     PositiveJointLogSpace n :=
   sourceJointExpPositiveLift q.val q.property
 
-theorem continuous_sourcePositiveCoverExp (n : ℕ) :
+lemma continuous_sourcePositiveCoverExp (n : ℕ) :
     Continuous (sourcePositiveCoverExp (n := n)) := by
   apply Continuous.subtype_mk
   exact (continuous_sourceJointCoverExp n).comp
     continuous_subtype_val
 
-theorem isOpen_sourcePositiveCover (n : ℕ) :
+lemma isOpen_sourcePositiveCover (n : ℕ) :
     IsOpen
       {q : SourceJointComplexCover n | 0 < sourceJointCoverTime q} := by
   exact isOpen_Ioi.preimage (continuous_sourceJointCoverTime n)
 
-theorem isOpenMap_sourcePositiveCoverExp (n : ℕ) :
+lemma isOpenMap_sourcePositiveCoverExp (n : ℕ) :
     IsOpenMap (sourcePositiveCoverExp (n := n)) := by
   let s : Set (SourceJointComplexCover n) :=
     {q | 0 < sourceJointCoverTime q}
@@ -28287,13 +28287,13 @@ def sourceJointCoverCirclePoint
     (R θ : ℝ) : SourceJointComplexCover n :=
   q + circleMap 0 R θ • v
 
-theorem continuous_sourceJointCoverCirclePoint
+lemma continuous_sourceJointCoverCirclePoint
     {n : ℕ} (q v : SourceJointComplexCover n) (R : ℝ) :
     Continuous (sourceJointCoverCirclePoint q v R) := by
   unfold sourceJointCoverCirclePoint
   fun_prop
 
-theorem tendsto_sourceJointCoverCirclePoint
+lemma tendsto_sourceJointCoverCirclePoint
     {n : ℕ} (q : ℕ → SourceJointComplexCover n)
     (q₀ : SourceJointComplexCover n)
     (hq : Tendsto q atTop (𝓝 q₀))
@@ -28304,7 +28304,7 @@ theorem tendsto_sourceJointCoverCirclePoint
       (𝓝 (sourceJointCoverCirclePoint q₀ v R θ)) := by
   exact hq.add_const (circleMap 0 R θ • v)
 
-theorem circleAverage_sourceJointCover_eq
+lemma circleAverage_sourceJointCover_eq
     {n : ℕ} (u : SourceJointComplexCover n → ℝ)
     (q v : SourceJointComplexCover n) (R : ℝ) :
     Real.circleAverage
@@ -28315,7 +28315,7 @@ theorem circleAverage_sourceJointCover_eq
   rw [Real.circleAverage_def]
   rfl
 
-theorem circleIntegrable_sourceJointCover_of_continuous
+lemma circleIntegrable_sourceJointCover_of_continuous
     {n : ℕ} (u : SourceJointComplexCover n → ℝ)
     (hu : Continuous u)
     (q v : SourceJointComplexCover n) (R : ℝ) :
@@ -28326,7 +28326,7 @@ theorem circleIntegrable_sourceJointCover_of_continuous
     (continuous_sourceJointCoverCirclePoint q v R)).intervalIntegrable
       0 (2 * Real.pi)
 
-theorem circleIntegrable_sourceJointCover_of_upperSemicontinuous
+lemma circleIntegrable_sourceJointCover_of_upperSemicontinuous
     {n : ℕ} (u : SourceJointComplexCover n → ℝ)
     (hu : UpperSemicontinuous u)
     (q v : SourceJointComplexCover n) (R : ℝ)
@@ -28355,7 +28355,7 @@ theorem circleIntegrable_sourceJointCover_of_upperSemicontinuous
     · linarith [(hbound θ).1, neg_abs_le L, abs_nonneg C]
     · linarith [(hbound θ).2, le_abs_self C, abs_nonneg L]
 
-theorem circleAverage_sourceJointCover_mono
+lemma circleAverage_sourceJointCover_mono
     {n : ℕ} (f u : SourceJointComplexCover n → ℝ)
     (hf : Continuous f) (hu : UpperSemicontinuous u)
     (q v : SourceJointComplexCover n) (R : ℝ)
@@ -28375,7 +28375,7 @@ theorem circleAverage_sourceJointCover_mono
   intro w _
   exact hle (q + w • v)
 
-theorem tendsto_circleAverage_sourceJointCover_of_dominated
+lemma tendsto_circleAverage_sourceJointCover_of_dominated
     {n : ℕ}
     (u : ℕ → SourceJointComplexCover n → ℝ)
     (u₀ : SourceJointComplexCover n → ℝ)
@@ -28450,7 +28450,7 @@ theorem tendsto_circleAverage_sourceJointCover_of_dominated
   rw [hsource, htarget]
   exact hinter.const_mul ((2 * Real.pi)⁻¹)
 
-theorem exists_sourceJointCoverCircle_uniform_bounds
+lemma exists_sourceJointCoverCircle_uniform_bounds
     {n : ℕ}
     (a b : SourceJointComplexCover n → ℝ)
     (ha : Continuous a) (hb : Continuous b)
@@ -28497,7 +28497,7 @@ theorem exists_sourceJointCoverCircle_uniform_bounds
   exact ⟨hL ⟨_, hmem, rfl⟩,
     hC ⟨_, hmem, rfl⟩⟩
 
-theorem sourceJointCover_complex_line_submean_of_convergent_finite_approximants
+lemma sourceJointCover_complex_line_submean_of_convergent_finite_approximants
     {n : ℕ} {ι : Type*}
     (F : ι → SourceJointComplexCover n → ℝ)
     (hFcont : ∀ i : ι, Continuous (F i))
@@ -28680,7 +28680,7 @@ theorem sourceJointCover_complex_line_submean_of_convergent_finite_approximants
     nlinarith
   simpa [γ₀, div_eq_mul_inv, mul_comm] using hdiv
 
-theorem sourceJointCover_upperRegularization_family_complex_line_submean_all_radius
+lemma sourceJointCover_upperRegularization_family_complex_line_submean_all_radius
     {n : ℕ} {ι : Type*} [Nonempty ι]
     (F : ι → SourceJointComplexCover n → ℝ)
     (hFcont : ∀ i : ι, Continuous (F i))
@@ -28803,7 +28803,7 @@ def sourceJointRadialNormSq {n : ℕ}
     (q : SourceJointComplexCover n) : ℝ :=
   (∑ i : Fin n, Complex.normSq (q.1 i)) + Complex.normSq q.2
 
-theorem contDiff_sourceJointRadialNormSq (n : ℕ) :
+lemma contDiff_sourceJointRadialNormSq (n : ℕ) :
     ContDiff ℝ ∞ (sourceJointRadialNormSq (n := n)) := by
   unfold sourceJointRadialNormSq
   apply ContDiff.add
@@ -28826,7 +28826,7 @@ theorem contDiff_sourceJointRadialNormSq (n : ℕ) :
         ((Complex.imCLM.contDiff.comp hz).mul
           (Complex.imCLM.contDiff.comp hz))
 
-theorem sourceJointRadialNormSq_coordinate_le {n : ℕ}
+lemma sourceJointRadialNormSq_coordinate_le {n : ℕ}
     (q : SourceJointComplexCover n) (i : Fin n) :
     Complex.normSq (q.1 i) ≤ sourceJointRadialNormSq q := by
   unfold sourceJointRadialNormSq
@@ -28840,7 +28840,7 @@ theorem sourceJointRadialNormSq_coordinate_le {n : ℕ}
           Complex.normSq q.2 :=
         le_add_of_nonneg_right (Complex.normSq_nonneg q.2)
 
-theorem sourceJointRadialNormSq_auxiliary_le {n : ℕ}
+lemma sourceJointRadialNormSq_auxiliary_le {n : ℕ}
     (q : SourceJointComplexCover n) :
     Complex.normSq q.2 ≤ sourceJointRadialNormSq q := by
   unfold sourceJointRadialNormSq
@@ -28852,19 +28852,19 @@ def sourceJointTrueRadialBump (n k : ℕ)
   Real.smoothTransition
     (1 - (((k + 1 : ℕ) : ℝ) ^ 2) * sourceJointRadialNormSq q)
 
-theorem contDiff_sourceJointTrueRadialBump (n k : ℕ) :
+lemma contDiff_sourceJointTrueRadialBump (n k : ℕ) :
     ContDiff ℝ ∞ (sourceJointTrueRadialBump n k) := by
   unfold sourceJointTrueRadialBump
   exact Real.smoothTransition.contDiff.comp
     (contDiff_const.sub
       (contDiff_const.mul (contDiff_sourceJointRadialNormSq n)))
 
-theorem sourceJointTrueRadialBump_nonneg (n k : ℕ)
+lemma sourceJointTrueRadialBump_nonneg (n k : ℕ)
     (q : SourceJointComplexCover n) :
     0 ≤ sourceJointTrueRadialBump n k q :=
   Real.smoothTransition.nonneg _
 
-theorem support_sourceJointTrueRadialBump_subset_closedBall
+lemma support_sourceJointTrueRadialBump_subset_closedBall
     {n : ℕ} (k : ℕ) :
     Function.support (sourceJointTrueRadialBump n k) ⊆
       Metric.closedBall (0 : SourceJointComplexCover n)
@@ -28913,7 +28913,7 @@ theorem support_sourceJointTrueRadialBump_subset_closedBall
   exact ⟨(pi_norm_le_iff_of_nonneg (by positivity)).mpr hcoord,
     haux⟩
 
-theorem hasCompactSupport_sourceJointTrueRadialBump (n k : ℕ) :
+lemma hasCompactSupport_sourceJointTrueRadialBump (n k : ℕ) :
     HasCompactSupport (sourceJointTrueRadialBump n k) :=
   HasCompactSupport.of_support_subset_isCompact
     (isCompact_closedBall (0 : SourceJointComplexCover n)
@@ -28924,7 +28924,7 @@ def sourceJointTrueRadialBumpMass (n k : ℕ) : ℝ :=
   ∫ q : SourceJointComplexCover n,
     sourceJointTrueRadialBump n k q
 
-theorem sourceJointTrueRadialBumpMass_pos (n k : ℕ) :
+lemma sourceJointTrueRadialBumpMass_pos (n k : ℕ) :
     0 < sourceJointTrueRadialBumpMass n k := by
   unfold sourceJointTrueRadialBumpMass
   apply (contDiff_sourceJointTrueRadialBump n k).continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
@@ -28937,18 +28937,18 @@ def sourceJointTrueRadialMollifier (n k : ℕ)
     (q : SourceJointComplexCover n) : ℝ :=
   sourceJointTrueRadialBump n k q / sourceJointTrueRadialBumpMass n k
 
-theorem contDiff_sourceJointTrueRadialMollifier (n k : ℕ) :
+lemma contDiff_sourceJointTrueRadialMollifier (n k : ℕ) :
     ContDiff ℝ ∞ (sourceJointTrueRadialMollifier n k) := by
   unfold sourceJointTrueRadialMollifier
   exact (contDiff_sourceJointTrueRadialBump n k).div_const _
 
-theorem sourceJointTrueRadialMollifier_nonneg (n k : ℕ)
+lemma sourceJointTrueRadialMollifier_nonneg (n k : ℕ)
     (q : SourceJointComplexCover n) :
     0 ≤ sourceJointTrueRadialMollifier n k q :=
   div_nonneg (sourceJointTrueRadialBump_nonneg n k q)
     (sourceJointTrueRadialBumpMass_pos n k).le
 
-theorem support_sourceJointTrueRadialMollifier_subset_closedBall
+lemma support_sourceJointTrueRadialMollifier_subset_closedBall
     {n : ℕ} (k : ℕ) :
     Function.support (sourceJointTrueRadialMollifier n k) ⊆
       Metric.closedBall (0 : SourceJointComplexCover n)
@@ -28959,20 +28959,20 @@ theorem support_sourceJointTrueRadialMollifier_subset_closedBall
   apply hq
   simp [sourceJointTrueRadialMollifier, hzero]
 
-theorem hasCompactSupport_sourceJointTrueRadialMollifier (n k : ℕ) :
+lemma hasCompactSupport_sourceJointTrueRadialMollifier (n k : ℕ) :
     HasCompactSupport (sourceJointTrueRadialMollifier n k) :=
   HasCompactSupport.of_support_subset_isCompact
     (isCompact_closedBall (0 : SourceJointComplexCover n)
       (1 / ((k + 1 : ℕ) : ℝ)))
     (support_sourceJointTrueRadialMollifier_subset_closedBall k)
 
-theorem integrable_sourceJointTrueRadialMollifier (n k : ℕ) :
+lemma integrable_sourceJointTrueRadialMollifier (n k : ℕ) :
     Integrable (sourceJointTrueRadialMollifier n k)
       (volume : Measure (SourceJointComplexCover n)) :=
   (contDiff_sourceJointTrueRadialMollifier n k).continuous.integrable_of_hasCompactSupport
     (hasCompactSupport_sourceJointTrueRadialMollifier n k)
 
-theorem integral_sourceJointTrueRadialMollifier (n k : ℕ) :
+lemma integral_sourceJointTrueRadialMollifier (n k : ℕ) :
     (∫ q : SourceJointComplexCover n,
       sourceJointTrueRadialMollifier n k q) = 1 := by
   unfold sourceJointTrueRadialMollifier
@@ -28981,13 +28981,13 @@ theorem integral_sourceJointTrueRadialMollifier (n k : ℕ) :
     sourceJointTrueRadialBumpMass n k = 1
   exact div_self (ne_of_gt (sourceJointTrueRadialBumpMass_pos n k))
 
-theorem tendsto_sourceJointTrueRadialRadius :
+lemma tendsto_sourceJointTrueRadialRadius :
     Tendsto (fun k : ℕ => 1 / ((k + 1 : ℕ) : ℝ))
       atTop (𝓝 0) := by
   simpa [Nat.cast_add, Nat.cast_one] using
     (tendsto_one_div_add_atTop_nhds_zero_nat (𝕜 := ℝ))
 
-theorem sourceJointRadialNormSq_phase {n : ℕ}
+lemma sourceJointRadialNormSq_phase {n : ℕ}
     (u : ℂ) (hu : ‖u‖ = 1)
     (q : SourceJointComplexCover n) :
     sourceJointRadialNormSq (u • q) = sourceJointRadialNormSq q := by
@@ -28998,7 +28998,7 @@ theorem sourceJointRadialNormSq_phase {n : ℕ}
     (∑ i : Fin n, Complex.normSq (q.1 i)) + Complex.normSq q.2
   simp_rw [normSq_mul_of_norm_one u hu]
 
-theorem sourceJointTrueRadialBump_phase {n : ℕ}
+lemma sourceJointTrueRadialBump_phase {n : ℕ}
     (k : ℕ) (u : ℂ) (hu : ‖u‖ = 1)
     (q : SourceJointComplexCover n) :
     sourceJointTrueRadialBump n k (u • q) =
@@ -29006,7 +29006,7 @@ theorem sourceJointTrueRadialBump_phase {n : ℕ}
   simp [sourceJointTrueRadialBump,
     sourceJointRadialNormSq_phase u hu q]
 
-theorem sourceJointTrueRadialMollifier_phase {n : ℕ}
+lemma sourceJointTrueRadialMollifier_phase {n : ℕ}
     (k : ℕ) (u : ℂ) (hu : ‖u‖ = 1)
     (q : SourceJointComplexCover n) :
     sourceJointTrueRadialMollifier n k (u • q) =
@@ -29014,7 +29014,7 @@ theorem sourceJointTrueRadialMollifier_phase {n : ℕ}
   simp [sourceJointTrueRadialMollifier,
     sourceJointTrueRadialBump_phase k u hu q]
 
-theorem measurePreserving_sourceJointComplexPhase {n : ℕ}
+lemma measurePreserving_sourceJointComplexPhase {n : ℕ}
     (u : ℂ) (hu : ‖u‖ = 1) :
     MeasurePreserving (fun q : SourceJointComplexCover n => u • q)
       (volume : Measure (SourceJointComplexCover n))
@@ -29039,7 +29039,7 @@ theorem measurePreserving_sourceJointComplexPhase {n : ℕ}
       (fun _ => hc)
   exact hp.prod hc
 
-theorem measurableEmbedding_sourceJointComplexPhase {n : ℕ}
+lemma measurableEmbedding_sourceJointComplexPhase {n : ℕ}
     (u : ℂ) (hu : ‖u‖ = 1) :
     MeasurableEmbedding
       (fun q : SourceJointComplexCover n => u • q) := by
@@ -29053,7 +29053,7 @@ theorem measurableEmbedding_sourceJointComplexPhase {n : ℕ}
       SourceJointComplexCover n := ep.prodCongr e
   exact ej.measurableEmbedding
 
-theorem integral_sourceJointComplexPhase {n : ℕ}
+lemma integral_sourceJointComplexPhase {n : ℕ}
     (u : ℂ) (hu : ‖u‖ = 1)
     (g : SourceJointComplexCover n → ℝ) :
     (∫ y : SourceJointComplexCover n, g (u • y)) =
@@ -29068,7 +29068,7 @@ def sourceJointTrueRadialSmoothed {n : ℕ}
     ⋆[ContinuousLinearMap.lsmul ℝ ℝ,
       (volume : Measure (SourceJointComplexCover n))] f
 
-theorem integrable_sourceJointTrueRadialMollifier_mul_translate
+lemma integrable_sourceJointTrueRadialMollifier_mul_translate
     {n : ℕ} {f : SourceJointComplexCover n → ℝ}
     (hf : LocallyIntegrable f
       (volume : Measure (SourceJointComplexCover n)))
@@ -29087,7 +29087,7 @@ theorem integrable_sourceJointTrueRadialMollifier_mul_translate
     sourceJointTrueRadialMollifier n k y * f (q - y)
   rfl
 
-theorem eventually_sourceJointTrueRadialSmoothed_le_of_upperSemicontinuousAt
+lemma eventually_sourceJointTrueRadialSmoothed_le_of_upperSemicontinuousAt
     {n : ℕ} {f : SourceJointComplexCover n → ℝ}
     (hf : LocallyIntegrable f
       (volume : Measure (SourceJointComplexCover n)))
@@ -29137,7 +29137,7 @@ theorem eventually_sourceJointTrueRadialSmoothed_le_of_upperSemicontinuousAt
       rw [MeasureTheory.integral_mul_const,
         integral_sourceJointTrueRadialMollifier, one_mul]
 
-theorem tendsto_sourceJointTrueRadialSmoothed_of_upperSemicontinuousAt_and_le
+lemma tendsto_sourceJointTrueRadialSmoothed_of_upperSemicontinuousAt_and_le
     {n : ℕ} {f : SourceJointComplexCover n → ℝ}
     (hf : LocallyIntegrable f
       (volume : Measure (SourceJointComplexCover n)))
@@ -29158,7 +29158,7 @@ theorem tendsto_sourceJointTrueRadialSmoothed_of_upperSemicontinuousAt_and_le
         hf q hupper hε] with k hk
     linarith
 
-theorem contDiff_sourceJointTrueRadialSmoothed {n : ℕ}
+lemma contDiff_sourceJointTrueRadialSmoothed {n : ℕ}
     {f : SourceJointComplexCover n → ℝ}
     (hf : LocallyIntegrable f
       (volume : Measure (SourceJointComplexCover n)))
@@ -29168,7 +29168,7 @@ theorem contDiff_sourceJointTrueRadialSmoothed {n : ℕ}
     (ContinuousLinearMap.lsmul ℝ ℝ)
     (contDiff_sourceJointTrueRadialMollifier n k) hf
 
-theorem sourceJointTrueRadialSmoothed_periodic {n : ℕ}
+lemma sourceJointTrueRadialSmoothed_periodic {n : ℕ}
     {f : SourceJointComplexCover n → ℝ}
     {d : SourceJointComplexCover n}
     (hf : Function.Periodic f d)
@@ -29194,7 +29194,7 @@ open Set Filter Function MeasureTheory Metric Matrix
 open JetEnvelopeGlobalPlurisubharmonic
 open scoped BigOperators Topology ENNReal InnerProductSpace Convolution ContDiff
 
-theorem hasDerivAt_intervalIntegral_of_joint_continuous
+lemma hasDerivAt_intervalIntegral_of_joint_continuous
     (F F' : ℝ → ℝ → ℝ)
     (hF : Continuous (Function.uncurry F))
     (hF' : Continuous (Function.uncurry F'))
@@ -29229,7 +29229,7 @@ theorem hasDerivAt_intervalIntegral_of_joint_continuous
       a b)
     (Eventually.of_forall fun θ _ x _ => hdiff x θ)).2
 
-theorem sourceJoint_ofReal_smul {n : ℕ}
+lemma sourceJoint_ofReal_smul {n : ℕ}
     (r : ℝ) (v : SourceJointComplexCover n) :
     (r : ℂ) • v = r • v := by
   apply Prod.ext
@@ -29239,14 +29239,14 @@ theorem sourceJoint_ofReal_smul {n : ℕ}
   · change (r : ℂ) * v.2 = r • v.2
     simp [Complex.real_smul]
 
-theorem sourceJointCircleMap_radius_smul {n : ℕ}
+lemma sourceJointCircleMap_radius_smul {n : ℕ}
     (v : SourceJointComplexCover n) (r θ : ℝ) :
     circleMap 0 r θ • v = r • (circleMap 0 1 θ • v) := by
   simp only [circleMap, zero_add]
   simpa [Complex.real_smul] using
     (smul_assoc r (Complex.exp ((θ : ℂ) * Complex.I)) v)
 
-theorem sourceJointCircleMap_unit_direction {n : ℕ}
+lemma sourceJointCircleMap_unit_direction {n : ℕ}
     (v : SourceJointComplexCover n) (θ : ℝ) :
     circleMap 0 1 θ • v =
       Real.cos θ • v + Real.sin θ • (Complex.I • v) := by
@@ -29259,12 +29259,12 @@ theorem sourceJointCircleMap_unit_direction {n : ℕ}
     sourceJoint_ofReal_smul (Real.cos θ) v,
     sourceJoint_ofReal_smul (Real.sin θ) (Complex.I • v)]
 
-theorem hasDerivAt_sourceJointRealAffine {n : ℕ}
+lemma hasDerivAt_sourceJointRealAffine {n : ℕ}
     (q d : SourceJointComplexCover n) (r : ℝ) :
     HasDerivAt (fun x : ℝ => q + x • d) d r := by
   simpa using ((hasDerivAt_id r).smul_const d).const_add q
 
-theorem hasDerivAt_sourceJointCircleLine {n : ℕ}
+lemma hasDerivAt_sourceJointCircleLine {n : ℕ}
     {f : SourceJointComplexCover n → ℝ}
     (hf : ContDiff ℝ 2 f)
     (q d : SourceJointComplexCover n) (r : ℝ) :
@@ -29273,7 +29273,7 @@ theorem hasDerivAt_sourceJointCircleLine {n : ℕ}
   exact ((hf.differentiable (by norm_num) (q + r • d)).hasFDerivAt).comp_hasDerivAt
     r (hasDerivAt_sourceJointRealAffine q d r)
 
-theorem hasDerivAt_sourceJointCircleLineDerivative {n : ℕ}
+lemma hasDerivAt_sourceJointCircleLineDerivative {n : ℕ}
     {f : SourceJointComplexCover n → ℝ}
     (hf : ContDiff ℝ 2 f)
     (q d : SourceJointComplexCover n) (r : ℝ) :
@@ -29300,7 +29300,7 @@ theorem hasDerivAt_sourceJointCircleLineDerivative {n : ℕ}
     (Filter.Eventually.of_forall fun _ => rfl)).congr_deriv ?_
   rfl
 
-theorem local_min_second_derivative_nonnegative
+lemma local_min_second_derivative_nonnegative
     {g : ℝ → ℝ} {r : ℝ}
     (hmin : IsLocalMin g r)
     (hc : ContinuousAt g r) :
@@ -29323,7 +29323,7 @@ def sourceJointCircleRadiusProfile {n : ℕ}
     (q v : SourceJointComplexCover n) (r : ℝ) : ℝ :=
   Real.circleAverage (fun w : ℂ => f (q + w • v)) 0 r
 
-theorem continuous_sourceJointCircleRadiusProfile {n : ℕ}
+lemma continuous_sourceJointCircleRadiusProfile {n : ℕ}
     {f : SourceJointComplexCover n → ℝ}
     (hf : Continuous f)
     (q v : SourceJointComplexCover n) :
@@ -29343,13 +29343,13 @@ theorem continuous_sourceJointCircleRadiusProfile {n : ℕ}
       ∫ θ in 0..2 * Real.pi, F r θ)
   exact hint.fun_const_smul ((2 * Real.pi)⁻¹)
 
-theorem sourceJointCircleRadiusProfile_zero {n : ℕ}
+lemma sourceJointCircleRadiusProfile_zero {n : ℕ}
     (f : SourceJointComplexCover n → ℝ)
     (q v : SourceJointComplexCover n) :
     sourceJointCircleRadiusProfile f q v 0 = f q := by
   simp [sourceJointCircleRadiusProfile]
 
-theorem sourceJointCircleRadiusProfile_second_eq_integral
+lemma sourceJointCircleRadiusProfile_second_eq_integral
     {n : ℕ} {f : SourceJointComplexCover n → ℝ}
     (hf : ContDiff ℝ 2 f)
     (q v : SourceJointComplexCover n) :
@@ -29460,7 +29460,7 @@ theorem sourceJointCircleRadiusProfile_second_eq_integral
         exact zero_smul ℂ (d θ)
       rw [hz, add_zero]
 
-theorem sourceJointCircleQuadratic_expand {n : ℕ}
+lemma sourceJointCircleQuadratic_expand {n : ℕ}
     (B : SourceJointComplexCover n →L[ℝ]
       SourceJointComplexCover n →L[ℝ] ℝ)
     (v : SourceJointComplexCover n) (θ : ℝ) :
@@ -29473,23 +29473,23 @@ theorem sourceJointCircleQuadratic_expand {n : ℕ}
   simp [map_add, map_smul, smul_eq_mul]
   ring
 
-theorem sourceJointIntegral_cos_sq_two_pi :
+lemma sourceJointIntegral_cos_sq_two_pi :
     (∫ θ in 0..2 * Real.pi, Real.cos θ ^ 2) = Real.pi := by
   rw [integral_cos_sq]
   simp [Real.sin_two_pi, Real.cos_two_pi]
 
-theorem sourceJointIntegral_sin_sq_two_pi :
+lemma sourceJointIntegral_sin_sq_two_pi :
     (∫ θ in 0..2 * Real.pi, Real.sin θ ^ 2) = Real.pi := by
   rw [integral_sin_sq]
   simp [Real.sin_two_pi, Real.cos_two_pi]
 
-theorem sourceJointIntegral_sin_mul_cos_two_pi :
+lemma sourceJointIntegral_sin_mul_cos_two_pi :
     (∫ θ in 0..2 * Real.pi,
       Real.sin θ * Real.cos θ) = 0 := by
   rw [integral_sin_mul_cos₁]
   simp [Real.sin_two_pi]
 
-theorem sourceJointCircleQuadratic_average {n : ℕ}
+lemma sourceJointCircleQuadratic_average {n : ℕ}
     (B : SourceJointComplexCover n →L[ℝ]
       SourceJointComplexCover n →L[ℝ] ℝ)
     (v : SourceJointComplexCover n) :
@@ -29545,7 +29545,7 @@ theorem sourceJointCircleQuadratic_average {n : ℕ}
       field_simp
       ring
 
-theorem sourceJointCircleRadiusProfile_second_eq_realHessian
+lemma sourceJointCircleRadiusProfile_second_eq_realHessian
     {n : ℕ} {f : SourceJointComplexCover n → ℝ}
     (hf : ContDiff ℝ 2 f)
     (q v : SourceJointComplexCover n) :
@@ -29572,7 +29572,7 @@ open JetEnvelopeGlobalPlurisubharmonic EqualitySaturatingKillingPaths
 open DolbeaultGraphDistributionBridge WeightedDolbeaultBochnerIdentity SchurConvexity
 open scoped BigOperators ComplexConjugate ComplexOrder Topology ContDiff
 
-theorem contDiff_sourceSpatialRealDirectional {n : ℕ}
+lemma contDiff_sourceSpatialRealDirectional {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     (ha : ContDiff ℝ 2 a)
     (u : TorusCharacters.LogSpace n) :
@@ -29581,7 +29581,7 @@ theorem contDiff_sourceSpatialRealDirectional {n : ℕ}
         (fderiv ℝ a z) u) := by
   exact (ha.fderiv_right (by norm_num)).clm_apply contDiff_const
 
-theorem fderiv_sourceSpatialRealDirectional {n : ℕ}
+lemma fderiv_sourceSpatialRealDirectional {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     (ha : ContDiff ℝ 2 a)
     (z u w : TorusCharacters.LogSpace n) :
@@ -29599,7 +29599,7 @@ theorem fderiv_sourceSpatialRealDirectional {n : ℕ}
     he
   simpa [ContinuousLinearMap.flip_apply] using happly
 
-theorem fderiv_sourceSpatialComplexRealDirectional {n : ℕ}
+lemma fderiv_sourceSpatialComplexRealDirectional {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     (ha : ContDiff ℝ 2 a)
     (z u w : TorusCharacters.LogSpace n) :
@@ -29612,7 +29612,7 @@ theorem fderiv_sourceSpatialComplexRealDirectional {n : ℕ}
       (by norm_num))]
   rw [fderiv_sourceSpatialRealDirectional ha z u w]
 
-theorem fderiv_holomorphicCoordinate_sourceSpatialReal {n : ℕ}
+lemma fderiv_holomorphicCoordinate_sourceSpatialReal {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     (ha : ContDiff ℝ 2 a)
     (z w : TorusCharacters.LogSpace n)
@@ -29698,7 +29698,7 @@ def sourceSpatialComplexHessianOfRealBilinear {n : ℕ}
           ((B (Pi.single j (1 : ℂ)) (Pi.single i Complex.I) : ℝ) : ℂ))) /
       4
 
-theorem complexHessian_eq_sourceSpatialComplexHessianOfRealBilinear
+lemma complexHessian_eq_sourceSpatialComplexHessianOfRealBilinear
     {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     (ha : ContDiff ℝ 2 a)
@@ -29718,7 +29718,7 @@ theorem complexHessian_eq_sourceSpatialComplexHessianOfRealBilinear
   simp [Complex.I_sq]
   ring
 
-theorem sourceSpatialComplexHessianOfRealBilinear_isHermitian {n : ℕ}
+lemma sourceSpatialComplexHessianOfRealBilinear_isHermitian {n : ℕ}
     (B : TorusCharacters.LogSpace n →L[ℝ]
       TorusCharacters.LogSpace n →L[ℝ] ℝ)
     (hB : ∀ u v : TorusCharacters.LogSpace n,
@@ -29737,7 +29737,7 @@ theorem sourceSpatialComplexHessianOfRealBilinear_isHermitian {n : ℕ}
     hB (Pi.single i (1 : ℂ)) (Pi.single j Complex.I)]
   ring
 
-theorem sourceCoverComplexHessian_isHermitian {n : ℕ}
+lemma sourceCoverComplexHessian_isHermitian {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     (ha : ContDiff ℝ 2 a)
     (z : TorusCharacters.LogSpace n) :
@@ -29763,14 +29763,14 @@ def sourceJointSpatialSlice {n : ℕ}
     (τ : ℂ) (z : TorusCharacters.LogSpace n) : ℝ :=
   f (z, τ)
 
-theorem contDiff_sourceJointSpatialSlice {n : ℕ}
+lemma contDiff_sourceJointSpatialSlice {n : ℕ}
     {f : SourceJointComplexCover n → ℝ}
     (hf : ContDiff ℝ 2 f)
     (τ : ℂ) :
     ContDiff ℝ 2 (sourceJointSpatialSlice f τ) := by
   exact hf.comp (contDiff_id.prodMk contDiff_const)
 
-theorem fderiv_sourceJointSpatialSlice_apply {n : ℕ}
+lemma fderiv_sourceJointSpatialSlice_apply {n : ℕ}
     {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
     {f : SourceJointComplexCover n → F}
     (hf : Differentiable ℝ f)
@@ -29790,7 +29790,7 @@ theorem fderiv_sourceJointSpatialSlice_apply {n : ℕ}
     ContinuousLinearMap.prod_apply, ContinuousLinearMap.id_apply,
     _root_.zero_apply] using heval
 
-theorem fderiv_sourceJointRealDirectional {n : ℕ}
+lemma fderiv_sourceJointRealDirectional {n : ℕ}
     {f : SourceJointComplexCover n → ℝ}
     (hf : ContDiff ℝ 2 f)
     (q u w : SourceJointComplexCover n) :
@@ -29806,7 +29806,7 @@ theorem fderiv_sourceJointRealDirectional {n : ℕ}
     (fun L : SourceJointComplexCover n →L[ℝ] ℝ => L w) he
   simpa [ContinuousLinearMap.flip_apply] using happly
 
-theorem sndFDeriv_sourceJointSpatialSlice {n : ℕ}
+lemma sndFDeriv_sourceJointSpatialSlice {n : ℕ}
     {f : SourceJointComplexCover n → ℝ}
     (hf : ContDiff ℝ 2 f)
     (τ : ℂ)
@@ -29850,7 +29850,7 @@ def sourceJointSpatialComplexHessian {n : ℕ}
     Matrix (Fin n) (Fin n) ℂ :=
   sourceCoverComplexHessian (sourceJointSpatialSlice f τ) z
 
-theorem sourceJointSpatialComplexHessian_isHermitian {n : ℕ}
+lemma sourceJointSpatialComplexHessian_isHermitian {n : ℕ}
     {f : SourceJointComplexCover n → ℝ}
     (hf : ContDiff ℝ 2 f)
     (τ : ℂ)
@@ -29869,7 +29869,7 @@ open JetEnvelopeGlobalPlurisubharmonic JetEnvelopeTrueRadialHessian
 open JetEnvelopeTrueRadialComplexHessian SchurConvexity
 open scoped BigOperators ComplexConjugate ComplexOrder Topology ContDiff
 
-theorem sourceSpatialRealBasis_decomposition {n : ℕ}
+lemma sourceSpatialRealBasis_decomposition {n : ℕ}
     (x : TorusCharacters.LogSpace n) :
     x = ∑ i : Fin n,
       ((x i).re •
@@ -29889,7 +29889,7 @@ theorem sourceSpatialRealBasis_decomposition {n : ℕ}
         simp [Complex.real_smul, Complex.re_add_im]
       · simp [h]
 
-theorem sourceSpatialRealBilinear_apply_eq_realBasis_sum {n : ℕ}
+lemma sourceSpatialRealBilinear_apply_eq_realBasis_sum {n : ℕ}
     (B : TorusCharacters.LogSpace n →L[ℝ]
       TorusCharacters.LogSpace n →L[ℝ] ℝ)
     (x y : TorusCharacters.LogSpace n) :
@@ -29935,7 +29935,7 @@ theorem sourceSpatialRealBilinear_apply_eq_realBasis_sum {n : ℕ}
         _root_.smul_apply, smul_eq_mul]
       ring
 
-theorem sourceSpatialComplexHessianOfRealBilinear_quadratic {n : ℕ}
+lemma sourceSpatialComplexHessianOfRealBilinear_quadratic {n : ℕ}
     (B : TorusCharacters.LogSpace n →L[ℝ]
       TorusCharacters.LogSpace n →L[ℝ] ℝ)
     (hsymm : ∀ u v : TorusCharacters.LogSpace n,
@@ -30010,7 +30010,7 @@ theorem sourceSpatialComplexHessianOfRealBilinear_quadratic {n : ℕ}
       simp only [Complex.I_sq]
       ring
 
-theorem sourceCoverComplexHessian_quadratic {n : ℕ}
+lemma sourceCoverComplexHessian_quadratic {n : ℕ}
     {a : TorusCharacters.LogSpace n → ℝ}
     (ha : ContDiff ℝ 2 a)
     (z x : TorusCharacters.LogSpace n) :
@@ -30035,7 +30035,7 @@ theorem sourceCoverComplexHessian_quadratic {n : ℕ}
   exact sourceSpatialComplexHessianOfRealBilinear_quadratic
     (fderiv ℝ (fderiv ℝ a) z) hsymm x
 
-theorem sourceJointSpatialComplexHessian_quadratic_eq_realLevi
+lemma sourceJointSpatialComplexHessian_quadratic_eq_realLevi
     {n : ℕ}
     {f : SourceJointComplexCover n → ℝ}
     (hf : ContDiff ℝ 2 f)
@@ -30061,7 +30061,7 @@ open JetEnvelopeTrueRadialComplexHessian SchurConvexity WeightedDolbeaultBochner
 open scoped BigOperators ComplexConjugate ComplexOrder MatrixOrder
   Topology ContDiff
 
-theorem sndFDeriv_sourceSpatialRealAffine {n : ℕ}
+lemma sndFDeriv_sourceSpatialRealAffine {n : ℕ}
     {a b : TorusCharacters.LogSpace n → ℝ}
     (ha : ContDiff ℝ 2 a)
     (hb : ContDiff ℝ 2 b)
@@ -30132,7 +30132,7 @@ theorem sndFDeriv_sourceSpatialRealAffine {n : ℕ}
       rw [fderiv_sourceSpatialRealDirectional ha z v u,
         fderiv_sourceSpatialRealDirectional hb z v u]
 
-theorem sourceCoverComplexHessian_realAffine {n : ℕ}
+lemma sourceCoverComplexHessian_realAffine {n : ℕ}
     {a b : TorusCharacters.LogSpace n → ℝ}
     (ha : ContDiff ℝ 2 a)
     (hb : ContDiff ℝ 2 b)
@@ -30183,7 +30183,7 @@ def sourceJointTimeDirection (n : ℕ) :
     SourceJointComplexCover n :=
   (0, (1 / 2 : ℂ))
 
-theorem hasDerivAt_sourceJointTimeEmbedding
+lemma hasDerivAt_sourceJointTimeEmbedding
     {n : ℕ}
     (z : TorusCharacters.LogSpace n)
     (t : ℝ) :
@@ -30194,7 +30194,7 @@ theorem hasDerivAt_sourceJointTimeEmbedding
   exact (hasDerivAt_const t z).prodMk
     (Complex.ofRealCLM.hasDerivAt.div_const (2 : ℂ))
 
-theorem sourceRealFderiv_periodic
+lemma sourceRealFderiv_periodic
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (F : E → ℝ) (d : E)
     (hperiod : Function.Periodic F d) :
@@ -30222,7 +30222,7 @@ def jointSourceCoverTimeSlice {n : ℕ}
     (t : ℝ) (z : TorusCharacters.LogSpace n) : ℝ :=
   F (sourceJointTimeEmbedding z t)
 
-theorem continuous_jointSourceCoverTimeSlice {n : ℕ}
+lemma continuous_jointSourceCoverTimeSlice {n : ℕ}
     {F : SourceJointComplexCover n → ℝ}
     (hF : Continuous F) (t : ℝ) :
     Continuous (jointSourceCoverTimeSlice F t) := by
@@ -30231,7 +30231,7 @@ theorem continuous_jointSourceCoverTimeSlice {n : ℕ}
   unfold sourceJointTimeEmbedding
   fun_prop
 
-theorem jointSourceCoverTimeSlice_spatial_periodic {n : ℕ}
+lemma jointSourceCoverTimeSlice_spatial_periodic {n : ℕ}
     {F : SourceJointComplexCover n → ℝ}
     (hperiod : ∀ m : Fin n → ℤ,
       Function.Periodic F
@@ -30250,14 +30250,14 @@ def jointSourceTorusWeight {n : ℕ}
     (fun z : TorusCharacters.LogSpace n =>
       (jointSourceCoverTimeSlice F t z : ℂ)) q).re
 
-theorem jointSourceTorusWeight_eq_cover {n : ℕ}
+lemma jointSourceTorusWeight_eq_cover {n : ℕ}
     (F : SourceJointComplexCover n → ℝ)
     (t : ℝ) (q : WeightedTorusHilbert.LogTorus n) :
     jointSourceTorusWeight F t q =
       F (sourceJointTimeEmbedding (sourceTorusCoverPoint q) t) := by
   rfl
 
-theorem continuous_jointSourceTorusWeight {n : ℕ}
+lemma continuous_jointSourceTorusWeight {n : ℕ}
     {F : SourceJointComplexCover n → ℝ}
     (hF : Continuous F)
     (hperiod : ∀ m : Fin n → ℤ,
@@ -30285,7 +30285,7 @@ def jointSourceCoverAcceleration {n : ℕ}
   (fderiv ℝ (jointSourceCoverVelocity F) q)
     (sourceJointTimeDirection n)
 
-theorem contDiff_jointSourceCoverVelocity {n : ℕ}
+lemma contDiff_jointSourceCoverVelocity {n : ℕ}
     {F : SourceJointComplexCover n → ℝ}
     (hF : ContDiff ℝ 2 F) :
     ContDiff ℝ 1 (jointSourceCoverVelocity F) := by
@@ -30293,7 +30293,7 @@ theorem contDiff_jointSourceCoverVelocity {n : ℕ}
   exact (hF.fderiv_right (m := 1) (by norm_num)).clm_apply
     contDiff_const
 
-theorem continuous_jointSourceCoverAcceleration {n : ℕ}
+lemma continuous_jointSourceCoverAcceleration {n : ℕ}
     {F : SourceJointComplexCover n → ℝ}
     (hF : ContDiff ℝ 2 F) :
     Continuous (jointSourceCoverAcceleration F) := by
@@ -30301,7 +30301,7 @@ theorem continuous_jointSourceCoverAcceleration {n : ℕ}
   exact ((contDiff_jointSourceCoverVelocity hF).continuous_fderiv
     (by norm_num)).clm_apply continuous_const
 
-theorem jointSourceCoverVelocity_spatial_periodic {n : ℕ}
+lemma jointSourceCoverVelocity_spatial_periodic {n : ℕ}
     {F : SourceJointComplexCover n → ℝ}
     (hperiod : ∀ m : Fin n → ℤ,
       Function.Periodic F
@@ -30316,7 +30316,7 @@ theorem jointSourceCoverVelocity_spatial_periodic {n : ℕ}
       (TorusCharacters.imaginaryShift m, (0 : ℂ))
       (hperiod m) q)
 
-theorem jointSourceCoverAcceleration_spatial_periodic {n : ℕ}
+lemma jointSourceCoverAcceleration_spatial_periodic {n : ℕ}
     {F : SourceJointComplexCover n → ℝ}
     (hperiod : ∀ m : Fin n → ℤ,
       Function.Periodic F
@@ -30341,7 +30341,7 @@ def jointSourceTorusAcceleration {n : ℕ}
     (t : ℝ) (q : WeightedTorusHilbert.LogTorus n) : ℝ :=
   jointSourceTorusWeight (jointSourceCoverAcceleration F) t q
 
-theorem jointSourceTorusVelocity_eq_cover {n : ℕ}
+lemma jointSourceTorusVelocity_eq_cover {n : ℕ}
     (F : SourceJointComplexCover n → ℝ)
     (t : ℝ) (q : WeightedTorusHilbert.LogTorus n) :
     jointSourceTorusVelocity F t q =
@@ -30349,7 +30349,7 @@ theorem jointSourceTorusVelocity_eq_cover {n : ℕ}
         (sourceJointTimeEmbedding (sourceTorusCoverPoint q) t) := by
   rfl
 
-theorem jointSourceTorusAcceleration_eq_cover {n : ℕ}
+lemma jointSourceTorusAcceleration_eq_cover {n : ℕ}
     (F : SourceJointComplexCover n → ℝ)
     (t : ℝ) (q : WeightedTorusHilbert.LogTorus n) :
     jointSourceTorusAcceleration F t q =
@@ -30357,7 +30357,7 @@ theorem jointSourceTorusAcceleration_eq_cover {n : ℕ}
         (sourceJointTimeEmbedding (sourceTorusCoverPoint q) t) := by
   rfl
 
-theorem continuous_jointSourceTorusVelocity {n : ℕ}
+lemma continuous_jointSourceTorusVelocity {n : ℕ}
     {F : SourceJointComplexCover n → ℝ}
     (hF : ContDiff ℝ 2 F)
     (hperiod : ∀ m : Fin n → ℤ,
@@ -30370,7 +30370,7 @@ theorem continuous_jointSourceTorusVelocity {n : ℕ}
     (contDiff_jointSourceCoverVelocity hF).continuous
     (jointSourceCoverVelocity_spatial_periodic hperiod) t
 
-theorem continuous_jointSourceTorusAcceleration {n : ℕ}
+lemma continuous_jointSourceTorusAcceleration {n : ℕ}
     {F : SourceJointComplexCover n → ℝ}
     (hF : ContDiff ℝ 2 F)
     (hperiod : ∀ m : Fin n → ℤ,
@@ -30383,7 +30383,7 @@ theorem continuous_jointSourceTorusAcceleration {n : ℕ}
     (continuous_jointSourceCoverAcceleration hF)
     (jointSourceCoverAcceleration_spatial_periodic hperiod) t
 
-theorem hasDerivAt_jointSourceTorusWeight {n : ℕ}
+lemma hasDerivAt_jointSourceTorusWeight {n : ℕ}
     {F : SourceJointComplexCover n → ℝ}
     (hF : ContDiff ℝ 2 F)
     (t : ℝ) (q : WeightedTorusHilbert.LogTorus n) :
@@ -30402,7 +30402,7 @@ theorem hasDerivAt_jointSourceTorusWeight {n : ℕ}
         (hasDerivAt_sourceJointTimeEmbedding
           (sourceTorusCoverPoint q) t)
 
-theorem hasDerivAt_jointSourceTorusVelocity {n : ℕ}
+lemma hasDerivAt_jointSourceTorusVelocity {n : ℕ}
     {F : SourceJointComplexCover n → ℝ}
     (hF : ContDiff ℝ 2 F)
     (t : ℝ) (q : WeightedTorusHilbert.LogTorus n) :
@@ -30432,7 +30432,7 @@ open EnvelopeGeneralTorusDescent WeightedTorusGraphWeakBridge WeightedTorusDolbe
 open scoped BigOperators ComplexConjugate ComplexOrder MatrixOrder
   Matrix.Norms.L2Operator Topology ContDiff
 
-theorem angularCoverPotential_jointSourceTorusWeight_eq
+lemma angularCoverPotential_jointSourceTorusWeight_eq
     {n : ℕ}
     (F : SourceJointComplexCover n → ℝ)
     (hperiod : ∀ m : Fin n → ℤ,
@@ -30462,7 +30462,7 @@ open Set Function Filter Matrix
 open scoped BigOperators ComplexConjugate ComplexOrder MatrixOrder
   Matrix.Norms.L2Operator Topology ContDiff
 
-theorem continuous_complexMatrixSquareRoot
+lemma continuous_complexMatrixSquareRoot
     {n : ℕ} {X : Type*} [TopologicalSpace X]
     {H : X → Matrix (Fin n) (Fin n) ℂ}
     (hcont : Continuous H)
@@ -30487,7 +30487,7 @@ theorem continuous_complexMatrixSquareRoot
   simp_rw [CFC.sqrt_eq_cfc]
   exact hcfc
 
-theorem continuous_complexMatrixSquareRoot_inverse
+lemma continuous_complexMatrixSquareRoot_inverse
     {n : ℕ} {X : Type*} [TopologicalSpace X]
     {H : X → Matrix (Fin n) (Fin n) ℂ}
     (hcont : Continuous H)
@@ -30530,13 +30530,13 @@ def momentBodyInteriorRadius
   ((Metric.isOpen_iff.mp isOpen_interior)
     (0 : Space n) (zero_mem_interior K)).choose
 
-theorem momentBodyInteriorRadius_pos
+lemma momentBodyInteriorRadius_pos
     {n : ℕ} (K : CenteredBody n) :
     0 < momentBodyInteriorRadius K :=
   ((Metric.isOpen_iff.mp isOpen_interior)
     (0 : Space n) (zero_mem_interior K)).choose_spec.1
 
-theorem ball_momentBodyInteriorRadius_subset
+lemma ball_momentBodyInteriorRadius_subset
     {n : ℕ} (K : CenteredBody n) :
     Metric.ball (0 : Space n)
       (momentBodyInteriorRadius K) ⊆ K.carrier := by
@@ -30549,12 +30549,12 @@ def momentBodyStrictScale
     {n : ℕ} (K : CenteredBody n) : ℝ :=
   momentBodyInteriorRadius K / 2
 
-theorem momentBodyStrictScale_pos
+lemma momentBodyStrictScale_pos
     {n : ℕ} (K : CenteredBody n) :
     0 < momentBodyStrictScale K :=
   half_pos (momentBodyInteriorRadius_pos K)
 
-theorem momentBodyStrictScale_sum_abs_le_support
+lemma momentBodyStrictScale_sum_abs_le_support
     {n : ℕ} (K : CenteredBody n)
     (x : Space n) :
     momentBodyStrictScale K * (∑ i : Fin n, |x i|) ≤
@@ -30579,11 +30579,11 @@ theorem momentBodyStrictScale_sum_abs_le_support
 def momentStrictRadialCoordinate (y : ℝ) : ℝ :=
   Real.log (Real.exp y + Real.exp (-y))
 
-theorem momentStrictRadialCoordinate_denominator_pos
+lemma momentStrictRadialCoordinate_denominator_pos
     (y : ℝ) : 0 < Real.exp y + Real.exp (-y) :=
   add_pos (Real.exp_pos y) (Real.exp_pos (-y))
 
-theorem contDiff_momentStrictRadialCoordinate :
+lemma contDiff_momentStrictRadialCoordinate :
     ContDiff ℝ ∞ momentStrictRadialCoordinate := by
   unfold momentStrictRadialCoordinate
   apply (Real.contDiff_exp.add
@@ -30595,7 +30595,7 @@ def momentStrictRadialCoordinateDerivative (y : ℝ) : ℝ :=
   (Real.exp y - Real.exp (-y)) /
     (Real.exp y + Real.exp (-y))
 
-theorem hasDerivAt_momentStrictRadialCoordinate (y : ℝ) :
+lemma hasDerivAt_momentStrictRadialCoordinate (y : ℝ) :
     HasDerivAt momentStrictRadialCoordinate
       (momentStrictRadialCoordinateDerivative y) y := by
   have hneg : HasDerivAt (fun x : ℝ => Real.exp (-x))
@@ -30619,7 +30619,7 @@ theorem hasDerivAt_momentStrictRadialCoordinate (y : ℝ) :
 def momentStrictRadialCoordinateSecond (y : ℝ) : ℝ :=
   4 / (Real.exp y + Real.exp (-y)) ^ 2
 
-theorem hasDerivAt_momentStrictRadialCoordinateDerivative
+lemma hasDerivAt_momentStrictRadialCoordinateDerivative
     (y : ℝ) :
     HasDerivAt momentStrictRadialCoordinateDerivative
       (momentStrictRadialCoordinateSecond y) y := by
@@ -30657,12 +30657,12 @@ theorem hasDerivAt_momentStrictRadialCoordinateDerivative
   congr 1
   nlinarith [he]
 
-theorem momentStrictRadialCoordinateSecond_pos (y : ℝ) :
+lemma momentStrictRadialCoordinateSecond_pos (y : ℝ) :
     0 < momentStrictRadialCoordinateSecond y := by
   unfold momentStrictRadialCoordinateSecond
   positivity
 
-theorem abs_le_momentStrictRadialCoordinate (y : ℝ) :
+lemma abs_le_momentStrictRadialCoordinate (y : ℝ) :
     |y| ≤ momentStrictRadialCoordinate y := by
   have hsum : Real.exp |y| ≤ Real.exp y + Real.exp (-y) := by
     by_cases hy : 0 ≤ y
@@ -30677,7 +30677,7 @@ theorem abs_le_momentStrictRadialCoordinate (y : ℝ) :
     hsum
   simpa [momentStrictRadialCoordinate] using hmono
 
-theorem momentStrictRadialCoordinate_le_abs_add_log_two
+lemma momentStrictRadialCoordinate_le_abs_add_log_two
     (y : ℝ) :
     momentStrictRadialCoordinate y ≤ |y| + Real.log 2 := by
   have hpos : Real.exp y ≤ Real.exp |y| :=
@@ -30712,7 +30712,7 @@ def momentBodyStrictRadialPotential
     momentStrictRadialCoordinate
       (momentBodyStrictScale K * x i)
 
-theorem contDiff_momentBodyStrictRadialPotential
+lemma contDiff_momentBodyStrictRadialPotential
     {n : ℕ} (K : CenteredBody n) :
     ContDiff ℝ ∞ (momentBodyStrictRadialPotential K) := by
   unfold momentBodyStrictRadialPotential
@@ -30721,7 +30721,7 @@ theorem contDiff_momentBodyStrictRadialPotential
   exact contDiff_momentStrictRadialCoordinate.comp
     (contDiff_const.mul (contDiff_apply ℝ ℝ i))
 
-theorem momentBodyStrictRadialPotential_sum_abs_lower
+lemma momentBodyStrictRadialPotential_sum_abs_lower
     {n : ℕ} (K : CenteredBody n)
     (x : Space n) :
     momentBodyStrictScale K * (∑ i : Fin n, |x i|) ≤
@@ -30734,7 +30734,7 @@ theorem momentBodyStrictRadialPotential_sum_abs_lower
   rwa [abs_mul,
     abs_of_pos (momentBodyStrictScale_pos K)] at h
 
-theorem momentBodyStrictRadialPotential_le_support_add
+lemma momentBodyStrictRadialPotential_le_support_add
     {n : ℕ} (K : CenteredBody n)
     (x : Space n) :
     momentBodyStrictRadialPotential K x ≤
@@ -30766,7 +30766,7 @@ def momentBodyStrictRadialGradient
         (momentBodyStrictScale K * x i)) •
       (ContinuousLinearMap.proj i : Space n →L[ℝ] ℝ)
 
-theorem hasFDerivAt_momentBodyStrictRadialPotential
+lemma hasFDerivAt_momentBodyStrictRadialPotential
     {n : ℕ} (K : CenteredBody n)
     (x : Space n) :
     HasFDerivAt (momentBodyStrictRadialPotential K)
@@ -30796,7 +30796,7 @@ theorem hasFDerivAt_momentBodyStrictRadialPotential
   exact HasFDerivAt.fun_sum
     (u := Finset.univ) (fun i _ => hterm i)
 
-theorem fderiv_momentBodyStrictRadialPotential
+lemma fderiv_momentBodyStrictRadialPotential
     {n : ℕ} (K : CenteredBody n)
     (x : Space n) :
     fderiv ℝ (momentBodyStrictRadialPotential K) x =
@@ -30810,7 +30810,7 @@ def momentBodyStrictRadialHessianDiagonal
     momentStrictRadialCoordinateSecond
       (momentBodyStrictScale K * x i)
 
-theorem momentBodyStrictRadialHessianDiagonal_pos
+lemma momentBodyStrictRadialHessianDiagonal_pos
     {n : ℕ} (K : CenteredBody n)
     (x : Space n) (i : Fin n) :
     0 < momentBodyStrictRadialHessianDiagonal K x i := by
@@ -30818,7 +30818,7 @@ theorem momentBodyStrictRadialHessianDiagonal_pos
   exact mul_pos (sq_pos_of_pos (momentBodyStrictScale_pos K))
     (momentStrictRadialCoordinateSecond_pos _)
 
-theorem hasFDerivAt_momentBodyStrictRadialGradientCoefficient
+lemma hasFDerivAt_momentBodyStrictRadialGradientCoefficient
     {n : ℕ} (K : CenteredBody n)
     (x : Space n) (i : Fin n) :
     HasFDerivAt
@@ -30843,7 +30843,7 @@ theorem hasFDerivAt_momentBodyStrictRadialGradientCoefficient
     momentBodyStrictRadialHessianDiagonal,
     smul_smul, pow_two, mul_assoc, mul_left_comm, mul_comm] using hscaled
 
-theorem fderiv_momentBodyStrictRadialGradient_apply
+lemma fderiv_momentBodyStrictRadialGradient_apply
     {n : ℕ} (K : CenteredBody n)
     (x v w : Space n) :
     ((fderiv ℝ (momentBodyStrictRadialGradient K) x) v) w =
@@ -30877,7 +30877,7 @@ theorem fderiv_momentBodyStrictRadialGradient_apply
   rw [h.fderiv]
   simp [mul_assoc]
 
-theorem fderiv_fderiv_momentBodyStrictRadialPotential_apply
+lemma fderiv_fderiv_momentBodyStrictRadialPotential_apply
     {n : ℕ} (K : CenteredBody n)
     (x v w : Space n) :
     ((fderiv ℝ
@@ -30893,7 +30893,7 @@ theorem fderiv_fderiv_momentBodyStrictRadialPotential_apply
   rw [heq]
   exact fderiv_momentBodyStrictRadialGradient_apply K x v w
 
-theorem sourceMatrixHessian_momentBodyStrictRadialPotential_eq_diagonal
+lemma sourceMatrixHessian_momentBodyStrictRadialPotential_eq_diagonal
     {n : ℕ} (K : CenteredBody n)
     (x : Space n) :
     sourceMatrixHessian (momentBodyStrictRadialPotential K) x =
@@ -30929,7 +30929,7 @@ theorem sourceMatrixHessian_momentBodyStrictRadialPotential_eq_diagonal
       simp [hz]
     · simp
 
-theorem sourceCoverComplexHessian_momentBodyStrictRadialPotential_eq_diagonal
+lemma sourceCoverComplexHessian_momentBodyStrictRadialPotential_eq_diagonal
     {n : ℕ} (K : CenteredBody n)
     (z : LogSpace n) :
     sourceCoverComplexHessian
@@ -30958,7 +30958,7 @@ theorem sourceCoverComplexHessian_momentBodyStrictRadialPotential_eq_diagonal
     simp
   · simp [h]
 
-theorem sourceCoverComplexHessian_momentBodyStrictRadialPotential_posDef
+lemma sourceCoverComplexHessian_momentBodyStrictRadialPotential_posDef
     {n : ℕ} (K : CenteredBody n)
     (z : LogSpace n) :
     (sourceCoverComplexHessian
@@ -30986,7 +30986,7 @@ def momentBodyOptimizer
     SourceFiniteEnergyPotential K :=
   Classical.choose (exists_exact_optimizer_gradientPushforward_eq K)
 
-theorem momentBodyOptimizer_transport
+lemma momentBodyOptimizer_transport
     {n : ℕ} (K : CenteredBody n) :
     finiteEnergySourceGradientPushforward (momentBodyOptimizer K) =
       normalizedTargetBodyMeasure K := by
@@ -31001,7 +31001,7 @@ def momentBodyTorusWeight
     K (momentBodyOptimizer K)
     (momentBodyOptimizer_transport K) p q t
 
-@[simp] theorem momentBodyTorusWeight_zero
+@[simp] lemma momentBodyTorusWeight_zero
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (q : LogTorus n) :
     momentBodyTorusWeight K p 0 q =
@@ -31010,7 +31010,7 @@ def momentBodyTorusWeight
     K (momentBodyOptimizer K)
     (momentBodyOptimizer_transport K) p q
 
-theorem momentBodyTorusWeight_of_nonpositive
+lemma momentBodyTorusWeight_of_nonpositive
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) {t : ℝ} (ht : t ≤ 0)
     (q : LogTorus n) :
@@ -31023,7 +31023,7 @@ theorem momentBodyTorusWeight_of_nonpositive
     (sourceTorusCoverPoint q) ht,
     realLogCoordinate_sourceTorusCoverPoint]
 
-theorem measurable_momentBodyTorusWeight
+lemma measurable_momentBodyTorusWeight
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (t : ℝ) :
     Measurable (momentBodyTorusWeight K p t) := by
@@ -31031,7 +31031,7 @@ theorem measurable_momentBodyTorusWeight
     K (momentBodyOptimizer K)
     (momentBodyOptimizer_transport K) p t
 
-theorem integrable_exp_neg_momentBodyTorusWeight
+lemma integrable_exp_neg_momentBodyTorusWeight
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (t : ℝ) :
     Integrable
@@ -31047,7 +31047,7 @@ def momentBodyPartition
     (p : LogSpace n) (t : ℝ) : ℝ :=
   sourcePartition (momentBodyTorusWeight K p) t
 
-theorem momentBodyPartition_eq_integral
+lemma momentBodyPartition_eq_integral
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (t : ℝ) :
     momentBodyPartition K p t =
@@ -31056,7 +31056,7 @@ theorem momentBodyPartition_eq_integral
           ∂(sourceTorusBaseMeasure n) := by
   rfl
 
-theorem momentBodyPartition_pos
+lemma momentBodyPartition_pos
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (t : ℝ) :
     0 < momentBodyPartition K p t := by
@@ -31064,7 +31064,7 @@ theorem momentBodyPartition_pos
     K (momentBodyOptimizer K)
     (momentBodyOptimizer_transport K) p t
 
-theorem momentBodyPartition_of_nonpositive
+lemma momentBodyPartition_of_nonpositive
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) {t : ℝ} (ht : t ≤ 0) :
     momentBodyPartition K p t =
@@ -31104,7 +31104,7 @@ theorem momentBodyPartition_of_nonpositive
         (momentBodyOptimizer K)]
       simp
 
-@[simp] theorem momentBodyPartition_zero
+@[simp] lemma momentBodyPartition_zero
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) :
     momentBodyPartition K p 0 =
@@ -31117,13 +31117,13 @@ def momentBodyNormalizedPartition
   momentBodyPartition K p t /
     normalizedVolume K.carrier
 
-theorem momentBodyNormalizedPartition_pos
+lemma momentBodyNormalizedPartition_pos
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (t : ℝ) :
     0 < momentBodyNormalizedPartition K p t := by
   exact div_pos (momentBodyPartition_pos K p t) K.volume_pos
 
-theorem momentBodyNormalizedPartition_of_nonpositive
+lemma momentBodyNormalizedPartition_of_nonpositive
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) {t : ℝ} (ht : t ≤ 0) :
     momentBodyNormalizedPartition K p t = 1 := by
@@ -31136,20 +31136,20 @@ def momentBodyLogPartition
     (p : LogSpace n) (t : ℝ) : ℝ :=
   -Real.log (momentBodyNormalizedPartition K p t)
 
-theorem momentBodyLogPartition_of_nonpositive
+lemma momentBodyLogPartition_of_nonpositive
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) {t : ℝ} (ht : t ≤ 0) :
     momentBodyLogPartition K p t = 0 := by
   simp [momentBodyLogPartition,
     momentBodyNormalizedPartition_of_nonpositive K p ht]
 
-@[simp] theorem momentBodyLogPartition_zero
+@[simp] lemma momentBodyLogPartition_zero
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) :
     momentBodyLogPartition K p 0 = 0 := by
   exact momentBodyLogPartition_of_nonpositive K p (le_refl 0)
 
-theorem momentBodyLogPartition_eq_sourceLogPartition_add_log_volume
+lemma momentBodyLogPartition_eq_sourceLogPartition_add_log_volume
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (t : ℝ) :
     momentBodyLogPartition K p t =
@@ -31166,7 +31166,7 @@ theorem momentBodyLogPartition_eq_sourceLogPartition_add_log_volume
     K.volume_pos.ne']
   ring
 
-theorem sourceNormalizedDensity_momentBody_pos
+lemma sourceNormalizedDensity_momentBody_pos
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (t : ℝ) (q : LogTorus n) :
     0 < sourceNormalizedDensity
@@ -31174,7 +31174,7 @@ theorem sourceNormalizedDensity_momentBody_pos
   exact div_pos (Real.exp_pos _)
     (momentBodyPartition_pos K p t)
 
-theorem sourceNormalizedDensity_momentBody_integrable
+lemma sourceNormalizedDensity_momentBody_integrable
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (t : ℝ) :
     Integrable
@@ -31183,7 +31183,7 @@ theorem sourceNormalizedDensity_momentBody_integrable
   exact (integrable_exp_neg_momentBodyTorusWeight
     K p t).div_const _
 
-theorem integral_sourceNormalizedDensity_momentBody
+lemma integral_sourceNormalizedDensity_momentBody
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (t : ℝ) :
     (∫ q : LogTorus n,
@@ -31193,7 +31193,7 @@ theorem integral_sourceNormalizedDensity_momentBody
   rw [MeasureTheory.integral_div]
   exact div_self (momentBodyPartition_pos K p t).ne'
 
-theorem sourceProbability_momentBody_univ
+lemma sourceProbability_momentBody_univ
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (t : ℝ) :
     sourceProbability (momentBodyTorusWeight K p) t Set.univ = 1 := by
@@ -31207,7 +31207,7 @@ theorem sourceProbability_momentBody_univ
     integral_sourceNormalizedDensity_momentBody K p t]
   exact ENNReal.ofReal_one
 
-theorem sourceProbability_momentBody_isProbability
+lemma sourceProbability_momentBody_isProbability
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (t : ℝ) :
     IsProbabilityMeasure
@@ -31232,7 +31232,7 @@ def momentNormalizedTorusMonomial
       (momentNormalizedPotential F)) : ℂ)⁻¹) *
     torusMonomial (integerExponent K hk u) q
 
-theorem continuous_momentNormalizedTorusMonomial
+lemma continuous_momentNormalizedTorusMonomial
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (u : monomialIndex K k) :
@@ -31241,7 +31241,7 @@ theorem continuous_momentNormalizedTorusMonomial
   exact continuous_const.mul
     (continuous_torusMonomial (integerExponent K hk u))
 
-theorem momentNormalizedTorusMonomial_ae
+lemma momentNormalizedTorusMonomial_ae
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31277,7 +31277,7 @@ def momentTorusRepresentative
       (momentLatticeMonomialBasis
         K hk F htransport).repr.toLinearMap
 
-theorem continuous_momentTorusRepresentative
+lemma continuous_momentTorusRepresentative
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31295,7 +31295,7 @@ theorem continuous_momentTorusRepresentative
         ((momentLatticeMonomialBasis
           K hk F htransport).repr s u))
 
-theorem momentTorusRepresentative_ae
+lemma momentTorusRepresentative_ae
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31351,7 +31351,7 @@ theorem momentTorusRepresentative_ae
     Finsupp.linearCombination_apply, Finsupp.sum_fintype,
     Finset.sum_apply, Pi.smul_apply, smul_eq_mul, b, c]
 
-theorem integral_momentTorusRepresentative_normSq
+lemma integral_momentTorusRepresentative_normSq
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31408,7 +31408,7 @@ theorem integral_momentTorusRepresentative_normSq
         simp [f]
   exact Complex.ofReal_injective hcomplex
 
-theorem integral_momentTorusRepresentative_jetBasis
+lemma integral_momentTorusRepresentative_jetBasis
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31426,7 +31426,7 @@ theorem integral_momentTorusRepresentative_jetBasis
     K hk F htransport p).orthonormal.norm_eq_one i]
   norm_num
 
-theorem integrable_momentTorusRepresentative_normSq
+lemma integrable_momentTorusRepresentative_normSq
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31461,7 +31461,7 @@ def momentTorusJetBasisWeight
       (momentSimultaneousJetBasis
         K hk F htransport p i) q)
 
-theorem continuous_momentTorusJetBasisWeight
+lemma continuous_momentTorusJetBasisWeight
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31484,7 +31484,7 @@ def momentTorusTruncatedJetOrderDensity
     (momentTruncatedJetOrder K hk F htransport p N i : ℝ) *
       momentTorusJetBasisWeight K hk F htransport p q i
 
-theorem continuous_momentTorusTruncatedJetOrderDensity
+lemma continuous_momentTorusTruncatedJetOrderDensity
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31499,7 +31499,7 @@ theorem continuous_momentTorusTruncatedJetOrderDensity
       (continuous_momentTorusJetBasisWeight
         K hk F htransport p i))
 
-theorem integral_momentTorusTruncatedJetOrderDensity
+lemma integral_momentTorusTruncatedJetOrderDensity
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31527,7 +31527,7 @@ theorem integral_momentTorusTruncatedJetOrderDensity
           (momentSimultaneousJetBasis
             K hk F htransport p i)).const_mul _
 
-theorem momentTorusRepresentative_eq_holomorphicRepresentative_cover
+lemma momentTorusRepresentative_eq_holomorphicRepresentative_cover
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31551,7 +31551,7 @@ theorem momentTorusRepresentative_eq_holomorphicRepresentative_cover
     normalizedHolomorphicMonomial
   rw [torusCharacter_sourceTorusCoverPoint]
 
-theorem sum_momentTorusRepresentative_normSq_eq_diagonalKernel
+lemma sum_momentTorusRepresentative_normSq_eq_diagonalKernel
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31581,7 +31581,7 @@ theorem sum_momentTorusRepresentative_normSq_eq_diagonalKernel
     _ = diagonalKernel K k (momentNormalizedPotential F) q.1 := by
       rw [realLogCoordinate_sourceTorusCoverPoint]
 
-theorem integrable_momentDiagonalKernel_weightedTorus
+lemma integrable_momentDiagonalKernel_weightedTorus
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31606,7 +31606,7 @@ theorem integrable_momentDiagonalKernel_weightedTorus
       sum_momentTorusRepresentative_normSq_eq_diagonalKernel
         K hk F htransport b q)
 
-theorem integral_momentDiagonalKernel_weightedTorus
+lemma integral_momentDiagonalKernel_weightedTorus
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31655,7 +31655,7 @@ theorem integral_momentDiagonalKernel_weightedTorus
       simp_rw [hunit]
       simp
 
-theorem continuous_momentDiagonalKernel
+lemma continuous_momentDiagonalKernel
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K) :
     Continuous (diagonalKernel K k (momentNormalizedPotential F)) := by
@@ -31677,7 +31677,7 @@ def momentTorusBergmanProbability
         (diagonalKernel K k (momentNormalizedPotential F) q.1 /
           (bergmanDimension K k : ℝ)))
 
-theorem momentTorusBergmanProbability_univ
+lemma momentTorusBergmanProbability_univ
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31705,7 +31705,7 @@ theorem momentTorusBergmanProbability_univ
       K hk F htransport]
   rw [div_self hdim.ne', ENNReal.ofReal_one]
 
-theorem momentTorusBergmanProbability_isProbability
+lemma momentTorusBergmanProbability_isProbability
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31724,7 +31724,7 @@ def momentPositiveTorusJetSlope
     ((k : ℝ) * diagonalKernel K k
       (momentNormalizedPotential F) q.1)
 
-theorem momentTorusNormalizedDensity_mul_positiveJetSlope
+lemma momentTorusNormalizedDensity_mul_positiveJetSlope
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31748,7 +31748,7 @@ theorem momentTorusNormalizedDensity_mul_positiveJetSlope
   unfold momentPositiveTorusJetSlope
   field_simp
 
-theorem integral_momentPositiveTorusJetSlope
+lemma integral_momentPositiveTorusJetSlope
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31795,7 +31795,7 @@ theorem integral_momentPositiveTorusJetSlope
     integral_momentTorusTruncatedJetOrderDensity
       K hk F htransport p N]
 
-theorem integral_momentPositiveTorusJetSlope_eq_normalizedProfile
+lemma integral_momentPositiveTorusJetSlope_eq_normalizedProfile
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31810,7 +31810,7 @@ theorem integral_momentPositiveTorusJetSlope_eq_normalizedProfile
   rw [integral_momentPositiveTorusJetSlope]
   simp [normalizedMomentTruncatedJetOrderProfile, hk]
 
-theorem eventually_integral_momentPositiveTorusJetSlope_ge_sharp
+lemma eventually_integral_momentPositiveTorusJetSlope_ge_sharp
     {n : ℕ} (hn : 0 < n) (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -31842,7 +31842,7 @@ open JetEnvelopeGlobalPlurisubharmonic JetEnvelopeTrueRadialHessian
 open JetEnvelopeTrueRadialComplexHessian JetEnvelopeTrueRadialComplexHessianPositivity
 open scoped BigOperators ComplexConjugate ComplexOrder Topology ContDiff
 
-theorem sourceJointCircleRadiusProfile_isLocalMin_of_local_circle_submean
+lemma sourceJointCircleRadiusProfile_isLocalMin_of_local_circle_submean
     {n : ℕ}
     (f : SourceJointComplexCover n → ℝ)
     (q v : SourceJointComplexCover n)
@@ -31860,7 +31860,7 @@ theorem sourceJointCircleRadiusProfile_isLocalMin_of_local_circle_submean
   rw [sourceJointCircleRadiusProfile_zero]
   exact hmean r hr
 
-theorem sourceJointCircleRadiusProfile_second_derivative_nonnegative_of_local_circle_submean
+lemma sourceJointCircleRadiusProfile_second_derivative_nonnegative_of_local_circle_submean
     {n : ℕ}
     (f : SourceJointComplexCover n → ℝ)
     (hf : Continuous f)
@@ -31875,7 +31875,7 @@ theorem sourceJointCircleRadiusProfile_second_derivative_nonnegative_of_local_ci
       f q v hmean)
     (continuous_sourceJointCircleRadiusProfile hf q v).continuousAt
 
-theorem sourceJointRealLeviQuadratic_nonnegative_of_local_circle_submean
+lemma sourceJointRealLeviQuadratic_nonnegative_of_local_circle_submean
     {n : ℕ}
     {f : SourceJointComplexCover n → ℝ}
     (hf : ContDiff ℝ 2 f)
@@ -31893,7 +31893,7 @@ theorem sourceJointRealLeviQuadratic_nonnegative_of_local_circle_submean
   unfold sourceJointRealLeviQuadratic
   linarith
 
-theorem sourceJointSpatialComplexHessian_posSemidef_of_local_circle_submean
+lemma sourceJointSpatialComplexHessian_posSemidef_of_local_circle_submean
     {n : ℕ}
     {f : SourceJointComplexCover n → ℝ}
     (hf : ContDiff ℝ 2 f)
@@ -31931,7 +31931,7 @@ def sourceComplexRowSchurEnergyDensity {n : ℕ}
     (b : Fin n → ℂ) : ℝ :=
   complexSchurEnergyDensity A (star b)
 
-theorem sourceComplexRowSchurEnergyDensity_eq {n : ℕ}
+lemma sourceComplexRowSchurEnergyDensity_eq {n : ℕ}
     (A : Matrix (Fin n) (Fin n) ℂ)
     (b : Fin n → ℂ) :
     sourceComplexRowSchurEnergyDensity A b =
@@ -31939,7 +31939,7 @@ theorem sourceComplexRowSchurEnergyDensity_eq {n : ℕ}
   simp [sourceComplexRowSchurEnergyDensity,
     complexSchurEnergyDensity]
 
-theorem sourceComplexRowSchurEnergyDensity_nonneg {n : ℕ}
+lemma sourceComplexRowSchurEnergyDensity_nonneg {n : ℕ}
     {A : Matrix (Fin n) (Fin n) ℂ}
     (hA : A.PosDef)
     (b : Fin n → ℂ) :
@@ -31953,7 +31953,7 @@ def sourceComplexRowSchurBlock {n : ℕ}
   Matrix.fromBlocks A (complexSchurColumn (star b))
     (complexSchurColumn (star b))ᴴ (complexSchurScalar c)
 
-theorem sourceComplexRowSchurBlock_isHermitian {n : ℕ}
+lemma sourceComplexRowSchurBlock_isHermitian {n : ℕ}
     {A : Matrix (Fin n) (Fin n) ℂ}
     (hA : A.IsHermitian)
     (b : Fin n → ℂ) (c : ℝ) :
@@ -31963,7 +31963,7 @@ theorem sourceComplexRowSchurBlock_isHermitian {n : ℕ}
   ext i j
   simp [complexSchurScalar, Matrix.conjTranspose_apply]
 
-theorem sourceComplexRowSchurEnergy_le {n : ℕ}
+lemma sourceComplexRowSchurEnergy_le {n : ℕ}
     {A : Matrix (Fin n) (Fin n) ℂ}
     (hA : A.PosDef)
     (b : Fin n → ℂ) (c : ℝ)
@@ -31987,7 +31987,7 @@ def sourceJointCoverHolomorphicVelocityGradient {n : ℕ}
     (fun w : TorusCharacters.LogSpace n =>
       (jointSourceCoverVelocity F (w, τ) : ℂ)) z i
 
-theorem star_sourceJointCoverAntiholomorphicVelocityGradient
+lemma star_sourceJointCoverAntiholomorphicVelocityGradient
     {n : ℕ}
     {F : SourceJointComplexCover n → ℝ}
     (hF : ContDiff ℝ 2 F)
@@ -32004,7 +32004,7 @@ theorem star_sourceJointCoverAntiholomorphicVelocityGradient
   ext i
   exact conj_barPartialCoordinate_real hv z i
 
-theorem sourceComplexSchurBlock_quadratic {n : ℕ}
+lemma sourceComplexSchurBlock_quadratic {n : ℕ}
     (A : Matrix (Fin n) (Fin n) ℂ)
     (b : Fin n → ℂ) (c : ℝ)
     (x : Fin n ⊕ Fin 1 → ℂ) :
@@ -32025,7 +32025,7 @@ theorem sourceComplexSchurBlock_quadratic {n : ℕ}
   simp [mul_assoc, mul_left_comm, mul_comm]
   ring
 
-theorem sourceComplexRowSchurBlock_quadratic {n : ℕ}
+lemma sourceComplexRowSchurBlock_quadratic {n : ℕ}
     (A : Matrix (Fin n) (Fin n) ℂ)
     (b : Fin n → ℂ) (c : ℝ)
     (x : Fin n ⊕ Fin 1 → ℂ) :
@@ -32048,7 +32048,7 @@ open JetEnvelopeTrueRadialComplexHessian EnvelopeTorusDescent EnvelopeGeneralTor
 open RadialSchurBlock WeightedDolbeaultBochnerIdentity
 open scoped BigOperators ComplexConjugate ComplexOrder Topology ContDiff
 
-theorem sourceJointImaginaryTime_fderiv_eq_zero
+lemma sourceJointImaginaryTime_fderiv_eq_zero
     {n : ℕ} {F : SourceJointComplexCover n → ℝ}
     (hF : ContDiff ℝ 2 F)
     (hperiod : ∀ r : ℝ,
@@ -32082,7 +32082,7 @@ theorem sourceJointImaginaryTime_fderiv_eq_zero
   rw [hline, hzero] at hder
   simpa [v] using hder.symm
 
-theorem sourceJointImaginaryTime_sndFDeriv_eq_zero
+lemma sourceJointImaginaryTime_sndFDeriv_eq_zero
     {n : ℕ} {F : SourceJointComplexCover n → ℝ}
     (hF : ContDiff ℝ 2 F)
     (hperiod : ∀ r : ℝ,
@@ -32104,7 +32104,7 @@ theorem sourceJointImaginaryTime_sndFDeriv_eq_zero
     hfun]
   simp
 
-theorem sourceJointCoverHolomorphicVelocityGradient_eq_sndFDeriv
+lemma sourceJointCoverHolomorphicVelocityGradient_eq_sndFDeriv
     {n : ℕ}
     {F : SourceJointComplexCover n → ℝ}
     (hF : ContDiff ℝ 2 F)
@@ -32155,7 +32155,7 @@ open JetEnvelopeTrueRadialComplexHessian JetEnvelopeTrueRadialComplexHessianPosi
 open EnvelopeTorusDescent EnvelopeGeneralTorusDescent RadialSchurBlock RadialFullLeviFoundations
 open scoped BigOperators ComplexConjugate ComplexOrder Topology ContDiff
 
-theorem sourceJointRealBilinear_spatial_apply_eq_realBasis_sum
+lemma sourceJointRealBilinear_spatial_apply_eq_realBasis_sum
     {n : ℕ}
     (B : SourceJointComplexCover n →L[ℝ]
       SourceJointComplexCover n →L[ℝ] ℝ)
@@ -32235,7 +32235,7 @@ theorem sourceJointRealBilinear_spatial_apply_eq_realBasis_sum
           rw [map_add, map_smul, map_smul]
           simp [            smul_eq_mul]
 
-theorem sourceJointCoverHolomorphicVelocityGradient_dot_eq_sndFDeriv
+lemma sourceJointCoverHolomorphicVelocityGradient_dot_eq_sndFDeriv
     {n : ℕ}
     {F : SourceJointComplexCover n → ℝ}
     (hF : ContDiff ℝ 2 F)
@@ -32298,7 +32298,7 @@ theorem sourceJointCoverHolomorphicVelocityGradient_dot_eq_sndFDeriv
   simp only [Finset.sum_sub_distrib, Finset.sum_add_distrib]
   rw [← Finset.mul_sum, Finset.sum_add_distrib]
 
-theorem jointSourceCoverAcceleration_eq_sndFDeriv
+lemma jointSourceCoverAcceleration_eq_sndFDeriv
     {n : ℕ}
     {F : SourceJointComplexCover n → ℝ}
     (hF : ContDiff ℝ 2 F)
@@ -32311,7 +32311,7 @@ theorem jointSourceCoverAcceleration_eq_sndFDeriv
   exact fderiv_sourceJointRealDirectional hF q
     (sourceJointTimeDirection n) (sourceJointTimeDirection n)
 
-theorem sourceJointComplexTime_decomposition
+lemma sourceJointComplexTime_decomposition
     {n : ℕ} (s : ℂ) :
     ((0 : TorusCharacters.LogSpace n), s) =
       (2 * s.re) • sourceJointTimeDirection n +
@@ -32322,7 +32322,7 @@ theorem sourceJointComplexTime_decomposition
   · simp [sourceJointTimeDirection, Complex.real_smul]
     simpa [mul_comm] using (Complex.re_add_im s).symm
 
-theorem sourceJointCoverAntiholomorphicVelocityGradient_dot_eq_star_holomorphic
+lemma sourceJointCoverAntiholomorphicVelocityGradient_dot_eq_star_holomorphic
     {n : ℕ}
     {F : SourceJointComplexCover n → ℝ}
     (hF : ContDiff ℝ 2 F)
@@ -32334,7 +32334,7 @@ theorem sourceJointCoverAntiholomorphicVelocityGradient_dot_eq_star_holomorphic
   rw [← star_sourceJointCoverAntiholomorphicVelocityGradient hF τ z]
   simp [dotProduct, Pi.star_apply, mul_comm]
 
-theorem sourceJointRealLeviQuadratic_eq_spatial_mixed_time
+lemma sourceJointRealLeviQuadratic_eq_spatial_mixed_time
     {n : ℕ}
     {F : SourceJointComplexCover n → ℝ}
     (hF : ContDiff ℝ 2 F)
@@ -32415,7 +32415,7 @@ theorem sourceJointRealLeviQuadratic_eq_spatial_mixed_time
   rw [hsymm T U, hsymm T V]
   ring
 
-theorem complex_sourceRowSchurMixedScalar_eq_real
+lemma complex_sourceRowSchurMixedScalar_eq_real
     (a : ℂ) (L P Q R : ℝ) :
     (L : ℂ) +
         (((P : ℂ) - Complex.I * (Q : ℂ)) / 2) * a +
@@ -32427,7 +32427,7 @@ theorem complex_sourceRowSchurMixedScalar_eq_real
     simp [Complex.mul_re, Complex.mul_im, pow_two] <;>
     ring
 
-theorem sourceJointCoverRowSchurBlock_quadratic_eq_realLevi
+lemma sourceJointCoverRowSchurBlock_quadratic_eq_realLevi
     {n : ℕ}
     {F : SourceJointComplexCover n → ℝ}
     (hF : ContDiff ℝ 2 F)
@@ -32487,7 +32487,7 @@ def momentWeakJointCoverEnvelope
   momentEnvelopeTimeSlice K F htransport p q.1
     (sourceJointCoverTime q)
 
-theorem momentWeakJointCoverEnvelope_of_positive
+lemma momentWeakJointCoverEnvelope_of_positive
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -32501,7 +32501,7 @@ theorem momentWeakJointCoverEnvelope_of_positive
   exact momentEnvelopeTimeSlice_of_positive
     K F htransport p q.1 hq
 
-theorem continuous_momentWeakJointRealLogCoordinate (n : ℕ) :
+lemma continuous_momentWeakJointRealLogCoordinate (n : ℕ) :
     Continuous (fun q : SourceJointComplexCover n =>
       realLogCoordinate q.1) := by
   apply continuous_pi
@@ -32520,7 +32520,7 @@ open BergmanJetUpperEnvelope BergmanJetEnvelopeLimit BergmanJetJointEnvelopeRegu
 open ActualJetUpperEnvelope JetEnvelopeRightDerivative JetEnvelopeGlobalPlurisubharmonic
 open scoped BigOperators ENNReal Topology
 
-theorem momentPositiveJointGeodesic_phase_invariant
+lemma momentPositiveJointGeodesic_phase_invariant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -32535,7 +32535,7 @@ theorem momentPositiveJointGeodesic_phase_invariant
     sourceJointPhaseHomeomorph_spatial,
     jointLogTime_sourceJointPhaseHomeomorph]
 
-theorem momentJointTailSup_phase_invariant
+lemma momentJointTailSup_phase_invariant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -32557,7 +32557,7 @@ theorem momentJointTailSup_phase_invariant
       K F htransport p _ u hu q
   rw [hfun]
 
-theorem momentJointTailUpperEnvelope_phase_invariant
+lemma momentJointTailUpperEnvelope_phase_invariant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -32584,7 +32584,7 @@ theorem momentJointTailUpperEnvelope_phase_invariant
   rw [← upperRegularization_comp_homeomorph
     (momentJointTailSup K F htransport p r) h q, hfun]
 
-theorem momentJointUpperEnvelope_phase_invariant
+lemma momentJointUpperEnvelope_phase_invariant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -32600,7 +32600,7 @@ theorem momentJointUpperEnvelope_phase_invariant
   exact momentJointTailUpperEnvelope_phase_invariant
     K F htransport p r u hu q
 
-theorem momentWeakJointCoverEnvelope_eq_holomorphicExpLift_of_pos
+lemma momentWeakJointCoverEnvelope_eq_holomorphicExpLift_of_pos
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -32646,7 +32646,7 @@ def momentWeakJointCoverFiniteGeodesic
     (Nat.floor (BodyScale.canonicalScale K *
       ((k + 1 : ℕ) : ℝ))) q.1 (sourceJointCoverTime q)
 
-theorem momentWeakJointCoverFiniteGeodesic_eq_log_diagonal
+lemma momentWeakJointCoverFiniteGeodesic_eq_log_diagonal
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -32674,7 +32674,7 @@ theorem momentWeakJointCoverFiniteGeodesic_eq_log_diagonal
   rw [momentJetGeodesic_eq_log_jointJetDiagonal, ← hrad]
   rfl
 
-theorem continuous_momentWeakJointCoverFiniteGeodesic
+lemma continuous_momentWeakJointCoverFiniteGeodesic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -32710,7 +32710,7 @@ theorem continuous_momentWeakJointCoverFiniteGeodesic
         (show (sourceJointCoverExp q).2 ≠ 0 from
           Complex.exp_ne_zero q.2)).ne'
 
-theorem momentWeakJointCoverFiniteGeodesic_complex_line_submean_all_radius
+lemma momentWeakJointCoverFiniteGeodesic_complex_line_submean_all_radius
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -32839,7 +32839,7 @@ theorem momentWeakJointCoverFiniteGeodesic_complex_line_submean_all_radius
       exact (momentWeakJointCoverFiniteGeodesic_eq_log_diagonal
         K F htransport p k (q + w • v)).symm
 
-theorem differentiable_momentWeakBodyScaleJetGeodesic
+lemma differentiable_momentWeakBodyScaleJetGeodesic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -32871,7 +32871,7 @@ theorem differentiable_momentWeakBodyScaleJetGeodesic
           K (Nat.zero_lt_succ k) F htransport p) z)
     ((k + 1 : ℕ) : ℝ) t).differentiableAt
 
-theorem momentWeakBodyScaleJetGeodesic_time_shift_le
+lemma momentWeakBodyScaleJetGeodesic_time_shift_le
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -32908,7 +32908,7 @@ theorem momentWeakBodyScaleJetGeodesic_time_shift_le
     change g t ≤ g s + BodyScale.canonicalScale K * (t - s)
     linarith
 
-theorem momentJointGlobalLowerBound_le_coverFiniteGeodesic_zero
+lemma momentJointGlobalLowerBound_le_coverFiniteGeodesic_zero
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -32944,7 +32944,7 @@ def momentWeakJointCoverFiniteMinorant
     BodyScale.canonicalScale K *
       min (sourceJointCoverTime q) 0
 
-theorem continuous_momentWeakJointCoverFiniteMinorant
+lemma continuous_momentWeakJointCoverFiniteMinorant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K) :
     Continuous (momentWeakJointCoverFiniteMinorant K F) := by
@@ -32953,7 +32953,7 @@ theorem continuous_momentWeakJointCoverFiniteMinorant
     (continuous_const.mul
       ((continuous_sourceJointCoverTime n).min continuous_const))
 
-theorem momentWeakJointCoverFiniteMinorant_le_finiteGeodesic
+lemma momentWeakJointCoverFiniteMinorant_le_finiteGeodesic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -32981,7 +32981,7 @@ theorem momentWeakJointCoverFiniteMinorant_le_finiteGeodesic
     rw [min_eq_left hneg]
     linarith
 
-theorem momentWeakJointCoverFiniteGeodesic_zero_le_of_tail
+lemma momentWeakJointCoverFiniteGeodesic_zero_le_of_tail
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33038,7 +33038,7 @@ def momentWeakJointCoverFiniteMajorant
     BodyScale.canonicalScale K *
       max (sourceJointCoverTime q) 0
 
-theorem continuous_momentWeakJointCoverFiniteMajorant
+lemma continuous_momentWeakJointCoverFiniteMajorant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K) :
     Continuous (momentWeakJointCoverFiniteMajorant K F) := by
@@ -33049,7 +33049,7 @@ theorem continuous_momentWeakJointCoverFiniteMajorant
         (continuous_const.mul
           ((continuous_sourceJointCoverTime n).max continuous_const))
 
-theorem momentWeakJointCoverFiniteGeodesic_le_majorant_of_tail
+lemma momentWeakJointCoverFiniteGeodesic_le_majorant_of_tail
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33098,7 +33098,7 @@ def momentWeakJointCoverTailUpperEnvelope
   upperRegularization (momentWeakJointCoverTailSup
     K F htransport p r)
 
-theorem momentWeakJointCoverTailSup_range_bddAbove
+lemma momentWeakJointCoverTailSup_range_bddAbove
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33115,7 +33115,7 @@ theorem momentWeakJointCoverTailSup_range_bddAbove
       (momentJointTailStart K F htransport p + r + j)
         (by omega) q
 
-theorem momentWeakJointCoverTailSup_le_majorant
+lemma momentWeakJointCoverTailSup_le_majorant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33132,7 +33132,7 @@ theorem momentWeakJointCoverTailSup_le_majorant
       (momentJointTailStart K F htransport p + r + j)
         (by omega) q
 
-theorem momentWeakJointCoverTailSup_localUpperBounds_nonempty
+lemma momentWeakJointCoverTailSup_localUpperBounds_nonempty
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33148,7 +33148,7 @@ theorem momentWeakJointCoverTailSup_localUpperBounds_nonempty
     (momentWeakJointCoverTailSup_le_majorant
       K F htransport p r) q
 
-theorem upperSemicontinuous_momentWeakJointCoverTailUpperEnvelope
+lemma upperSemicontinuous_momentWeakJointCoverTailUpperEnvelope
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33162,7 +33162,7 @@ theorem upperSemicontinuous_momentWeakJointCoverTailUpperEnvelope
     (momentWeakJointCoverTailSup_localUpperBounds_nonempty
       K F htransport p r)
 
-theorem momentWeakJointCoverTailUpperEnvelope_le_majorant
+lemma momentWeakJointCoverTailUpperEnvelope_le_majorant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33179,7 +33179,7 @@ theorem momentWeakJointCoverTailUpperEnvelope_le_majorant
     (momentWeakJointCoverTailSup_le_majorant
       K F htransport p r) q
 
-theorem momentWeakJointCoverFiniteMinorant_le_tailSup
+lemma momentWeakJointCoverFiniteMinorant_le_tailSup
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33202,7 +33202,7 @@ theorem momentWeakJointCoverFiniteMinorant_le_tailSup
           K F htransport p r q)
       exact ⟨0, by simp⟩
 
-theorem momentWeakJointCoverFiniteMinorant_le_tailUpperEnvelope
+lemma momentWeakJointCoverFiniteMinorant_le_tailUpperEnvelope
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33224,7 +33224,7 @@ theorem momentWeakJointCoverFiniteMinorant_le_tailUpperEnvelope
         (momentWeakJointCoverTailSup_localUpperBounds_nonempty
           K F htransport p r q)
 
-theorem momentWeakJointCoverTailSup_antitone
+lemma momentWeakJointCoverTailSup_antitone
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33252,7 +33252,7 @@ theorem momentWeakJointCoverTailSup_antitone
       (momentJointTailStart K F htransport p + s + j) q
   rw [hindex]
 
-theorem momentWeakJointCoverTailUpperEnvelope_antitone
+lemma momentWeakJointCoverTailUpperEnvelope_antitone
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33271,7 +33271,7 @@ theorem momentWeakJointCoverTailUpperEnvelope_antitone
     (momentWeakJointCoverTailSup_localUpperBounds_nonempty
       K F htransport p r q)
 
-theorem momentWeakJointCoverTailUpperEnvelope_bddBelow
+lemma momentWeakJointCoverTailUpperEnvelope_bddBelow
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33296,7 +33296,7 @@ def momentWeakJointCoverUpperEnvelope
     momentWeakJointCoverTailUpperEnvelope
       K F htransport p r q
 
-theorem upperSemicontinuous_momentWeakJointCoverUpperEnvelope
+lemma upperSemicontinuous_momentWeakJointCoverUpperEnvelope
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33311,7 +33311,7 @@ theorem upperSemicontinuous_momentWeakJointCoverUpperEnvelope
     (upperSemicontinuous_momentWeakJointCoverTailUpperEnvelope
       K F htransport p)
 
-theorem tendsto_momentWeakJointCoverTailUpperEnvelope
+lemma tendsto_momentWeakJointCoverTailUpperEnvelope
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33330,7 +33330,7 @@ theorem tendsto_momentWeakJointCoverTailUpperEnvelope
     (momentWeakJointCoverTailUpperEnvelope_bddBelow
       K F htransport p q)
 
-theorem momentWeakJointCoverFiniteMinorant_le_upperEnvelope
+lemma momentWeakJointCoverFiniteMinorant_le_upperEnvelope
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33346,7 +33346,7 @@ theorem momentWeakJointCoverFiniteMinorant_le_upperEnvelope
       (fun r => momentWeakJointCoverFiniteMinorant_le_tailUpperEnvelope
         K F htransport p r q)
 
-theorem momentWeakJointCoverUpperEnvelope_le_majorant
+lemma momentWeakJointCoverUpperEnvelope_le_majorant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33367,7 +33367,7 @@ theorem momentWeakJointCoverUpperEnvelope_le_majorant
       momentWeakJointCoverTailUpperEnvelope_le_majorant
         K F htransport p 0 q
 
-theorem momentWeakJointCoverTailUpperEnvelope_complex_line_submean_all_radius
+lemma momentWeakJointCoverTailUpperEnvelope_complex_line_submean_all_radius
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33431,7 +33431,7 @@ theorem momentWeakJointCoverTailUpperEnvelope_complex_line_submean_all_radius
   rw [← hsup]
   exact h
 
-theorem momentWeakJointCoverUpperEnvelope_complex_line_submean_all_radius
+lemma momentWeakJointCoverUpperEnvelope_complex_line_submean_all_radius
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33481,7 +33481,7 @@ theorem momentWeakJointCoverUpperEnvelope_complex_line_submean_all_radius
       momentWeakJointCoverTailUpperEnvelope_complex_line_submean_all_radius
         K F htransport p r q v R)
 
-theorem momentWeakJointCoverFiniteGeodesic_eq_positive
+lemma momentWeakJointCoverFiniteGeodesic_eq_positive
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33496,7 +33496,7 @@ theorem momentWeakJointCoverFiniteGeodesic_eq_positive
     jointLogTime_sourceJointExpPositiveLift]
   rfl
 
-theorem momentWeakJointCoverTailSup_eq_positive
+lemma momentWeakJointCoverTailSup_eq_positive
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33522,7 +33522,7 @@ theorem momentWeakJointCoverTailSup_eq_positive
   unfold momentWeakJointCoverTailSup momentJointTailSup
   rw [hfamily]
 
-theorem momentWeakJointCoverTailUpperEnvelope_eq_positive
+lemma momentWeakJointCoverTailUpperEnvelope_eq_positive
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33579,7 +33579,7 @@ theorem momentWeakJointCoverTailUpperEnvelope_eq_positive
         (momentJointTailSup K F htransport p r)
           (sourceJointExpPositiveLift q hq) := by rfl
 
-theorem momentWeakJointCoverUpperEnvelope_eq_positive
+lemma momentWeakJointCoverUpperEnvelope_eq_positive
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33594,7 +33594,7 @@ theorem momentWeakJointCoverUpperEnvelope_eq_positive
   simp_rw [momentWeakJointCoverTailUpperEnvelope_eq_positive
     K F htransport p _ q hq]
 
-theorem momentWeakJointCoverEnvelope_eq_upperEnvelope_of_pos
+lemma momentWeakJointCoverEnvelope_eq_upperEnvelope_of_pos
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33634,7 +33634,7 @@ def momentWeakHolomorphicJointAbsoluteMajorant
   |momentWeakJointCoverFiniteMinorant K F q| +
     |momentWeakJointCoverFiniteMajorant K F q|
 
-theorem continuous_momentWeakHolomorphicJointAbsoluteMajorant
+lemma continuous_momentWeakHolomorphicJointAbsoluteMajorant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K) :
     Continuous (momentWeakHolomorphicJointAbsoluteMajorant K F) := by
@@ -33642,7 +33642,7 @@ theorem continuous_momentWeakHolomorphicJointAbsoluteMajorant
   exact (continuous_momentWeakJointCoverFiniteMinorant K F).abs.add
     (continuous_momentWeakJointCoverFiniteMajorant K F).abs
 
-theorem norm_momentWeakJointCoverUpperEnvelope_le_majorant
+lemma norm_momentWeakJointCoverUpperEnvelope_le_majorant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33667,7 +33667,7 @@ theorem norm_momentWeakJointCoverUpperEnvelope_le_majorant
     (momentWeakJointCoverFiniteMajorant K F q)
   exact abs_le.mpr ⟨by linarith, by linarith⟩
 
-theorem measurable_momentWeakJointCoverUpperEnvelope
+lemma measurable_momentWeakJointCoverUpperEnvelope
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33678,7 +33678,7 @@ theorem measurable_momentWeakJointCoverUpperEnvelope
   (upperSemicontinuous_momentWeakJointCoverUpperEnvelope
     K F htransport p).measurable
 
-theorem locallyIntegrable_momentWeakJointCoverUpperEnvelope
+lemma locallyIntegrable_momentWeakJointCoverUpperEnvelope
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33710,7 +33710,7 @@ def momentWeakHolomorphicJointTrueRadialMollification
   sourceJointTrueRadialSmoothed
     (momentWeakJointCoverUpperEnvelope K F htransport p) k
 
-theorem contDiff_momentWeakHolomorphicJointTrueRadialMollification
+lemma contDiff_momentWeakHolomorphicJointTrueRadialMollification
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33723,7 +33723,7 @@ theorem contDiff_momentWeakHolomorphicJointTrueRadialMollification
     (locallyIntegrable_momentWeakJointCoverUpperEnvelope
       K F htransport p) k
 
-theorem integrable_momentWeakHolomorphicJointComplexLineIntegrand
+lemma integrable_momentWeakHolomorphicJointComplexLineIntegrand
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33797,7 +33797,7 @@ theorem integrable_momentWeakHolomorphicJointComplexLineIntegrand
           K F htransport p _).trans hmaj)
         (sourceJointTrueRadialMollifier_nonneg n k z.1)
 
-theorem integrable_momentWeakHolomorphicJointComplexLineAverage
+lemma integrable_momentWeakHolomorphicJointComplexLineAverage
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33858,7 +33858,7 @@ theorem integrable_momentWeakHolomorphicJointComplexLineAverage
   rw [MeasureTheory.integral_const_mul]
   ring
 
-theorem momentWeakHolomorphicJointComplexLineAverage_integral_eq
+lemma momentWeakHolomorphicJointComplexLineAverage_integral_eq
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -33981,7 +33981,7 @@ theorem momentWeakHolomorphicJointComplexLineAverage_integral_eq
         intervalIntegral.integral_of_le Real.two_pi_pos.le]
       rfl
 
-theorem momentWeakHolomorphicJointTrueRadialMollification_complex_line_submean_all_radius
+lemma momentWeakHolomorphicJointTrueRadialMollification_complex_line_submean_all_radius
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34039,7 +34039,7 @@ open WeightedTorusBrascampLieb MatrixTorusBochnerBridge MatrixTorusBochnerIdenti
 open scoped BigOperators ENNReal Topology ContDiff Convolution
   ComplexConjugate ComplexOrder MatrixOrder
 
-theorem upperRegularization_sourceJointCover_periodic
+lemma upperRegularization_sourceJointCover_periodic
     {n : ℕ} {f : SourceJointComplexCover n → ℝ}
     {d : SourceJointComplexCover n}
     (hf : Function.Periodic f d) :
@@ -34053,7 +34053,7 @@ theorem upperRegularization_sourceJointCover_periodic
   change upperRegularization f (h q) = upperRegularization f q
   rw [← upperRegularization_comp_homeomorph f h q, hfun]
 
-theorem momentWeakJointCoverFiniteGeodesic_spatial_periodic
+lemma momentWeakJointCoverFiniteGeodesic_spatial_periodic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34071,7 +34071,7 @@ theorem momentWeakJointCoverFiniteGeodesic_spatial_periodic
             ((k + 1 : ℕ) : ℝ)))
           (sourceJointCoverTime q) m q.1
 
-theorem momentWeakJointCoverFiniteGeodesic_imaginary_periodic
+lemma momentWeakJointCoverFiniteGeodesic_imaginary_periodic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34084,7 +34084,7 @@ theorem momentWeakJointCoverFiniteGeodesic_imaginary_periodic
   simp [momentWeakJointCoverFiniteGeodesic,
     sourceJointCoverTime, Complex.add_re, Complex.mul_re]
 
-theorem momentWeakJointCoverTailSup_spatial_periodic
+lemma momentWeakJointCoverTailSup_spatial_periodic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34109,7 +34109,7 @@ theorem momentWeakJointCoverTailSup_spatial_periodic
         (momentJointTailStart K F htransport p + r + j) m q
   rw [hfun]
 
-theorem momentWeakJointCoverTailSup_imaginary_periodic
+lemma momentWeakJointCoverTailSup_imaginary_periodic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34134,7 +34134,7 @@ theorem momentWeakJointCoverTailSup_imaginary_periodic
         (momentJointTailStart K F htransport p + s + j) r q
   rw [hfun]
 
-theorem momentWeakJointCoverTailUpperEnvelope_spatial_periodic
+lemma momentWeakJointCoverTailUpperEnvelope_spatial_periodic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34148,7 +34148,7 @@ theorem momentWeakJointCoverTailUpperEnvelope_spatial_periodic
     (momentWeakJointCoverTailSup_spatial_periodic
       K F htransport p r m)
 
-theorem momentWeakJointCoverTailUpperEnvelope_imaginary_periodic
+lemma momentWeakJointCoverTailUpperEnvelope_imaginary_periodic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34162,7 +34162,7 @@ theorem momentWeakJointCoverTailUpperEnvelope_imaginary_periodic
     (momentWeakJointCoverTailSup_imaginary_periodic
       K F htransport p s r)
 
-theorem momentWeakJointCoverUpperEnvelope_spatial_periodic
+lemma momentWeakJointCoverUpperEnvelope_spatial_periodic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34178,7 +34178,7 @@ theorem momentWeakJointCoverUpperEnvelope_spatial_periodic
   exact momentWeakJointCoverTailUpperEnvelope_spatial_periodic
     K F htransport p r m q
 
-theorem momentWeakJointCoverUpperEnvelope_imaginary_periodic
+lemma momentWeakJointCoverUpperEnvelope_imaginary_periodic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34194,7 +34194,7 @@ theorem momentWeakJointCoverUpperEnvelope_imaginary_periodic
   exact momentWeakJointCoverTailUpperEnvelope_imaginary_periodic
     K F htransport p s r q
 
-theorem momentWeakHolomorphicJointTrueRadialMollification_spatial_periodic
+lemma momentWeakHolomorphicJointTrueRadialMollification_spatial_periodic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34208,7 +34208,7 @@ theorem momentWeakHolomorphicJointTrueRadialMollification_spatial_periodic
     (momentWeakJointCoverUpperEnvelope_spatial_periodic
       K F htransport p m) k
 
-theorem momentWeakHolomorphicJointTrueRadialMollification_imaginary_periodic
+lemma momentWeakHolomorphicJointTrueRadialMollification_imaginary_periodic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34222,7 +34222,7 @@ theorem momentWeakHolomorphicJointTrueRadialMollification_imaginary_periodic
     (momentWeakJointCoverUpperEnvelope_imaginary_periodic
       K F htransport p r) k
 
-theorem sourceJointSpatialComplexHessian_momentWeakHolomorphicJointTrueRadialMollification_posSemidef
+lemma sourceJointSpatialComplexHessian_momentWeakHolomorphicJointTrueRadialMollification_posSemidef
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34255,7 +34255,7 @@ def momentWeakHolomorphicStrictJointCoverWeight
       ε * matrixSourceCoverPotential
         (momentBodyStrictRadialPotential K) q.1
 
-theorem contDiff_momentWeakHolomorphicStrictJointCoverWeight
+lemma contDiff_momentWeakHolomorphicStrictJointCoverWeight
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34275,7 +34275,7 @@ theorem contDiff_momentWeakHolomorphicStrictJointCoverWeight
       ((contDiff_matrixSourceCoverPotential
         (contDiff_momentBodyStrictRadialPotential K)).comp hfst))
 
-theorem momentWeakHolomorphicStrictJointCoverWeight_spatial_periodic
+lemma momentWeakHolomorphicStrictJointCoverWeight_spatial_periodic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34295,7 +34295,7 @@ theorem momentWeakHolomorphicStrictJointCoverWeight_spatial_periodic
     (1 - ε) * momentWeakHolomorphicJointTrueRadialMollification
       K F htransport p k q + ε * x) hp
 
-theorem momentWeakHolomorphicStrictJointCoverWeight_imaginary_periodic
+lemma momentWeakHolomorphicStrictJointCoverWeight_imaginary_periodic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34311,7 +34311,7 @@ theorem momentWeakHolomorphicStrictJointCoverWeight_imaginary_periodic
     K F htransport p k r q]
   simp
 
-theorem sourceJointSpatialComplexHessian_momentWeakHolomorphicStrictJointCoverWeight_eq
+lemma sourceJointSpatialComplexHessian_momentWeakHolomorphicStrictJointCoverWeight_eq
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34352,7 +34352,7 @@ theorem sourceJointSpatialComplexHessian_momentWeakHolomorphicStrictJointCoverWe
         (contDiff_momentBodyStrictRadialPotential K))) 2)
     (1 - ε) ε z
 
-theorem sourceJointSpatialComplexHessian_momentWeakHolomorphicStrictJointCoverWeight_posDef
+lemma sourceJointSpatialComplexHessian_momentWeakHolomorphicStrictJointCoverWeight_posDef
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34382,7 +34382,7 @@ def momentWeakHolomorphicStrictJointTorusWeight
     (momentWeakHolomorphicStrictJointCoverWeight
       K F htransport p ε k) t q
 
-theorem angularCoverPotential_momentWeakHolomorphicStrictJointTorusWeight_eq
+lemma angularCoverPotential_momentWeakHolomorphicStrictJointTorusWeight_eq
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34400,7 +34400,7 @@ theorem angularCoverPotential_momentWeakHolomorphicStrictJointTorusWeight_eq
     (momentWeakHolomorphicStrictJointCoverWeight_spatial_periodic
       K F htransport p ε k) t
 
-theorem contDiff_angularCoverPotential_momentWeakHolomorphicStrictJointTorusWeight
+lemma contDiff_angularCoverPotential_momentWeakHolomorphicStrictJointTorusWeight
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34417,7 +34417,7 @@ theorem contDiff_angularCoverPotential_momentWeakHolomorphicStrictJointTorusWeig
       K F htransport p ε k).comp
       (contDiff_id.prodMk contDiff_const)
 
-theorem angularTorusComplexHessianMatrix_momentWeakHolomorphicStrictJointTorusWeight_eq
+lemma angularTorusComplexHessianMatrix_momentWeakHolomorphicStrictJointTorusWeight_eq
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34447,7 +34447,7 @@ theorem angularTorusComplexHessianMatrix_momentWeakHolomorphicStrictJointTorusWe
     K F htransport p ε k t]
   rfl
 
-theorem angularTorusComplexHessianMatrix_momentWeakHolomorphicStrictJointTorusWeight_posDef
+lemma angularTorusComplexHessianMatrix_momentWeakHolomorphicStrictJointTorusWeight_posDef
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34465,7 +34465,7 @@ theorem angularTorusComplexHessianMatrix_momentWeakHolomorphicStrictJointTorusWe
       K F htransport p ε hε₀ hε₁ k
         (t / 2 : ℂ) (sourceTorusCoverPoint q)
 
-theorem continuous_momentWeakHolomorphicStrictJointTorusWeight
+lemma continuous_momentWeakHolomorphicStrictJointTorusWeight
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34494,7 +34494,7 @@ open MatrixTorusBochnerCore
 open scoped BigOperators ENNReal Topology ContDiff Convolution
   ComplexConjugate ComplexOrder MatrixOrder
 
-theorem convexOn_momentStrictRadialCoordinate :
+lemma convexOn_momentStrictRadialCoordinate :
     ConvexOn ℝ Set.univ momentStrictRadialCoordinate := by
   have hd : deriv momentStrictRadialCoordinate =
       momentStrictRadialCoordinateDerivative := by
@@ -34512,7 +34512,7 @@ theorem convexOn_momentStrictRadialCoordinate :
     rw [hd, (hasDerivAt_momentStrictRadialCoordinateDerivative y).deriv]
     exact (momentStrictRadialCoordinateSecond_pos y).le
 
-theorem convexOn_momentBodyStrictRadialPotential
+lemma convexOn_momentBodyStrictRadialPotential
     {n : ℕ} (K : CenteredBody n) :
     ConvexOn ℝ Set.univ (momentBodyStrictRadialPotential K) := by
   classical
@@ -34571,7 +34571,7 @@ def momentBodyStrictJointCoverReference
     (q : SourceJointComplexCover n) : ℝ :=
   matrixSourceCoverPotential (momentBodyStrictRadialPotential K) q.1
 
-theorem continuous_momentBodyStrictJointCoverReference
+lemma continuous_momentBodyStrictJointCoverReference
     {n : ℕ} (K : CenteredBody n) :
     Continuous (momentBodyStrictJointCoverReference K) := by
   unfold momentBodyStrictJointCoverReference
@@ -34579,7 +34579,7 @@ theorem continuous_momentBodyStrictJointCoverReference
     (contDiff_momentBodyStrictRadialPotential K).continuous).comp
       continuous_fst
 
-theorem momentBodyStrictJointCoverReference_complex_line_submean_all_radius
+lemma momentBodyStrictJointCoverReference_complex_line_submean_all_radius
     {n : ℕ} (K : CenteredBody n)
     (q v : SourceJointComplexCover n) (R : ℝ) :
     momentBodyStrictJointCoverReference K q ≤
@@ -34656,7 +34656,7 @@ theorem momentBodyStrictJointCoverReference_complex_line_submean_all_radius
   simpa [f, momentBodyStrictJointCoverReference,
     matrixSourceCoverPotential, sourceCoverRadialLinear] using hmean
 
-theorem momentWeakHolomorphicStrictJointCoverWeight_complex_line_submean_all_radius
+lemma momentWeakHolomorphicStrictJointCoverWeight_complex_line_submean_all_radius
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34752,7 +34752,7 @@ theorem momentWeakHolomorphicStrictJointCoverWeight_complex_line_submean_all_rad
       (momentBodyStrictJointCoverReference_complex_line_submean_all_radius
         K q v R) hε₀)
 
-theorem sourceJointRealLeviQuadratic_momentWeakHolomorphicStrictJointCoverWeight_nonneg
+lemma sourceJointRealLeviQuadratic_momentWeakHolomorphicStrictJointCoverWeight_nonneg
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34792,7 +34792,7 @@ def momentWeakHolomorphicStrictJointCoverSchurBlock
       (momentWeakHolomorphicStrictJointCoverWeight
         K F htransport p ε k) (z, τ))
 
-theorem momentWeakHolomorphicStrictJointCoverSchurBlock_isHermitian
+lemma momentWeakHolomorphicStrictJointCoverSchurBlock_isHermitian
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34808,7 +34808,7 @@ theorem momentWeakHolomorphicStrictJointCoverSchurBlock_isHermitian
       (contDiff_momentWeakHolomorphicStrictJointCoverWeight
         K F htransport p ε k)) 2) τ z
 
-theorem momentWeakHolomorphicStrictJointCoverSchurBlock_quadratic_eq_realLevi
+lemma momentWeakHolomorphicStrictJointCoverSchurBlock_quadratic_eq_realLevi
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34832,7 +34832,7 @@ theorem momentWeakHolomorphicStrictJointCoverSchurBlock_quadratic_eq_realLevi
       K F htransport p ε k r)
     τ z x
 
-theorem momentWeakHolomorphicStrictJointCoverSchurBlock_posSemidef
+lemma momentWeakHolomorphicStrictJointCoverSchurBlock_posSemidef
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34856,7 +34856,7 @@ theorem momentWeakHolomorphicStrictJointCoverSchurBlock_posSemidef
           (star (x ∘ Sum.inl), star (x (Sum.inr 0)))
   · simp
 
-theorem momentWeakHolomorphicStrictJointCover_rowSchurEnergy_le_acceleration
+lemma momentWeakHolomorphicStrictJointCover_rowSchurEnergy_le_acceleration
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34898,7 +34898,7 @@ local instance sourceJointCoverVolume_isAddHaar (n : ℕ) :
   Measure.prod.instIsAddHaarMeasure
     (volume : Measure (LogSpace n)) (volume : Measure ℂ)
 
-theorem integrable_momentWeakHolomorphicJointRadialEnvelopeCircleIntegrand
+lemma integrable_momentWeakHolomorphicJointRadialEnvelopeCircleIntegrand
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -34979,7 +34979,7 @@ theorem integrable_momentWeakHolomorphicJointRadialEnvelopeCircleIntegrand
           K F htransport p _).trans hmaj)
         (sourceJointTrueRadialMollifier_nonneg n k z.1)
 
-theorem momentWeakHolomorphicJointRadialEnvelopeAngleIntegral
+lemma momentWeakHolomorphicJointRadialEnvelopeAngleIntegral
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -35015,7 +35015,7 @@ theorem momentWeakHolomorphicJointRadialEnvelopeAngleIntegral
           sourceJointTrueRadialMollifier n k y *
             momentWeakJointCoverUpperEnvelope K F htransport p (q - y))
 
-theorem momentWeakHolomorphicJointRadialEnvelopeCircleAverageIntegral
+lemma momentWeakHolomorphicJointRadialEnvelopeCircleAverageIntegral
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -35116,7 +35116,7 @@ theorem momentWeakHolomorphicJointRadialEnvelopeCircleAverageIntegral
         Real.pi_pos.le]
       field_simp [Real.pi_ne_zero]
 
-theorem integrable_momentWeakHolomorphicJointRadialEnvelopeCircleAverage
+lemma integrable_momentWeakHolomorphicJointRadialEnvelopeCircleAverage
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -35171,7 +35171,7 @@ theorem integrable_momentWeakHolomorphicJointRadialEnvelopeCircleAverage
   rw [MeasureTheory.integral_const_mul]
   ring
 
-theorem momentWeakJointCoverUpperEnvelope_le_trueRadialMollification
+lemma momentWeakJointCoverUpperEnvelope_le_trueRadialMollification
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -35217,7 +35217,7 @@ theorem momentWeakJointCoverUpperEnvelope_le_trueRadialMollification
           K F htransport p q (-y) 1
       simpa [smul_neg, sub_eq_add_neg] using hmean
 
-theorem tendsto_momentWeakHolomorphicJointTrueRadialMollification
+lemma tendsto_momentWeakHolomorphicJointTrueRadialMollification
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -35260,12 +35260,12 @@ def sourceJointRealTimeCLM (n : ℕ) :
       (ContinuousLinearMap.snd ℝ
         (TorusCharacters.LogSpace n) ℂ))
 
-theorem sourceJointRealTimeCLM_apply {n : ℕ}
+lemma sourceJointRealTimeCLM_apply {n : ℕ}
     (q : SourceJointComplexCover n) :
     sourceJointRealTimeCLM n q = sourceJointCoverTime q := by
   simp [sourceJointRealTimeCLM, sourceJointCoverTime]
 
-theorem abs_sourceJointCoverTime_sub_le {n : ℕ}
+lemma abs_sourceJointCoverTime_sub_le {n : ℕ}
     (q y : SourceJointComplexCover n) :
     |sourceJointCoverTime (q - y)| ≤
       |sourceJointCoverTime q| +
@@ -35299,7 +35299,7 @@ open MatrixTorusBochnerCoreConvergence WeightedTorusDolbeault WeightedTorusBochn
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff
 
-theorem angularSourceRadialCutoff_smul_memLp
+lemma angularSourceRadialCutoff_smul_memLp
     {n : ℕ} {a : LogTorus n → ℝ}
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
     {F : LogTorus n → E}
@@ -35321,7 +35321,7 @@ theorem angularSourceRadialCutoff_smul_memLp
   exact mul_le_mul_of_nonneg_right
     (sourceRadialCutoff_le_one m q) (norm_nonneg (F q))
 
-theorem angularSourceRadialCutoff_smul_squared_error_integrals_tendsto_zero
+lemma angularSourceRadialCutoff_smul_squared_error_integrals_tendsto_zero
     {n : ℕ} {a : LogTorus n → ℝ}
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
     {F : LogTorus n → E}
@@ -35381,7 +35381,7 @@ theorem angularSourceRadialCutoff_smul_squared_error_integrals_tendsto_zero
       simp [hm])
   simpa using hdom
 
-theorem angularSourceRadialCutoff_smul_L2_tendsto
+lemma angularSourceRadialCutoff_smul_L2_tendsto
     {n : ℕ} {a : LogTorus n → ℝ}
     {E : Type*} [NormedAddCommGroup E]
     [InnerProductSpace ℂ E]
@@ -35428,7 +35428,7 @@ theorem angularSourceRadialCutoff_smul_L2_tendsto
       angularSourceRadialCutoff_smul_squared_error_integrals_tendsto_zero hF
   simpa [Real.sqrt_sq_eq_abs] using hsq.sqrt
 
-theorem angularTorusWeightedHolomorphicDerivative_cutoffPhysicalField
+lemma angularTorusWeightedHolomorphicDerivative_cutoffPhysicalField
     {n : ℕ} (a : LogTorus n → ℝ) (m : ℕ)
     {W : LogSpace n → LogSpace n}
     (hW : ContDiff ℝ 2 W)
@@ -35472,7 +35472,7 @@ theorem angularTorusWeightedHolomorphicDerivative_cutoffPhysicalField
     torusScalarRepresentative_mul,
     torusScalarRepresentative_complexSourceCoverRadialCutoff]
 
-theorem torusHolomorphicDerivative_complexSourceCoverRadialCutoff
+lemma torusHolomorphicDerivative_complexSourceCoverRadialCutoff
     {n : ℕ} (m : ℕ) (i : Fin n) (q : LogTorus n) :
     torusScalarRepresentative
       (fun z => holomorphicCoordinate
@@ -35498,7 +35498,7 @@ def angularSourceCutoffAdjointCommutator
     (sourceCutoffBarGradient m q)
     (torusFormRepresentative W q)
 
-theorem angularSourceCutoffAdjointCommutator_eq_sum
+lemma angularSourceCutoffAdjointCommutator_eq_sum
     {n : ℕ} (m : ℕ)
     (W : LogSpace n → LogSpace n)
     (q : LogTorus n) :
@@ -35516,7 +35516,7 @@ theorem angularSourceCutoffAdjointCommutator_eq_sum
   rw [torusHolomorphicDerivative_complexSourceCoverRadialCutoff]
   rfl
 
-theorem angularTorusFormAdjoint_cutoffPhysicalField
+lemma angularTorusFormAdjoint_cutoffPhysicalField
     {n : ℕ} (a : LogTorus n → ℝ) (m : ℕ)
     {W : LogSpace n → LogSpace n}
     (hW : ContDiff ℝ 2 W) (q : LogTorus n) :
@@ -35530,7 +35530,7 @@ theorem angularTorusFormAdjoint_cutoffPhysicalField
   rw [angularSourceCutoffAdjointCommutator_eq_sum]
   simp [Finset.sum_add_distrib, ← Finset.mul_sum]
 
-theorem continuous_angularSourceCutoffAdjointCommutator
+lemma continuous_angularSourceCutoffAdjointCommutator
     {n : ℕ} (m : ℕ)
     {W : LogSpace n → LogSpace n}
     (hW : ContDiff ℝ 2 W)
@@ -35561,18 +35561,18 @@ def sourceJointTrueRadialTimeKernel (n k : ℕ)
   (fderiv ℝ (sourceJointTrueRadialMollifier n k) y)
     (sourceJointTimeDirection n)
 
-theorem hasCompactSupport_sourceJointTrueRadialTimeKernel (n k : ℕ) :
+lemma hasCompactSupport_sourceJointTrueRadialTimeKernel (n k : ℕ) :
     HasCompactSupport (sourceJointTrueRadialTimeKernel n k) := by
   exact (hasCompactSupport_sourceJointTrueRadialMollifier n k).fderiv_apply
     ℝ (sourceJointTimeDirection n)
 
-theorem continuous_sourceJointTrueRadialTimeKernel (n k : ℕ) :
+lemma continuous_sourceJointTrueRadialTimeKernel (n k : ℕ) :
     Continuous (sourceJointTrueRadialTimeKernel n k) := by
   unfold sourceJointTrueRadialTimeKernel
   exact ((contDiff_sourceJointTrueRadialMollifier n k).continuous_fderiv
     (by simp)).clm_apply continuous_const
 
-theorem integrable_sourceJointTrueRadialTimeKernel (n k : ℕ) :
+lemma integrable_sourceJointTrueRadialTimeKernel (n k : ℕ) :
     Integrable (sourceJointTrueRadialTimeKernel n k)
       (volume : Measure (SourceJointComplexCover n)) :=
   (continuous_sourceJointTrueRadialTimeKernel n k).integrable_of_hasCompactSupport
@@ -35582,11 +35582,11 @@ def sourceJointTrueRadialTimeKernelMass (n k : ℕ) : ℝ :=
   ∫ y : SourceJointComplexCover n,
     |sourceJointTrueRadialTimeKernel n k y|
 
-theorem sourceJointTrueRadialTimeKernelMass_nonneg (n k : ℕ) :
+lemma sourceJointTrueRadialTimeKernelMass_nonneg (n k : ℕ) :
     0 ≤ sourceJointTrueRadialTimeKernelMass n k := by
   exact integral_nonneg (fun y => abs_nonneg _)
 
-theorem jointSourceCoverVelocity_sourceJointTrueRadialSmoothed
+lemma jointSourceCoverVelocity_sourceJointTrueRadialSmoothed
     {n : ℕ} {f : SourceJointComplexCover n → ℝ}
     (hf : LocallyIntegrable f
       (volume : Measure (SourceJointComplexCover n)))
@@ -35635,7 +35635,7 @@ open EqualitySaturatingKillingPaths DolbeaultRegularity DolbeaultGraphDistributi
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff Convolution
 
-theorem barPartial_complexReal_convolution_eq_of_compact_green
+lemma barPartial_complexReal_convolution_eq_of_compact_green
     {n : ℕ}
     {g : TorusCharacters.LogSpace n → ℂ}
     {G : Fin n → TorusCharacters.LogSpace n → ℂ}
@@ -35771,7 +35771,7 @@ def normalizedCoverMollification {n : ℕ}
     ⋆[ContinuousLinearMap.lsmul ℝ ℝ,
       (volume : Measure (TorusCharacters.LogSpace n))] g
 
-theorem contDiff_normalizedCoverMollification
+lemma contDiff_normalizedCoverMollification
     {n : ℕ}
     {g : TorusCharacters.LogSpace n → ℂ}
     (hg : LocallyIntegrable g
@@ -35791,7 +35791,7 @@ theorem contDiff_normalizedCoverMollification
   exact hκcompact.contDiff_convolution_left
     (ContinuousLinearMap.lsmul ℝ ℝ) hκ hg
 
-theorem normalizedCoverMollification_periodic
+lemma normalizedCoverMollification_periodic
     {n : ℕ}
     {g : TorusCharacters.LogSpace n → ℂ}
     (hperiod : ∀ q : Fin n → ℤ,
@@ -35801,7 +35801,7 @@ theorem normalizedCoverMollification_periodic
       (TorusCharacters.imaginaryShift q) := by
   exact normalizedShrinkingConvolution_periodic hperiod k q
 
-theorem barPartial_normalizedCoverMollification_eq_of_compact_green
+lemma barPartial_normalizedCoverMollification_eq_of_compact_green
     {n : ℕ}
     {g : TorusCharacters.LogSpace n → ℂ}
     {G : Fin n → TorusCharacters.LogSpace n → ℂ}
@@ -35839,7 +35839,7 @@ open Set Function Filter MeasureTheory
 open TorusCharacters DolbeaultRegularity TorusWeakDolbeaultMollification
 open scoped BigOperators ENNReal Topology ContDiff Convolution
 
-theorem normalizedCoverBump_convolution_sq_le_convolution_sq
+lemma normalizedCoverBump_convolution_sq_le_convolution_sq
     {n : ℕ} {h : LogSpace n → ℝ}
     (hh : MemLp h 2 (volume : Measure (LogSpace n)))
     (k : ℕ) (x : LogSpace n) :
@@ -35947,7 +35947,7 @@ theorem normalizedCoverBump_convolution_sq_le_convolution_sq
   change m ^ 2 ≤ _
   linarith [hnonneg, hexpand]
 
-theorem norm_normalizedCoverMollification_le
+lemma norm_normalizedCoverMollification_le
     {n : ℕ} {h : LogSpace n → ℂ}
     (k : ℕ) (x : LogSpace n) :
     ‖normalizedCoverMollification h k x‖ ≤
@@ -35978,7 +35978,7 @@ theorem norm_normalizedCoverMollification_le
         abs_of_nonneg
           ((complexShrinkingBump (n := n) k).nonneg_normed y)]
 
-theorem normalizedCoverMollification_norm_sq_le_convolution_norm_sq
+lemma normalizedCoverMollification_norm_sq_le_convolution_norm_sq
     {n : ℕ} {h : LogSpace n → ℂ}
     (hh : MemLp h 2 (volume : Measure (LogSpace n)))
     (k : ℕ) (x : LogSpace n) :
@@ -35992,7 +35992,7 @@ theorem normalizedCoverMollification_norm_sq_le_convolution_norm_sq
     hh.norm k x
   exact (pow_le_pow_left₀ (norm_nonneg _) hnorm 2).trans hJ
 
-theorem locallyIntegrable_cover_complex_mul_continuous
+lemma locallyIntegrable_cover_complex_mul_continuous
     {n : ℕ} {h b : LogSpace n → ℂ}
     (hh : LocallyIntegrable h (volume : Measure (LogSpace n)))
     (hb : Continuous b) :
@@ -36010,7 +36010,7 @@ def normalizedCoverComplexDriftCommutator {n : ℕ}
   normalizedCoverMollification (fun y => b y * h y) k x -
     b x * normalizedCoverMollification h k x
 
-theorem continuous_normalizedCoverComplexDriftCommutator
+lemma continuous_normalizedCoverComplexDriftCommutator
     {n : ℕ} {b h : LogSpace n → ℂ}
     (hh : LocallyIntegrable h (volume : Measure (LogSpace n)))
     (hb : Continuous b) (k : ℕ) :
@@ -36020,7 +36020,7 @@ theorem continuous_normalizedCoverComplexDriftCommutator
     (locallyIntegrable_cover_complex_mul_continuous hh hb) k 0).continuous.sub
       (hb.mul (contDiff_normalizedCoverMollification hh k 0).continuous)
 
-theorem normalizedCoverComplexDriftCommutator_eq_integral
+lemma normalizedCoverComplexDriftCommutator_eq_integral
     {n : ℕ} {b h : LogSpace n → ℂ}
     (hh : LocallyIntegrable h (volume : Measure (LogSpace n)))
     (hb : Continuous b) (k : ℕ) (x : LogSpace n) :
@@ -36091,7 +36091,7 @@ theorem normalizedCoverComplexDriftCommutator_eq_integral
   filter_upwards with y
   ring
 
-theorem norm_normalizedCoverComplexDriftCommutator_le_driftOscillation
+lemma norm_normalizedCoverComplexDriftCommutator_le_driftOscillation
     {n : ℕ} {b h : LogSpace n → ℂ}
     (hh : LocallyIntegrable h (volume : Measure (LogSpace n)))
     (hb : Continuous b) (k : ℕ) (x : LogSpace n)
@@ -36147,7 +36147,7 @@ theorem norm_normalizedCoverComplexDriftCommutator_le_driftOscillation
               (x - y))
       _ = c * (‖h y‖ * κ (x - y)) := by ring
 
-theorem coverReal_convolution_comm {n : ℕ}
+lemma coverReal_convolution_comm {n : ℕ}
     (f g : LogSpace n → ℝ) :
     (f ⋆[ContinuousLinearMap.mul ℝ ℝ,
       (volume : Measure (LogSpace n))] g) =
@@ -36159,7 +36159,7 @@ theorem coverReal_convolution_comm {n : ℕ}
   rw [ContinuousLinearMap.flip_mul] at h
   exact h
 
-theorem setIntegral_norm_sq_normalizedCoverComplexDriftCommutator_le
+lemma setIntegral_norm_sq_normalizedCoverComplexDriftCommutator_le
     {n : ℕ} {b h : LogSpace n → ℂ}
     (hh : LocallyIntegrable h (volume : Measure (LogSpace n)))
     (hb : Continuous b) (k : ℕ)
@@ -36326,7 +36326,7 @@ theorem setIntegral_norm_sq_normalizedCoverComplexDriftCommutator_le
           (sq_nonneg c)
     _ = _ := by rw [htotal]
 
-theorem setIntegral_norm_sq_normalizedCoverComplexDriftCommutator_tendsto_zero
+lemma setIntegral_norm_sq_normalizedCoverComplexDriftCommutator_tendsto_zero
     {n : ℕ} {b h : LogSpace n → ℂ}
     (hh : LocallyIntegrable h (volume : Measure (LogSpace n)))
     (hlocal : ∀ {S : Set (LogSpace n)}, IsCompact S →
@@ -36441,7 +36441,7 @@ open Set Function Filter MeasureTheory Matrix
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff Convolution
 
-theorem norm_imaginaryShift_coordinate
+lemma norm_imaginaryShift_coordinate
     {n : ℕ} (q : Fin n → ℤ) (i : Fin n) :
     ‖TorusCharacters.imaginaryShift q i‖ =
       |(q i : ℝ)| * (2 * Real.pi) := by
@@ -36454,7 +36454,7 @@ def complexDeckPeriodization {n : ℕ}
   ∑' q : Fin n → ℤ,
     ψ (z + TorusCharacters.imaginaryShift q)
 
-theorem complexDeckPeriodization_periodic
+lemma complexDeckPeriodization_periodic
     {n : ℕ}
     (ψ : TorusCharacters.LogSpace n → ℂ)
     (q : Fin n → ℤ) :
@@ -36481,7 +36481,7 @@ theorem complexDeckPeriodization_periodic
         (fun d : Fin n → ℤ =>
           ψ (z + TorusCharacters.imaginaryShift d))
 
-theorem exists_finite_complexDeckPeriodization_support_near
+lemma exists_finite_complexDeckPeriodization_support_near
     {n : ℕ}
     {ψ : TorusCharacters.LogSpace n → ℂ}
     (hψcompact : HasCompactSupport ψ)
@@ -36548,7 +36548,7 @@ theorem exists_finite_complexDeckPeriodization_support_near
     exact Finset.mem_Icc.mpr ⟨hleft, hright⟩
   exact hq hmember
 
-theorem contDiff_complexDeckPeriodization
+lemma contDiff_complexDeckPeriodization
     {n : ℕ} {r : ℕ}
     {ψ : TorusCharacters.LogSpace n → ℂ}
     (hψ : ContDiff ℝ r ψ)
@@ -36585,7 +36585,7 @@ open MatrixTorusBochnerIdentity TorusDeckPeriodization
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff Convolution
 
-theorem hasCompactSupport_torusScalarRepresentative_complexDeckPeriodization
+lemma hasCompactSupport_torusScalarRepresentative_complexDeckPeriodization
     {n : ℕ}
     {ψ : TorusCharacters.LogSpace n → ℂ}
     (hψcompact : HasCompactSupport ψ) :
@@ -36637,7 +36637,7 @@ open WeightedTorusDolbeault WeightedTorusBrascampLieb TorusDeckPeriodization Tor
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff Convolution
 
-theorem continuous_torusFunctionBarPartialRepresentative_of_periodic
+lemma continuous_torusFunctionBarPartialRepresentative_of_periodic
     {n : ℕ}
     {F : TorusCharacters.LogSpace n → ℂ}
     (hF : ContDiff ℝ 2 F)
@@ -36654,7 +36654,7 @@ theorem continuous_torusFunctionBarPartialRepresentative_of_periodic
       (continuous_pi (fun j =>
         continuous_sourceTorusBarPartial hF hperiod j))
 
-theorem hasCompactSupport_torusFunctionBarPartialRepresentative_of_periodic
+lemma hasCompactSupport_torusFunctionBarPartialRepresentative_of_periodic
     {n : ℕ}
     (F : TorusCharacters.LogSpace n → ℂ)
     (hperiod : ∀ q : Fin n → ℤ,
@@ -36677,7 +36677,7 @@ theorem hasCompactSupport_torusFunctionBarPartialRepresentative_of_periodic
   exact Set.mem_iUnion.mpr
     ⟨j, subset_closure ((mem_support).mpr hnonzero)⟩
 
-theorem complexDeckPeriodization_scalar_memLp
+lemma complexDeckPeriodization_scalar_memLp
     {n : ℕ}
     {a : LogTorus n → ℝ}
     (ha : Continuous a)
@@ -36696,7 +36696,7 @@ theorem complexDeckPeriodization_scalar_memLp
       (hasCompactSupport_torusScalarRepresentative_complexDeckPeriodization
         hψcompact)
 
-theorem complexDeckPeriodization_barPartial_memLp
+lemma complexDeckPeriodization_barPartial_memLp
     {n : ℕ}
     {a : LogTorus n → ℝ}
     (ha : Continuous a)
@@ -36721,7 +36721,7 @@ theorem complexDeckPeriodization_barPartial_memLp
       (hasCompactSupport_torusScalarRepresentative_complexDeckPeriodization
         hψcompact)
 
-theorem angularWeakDolbeaultResolvent_smoothGraphTest_adjoint
+lemma angularWeakDolbeaultResolvent_smoothGraphTest_adjoint
     {n : ℕ} (a : LogTorus n → ℝ)
     (f : angularWeightedScalarL2 a)
     (F : TorusCharacters.LogSpace n → ℂ)
@@ -36749,7 +36749,7 @@ theorem angularWeakDolbeaultResolvent_smoothGraphTest_adjoint
         a F hFcont hFperiod hFcompact hF hD⟩
   exact angularWeakDolbeaultResolvent_form_adjoint a f v
 
-theorem angularWeakDolbeaultResolvent_smoothGraphTest_adjoint_integral
+lemma angularWeakDolbeaultResolvent_smoothGraphTest_adjoint_integral
     {n : ℕ} (a : LogTorus n → ℝ)
     (f : angularWeightedScalarL2 a)
     (F : TorusCharacters.LogSpace n → ℂ)
@@ -36810,7 +36810,7 @@ theorem angularWeakDolbeaultResolvent_smoothGraphTest_adjoint_integral
       unfold angularScalarL2OfRepresentative
       rw [hq]
 
-theorem angularWeakDolbeaultResolvent_complexDeckPeriodization_adjoint_integral
+lemma angularWeakDolbeaultResolvent_complexDeckPeriodization_adjoint_integral
     {n : ℕ}
     {a : LogTorus n → ℝ}
     (ha : Continuous a)
@@ -36850,7 +36850,7 @@ open WeightedTorusDistributionBridge TorusDeckPeriodization
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff Convolution
 
-theorem angularFundamentalBox_integer_shift_eq_zero
+lemma angularFundamentalBox_integer_shift_eq_zero
     {n : ℕ} {b t : Space n}
     (ht : t ∈ angularFundamentalBox b)
     {q : Fin n → ℤ}
@@ -36875,7 +36875,7 @@ theorem angularFundamentalBox_integer_shift_eq_zero
     omega
   simpa using hz
 
-theorem complexDeckPeriodization_eq_of_fundamentalCell
+lemma complexDeckPeriodization_eq_of_fundamentalCell
     {n : ℕ}
     {b : Space n}
     {ψ : TorusCharacters.LogSpace n → ℂ}
@@ -36924,7 +36924,7 @@ open Set Function Filter MeasureTheory Matrix
 open WeightedTorusHilbert JetEnvelopeSlopeConvergence WeightedTorusDolbeault
 open scoped BigOperators ENNReal InnerProductSpace Topology ContDiff
 
-theorem angularWeightedTorus_ae_iff_base
+lemma angularWeightedTorus_ae_iff_base
     {n : ℕ}
     {a : LogTorus n → ℝ}
     (ha : Continuous a)
@@ -36948,7 +36948,7 @@ theorem angularWeightedTorus_ae_iff_base
     filter_upwards [h] with p hp _
     exact hp
 
-theorem angularWeightedTorus_ae_eq_base
+lemma angularWeightedTorus_ae_eq_base
     {n : ℕ} {E : Type*}
     {a : LogTorus n → ℝ}
     (ha : Continuous a)
@@ -36958,7 +36958,7 @@ theorem angularWeightedTorus_ae_eq_base
   (angularWeightedTorus_ae_iff_base ha
     (fun p : LogTorus n => f p = g p)).mp h
 
-theorem angularWeightedLp_aestronglyMeasurable_base
+lemma angularWeightedLp_aestronglyMeasurable_base
     {n : ℕ} {E : Type*}
     [NormedAddCommGroup E]
     {a : LogTorus n → ℝ}
@@ -36977,7 +36977,7 @@ open TorusCharacters WeightedTorusHilbert JetEnvelopeSlopeConvergence
 open WeightedTorusDistributionBridge WeightedTorusVectorClosedGraphWeakBridge WeightedTorusDolbeault
 open scoped BigOperators ENNReal InnerProductSpace Topology
 
-theorem angularMemLp_locallyIntegrable_base
+lemma angularMemLp_locallyIntegrable_base
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     {g : LogTorus n → ℂ}
@@ -37042,7 +37042,7 @@ theorem angularMemLp_locallyIntegrable_base
           ring
     _ = g q := by rw [hcancel, one_mul]
 
-theorem angularWeightedScalarL2_locallyIntegrable_base
+lemma angularWeightedScalarL2_locallyIntegrable_base
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (f : angularWeightedScalarL2 a) :
@@ -37052,7 +37052,7 @@ theorem angularWeightedScalarL2_locallyIntegrable_base
   angularMemLp_locallyIntegrable_base ha
     (MeasureTheory.Lp.memLp f)
 
-theorem angularWeightedFormCoordinate_memLp
+lemma angularWeightedFormCoordinate_memLp
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : angularWeightedFormL2 a)
     (i : Fin n) :
@@ -37064,7 +37064,7 @@ theorem angularWeightedFormCoordinate_memLp
     (formCoordinateCLM i).comp_memLp'
       (MeasureTheory.Lp.memLp W)
 
-theorem angularWeightedFormCoordinate_locallyIntegrable_base
+lemma angularWeightedFormCoordinate_locallyIntegrable_base
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (W : angularWeightedFormL2 a) (i : Fin n) :
@@ -37075,7 +37075,7 @@ theorem angularWeightedFormCoordinate_locallyIntegrable_base
   angularMemLp_locallyIntegrable_base ha
     (angularWeightedFormCoordinate_memLp W i)
 
-theorem angularWeightedScalarCoverLift_locallyIntegrable
+lemma angularWeightedScalarCoverLift_locallyIntegrable
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (f : angularWeightedScalarL2 a) :
@@ -37087,7 +37087,7 @@ theorem angularWeightedScalarCoverLift_locallyIntegrable
   simpa [unweightedTorusMeasure, sourceTorusBaseMeasure] using
     angularWeightedScalarL2_locallyIntegrable_base ha f
 
-theorem angularWeightedFormCoordinateCoverLift_locallyIntegrable
+lemma angularWeightedFormCoordinateCoverLift_locallyIntegrable
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (W : angularWeightedFormL2 a) (i : Fin n) :
@@ -37101,7 +37101,7 @@ theorem angularWeightedFormCoordinateCoverLift_locallyIntegrable
     angularWeightedFormCoordinate_locallyIntegrable_base
       ha W i
 
-theorem angularMemLp_restrict_base_isCompact
+lemma angularMemLp_restrict_base_isCompact
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     {g : LogTorus n → ℂ}
@@ -37172,7 +37172,7 @@ theorem angularMemLp_restrict_base_isCompact
         ring
     _ = ‖g q‖ ^ 2 := by rw [hcancel, one_mul]
 
-theorem angularMemLp_normSquared_locallyIntegrable_base
+lemma angularMemLp_normSquared_locallyIntegrable_base
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     {g : LogTorus n → ℂ}
@@ -37188,7 +37188,7 @@ theorem angularMemLp_normSquared_locallyIntegrable_base
       hgS.aestronglyMeasurable).mp hgS
   exact hsq.ofReal (𝕜 := ℂ)
 
-theorem angularWeightedScalarCoverLift_memLp_restrict_volume_isCompact
+lemma angularWeightedScalarCoverLift_memLp_restrict_volume_isCompact
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (f : angularWeightedScalarL2 a)
@@ -37225,7 +37225,7 @@ theorem angularWeightedScalarCoverLift_memLp_restrict_volume_isCompact
       ‖f (complexTorusCoverProjection n z)‖ ^ 2
   exact Complex.ofReal_re _
 
-theorem angularWeightedFormCoordinateCoverLift_memLp_restrict_volume_isCompact
+lemma angularWeightedFormCoordinateCoverLift_memLp_restrict_volume_isCompact
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (W : angularWeightedFormL2 a) (i : Fin n)
@@ -37282,13 +37282,13 @@ def angularMatrixSquareRoot {n : ℕ}
     (q : LogTorus n) : Matrix (Fin n) (Fin n) ℂ :=
   CFC.sqrt (H q)
 
-theorem angularMatrixSquareRoot_posDef {n : ℕ}
+lemma angularMatrixSquareRoot_posDef {n : ℕ}
     {H : LogTorus n → Matrix (Fin n) (Fin n) ℂ}
     (hH : ∀ q, (H q).PosDef) (q : LogTorus n) :
     (angularMatrixSquareRoot H q).PosDef := by
   exact (hH q).isStrictlyPositive.sqrt.posDef
 
-theorem continuous_angularMatrixSquareRoot {n : ℕ}
+lemma continuous_angularMatrixSquareRoot {n : ℕ}
     {H : LogTorus n → Matrix (Fin n) (Fin n) ℂ}
     (hcont : Continuous H)
     (hH : ∀ q, (H q).PosDef) :
@@ -37296,7 +37296,7 @@ theorem continuous_angularMatrixSquareRoot {n : ℕ}
   exact continuous_complexMatrixSquareRoot hcont
     (fun q => (hH q).posSemidef)
 
-theorem continuous_angularMatrixSquareRoot_inverse {n : ℕ}
+lemma continuous_angularMatrixSquareRoot_inverse {n : ℕ}
     {H : LogTorus n → Matrix (Fin n) (Fin n) ℂ}
     (hcont : Continuous H)
     (hH : ∀ q, (H q).PosDef) :
@@ -37314,7 +37314,7 @@ open WeightedTorusBochner TorusWeightedBaseAE
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff Convolution Manifold
 
-theorem angularWeightedTorus_integral_eq_realFundamentalCell
+lemma angularWeightedTorus_integral_eq_realFundamentalCell
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (b : Space n)
@@ -37355,7 +37355,7 @@ theorem angularWeightedTorus_integral_eq_realFundamentalCell
       rw [hmap]
       exact hH
 
-theorem angularWeightedScalarL2_inner_integral_eq_realFundamentalCell
+lemma angularWeightedScalarL2_inner_integral_eq_realFundamentalCell
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (b : Space n)
@@ -37374,7 +37374,7 @@ theorem angularWeightedScalarL2_inner_integral_eq_realFundamentalCell
   exact (angularWeightedLp_aestronglyMeasurable_base f).inner
     hG.aestronglyMeasurable
 
-theorem angularWeightedFormL2_inner_integral_eq_realFundamentalCell
+lemma angularWeightedFormL2_inner_integral_eq_realFundamentalCell
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (b : Space n)
@@ -37394,7 +37394,7 @@ theorem angularWeightedFormL2_inner_integral_eq_realFundamentalCell
   exact (angularWeightedLp_aestronglyMeasurable_base W).inner
     hV.aestronglyMeasurable
 
-theorem exists_finite_complex_fundamental_test_partition
+lemma exists_finite_complex_fundamental_test_partition
     {n : ℕ}
     {ψ : LogSpace n → ℂ}
     (hψcompact : HasCompactSupport ψ) :
@@ -37456,7 +37456,7 @@ open WeightedTorusClosedGraphWeakBridge TorusDeckPeriodization TorusDeckFundamen
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff
 
-theorem complexDeckPeriodization_eventuallyEq_on_fundamentalCell
+lemma complexDeckPeriodization_eventuallyEq_on_fundamentalCell
     {n : ℕ}
     {b : Space n}
     {ψ : TorusCharacters.LogSpace n → ℂ}
@@ -37544,7 +37544,7 @@ theorem complexDeckPeriodization_eventuallyEq_on_fundamentalCell
     _ = ψ w := by
       rw [hdeckzero, add_zero]
 
-theorem barPartial_complexDeckPeriodization_eq_on_fundamentalCell
+lemma barPartial_complexDeckPeriodization_eq_on_fundamentalCell
     {n : ℕ}
     {b : Space n}
     {ψ : TorusCharacters.LogSpace n → ℂ}
@@ -37584,7 +37584,7 @@ def realAngularWeightedFundamentalCellMeasure {n : ℕ}
     (fun p => ENNReal.ofReal
       (angularWeightedTorusDensity a (realTorusCoverProjection n p)))
 
-theorem continuous_realTorusCoverProjection (n : ℕ) :
+lemma continuous_realTorusCoverProjection (n : ℕ) :
     Continuous (realTorusCoverProjection n) := by
   change Continuous (fun p : Space n × Space n =>
     (p.1, angularCoverProjection n p.2))
@@ -37594,7 +37594,7 @@ theorem continuous_realTorusCoverProjection (n : ℕ) :
         (continuous_snd : Continuous
           (fun p : Space n × Space n => p.2)))
 
-theorem realAngularWeightedFundamentalCell_measurePreserving
+lemma realAngularWeightedFundamentalCell_measurePreserving
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a) (b : Space n) :
     MeasurePreserving (realTorusCoverProjection n)
@@ -37651,7 +37651,7 @@ def angularFormFundamentalLiftLI {n : ℕ}
     (realTorusCoverProjection n)
     (realAngularWeightedFundamentalCell_measurePreserving ha b)
 
-theorem angularScalarFundamentalLiftLI_ae_eq {n : ℕ}
+lemma angularScalarFundamentalLiftLI_ae_eq {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a)
     (b : Space n) (f : angularWeightedScalarL2 a) :
     (fun p : Space n × Space n =>
@@ -37661,7 +37661,7 @@ theorem angularScalarFundamentalLiftLI_ae_eq {n : ℕ}
   exact MeasureTheory.Lp.coeFn_compMeasurePreserving f
     (realAngularWeightedFundamentalCell_measurePreserving ha b)
 
-theorem angularFormFundamentalLiftLI_ae_eq {n : ℕ}
+lemma angularFormFundamentalLiftLI_ae_eq {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a)
     (b : Space n) (f : angularWeightedFormL2 a) :
     (fun p : Space n × Space n =>
@@ -37671,7 +37671,7 @@ theorem angularFormFundamentalLiftLI_ae_eq {n : ℕ}
   exact MeasureTheory.Lp.coeFn_compMeasurePreserving f
     (realAngularWeightedFundamentalCell_measurePreserving ha b)
 
-theorem realAngularWeightedFundamentalCellMeasure_isLocallyFinite
+lemma realAngularWeightedFundamentalCellMeasure_isLocallyFinite
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a) (b : Space n) :
     IsLocallyFiniteMeasure
@@ -37687,7 +37687,7 @@ def inverseAngularCoverWeight {n : ℕ}
     (p : Space n × Space n) : ℂ :=
   (Real.exp (a (realTorusCoverProjection n p)) : ℂ)
 
-theorem continuous_inverseAngularCoverWeight {n : ℕ}
+lemma continuous_inverseAngularCoverWeight {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a) :
     Continuous (inverseAngularCoverWeight a) := by
   exact Complex.continuous_ofReal.comp
@@ -37707,7 +37707,7 @@ def angularWeightedCellAdjointVectorTest {n : ℕ}
   inverseAngularCoverWeight a p •
     coverAdjointVectorTest ψ j (logarithmicCoordinatesEquiv n p)
 
-theorem continuous_angularWeightedCellAdjointScalarTest {n : ℕ}
+lemma continuous_angularWeightedCellAdjointScalarTest {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a)
     {ψ : LogSpace n → ℝ} (hψ : ContDiff ℝ 1 ψ)
     (j : Fin n) :
@@ -37716,7 +37716,7 @@ theorem continuous_angularWeightedCellAdjointScalarTest {n : ℕ}
     ((continuous_coverAdjointScalarTest hψ j).comp
       (logarithmicCoordinatesEquiv n).continuous)
 
-theorem continuous_angularWeightedCellAdjointVectorTest {n : ℕ}
+lemma continuous_angularWeightedCellAdjointVectorTest {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a)
     {ψ : LogSpace n → ℝ} (hψ : ContDiff ℝ 1 ψ)
     (j : Fin n) :
@@ -37725,7 +37725,7 @@ theorem continuous_angularWeightedCellAdjointVectorTest {n : ℕ}
     ((continuous_coverAdjointVectorTest hψ.continuous j).comp
       (logarithmicCoordinatesEquiv n).continuous)
 
-theorem compactSupport_angularWeightedCellAdjointScalarTest {n : ℕ}
+lemma compactSupport_angularWeightedCellAdjointScalarTest {n : ℕ}
     (a : LogTorus n → ℝ) {ψ : LogSpace n → ℝ}
     (hψcompact : HasCompactSupport ψ) (j : Fin n) :
     HasCompactSupport (angularWeightedCellAdjointScalarTest a ψ j) := by
@@ -37738,7 +37738,7 @@ theorem compactSupport_angularWeightedCellAdjointScalarTest {n : ℕ}
         (logarithmicCoordinatesEquiv n).toHomeomorph
   exact hcomp.mul_left
 
-theorem compactSupport_angularWeightedCellAdjointVectorTest {n : ℕ}
+lemma compactSupport_angularWeightedCellAdjointVectorTest {n : ℕ}
     (a : LogTorus n → ℝ) {ψ : LogSpace n → ℝ}
     (hψcompact : HasCompactSupport ψ) (j : Fin n) :
     HasCompactSupport (angularWeightedCellAdjointVectorTest a ψ j) := by
@@ -37771,7 +37771,7 @@ def angularWeightedCellAdjointVectorL2 {n : ℕ}
         a hψcompact j)).toLp
       (angularWeightedCellAdjointVectorTest a ψ j)
 
-theorem angularWeightedCellAdjointVectorL2_ae_eq {n : ℕ}
+lemma angularWeightedCellAdjointVectorL2_ae_eq {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a)
     (b : Space n) {ψ : LogSpace n → ℝ}
     (hψ : ContDiff ℝ 1 ψ)
@@ -37791,7 +37791,7 @@ theorem angularWeightedCellAdjointVectorL2_ae_eq {n : ℕ}
         (compactSupport_angularWeightedCellAdjointVectorTest
           a hψcompact j)))
 
-theorem angularWeight_mul_inverseAngularCoverWeight {n : ℕ}
+lemma angularWeight_mul_inverseAngularCoverWeight {n : ℕ}
     (a : LogTorus n → ℝ)
     (p : Space n × Space n) :
     ((ENNReal.ofReal
@@ -37804,7 +37804,7 @@ theorem angularWeight_mul_inverseAngularCoverWeight {n : ℕ}
   rw [← Complex.ofReal_mul, ← Real.exp_add]
   simp
 
-theorem angularWeightedCellVector_inner_eq_unweighted {n : ℕ}
+lemma angularWeightedCellVector_inner_eq_unweighted {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a)
     (b : Space n)
     {ψ : LogSpace n → ℝ} (hψ : ContDiff ℝ 1 ψ)
@@ -37867,7 +37867,7 @@ theorem angularWeightedCellVector_inner_eq_unweighted {n : ℕ}
             ring
         _ = _ := by rw [hc, one_mul]
 
-theorem angularWeightedCellVector_inner_eq_jacobian_cover {n : ℕ}
+lemma angularWeightedCellVector_inner_eq_jacobian_cover {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a)
     (b : Space n)
     {ψ : LogSpace n → ℝ} (hψ : ContDiff ℝ 1 ψ)
@@ -37918,7 +37918,7 @@ theorem angularWeightedCellVector_inner_eq_jacobian_cover {n : ℕ}
       rw [(coverTest_zero_outside_fundamentalCell hcell p hp).1]
       simp
 
-theorem angularWeightedTorus_complexCoverLift_ae_eq {n : ℕ}
+lemma angularWeightedTorus_complexCoverLift_ae_eq {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a)
     {f g : LogTorus n → ℂ}
     (h : f =ᵐ[angularWeightedTorusMeasure a] g) :
@@ -37928,7 +37928,7 @@ theorem angularWeightedTorus_complexCoverLift_ae_eq {n : ℕ}
   simpa [sourceTorusBaseMeasure, unweightedTorusMeasure] using
     angularWeightedTorus_ae_eq_base ha h
 
-theorem angularFormGraphGenerator_complexCoverLift_ae_eq
+lemma angularFormGraphGenerator_complexCoverLift_ae_eq
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (F : LogSpace n → ℂ)
     (hperiod : ∀ q : Fin n → ℤ,
@@ -37968,7 +37968,7 @@ open MatrixTorusBochnerCoreConvergence WeightedTorusDolbeault WeightedTorusBochn
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   Topology ContDiff
 
-theorem complexScalar_integral_mul_conj_re_eq_L2_norm_sq
+lemma complexScalar_integral_mul_conj_re_eq_L2_norm_sq
     {X : Type*} [MeasurableSpace X]
     {μ : Measure X}
     {F : X → ℂ}
@@ -37990,7 +37990,7 @@ theorem complexScalar_integral_mul_conj_re_eq_L2_norm_sq
       ‖hF.toLp F‖ ^ 2
   exact (norm_sq_eq_re_inner (hF.toLp F)).symm
 
-theorem angularTorus_compact_form_curvature_le_adjoint_add_exterior
+lemma angularTorus_compact_form_curvature_le_adjoint_add_exterior
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : LogSpace n → Fin n → ℂ)
     (ha : Continuous a)
@@ -38040,7 +38040,7 @@ theorem angularTorus_compact_form_curvature_le_adjoint_add_exterior
       sourceTorusFormExteriorDerivativeDensity W p ∂μ).re
   linarith
 
-theorem complex_norm_sub_sq_le_two_mul_add
+lemma complex_norm_sub_sq_le_two_mul_add
     (z w : ℂ) :
     ‖z - w‖ ^ 2 ≤ 2 * (‖z‖ ^ 2 + ‖w‖ ^ 2) := by
   have hsub := norm_sub_le z w
@@ -38048,7 +38048,7 @@ theorem complex_norm_sub_sq_le_two_mul_add
     exact (sq_le_sq₀ (norm_nonneg _) (add_nonneg (norm_nonneg _) (norm_nonneg _))).mpr hsub
   nlinarith [sq_nonneg (‖z‖ - ‖w‖)]
 
-theorem complexEuclidean_antisymmetric_energy_le_two_norm_sq
+lemma complexEuclidean_antisymmetric_energy_le_two_norm_sq
     {n : ℕ}
     (M : EuclideanSpace ℂ (Fin n × Fin n)) :
     ((∑ i : Fin n, ∑ j : Fin n,
@@ -38079,7 +38079,7 @@ theorem complexEuclidean_antisymmetric_energy_le_two_norm_sq
   rw [hswap] at hsum
   nlinarith
 
-theorem sourceTorusBarPartial_cutoffPhysicalField_antisymmetric
+lemma sourceTorusBarPartial_cutoffPhysicalField_antisymmetric
     {n : ℕ}
     {W : LogSpace n → LogSpace n}
     (hW : ContDiff ℝ 2 W)
@@ -38121,7 +38121,7 @@ open WeightedDolbeaultBochnerIdentity MatrixTorusBochnerIdentity WeightedTorusDo
 open WeightedTorusDistributionBridge TorusWeakDolbeaultMollification
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace Topology ContDiff
 
-theorem barPartial_barPartial_commute
+lemma barPartial_barPartial_commute
     {n : ℕ}
     {F : LogSpace n → ℂ}
     (hF : ContDiff ℝ 2 F)
@@ -38170,7 +38170,7 @@ theorem barPartial_barPartial_commute
     fderiv_directional_commute hF z ei₁ ej₁]
   ring
 
-theorem sourceTorusClosedForm_barPartial
+lemma sourceTorusClosedForm_barPartial
     {n : ℕ}
     {F : LogSpace n → ℂ}
     (hF : ContDiff ℝ 2 F) :
@@ -38192,7 +38192,7 @@ def angularGraphMollifiedPhysicalField
       (fun q : LogTorus n =>
         (W q : EuclideanSpace ℂ (Fin n)) i)) k z
 
-theorem angularGraphMollifiedPhysicalField_periodic
+lemma angularGraphMollifiedPhysicalField_periodic
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : angularWeightedFormL2 a)
     (k : ℕ) (q : Fin n → ℤ) :
@@ -38235,7 +38235,7 @@ def angularWeightedCellAdjointScalarL2 {n : ℕ}
         a hψcompact j)).toLp
       (angularWeightedCellAdjointScalarTest a ψ j)
 
-theorem angularWeightedCellAdjointScalarL2_ae_eq {n : ℕ}
+lemma angularWeightedCellAdjointScalarL2_ae_eq {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a)
     (b : Space n)
     {ψ : LogSpace n → ℝ} (hψ : ContDiff ℝ 1 ψ)
@@ -38255,7 +38255,7 @@ theorem angularWeightedCellAdjointScalarL2_ae_eq {n : ℕ}
         (compactSupport_angularWeightedCellAdjointScalarTest
           a hψcompact j)))
 
-theorem angularWeightedCellScalar_inner_eq_unweighted {n : ℕ}
+lemma angularWeightedCellScalar_inner_eq_unweighted {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a)
     (b : Space n)
     {ψ : LogSpace n → ℝ} (hψ : ContDiff ℝ 1 ψ)
@@ -38324,7 +38324,7 @@ theorem angularWeightedCellScalar_inner_eq_unweighted {n : ℕ}
             ring
         _ = _ := by rw [hc, one_mul]; ring
 
-theorem angularWeightedCellScalar_inner_eq_jacobian_cover {n : ℕ}
+lemma angularWeightedCellScalar_inner_eq_jacobian_cover {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a)
     (b : Space n)
     {ψ : LogSpace n → ℝ} (hψ : ContDiff ℝ 1 ψ)
@@ -38393,7 +38393,7 @@ def angularCellWeakAdjointFunctional {n : ℕ}
   angularCellFormAdjointFunctional ha b
     (angularWeightedCellAdjointVectorL2 ha b hψ hψcompact j)
 
-theorem angularCellWeakAdjointFunctional_apply {n : ℕ}
+lemma angularCellWeakAdjointFunctional_apply {n : ℕ}
     {a : LogTorus n → ℝ} (ha : Continuous a)
     (b : Space n)
     {ψ : LogSpace n → ℝ} (hψ : ContDiff ℝ 1 ψ)
@@ -38408,7 +38408,7 @@ theorem angularCellWeakAdjointFunctional_apply {n : ℕ}
         (angularFormFundamentalLiftLI ha b (WithLp.snd v)) := by
   rfl
 
-theorem angularScalarGraphGenerator_complexCoverLift_ae_eq
+lemma angularScalarGraphGenerator_complexCoverLift_ae_eq
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (F : LogSpace n → ℂ)
     (hperiod : ∀ q : Fin n → ℤ,
@@ -38428,7 +38428,7 @@ theorem angularScalarGraphGenerator_complexCoverLift_ae_eq
   simpa [complexTorusCoverLift_torusScalarRepresentative_eq
     F hperiod] using h
 
-theorem angularCellWeakAdjointFunctional_smoothGraph_zero
+lemma angularCellWeakAdjointFunctional_smoothGraph_zero
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (b : Space n)
     {ψ : LogSpace n → ℝ} (hψ : ContDiff ℝ 1 ψ)
@@ -38498,7 +38498,7 @@ theorem angularCellWeakAdjointFunctional_smoothGraph_zero
   rw [← smul_add, hgreen]
   simp
 
-theorem angularCellWeakAdjointFunctional_closedGraph_zero
+lemma angularCellWeakAdjointFunctional_closedGraph_zero
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (b : Space n)
     {ψ : LogSpace n → ℝ} (hψ : ContDiff ℝ 1 ψ)
@@ -38525,7 +38525,7 @@ theorem angularCellWeakAdjointFunctional_closedGraph_zero
       hspan L.isClosed_ker
   exact hgraph hv
 
-theorem angularDolbeaultGraph_compact_barPartial_green_of_fundamentalCell
+lemma angularDolbeaultGraph_compact_barPartial_green_of_fundamentalCell
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (f : angularWeightedScalarL2 a)
     (W : angularWeightedFormL2 a)
@@ -38575,7 +38575,7 @@ theorem angularDolbeaultGraph_compact_barPartial_green_of_fundamentalCell
   rw [integral_const_mul] at hinner
   linear_combination hinner
 
-theorem angularDolbeaultGraph_compact_barPartial_green
+lemma angularDolbeaultGraph_compact_barPartial_green
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (f : angularWeightedScalarL2 a)
     (W : angularWeightedFormL2 a)
@@ -38686,7 +38686,7 @@ theorem angularDolbeaultGraph_compact_barPartial_green
       rw [hpartition z]
       simp [ξ, Finset.mul_sum]
 
-theorem angularDolbeaultGraph_normalizedCoverMollification_barPartial
+lemma angularDolbeaultGraph_normalizedCoverMollification_barPartial
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (f : angularWeightedScalarL2 a)
     (W : angularWeightedFormL2 a)
@@ -38705,7 +38705,7 @@ theorem angularDolbeaultGraph_normalizedCoverMollification_barPartial
   exact angularDolbeaultGraph_compact_barPartial_green
     ha f W hgraph hψ hψcompact i
 
-theorem contDiff_angularGraphMollifiedPhysicalField
+lemma contDiff_angularGraphMollifiedPhysicalField
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (W : angularWeightedFormL2 a)
     (k r : ℕ) :
@@ -38716,7 +38716,7 @@ theorem contDiff_angularGraphMollifiedPhysicalField
     (angularWeightedFormCoordinateCoverLift_locallyIntegrable
       ha W i) k r
 
-theorem sourceTorusClosedForm_angularGraphMollifiedPhysicalField
+lemma sourceTorusClosedForm_angularGraphMollifiedPhysicalField
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (f : angularWeightedScalarL2 a)
     (W : angularWeightedFormL2 a)
@@ -38763,7 +38763,7 @@ open TorusCharacters DolbeaultRegularity TorusWeakDolbeaultMollification
 open TorusFriedrichsMollifierEstimates
 open scoped BigOperators ENNReal Topology ContDiff Convolution
 
-theorem normalizedCoverMollification_memLp
+lemma normalizedCoverMollification_memLp
     {n : ℕ} {h : LogSpace n → ℂ}
     (hh : MemLp h 2 (volume : Measure (LogSpace n)))
     (k : ℕ) :
@@ -38796,7 +38796,7 @@ theorem normalizedCoverMollification_memLp
   simpa [q, κ, L, MeasureTheory.convolution_def] using
     normalizedCoverMollification_norm_sq_le_convolution_norm_sq hh k x
 
-theorem integral_norm_sq_normalizedCoverMollification_le
+lemma integral_norm_sq_normalizedCoverMollification_le
     {n : ℕ} {h : LogSpace n → ℂ}
     (hh : MemLp h 2 (volume : Measure (LogSpace n)))
     (k : ℕ) :
@@ -38848,7 +38848,7 @@ theorem integral_norm_sq_normalizedCoverMollification_le
       rw [(complexShrinkingBump (n := n) k).integral_normed]
       simp
 
-theorem complexShrinkingBump_rOut_le_one
+lemma complexShrinkingBump_rOut_le_one
     {n : ℕ} (k : ℕ) :
     (complexShrinkingBump (n := n) k).rOut ≤ 1 := by
   change 1 / ((k : ℝ) + 1) ≤ 1
@@ -38870,7 +38870,7 @@ open TorusDeckWeightedUnfolding
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff Convolution Manifold
 
-theorem ae_mem_angularFundamentalBox_realFundamentalCell
+lemma ae_mem_angularFundamentalBox_realFundamentalCell
     {n : ℕ}
     (b : Space n) :
     ∀ᵐ p : Space n × Space n
@@ -38884,7 +38884,7 @@ theorem ae_mem_angularFundamentalBox_realFundamentalCell
     with p hp
   exact hp.2
 
-theorem angularWeightedScalarL2_periodized_cell_inner_eq_cover
+lemma angularWeightedScalarL2_periodized_cell_inner_eq_cover
     {n : ℕ}
     {a : LogTorus n → ℝ}
     (ha : Continuous a)
@@ -39015,7 +39015,7 @@ theorem angularWeightedScalarL2_periodized_cell_inner_eq_cover
               (f (complexTorusCoverProjection n z))
               (ψ z))).symm
 
-theorem angularWeightedFormL2_periodized_cell_inner_eq_cover
+lemma angularWeightedFormL2_periodized_cell_inner_eq_cover
     {n : ℕ}
     {a : LogTorus n → ℝ}
     (ha : Continuous a)
@@ -39176,7 +39176,7 @@ theorem angularWeightedFormL2_periodized_cell_inner_eq_cover
               (WithLp.toLp 2
                 (fun j : Fin n => barPartialCoordinate ψ z j)))).symm
 
-theorem angularWeakDolbeaultResolvent_weighted_cover_green_of_fundamentalInterior
+lemma angularWeakDolbeaultResolvent_weighted_cover_green_of_fundamentalInterior
     {n : ℕ}
     {a : LogTorus n → ℝ}
     (ha : Continuous a)
@@ -39268,7 +39268,7 @@ open EqualitySaturatingKillingPaths TorusCharacters
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff Convolution Manifold
 
-theorem locallyIntegrable_complex_inner_mul_integrable
+lemma locallyIntegrable_complex_inner_mul_integrable
     {E : Type*} [MeasurableSpace E] [TopologicalSpace E]
     [OpensMeasurableSpace E] [T2Space E]
     {μ : Measure E} {F G : E → ℂ}
@@ -39288,7 +39288,7 @@ theorem locallyIntegrable_complex_inner_mul_integrable
   have hc := Complex.conjCLE.toContinuousLinearMap.integrable_comp hmul
   simpa [RCLike.inner_apply', map_mul, mul_comm] using hc
 
-theorem barPartialCoordinate_finset_sum_complex
+lemma barPartialCoordinate_finset_sum_complex
     {n : ℕ} {ι : Type*} (s : Finset ι)
     (ψ : ι → LogSpace n → ℂ)
     (hψ : ∀ i ∈ s, ContDiff ℝ 1 (ψ i))
@@ -39325,7 +39325,7 @@ def angularMollifiedPhysicalAdjointDriftCommutator
         (fun q : LogTorus n =>
           (W q : EuclideanSpace ℂ (Fin n)) j)) k x
 
-theorem coverFormAdjoint_angularGraphMollifiedPhysicalField_eq
+lemma coverFormAdjoint_angularGraphMollifiedPhysicalField_eq
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : angularWeightedFormL2 a) (k : ℕ) (x : LogSpace n) :
     coverFormAdjoint (angularCoverPotential a)
@@ -39371,7 +39371,7 @@ theorem coverFormAdjoint_angularGraphMollifiedPhysicalField_eq
   rw [hcomm]
   ring
 
-theorem complex_norm_add_sq_le_two_mul_add (u v : ℂ) :
+lemma complex_norm_add_sq_le_two_mul_add (u v : ℂ) :
     ‖u + v‖ ^ 2 ≤ 2 * (‖u‖ ^ 2 + ‖v‖ ^ 2) := by
   have h := norm_add_le u v
   have hu : 0 ≤ ‖u‖ := norm_nonneg _
@@ -39379,7 +39379,7 @@ theorem complex_norm_add_sq_le_two_mul_add (u v : ℂ) :
   have hs : 0 ≤ ‖u + v‖ := norm_nonneg _
   nlinarith [sq_nonneg (‖u‖ - ‖v‖)]
 
-theorem finite_complex_local_square_integral_sum_tendsto_zero
+lemma finite_complex_local_square_integral_sum_tendsto_zero
     {n : ℕ} {ι : Type*}
     (s : Finset ι)
     (g : ι → ℕ → LogSpace n → ℂ)
@@ -39504,7 +39504,7 @@ open TorusWeakDolbeaultMollification
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff Convolution
 
-theorem holomorphicCoordinate_normalizedCoverMollification_eq_kernel
+lemma holomorphicCoordinate_normalizedCoverMollification_eq_kernel
     {n : ℕ} {g : LogSpace n → ℂ}
     (hg : LocallyIntegrable g (volume : Measure (LogSpace n)))
     (k : ℕ) (x : LogSpace n) (j : Fin n) :
@@ -39627,7 +39627,7 @@ theorem holomorphicCoordinate_normalizedCoverMollification_eq_kernel
       rw [hkernel y]
       ring
 
-theorem normalizedCoverMollification_eq_kernel_integral
+lemma normalizedCoverMollification_eq_kernel_integral
     {n : ℕ} (g : LogSpace n → ℂ)
     (k : ℕ) (x : LogSpace n) :
     normalizedCoverMollification g k x =
@@ -39652,7 +39652,7 @@ open TorusCharacters DolbeaultGraphDistributionBridge WeightedDolbeaultBochnerId
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff Convolution
 
-theorem holomorphicCoordinate_complexCoverWeight
+lemma holomorphicCoordinate_complexCoverWeight
     {n : ℕ} {a : LogSpace n → ℝ}
     (ha : ContDiff ℝ 1 a) (x : LogSpace n) (j : Fin n) :
     holomorphicCoordinate (complexCoverWeight a) x j =
@@ -39677,7 +39677,7 @@ open TorusMollificationLocalL2Bounds
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff Convolution
 
-theorem normalizedCoverMollification_tendsto_of_continuous
+lemma normalizedCoverMollification_tendsto_of_continuous
     {n : ℕ} {g : LogSpace n → ℂ}
     (hg : Continuous g) (x : LogSpace n) :
     Tendsto (fun k : ℕ => normalizedCoverMollification g k x)
@@ -39685,7 +39685,7 @@ theorem normalizedCoverMollification_tendsto_of_continuous
   exact ContDiffBump.convolution_tendsto_right_of_continuous
     (complexShrinkingBump_rOut_tendsto (n := n)) hg x
 
-theorem tsupport_normalizedCoverMollification_subset_cthickening
+lemma tsupport_normalizedCoverMollification_subset_cthickening
     {n : ℕ} {g : LogSpace n → ℂ}
     (k : ℕ) :
     tsupport (normalizedCoverMollification g k) ⊆
@@ -39709,7 +39709,7 @@ theorem tsupport_normalizedCoverMollification_subset_cthickening
     (u + v) u 1 (tsupport g) (subset_closure hu)
   simpa [dist_eq_norm] using hvnorm
 
-theorem norm_normalizedCoverMollification_le_of_continuous_bound
+lemma norm_normalizedCoverMollification_le_of_continuous_bound
     {n : ℕ} {g : LogSpace n → ℂ}
     (hg : Continuous g) {B : ℝ}
     (hB : 0 ≤ B) (hgb : ∀ x : LogSpace n, ‖g x‖ ≤ B)
@@ -39741,7 +39741,7 @@ open TorusCharacters MatrixTorusBochnerCoreApproximation TorusWeakDolbeaultMolli
 open TorusMollificationLocalL2Bounds TorusCompactTestGreen
 open scoped ENNReal Topology ContDiff Convolution
 
-theorem normalizedCoverMollification_L2_norm_le
+lemma normalizedCoverMollification_L2_norm_le
     {n : ℕ} {h : LogSpace n → ℂ}
     (hh : MemLp h 2 (volume : Measure (LogSpace n)))
     (k : ℕ) :
@@ -39774,7 +39774,7 @@ theorem normalizedCoverMollification_L2_norm_le
             rw [hx]
   exact (sq_le_sq₀ (norm_nonneg _) (norm_nonneg _)).mp hsq
 
-theorem tendsto_integral_norm_sq_normalizedCoverMollification_sub_of_continuous_compact
+lemma tendsto_integral_norm_sq_normalizedCoverMollification_sub_of_continuous_compact
     {n : ℕ} {h : LogSpace n → ℂ}
     (hc : Continuous h) (hs : HasCompactSupport h) :
     Tendsto
@@ -39847,7 +39847,7 @@ theorem tendsto_integral_norm_sq_normalizedCoverMollification_sub_of_continuous_
       simpa using ht.norm.pow 2)
   simpa using hconv
 
-theorem normalizedCoverMollification_continuous_compact_L2_tendsto
+lemma normalizedCoverMollification_continuous_compact_L2_tendsto
     {n : ℕ} {h : LogSpace n → ℂ}
     (hc : Continuous h) (hs : HasCompactSupport h) :
     Tendsto
@@ -39921,7 +39921,7 @@ def translatedDensityCancelledCoverKernel
     (volume : Measure (LogSpace n)) (x - y) /
     coverWeight (angularCoverPotential a) y
 
-theorem contDiff_translatedDensityCancelledCoverKernel
+lemma contDiff_translatedDensityCancelledCoverKernel
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : ContDiff ℝ 1 (angularCoverPotential a))
     (k : ℕ) (x : LogSpace n) :
@@ -39932,7 +39932,7 @@ theorem contDiff_translatedDensityCancelledCoverKernel
       (contDiff_coverWeight ha)
       (fun y => (coverWeight_pos (angularCoverPotential a) y).ne')
 
-theorem hasCompactSupport_translatedDensityCancelledCoverKernel
+lemma hasCompactSupport_translatedDensityCancelledCoverKernel
     {n : ℕ} (a : LogTorus n → ℝ)
     (k : ℕ) (x : LogSpace n) :
     HasCompactSupport (translatedDensityCancelledCoverKernel a k x) := by
@@ -39955,7 +39955,7 @@ theorem hasCompactSupport_translatedDensityCancelledCoverKernel
   rw [hkernel]
   exact hm
 
-theorem complexCoverWeight_mul_translatedDensityCancelledCoverKernel
+lemma complexCoverWeight_mul_translatedDensityCancelledCoverKernel
     {n : ℕ} (a : LogTorus n → ℝ)
     (k : ℕ) (x y : LogSpace n) :
     complexCoverWeight (angularCoverPotential a) y *
@@ -39969,7 +39969,7 @@ theorem complexCoverWeight_mul_translatedDensityCancelledCoverKernel
       (coverWeight_pos (angularCoverPotential a) y).ne'
   field_simp
 
-theorem complexCoverWeight_mul_conj_barPartial_translatedDensityCancelledCoverKernel
+lemma complexCoverWeight_mul_conj_barPartial_translatedDensityCancelledCoverKernel
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : ContDiff ℝ 1 (angularCoverPotential a))
     (k : ℕ) (x y : LogSpace n) (j : Fin n) :
@@ -40050,7 +40050,7 @@ open TorusWeakDolbeaultMollification TorusMollificationLocalL2Bounds TorusStrong
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff Convolution
 
-theorem normalizedCoverMollification_sub
+lemma normalizedCoverMollification_sub
     {n : ℕ} {g h : LogSpace n → ℂ}
     (hg : MemLp g 2 (volume : Measure (LogSpace n)))
     (hh : MemLp h 2 (volume : Measure (LogSpace n)))
@@ -40094,7 +40094,7 @@ def normalizedCoverMollificationL2
   (normalizedCoverMollification_memLp (MeasureTheory.Lp.memLp u) k).toLp
     (normalizedCoverMollification (fun x : LogSpace n => u x) k)
 
-theorem normalizedCoverMollificationL2_sub
+lemma normalizedCoverMollificationL2_sub
     {n : ℕ} (k : ℕ)
     (u v : MeasureTheory.Lp ℂ 2 (volume : Measure (LogSpace n))) :
     normalizedCoverMollificationL2 k u -
@@ -40138,7 +40138,7 @@ theorem normalizedCoverMollificationL2_sub
     normalizedCoverMollification_sub
       (MeasureTheory.Lp.memLp u) (MeasureTheory.Lp.memLp v) k x]
 
-theorem normalizedCoverMollificationL2_dist_le
+lemma normalizedCoverMollificationL2_dist_le
     {n : ℕ} (k : ℕ)
     (u v : MeasureTheory.Lp ℂ 2 (volume : Measure (LogSpace n))) :
     dist (normalizedCoverMollificationL2 k u)
@@ -40161,7 +40161,7 @@ theorem normalizedCoverMollificationL2_dist_le
       rw [hx, hsub]
       rfl
 
-theorem normalizedCoverMollification_congr_ae
+lemma normalizedCoverMollification_congr_ae
     {n : ℕ} {g h : LogSpace n → ℂ}
     (hgh : g =ᵐ[(volume : Measure (LogSpace n))] h)
     (k : ℕ) :
@@ -40172,7 +40172,7 @@ theorem normalizedCoverMollification_congr_ae
     (ContinuousLinearMap.lsmul ℝ ℝ)
     (Filter.Eventually.of_forall (fun _ => rfl)) hgh
 
-theorem normalizedCoverMollificationL2_toLp
+lemma normalizedCoverMollificationL2_toLp
     {n : ℕ} {g : LogSpace n → ℂ}
     (hg : MemLp g 2 (volume : Measure (LogSpace n)))
     (k : ℕ) :
@@ -40194,7 +40194,7 @@ theorem normalizedCoverMollificationL2_toLp
   exact congrFun
     (normalizedCoverMollification_congr_ae hg.coeFn_toLp k) x
 
-theorem normalizedCoverMollificationL2_tendsto
+lemma normalizedCoverMollificationL2_tendsto
     {n : ℕ}
     (u : MeasureTheory.Lp ℂ 2 (volume : Measure (LogSpace n))) :
     Tendsto
@@ -40253,7 +40253,7 @@ theorem normalizedCoverMollificationL2_tendsto
           rw [dist_comm v u]
           nlinarith [hN k hk]
 
-theorem normalizedCoverMollification_global_L2_tendsto
+lemma normalizedCoverMollification_global_L2_tendsto
     {n : ℕ} {h : LogSpace n → ℂ}
     (hh : MemLp h 2 (volume : Measure (LogSpace n))) :
     Tendsto
@@ -40264,7 +40264,7 @@ theorem normalizedCoverMollification_global_L2_tendsto
   simpa only [normalizedCoverMollificationL2_toLp] using
     normalizedCoverMollificationL2_tendsto (hh.toLp h)
 
-theorem tendsto_integral_norm_sq_normalizedCoverMollification_sub
+lemma tendsto_integral_norm_sq_normalizedCoverMollification_sub
     {n : ℕ} {h : LogSpace n → ℂ}
     (hh : MemLp h 2 (volume : Measure (LogSpace n))) :
     Tendsto
@@ -40300,7 +40300,7 @@ theorem tendsto_integral_norm_sq_normalizedCoverMollification_sub
   simpa only [hsq, zero_pow (by norm_num : (2 : ℕ) ≠ 0)] using
     hnorm.pow 2
 
-theorem normalizedCoverMollification_indicator_cthickening_eq_on
+lemma normalizedCoverMollification_indicator_cthickening_eq_on
     {n : ℕ} {h : LogSpace n → ℂ}
     {K : Set (LogSpace n)} (_ : IsCompact K)
     (k : ℕ) (x : LogSpace n) (hx : x ∈ K) :
@@ -40335,7 +40335,7 @@ theorem normalizedCoverMollification_indicator_cthickening_eq_on
       exact hnorm.le.trans (complexShrinkingBump_rOut_le_one k)
     simp [Set.indicator_of_mem hxy]
 
-theorem normalizedCoverMollification_localL2_tendsto_zero
+lemma normalizedCoverMollification_localL2_tendsto_zero
     {n : ℕ} {h : LogSpace n → ℂ}
     (_ : LocallyIntegrable h (volume : Measure (LogSpace n)))
     {K : Set (LogSpace n)} (hK : IsCompact K)
@@ -40405,7 +40405,7 @@ def sourceCompactAngularCoverBox
     ((Prod.fst '' S) ×ˢ
       Set.univ.pi (fun _ : Fin n => Set.Icc (0 : ℝ) 1))
 
-theorem isCompact_sourceCompactAngularCoverBox
+lemma isCompact_sourceCompactAngularCoverBox
     {n : ℕ} {S : Set (LogTorus n)} (hS : IsCompact S) :
     IsCompact (sourceCompactAngularCoverBox S) := by
   unfold sourceCompactAngularCoverBox
@@ -40413,7 +40413,7 @@ theorem isCompact_sourceCompactAngularCoverBox
     (isCompact_univ_pi fun _ : Fin n => isCompact_Icc)).image
       (logarithmicCoordinatesEquiv n).continuous
 
-theorem logarithmicPoint_mem_sourceCompactAngularCoverBox
+lemma logarithmicPoint_mem_sourceCompactAngularCoverBox
     {n : ℕ} {S : Set (LogTorus n)}
     (p : Space n × Space n)
     (hbox : p.2 ∈ angularFundamentalBox (0 : Space n))
@@ -40426,7 +40426,7 @@ theorem logarithmicPoint_mem_sourceCompactAngularCoverBox
     exact ⟨hi.1.le, by simpa using hi.2⟩
   · simpa using logarithmicCoordinatesEquiv_apply p.1 p.2
 
-theorem torusScalarRepresentative_realTorusCoverProjection
+lemma torusScalarRepresentative_realTorusCoverProjection
     {n : ℕ} (F : LogSpace n → ℂ)
     (p : Space n × Space n)
     (hbox : p.2 ∈ angularFundamentalBox (0 : Space n)) :
@@ -40436,7 +40436,7 @@ theorem torusScalarRepresentative_realTorusCoverProjection
   intro i _
   simpa [angularFundamentalBox] using hbox i
 
-theorem angularWeightedTorus_integral_real_eq_realFundamentalCell
+lemma angularWeightedTorus_integral_real_eq_realFundamentalCell
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a) (b : Space n)
     {G : LogTorus n → ℝ}
@@ -40480,7 +40480,7 @@ theorem angularWeightedTorus_integral_real_eq_realFundamentalCell
       rw [hmap]
       exact (continuous_angularWeightedTorusDensity ha).aestronglyMeasurable.mul hG
 
-theorem realFundamentalCell_integral_real_eq_coverJacobian
+lemma realFundamentalCell_integral_real_eq_coverJacobian
     {n : ℕ} (b : Space n)
     (g : LogSpace n → ℝ)
     (hsupport : ∀ p : Space n × Space n,
@@ -40511,7 +40511,7 @@ theorem realFundamentalCell_integral_real_eq_coverJacobian
       rw [logarithmicCoverPushforward_eq_smul_volume,
         integral_smul_nnreal_measure]
 
-theorem angularWeightedTorus_compact_scalarRepresentative_L2_tendsto_of_cover
+lemma angularWeightedTorus_compact_scalarRepresentative_L2_tendsto_of_cover
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     {f : LogTorus n → ℂ}
@@ -40781,7 +40781,7 @@ open TorusWeightedAdjointMollification BergmanJetStrictMixedLocalCore
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff Convolution
 
-theorem angularScalarCoverLift_normalizedCoverMollification_localL2_tendsto_zero
+lemma angularScalarCoverLift_normalizedCoverMollification_localL2_tendsto_zero
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (f : angularWeightedScalarL2 a)
     {K : Set (LogSpace n)} (hK : IsCompact K) :
@@ -40801,7 +40801,7 @@ theorem angularScalarCoverLift_normalizedCoverMollification_localL2_tendsto_zero
     (angularWeightedScalarCoverLift_memLp_restrict_volume_isCompact
       ha f hK.cthickening)
 
-theorem angularFormCoordinateCoverLift_normalizedCoverMollification_localL2_tendsto_zero
+lemma angularFormCoordinateCoverLift_normalizedCoverMollification_localL2_tendsto_zero
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (W : angularWeightedFormL2 a) (j : Fin n)
     {K : Set (LogSpace n)} (hK : IsCompact K) :
@@ -40824,7 +40824,7 @@ theorem angularFormCoordinateCoverLift_normalizedCoverMollification_localL2_tend
     (angularWeightedFormCoordinateCoverLift_memLp_restrict_volume_isCompact
       ha W j hK.cthickening)
 
-theorem angularWeightedScalar_normalizedCoverMollification_compact_L2_tendsto_zero
+lemma angularWeightedScalar_normalizedCoverMollification_compact_L2_tendsto_zero
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (f : angularWeightedScalarL2 a)
     {S : Set (LogTorus n)} (hS : IsCompact S) :
@@ -40856,7 +40856,7 @@ theorem angularWeightedScalar_normalizedCoverMollification_compact_L2_tendsto_ze
         ha f hK
   · exact hS
 
-theorem angularWeightedFormCoordinate_normalizedCoverMollification_compact_L2_tendsto_zero
+lemma angularWeightedFormCoordinate_normalizedCoverMollification_compact_L2_tendsto_zero
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (W : angularWeightedFormL2 a) (j : Fin n)
     {S : Set (LogTorus n)} (hS : IsCompact S) :
@@ -40899,7 +40899,7 @@ theorem angularWeightedFormCoordinate_normalizedCoverMollification_compact_L2_te
         ha W j hK
   · exact hS
 
-theorem angularFormCoordinateCoverLift_complexDriftCommutator_tendsto_zero
+lemma angularFormCoordinateCoverLift_complexDriftCommutator_tendsto_zero
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (W : angularWeightedFormL2 a) (j : Fin n)
     {b : LogSpace n → ℂ} (hb : Continuous b)
@@ -40922,7 +40922,7 @@ theorem angularFormCoordinateCoverLift_complexDriftCommutator_tendsto_zero
           ha W j hS)
       hb hK
 
-theorem angularFormCoordinateCoverLift_holomorphicDriftCommutator_tendsto_zero
+lemma angularFormCoordinateCoverLift_holomorphicDriftCommutator_tendsto_zero
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
     (W : angularWeightedFormL2 a) (i j : Fin n)
@@ -40943,7 +40943,7 @@ theorem angularFormCoordinateCoverLift_holomorphicDriftCommutator_tendsto_zero
   exact (contDiff_holomorphicCoordinate
     (Complex.ofRealCLM.contDiff.comp ha2) i).continuous
 
-theorem angularMollifiedPhysicalAdjointDriftCommutator_tendsto_zero
+lemma angularMollifiedPhysicalAdjointDriftCommutator_tendsto_zero
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
     (W : angularWeightedFormL2 a)
@@ -40977,7 +40977,7 @@ open RadialSchurBlock
 open scoped BigOperators ENNReal ComplexConjugate ComplexOrder
   InnerProductSpace MatrixOrder Matrix.Norms.L2Operator Topology ContDiff
 
-theorem complexEuclideanMatrixAction_mul
+lemma complexEuclideanMatrixAction_mul
     {n : ℕ}
     (A B : Matrix (Fin n) (Fin n) ℂ)
     (v : EuclideanSpace ℂ (Fin n)) :
@@ -40989,7 +40989,7 @@ theorem complexEuclideanMatrixAction_mul
       ((A * B) *ᵥ (fun j : Fin n => v j)) i
   rw [Matrix.mulVec_mulVec]
 
-theorem complexHermitianMatrixAction_norm_sq
+lemma complexHermitianMatrixAction_norm_sq
     {n : ℕ}
     {A : Matrix (Fin n) (Fin n) ℂ}
     (hA : A.IsHermitian)
@@ -41015,7 +41015,7 @@ theorem complexHermitianMatrixAction_norm_sq
     _ = _ := by
       rw [complexEuclideanMatrixAction_mul]
 
-theorem complexPositiveInverseSquareRootAction_norm_sq
+lemma complexPositiveInverseSquareRootAction_norm_sq
     {n : ℕ}
     {A : Matrix (Fin n) (Fin n) ℂ}
     (hA : A.PosDef)
@@ -41029,7 +41029,7 @@ theorem complexPositiveInverseSquareRootAction_norm_sq
   rw [← Matrix.mul_inv_rev,
     CFC.sqrt_mul_sqrt_self A hA.posSemidef.nonneg]
 
-theorem sourceComplexRowSchurEnergyDensity_eq_inverseSquareRoot_norm_sq
+lemma sourceComplexRowSchurEnergyDensity_eq_inverseSquareRoot_norm_sq
     {n : ℕ}
     {A : Matrix (Fin n) (Fin n) ℂ}
     (hA : A.PosDef)
@@ -41045,7 +41045,7 @@ theorem sourceComplexRowSchurEnergyDensity_eq_inverseSquareRoot_norm_sq
       ((A⁻¹ *ᵥ star b) ⬝ᵥ star (star b)).re
   rw [star_star, dotProduct_comm]
 
-theorem complexPositiveInverseSquareRootAction_pairing
+lemma complexPositiveInverseSquareRootAction_pairing
     {n : ℕ}
     {A : Matrix (Fin n) (Fin n) ℂ}
     (hA : A.PosDef)
@@ -41094,7 +41094,7 @@ open Set Function Filter MeasureTheory Matrix
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   Topology ContDiff
 
-theorem complexHilbert_norm_le_of_mem_closure_inner_bound
+lemma complexHilbert_norm_le_of_mem_closure_inner_bound
     {E : Type*}
     [NormedAddCommGroup E] [InnerProductSpace ℂ E]
     (f : E) (S : Set E) (hf : f ∈ closure S)
@@ -41132,7 +41132,7 @@ open MatrixTorusBochnerCore MatrixTorusBochnerCoreDensity MatrixTorusBochnerCore
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   Topology ContDiff
 
-theorem contDiff_complexSourceCoverRadialCutoff_all
+lemma contDiff_complexSourceCoverRadialCutoff_all
     {n : ℕ} (m r : ℕ) :
     ContDiff ℝ r (complexSourceCoverRadialCutoff (n := n) m) := by
   unfold complexSourceCoverRadialCutoff sourceCoverRadialCutoff
@@ -41158,7 +41158,7 @@ def angularTorusConjugatePhysicalFormVector {n : ℕ}
     (star (fun i : Fin n =>
       torusScalarRepresentative (fun z => W z i) q))
 
-theorem angularTorusFormCurvatureDensity_eq_conjugatePhysical_inner
+lemma angularTorusFormCurvatureDensity_eq_conjugatePhysical_inner
     {n : ℕ} (a : LogTorus n → ℝ)
     (W : LogSpace n → Fin n → ℂ) (q : LogTorus n) :
     angularTorusFormCurvatureDensity a W q =
@@ -41186,14 +41186,14 @@ def angularEuclideanConjugation {n : ℕ}
     (v : EuclideanSpace ℂ (Fin n)) : EuclideanSpace ℂ (Fin n) :=
   WithLp.toLp 2 (star (fun j : Fin n => v j))
 
-theorem norm_angularEuclideanConjugation {n : ℕ}
+lemma norm_angularEuclideanConjugation {n : ℕ}
     (v : EuclideanSpace ℂ (Fin n)) :
     ‖angularEuclideanConjugation v‖ = ‖v‖ := by
   apply (sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)).mp
   rw [EuclideanSpace.norm_sq_eq, EuclideanSpace.norm_sq_eq]
   simp [angularEuclideanConjugation, Pi.star_apply]
 
-theorem continuous_complexEuclideanConjugatedMatrixAction {n : ℕ} :
+lemma continuous_complexEuclideanConjugatedMatrixAction {n : ℕ} :
     Continuous
       (fun Av : Matrix (Fin n) (Fin n) ℂ ×
           EuclideanSpace ℂ (Fin n) =>
@@ -41214,7 +41214,7 @@ theorem continuous_complexEuclideanConjugatedMatrixAction {n : ℕ} :
       ((PiLp.continuous_apply 2 (fun _ : Fin n => ℂ) j).comp
         continuous_snd))
 
-theorem aestronglyMeasurable_complexEuclideanConjugatedMatrixAction
+lemma aestronglyMeasurable_complexEuclideanConjugatedMatrixAction
     {n : ℕ} {X : Type*} [MeasurableSpace X]
     {μ : Measure X}
     {A : X → Matrix (Fin n) (Fin n) ℂ}
@@ -41244,7 +41244,7 @@ open MatrixTorusBochnerCoreConvergence
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   Topology ContDiff
 
-theorem continuous_complexEuclideanOuterProduct_uncurry
+lemma continuous_complexEuclideanOuterProduct_uncurry
     {n : ℕ} :
     Continuous
       (fun vw : EuclideanSpace ℂ (Fin n) ×
@@ -41273,7 +41273,7 @@ def angularWeakSourceCutoffDerivativeCommutator
   complexEuclideanOuterProduct (W q)
     (sourceCutoffBarGradient m q)
 
-theorem angularWeakSourceCutoffDerivativeCommutator_aestronglyMeasurable
+lemma angularWeakSourceCutoffDerivativeCommutator_aestronglyMeasurable
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : angularWeightedFormL2 a)
     (m : ℕ) :
@@ -41292,7 +41292,7 @@ theorem angularWeakSourceCutoffDerivativeCommutator_aestronglyMeasurable
       ((MeasureTheory.Lp.memLp W).aestronglyMeasurable.prodMk
         (continuous_sourceCutoffBarGradient m).aestronglyMeasurable)
 
-theorem angularWeakSourceCutoffDerivativeCommutator_norm
+lemma angularWeakSourceCutoffDerivativeCommutator_norm
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : angularWeightedFormL2 a)
     (m : ℕ) (q : LogTorus n) :
@@ -41301,7 +41301,7 @@ theorem angularWeakSourceCutoffDerivativeCommutator_norm
   exact complexEuclideanOuterProduct_norm
     (W q) (sourceCutoffBarGradient m q)
 
-theorem angularWeakSourceCutoffDerivativeCommutator_norm_le
+lemma angularWeakSourceCutoffDerivativeCommutator_norm_le
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : angularWeightedFormL2 a)
     {C : ℝ}
@@ -41319,7 +41319,7 @@ theorem angularWeakSourceCutoffDerivativeCommutator_norm_le
           (norm_nonneg _)
     _ = _ := by ring
 
-theorem angularWeakSourceCutoffDerivativeCommutator_memLp
+lemma angularWeakSourceCutoffDerivativeCommutator_memLp
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : angularWeightedFormL2 a)
     {C : ℝ}
@@ -41337,7 +41337,7 @@ theorem angularWeakSourceCutoffDerivativeCommutator_memLp
   exact angularWeakSourceCutoffDerivativeCommutator_norm_le
     W hC m q
 
-theorem angularWeakSourceCutoffDerivativeCommutator_L2_norm_le
+lemma angularWeakSourceCutoffDerivativeCommutator_L2_norm_le
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : angularWeightedFormL2 a)
     {C : ℝ} (hC₀ : 0 ≤ C)
@@ -41359,7 +41359,7 @@ theorem angularWeakSourceCutoffDerivativeCommutator_L2_norm_le
         W hC m q)
   simpa using hcmp
 
-theorem angularWeakSourceCutoffDerivativeCommutator_L2_tendsto_zero
+lemma angularWeakSourceCutoffDerivativeCommutator_L2_tendsto_zero
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : angularWeightedFormL2 a)
     {C : ℝ} (hC₀ : 0 ≤ C)
@@ -41390,7 +41390,7 @@ def angularWeakSourceCutoffAdjointCommutator
   @inner ℂ (EuclideanSpace ℂ (Fin n)) _
     (sourceCutoffBarGradient m q) (W q)
 
-theorem angularWeakSourceCutoffAdjointCommutator_aestronglyMeasurable
+lemma angularWeakSourceCutoffAdjointCommutator_aestronglyMeasurable
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : angularWeightedFormL2 a)
     (m : ℕ) :
@@ -41401,7 +41401,7 @@ theorem angularWeakSourceCutoffAdjointCommutator_aestronglyMeasurable
     ((continuous_sourceCutoffBarGradient m).aestronglyMeasurable).inner
       (MeasureTheory.Lp.memLp W).aestronglyMeasurable
 
-theorem angularWeakSourceCutoffAdjointCommutator_norm_le
+lemma angularWeakSourceCutoffAdjointCommutator_norm_le
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : angularWeightedFormL2 a)
     {C : ℝ}
@@ -41416,7 +41416,7 @@ theorem angularWeakSourceCutoffAdjointCommutator_norm_le
       (sourceCutoffBarGradient_norm_le hC m q)
       (norm_nonneg _))
 
-theorem angularWeakSourceCutoffAdjointCommutator_memLp
+lemma angularWeakSourceCutoffAdjointCommutator_memLp
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : angularWeightedFormL2 a)
     {C : ℝ}
@@ -41433,7 +41433,7 @@ theorem angularWeakSourceCutoffAdjointCommutator_memLp
   filter_upwards [] with q
   exact angularWeakSourceCutoffAdjointCommutator_norm_le W hC m q
 
-theorem angularWeakSourceCutoffAdjointCommutator_L2_norm_le
+lemma angularWeakSourceCutoffAdjointCommutator_L2_norm_le
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : angularWeightedFormL2 a)
     {C : ℝ} (hC₀ : 0 ≤ C)
@@ -41455,7 +41455,7 @@ theorem angularWeakSourceCutoffAdjointCommutator_L2_norm_le
         W hC m q)
   simpa using hcmp
 
-theorem angularWeakSourceCutoffAdjointCommutator_L2_tendsto_zero
+lemma angularWeakSourceCutoffAdjointCommutator_L2_tendsto_zero
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : angularWeightedFormL2 a)
     {C : ℝ} (hC₀ : 0 ≤ C)
@@ -41492,7 +41492,7 @@ def complexEuclideanAntisymmetricEnergy
     (M (i, j) - M (j, i)) *
       conj (M (i, j) - M (j, i))) / 2
 
-theorem complexEuclideanAntisymmetricEnergy_im
+lemma complexEuclideanAntisymmetricEnergy_im
     {n : ℕ}
     (M : EuclideanSpace ℂ (Fin n × Fin n)) :
     (complexEuclideanAntisymmetricEnergy M).im = 0 := by
@@ -41506,7 +41506,7 @@ theorem complexEuclideanAntisymmetricEnergy_im
   simp_rw [Complex.im_sum, Complex.mul_conj, Complex.ofReal_im]
   simp
 
-theorem complexEuclideanAntisymmetricEnergy_re_nonneg
+lemma complexEuclideanAntisymmetricEnergy_re_nonneg
     {n : ℕ}
     (M : EuclideanSpace ℂ (Fin n × Fin n)) :
     0 ≤ (complexEuclideanAntisymmetricEnergy M).re := by
@@ -41521,7 +41521,7 @@ theorem complexEuclideanAntisymmetricEnergy_re_nonneg
     Complex.normSq_eq_norm_sq]
   positivity
 
-theorem norm_complexEuclideanAntisymmetricEnergy
+lemma norm_complexEuclideanAntisymmetricEnergy
     {n : ℕ}
     (M : EuclideanSpace ℂ (Fin n × Fin n)) :
     ‖complexEuclideanAntisymmetricEnergy M‖ =
@@ -41540,7 +41540,7 @@ theorem norm_complexEuclideanAntisymmetricEnergy
     _ = (complexEuclideanAntisymmetricEnergy M).re :=
       abs_of_nonneg (complexEuclideanAntisymmetricEnergy_re_nonneg M)
 
-theorem continuous_complexEuclideanAntisymmetricEnergy
+lemma continuous_complexEuclideanAntisymmetricEnergy
     {n : ℕ} :
     Continuous (complexEuclideanAntisymmetricEnergy (n := n)) := by
   unfold complexEuclideanAntisymmetricEnergy
@@ -41582,7 +41582,7 @@ def angularWeakSourceCutoffAdjointDefectL2
     (angularWeakSourceCutoffAdjointCommutator_memLp W hC m).toLp
       (angularWeakSourceCutoffAdjointCommutator W m)
 
-theorem angularWeakSourceCutoffAdjointDefectL2_tendsto
+lemma angularWeakSourceCutoffAdjointDefectL2_tendsto
     {n : ℕ} {a : LogTorus n → ℝ}
     (d : angularWeightedScalarL2 a)
     (W : angularWeightedFormL2 a)
@@ -41620,7 +41620,7 @@ open MatrixTorusBochnerCoreConvergence WeightedTorusDolbeault WeightedTorusBochn
 open WeightedTorusBrascampLieb TorusNoncompactBochner TorusWeakRadialExteriorEnergy
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace Topology ContDiff
 
-theorem angularTorusFormAdjoint_eq_coverFormAdjoint
+lemma angularTorusFormAdjoint_eq_coverFormAdjoint
     {n : ℕ} (a : LogTorus n → ℝ)
     (V : LogSpace n → LogSpace n) (q : LogTorus n) :
     angularTorusFormAdjoint a V q =
@@ -41628,7 +41628,7 @@ theorem angularTorusFormAdjoint_eq_coverFormAdjoint
         (sourceTorusCoverPoint q) := by
   rfl
 
-theorem angularWeakDolbeaultResolvent_components_mem_graph
+lemma angularWeakDolbeaultResolvent_components_mem_graph
     {n : ℕ} (a : LogTorus n → ℝ)
     (g : angularWeightedScalarL2 a) :
     WithLp.toLp 2
@@ -41646,7 +41646,7 @@ theorem angularWeakDolbeaultResolvent_components_mem_graph
   rw [WithLp.toLp_ofLp]
   exact h
 
-theorem sourceTorusFormExteriorDerivativeDensity_cutoff_eq_antisymmetric
+lemma sourceTorusFormExteriorDerivativeDensity_cutoff_eq_antisymmetric
     {n : ℕ} {V : LogSpace n → LogSpace n}
     (hV : ContDiff ℝ 2 V)
     (hclosed : ∀ q : LogTorus n,
@@ -41672,7 +41672,7 @@ open WeightedTorusDolbeault
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff Convolution
 
-theorem angularWeightedTorus_fixedRadialCutoff_smul_error_integral_tendsto_zero
+lemma angularWeightedTorus_fixedRadialCutoff_smul_error_integral_tendsto_zero
     {n : ℕ} {a : LogTorus n → ℝ}
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
     {F : ℕ → LogTorus n → E}
@@ -41749,7 +41749,7 @@ theorem angularWeightedTorus_fixedRadialCutoff_smul_error_integral_tendsto_zero
     hbound
     (hconv hS)
 
-theorem angularWeightedLp_tendsto_of_squared_error_integral
+lemma angularWeightedLp_tendsto_of_squared_error_integral
     {n : ℕ} {a : LogTorus n → ℝ}
     {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
     {F : ℕ → LogTorus n → E} {f : LogTorus n → E}
@@ -41797,7 +41797,7 @@ open Set Function Filter MeasureTheory Matrix
 open WeightedTorusHilbert WeightedResolventConstantCore MatrixTorusBochnerCoreDensity
 open scoped BigOperators ENNReal InnerProductSpace Topology
 
-theorem sourceRadialCutoff_eventually_one_on_compact
+lemma sourceRadialCutoff_eventually_one_on_compact
     {n : ℕ} {s : Set (LogTorus n)}
     (hs : IsCompact s) :
     ∀ᶠ m : ℕ in atTop,
@@ -41830,7 +41830,7 @@ open RadialPhysicalResolventRootCutoffPairing
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   Matrix.Norms.L2Operator Topology ContDiff
 
-theorem angularEuclideanConjugation_sub
+lemma angularEuclideanConjugation_sub
     {n : ℕ} (v w : EuclideanSpace ℂ (Fin n)) :
     angularEuclideanConjugation (v - w) =
       angularEuclideanConjugation v -
@@ -41839,7 +41839,7 @@ theorem angularEuclideanConjugation_sub
   change conj (v i - w i) = conj (v i) - conj (w i)
   exact map_sub (starRingEnd ℂ) (v i) (w i)
 
-theorem angularEuclideanConjugation_real_smul
+lemma angularEuclideanConjugation_real_smul
     {n : ℕ} (c : ℝ) (v : EuclideanSpace ℂ (Fin n)) :
     angularEuclideanConjugation ((c : ℂ) • v) =
       (c : ℂ) • angularEuclideanConjugation v := by
@@ -41860,7 +41860,7 @@ open TorusWeakRadialExteriorEnergy
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   Matrix.Norms.L2Operator Topology ContDiff
 
-theorem sourceCutoffBarGradient_hasCompactSupport
+lemma sourceCutoffBarGradient_hasCompactSupport
     {n : ℕ} (m : ℕ) :
     HasCompactSupport (sourceCutoffBarGradient (n := n) m) := by
   let S : Set (LogTorus n) :=
@@ -41887,7 +41887,7 @@ theorem sourceCutoffBarGradient_hasCompactSupport
   apply norm_eq_zero.mp
   rw [sourceCutoffBarGradient_norm_eq, hgrad, norm_zero]
 
-theorem sourceCutoffDerivativeCommutator_hasCompactSupport
+lemma sourceCutoffDerivativeCommutator_hasCompactSupport
     {n : ℕ} (m : ℕ)
     (V : LogSpace n → LogSpace n) :
     HasCompactSupport (sourceCutoffDerivativeCommutator m V) := by
@@ -41900,7 +41900,7 @@ theorem sourceCutoffDerivativeCommutator_hasCompactSupport
   ext ij
   simp [complexEuclideanOuterProduct]
 
-theorem angularClosedMollifiedRadialMatrixCommutator_sub_weak
+lemma angularClosedMollifiedRadialMatrixCommutator_sub_weak
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : angularWeightedFormL2 a)
     (ℓ m : ℕ) (q : LogTorus n) :
@@ -41924,7 +41924,7 @@ theorem angularClosedMollifiedRadialMatrixCommutator_sub_weak
         (W q) ij.1) * (sourceCutoffBarGradient m q) ij.2
   ring
 
-theorem complexEuclideanAntisymmetricEnergy_integrable_of_memLp
+lemma complexEuclideanAntisymmetricEnergy_integrable_of_memLp
     {n : ℕ} {X : Type*} [MeasurableSpace X]
     {μ : Measure X}
     {M : X → EuclideanSpace ℂ (Fin n × Fin n)}
@@ -41941,7 +41941,7 @@ theorem complexEuclideanAntisymmetricEnergy_integrable_of_memLp
   rw [norm_complexEuclideanAntisymmetricEnergy]
   exact complexEuclidean_antisymmetric_energy_le_two_norm_sq (M x)
 
-theorem integral_complexEuclideanAntisymmetricEnergy_le_of_memLp
+lemma integral_complexEuclideanAntisymmetricEnergy_le_of_memLp
     {n : ℕ} {X : Type*} [MeasurableSpace X]
     {μ : Measure X}
     {M : X → EuclideanSpace ℂ (Fin n × Fin n)}
@@ -41985,12 +41985,12 @@ open TorusWeightedAdjointMollification TorusFriedrichsCutoff TorusWeakRadialCuto
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff Convolution
 
-theorem torusScalarRepresentative_eq_sourceTorusCoverPoint
+lemma torusScalarRepresentative_eq_sourceTorusCoverPoint
     {n : ℕ} (F : LogSpace n → ℂ) (q : LogTorus n) :
     torusScalarRepresentative F q = F (sourceTorusCoverPoint q) := by
   rfl
 
-theorem angularMollifiedPhysicalAdjointDriftCommutator_periodic
+lemma angularMollifiedPhysicalAdjointDriftCommutator_periodic
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : angularWeightedFormL2 a)
     (k : ℕ) (d : Fin n → ℤ) :
@@ -42035,7 +42035,7 @@ theorem angularMollifiedPhysicalAdjointDriftCommutator_periodic
   rw [normalizedCoverMollification_periodic hp k d z,
     hb d z, normalizedCoverMollification_periodic hh k d z]
 
-theorem angularClosedMollifiedRadialAdjointCommutator_sub_weak
+lemma angularClosedMollifiedRadialAdjointCommutator_sub_weak
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : angularWeightedFormL2 a)
     (ℓ m : ℕ) (q : LogTorus n) :
@@ -42065,7 +42065,7 @@ open BergmanJetStrictMixedLocalCore
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff Convolution
 
-theorem continuous_angularMollifiedPhysicalAdjointDriftCommutator
+lemma continuous_angularMollifiedPhysicalAdjointDriftCommutator
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
     (W : angularWeightedFormL2 a) (k : ℕ) :
@@ -42078,7 +42078,7 @@ theorem continuous_angularMollifiedPhysicalAdjointDriftCommutator
   exact (contDiff_holomorphicCoordinate
     (Complex.ofRealCLM.contDiff.comp ha2) j).continuous
 
-theorem angularGraphMollifiedPhysicalField_compact_weighted_L2_tendsto_zero
+lemma angularGraphMollifiedPhysicalField_compact_weighted_L2_tendsto_zero
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (W : angularWeightedFormL2 a)
     {S : Set (LogTorus n)} (hS : IsCompact S) :
@@ -42175,7 +42175,7 @@ theorem angularGraphMollifiedPhysicalField_compact_weighted_L2_tendsto_zero
   exact ht.congr'
     (Filter.Eventually.of_forall (fun k => (hident k).symm))
 
-theorem angularMollifiedPhysicalAdjointDriftCommutator_compact_weighted_L2_tendsto_zero
+lemma angularMollifiedPhysicalAdjointDriftCommutator_compact_weighted_L2_tendsto_zero
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
@@ -42222,7 +42222,7 @@ theorem angularMollifiedPhysicalAdjointDriftCommutator_compact_weighted_L2_tends
       hS
   simpa using h
 
-theorem angularClosedMollifiedDrift_fixedRadialCutoff_memLp
+lemma angularClosedMollifiedDrift_fixedRadialCutoff_memLp
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
@@ -42263,7 +42263,7 @@ theorem angularClosedMollifiedDrift_fixedRadialCutoff_memLp
     simp [hz]
   exact hc.memLp_of_hasCompactSupport hs
 
-theorem angularClosedMollifiedDrift_fixedRadialCutoff_L2_tendsto_zero
+lemma angularClosedMollifiedDrift_fixedRadialCutoff_L2_tendsto_zero
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
@@ -42339,7 +42339,7 @@ theorem angularClosedMollifiedDrift_fixedRadialCutoff_L2_tendsto_zero
     (by simpa using hc)
   simpa using ht
 
-theorem angularWeightedScalar_fixedRadialCutoff_mollification_integral_tendsto_zero
+lemma angularWeightedScalar_fixedRadialCutoff_mollification_integral_tendsto_zero
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a) (f : angularWeightedScalarL2 a) (m : ℕ) :
     Tendsto
@@ -42394,7 +42394,7 @@ theorem angularWeightedScalar_fixedRadialCutoff_mollification_integral_tendsto_z
     exact TorusHomogeneousFriedrichs.angularWeightedScalar_normalizedCoverMollification_compact_L2_tendsto_zero
         ha f hS
 
-theorem angularWeightedScalar_fixedRadialCutoff_mollification_memLp
+lemma angularWeightedScalar_fixedRadialCutoff_mollification_memLp
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a) (f : angularWeightedScalarL2 a)
     (m k : ℕ) :
@@ -42445,7 +42445,7 @@ theorem angularWeightedScalar_fixedRadialCutoff_mollification_memLp
     simp [hzero]
   exact hcont.memLp_of_hasCompactSupport hsupp
 
-theorem angularWeightedScalar_fixedRadialCutoff_mollification_L2_tendsto
+lemma angularWeightedScalar_fixedRadialCutoff_mollification_L2_tendsto
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a) (f : angularWeightedScalarL2 a) (m : ℕ) :
     Tendsto
@@ -42484,7 +42484,7 @@ open TorusWeakRadialCutoffCommutator TorusWeakRadialExteriorMollification
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   Matrix.Norms.L2Operator Topology ContDiff
 
-theorem angularClosedMollifiedRadialMatrixCommutator_memLp
+lemma angularClosedMollifiedRadialMatrixCommutator_memLp
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a) (W : angularWeightedFormL2 a)
     (ℓ m : ℕ) :
@@ -42514,7 +42514,7 @@ def angularClosedMollifiedRadialMatrixCommutatorL2
       (sourceCutoffDerivativeCommutator m
         (angularGraphMollifiedPhysicalField W ℓ))
 
-theorem angularClosedMollifiedRadialMatrixCommutatorL2_sub_norm_sq_le
+lemma angularClosedMollifiedRadialMatrixCommutatorL2_sub_norm_sq_le
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a) (W : angularWeightedFormL2 a)
     (ℓ m : ℕ)
@@ -42666,7 +42666,7 @@ theorem angularClosedMollifiedRadialMatrixCommutatorL2_sub_norm_sq_le
       ∂μ := MeasureTheory.integral_indicator hS.measurableSet
     _ = _ := integral_const_mul (A ^ 2) _
 
-theorem angularClosedMollifiedRadialMatrixCommutatorL2_tendsto
+lemma angularClosedMollifiedRadialMatrixCommutatorL2_tendsto
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a) (W : angularWeightedFormL2 a)
     {B : ℝ} (hB₀ : 0 ≤ B)
@@ -42717,7 +42717,7 @@ open BergmanJetStrictMixedLocalCore
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff Convolution Manifold
 
-theorem angularWeightedScalarCover_density_inner_integrable
+lemma angularWeightedScalarCover_density_inner_integrable
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a) (f : angularWeightedScalarL2 a)
     {ψ : LogSpace n → ℂ}
@@ -42745,7 +42745,7 @@ theorem angularWeightedScalarCover_density_inner_integrable
   simpa [complexTorusCoverLift, RCLike.inner_apply', mul_assoc,
     mul_left_comm, mul_comm] using h
 
-theorem angularWeightedFormCover_density_inner_integrable
+lemma angularWeightedFormCover_density_inner_integrable
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a) (W : angularWeightedFormL2 a)
     {ψ : LogSpace n → ℂ}
@@ -42790,7 +42790,7 @@ theorem angularWeightedFormCover_density_inner_integrable
     (Finset.univ : Finset (Fin n)) (fun j _ => hj j)
   simpa [PiLp.inner_apply, Finset.mul_sum] using hsum
 
-theorem angularWeakDolbeaultResolvent_weighted_cover_green
+lemma angularWeakDolbeaultResolvent_weighted_cover_green
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a) (f : angularWeightedScalarL2 a)
     {ψ : LogSpace n → ℂ}
@@ -42976,7 +42976,7 @@ open BergmanJetStrictMixedLocalCore
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder Topology ContDiff Convolution
 
-theorem contDiff_translatedDensityCancelledCoverKernel_three
+lemma contDiff_translatedDensityCancelledCoverKernel_three
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha3 : ContDiff ℝ 3 (angularCoverPotential a))
     (k : ℕ) (x : LogSpace n) :
@@ -42987,7 +42987,7 @@ theorem contDiff_translatedDensityCancelledCoverKernel_three
       ha3.neg.exp
       (fun y => (coverWeight_pos (angularCoverPotential a) y).ne')
 
-theorem angularWeakDolbeaultResolvent_unweighted_translated_bump_green
+lemma angularWeakDolbeaultResolvent_unweighted_translated_bump_green
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha3 : ContDiff ℝ 3 (angularCoverPotential a))
@@ -43174,7 +43174,7 @@ theorem angularWeakDolbeaultResolvent_unweighted_translated_bump_green
       rw [mul_right_comm, he]
       simp [κ, mul_comm]
 
-theorem angularWeakDolbeaultResolvent_closed_mollified_divergence
+lemma angularWeakDolbeaultResolvent_closed_mollified_divergence
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha3 : ContDiff ℝ 3 (angularCoverPotential a))
@@ -43356,7 +43356,7 @@ theorem angularWeakDolbeaultResolvent_closed_mollified_divergence
     _ = _ := by
       rw [normalizedCoverMollification_eq_kernel_integral]
 
-theorem coverFormAdjoint_angularGraphMollifiedPhysicalWeakResolvent_eq
+lemma coverFormAdjoint_angularGraphMollifiedPhysicalWeakResolvent_eq
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha3 : ContDiff ℝ 3 (angularCoverPotential a))
@@ -43403,7 +43403,7 @@ def angularSmoothCompactHessianRootVector
     (angularTorusConjugatePhysicalFormVector
       (cutoffPhysicalField m V) q)
 
-theorem angularCurvatureDensity_re_eq_squareRoot_norm_sq
+lemma angularCurvatureDensity_re_eq_squareRoot_norm_sq
     {n : ℕ} {a : LogTorus n → ℝ}
     (hH : ∀ q : LogTorus n,
       (angularTorusComplexHessianMatrix a q).PosDef)
@@ -43422,7 +43422,7 @@ theorem angularCurvatureDensity_re_eq_squareRoot_norm_sq
       CFC.sqrt_mul_sqrt_self _ (hH q).posSemidef.nonneg]
   rfl
 
-theorem continuous_angularSmoothCompactHessianRootVector
+lemma continuous_angularSmoothCompactHessianRootVector
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
     (hH : ∀ q : LogTorus n,
@@ -43458,7 +43458,7 @@ theorem continuous_angularSmoothCompactHessianRootVector
   exact (continuous_complexEuclideanConjugatedMatrixAction
     (n := n)).comp (hroot.prodMk hform)
 
-theorem hasCompactSupport_angularSmoothCompactHessianRootVector
+lemma hasCompactSupport_angularSmoothCompactHessianRootVector
     {n : ℕ} (a : LogTorus n → ℝ)
     (V : LogSpace n → LogSpace n) (m : ℕ) :
     HasCompactSupport (angularSmoothCompactHessianRootVector a V m) := by
@@ -43480,7 +43480,7 @@ theorem hasCompactSupport_angularSmoothCompactHessianRootVector
   simp [angularEuclideanConjugation, Matrix.mulVec, dotProduct,
     Pi.star_apply]
 
-theorem angularSmoothCompactHessianRootVector_memLp
+lemma angularSmoothCompactHessianRootVector_memLp
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
@@ -43500,7 +43500,7 @@ theorem angularSmoothCompactHessianRootVector_memLp
       ha2 hH V hV hVp m).memLp_of_hasCompactSupport
       (hasCompactSupport_angularSmoothCompactHessianRootVector a V m)
 
-theorem angularSmoothCompactHessianRootVector_L2_norm_sq
+lemma angularSmoothCompactHessianRootVector_L2_norm_sq
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
@@ -43565,7 +43565,7 @@ theorem angularSmoothCompactHessianRootVector_L2_norm_sq
       ∂(angularWeightedTorusMeasure a)).re := by
         simpa using (integral_re hcurv)
 
-theorem angularSmoothCompactHessianRootVector_norm_sq_le_adjoint_add_exterior
+lemma angularSmoothCompactHessianRootVector_norm_sq_le_adjoint_add_exterior
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
@@ -43614,7 +43614,7 @@ def angularClosedMollifiedRootVectorL2
       (angularSmoothCompactHessianRootVector a
         (angularGraphMollifiedPhysicalField W ℓ) m)
 
-theorem angularClosedGraphMollifiedRootBochner
+lemma angularClosedGraphMollifiedRootBochner
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
@@ -43658,7 +43658,7 @@ theorem angularClosedGraphMollifiedRootBochner
     [sourceTorusFormExteriorDerivativeDensity_cutoff_eq_antisymmetric
       hV hclosed m] using hbochner
 
-theorem angularWeakResolventClosedMollifiedRootBochner
+lemma angularWeakResolventClosedMollifiedRootBochner
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
@@ -43706,7 +43706,7 @@ open TorusFriedrichsCutoff TorusWeakRadialCutoffCommutator TorusWeakRadialExteri
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   Matrix.Norms.L2Operator Topology ContDiff
 
-theorem angularClosedMollifiedRadialAdjointCommutator_memLp
+lemma angularClosedMollifiedRadialAdjointCommutator_memLp
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a) (W : angularWeightedFormL2 a)
     (ℓ m : ℕ) :
@@ -43743,7 +43743,7 @@ def angularClosedMollifiedRadialAdjointCommutatorL2
       (angularSourceCutoffAdjointCommutator m
         (angularGraphMollifiedPhysicalField W ℓ))
 
-theorem angularClosedMollifiedRadialAdjointCommutatorL2_sub_norm_sq_le
+lemma angularClosedMollifiedRadialAdjointCommutatorL2_sub_norm_sq_le
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a) (W : angularWeightedFormL2 a)
     (ℓ m : ℕ)
@@ -43896,7 +43896,7 @@ theorem angularClosedMollifiedRadialAdjointCommutatorL2_sub_norm_sq_le
       ∂μ := MeasureTheory.integral_indicator hS.measurableSet
     _ = _ := integral_const_mul (A ^ 2) _
 
-theorem angularClosedMollifiedRadialAdjointCommutatorL2_tendsto
+lemma angularClosedMollifiedRadialAdjointCommutatorL2_tendsto
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a) (W : angularWeightedFormL2 a)
     {B : ℝ}
@@ -43954,7 +43954,7 @@ open RadialPhysicalResolventRootCutoffUniformExtraction TorusHomogeneousSmoothRo
 open scoped BigOperators ENNReal ComplexConjugate InnerProductSpace
   MatrixOrder ComplexOrder Matrix.Norms.L2Operator Topology ContDiff
 
-theorem exists_angularHessianSquareRoot_fiber_bound_on_compact
+lemma exists_angularHessianSquareRoot_fiber_bound_on_compact
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
     (hH : ∀ q : LogTorus n,
@@ -44008,7 +44008,7 @@ def angularPhysicalResolventRootCutoffField
         (angularTorusComplexHessianMatrix a) q)
       (angularEuclideanConjugation (W q))
 
-theorem angularPhysicalResolventRootCutoffField_aestronglyMeasurable
+lemma angularPhysicalResolventRootCutoffField_aestronglyMeasurable
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
     (hH : ∀ q : LogTorus n,
@@ -44034,7 +44034,7 @@ theorem angularPhysicalResolventRootCutoffField_aestronglyMeasurable
         hH).aestronglyMeasurable
   · exact (MeasureTheory.Lp.memLp W).aestronglyMeasurable
 
-theorem angularPhysicalResolventRootCutoffField_memLp
+lemma angularPhysicalResolventRootCutoffField_memLp
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
     (hH : ∀ q : LogTorus n,
@@ -44087,7 +44087,7 @@ def angularPhysicalResolventRootCutoffL2
     ha2 hH W m).toLp
       (angularPhysicalResolventRootCutoffField a W m)
 
-theorem angularClosedMollifiedRootVector_sub_pointwise
+lemma angularClosedMollifiedRootVector_sub_pointwise
     {n : ℕ} {a : LogTorus n → ℝ}
     (W : angularWeightedFormL2 a)
     (ℓ m : ℕ) (q : LogTorus n) :
@@ -44121,7 +44121,7 @@ theorem angularClosedMollifiedRootVector_sub_pointwise
     map_smul, ← smul_sub, ← map_sub,
     ← angularEuclideanConjugation_sub]
 
-theorem angularClosedMollifiedRootVectorL2_sub_norm_sq_le
+lemma angularClosedMollifiedRootVectorL2_sub_norm_sq_le
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
@@ -44278,7 +44278,7 @@ theorem angularClosedMollifiedRootVectorL2_sub_norm_sq_le
         ∂μ := MeasureTheory.integral_indicator hS.measurableSet
     _ = _ := integral_const_mul (B ^ 2) _
 
-theorem angularClosedMollifiedRootVectorL2_tendsto
+lemma angularClosedMollifiedRootVectorL2_tendsto
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
@@ -44314,7 +44314,7 @@ theorem angularClosedMollifiedRootVectorL2_tendsto
   apply tendsto_iff_norm_sub_tendsto_zero.mpr
   simpa [Real.sqrt_sq_eq_abs] using hsq.sqrt
 
-theorem angularClosedMollifiedRadialAdjoint_memLp
+lemma angularClosedMollifiedRadialAdjoint_memLp
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
@@ -44378,7 +44378,7 @@ def angularClosedMollifiedRadialAdjointL2
         (cutoffPhysicalField m
           (angularGraphMollifiedPhysicalField W ℓ)))
 
-theorem angularTorusFormAdjoint_cutoff_closedWeakResolventMollifier
+lemma angularTorusFormAdjoint_cutoff_closedWeakResolventMollifier
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha3 : ContDiff ℝ 3 (angularCoverPotential a))
@@ -44412,7 +44412,7 @@ theorem angularTorusFormAdjoint_cutoff_closedWeakResolventMollifier
     TorusHomogeneousClosedResolventAdjoint.coverFormAdjoint_angularGraphMollifiedPhysicalWeakResolvent_eq
       ha ha3 g ℓ (sourceTorusCoverPoint q)]
 
-theorem angularClosedMollifiedRadialAdjointL2_eq_defect_drift_commutator
+lemma angularClosedMollifiedRadialAdjointL2_eq_defect_drift_commutator
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha3 : ContDiff ℝ 3 (angularCoverPotential a))
@@ -44534,7 +44534,7 @@ theorem angularClosedMollifiedRadialAdjointL2_eq_defect_drift_commutator
     smul_eq_mul]
   ring
 
-theorem angularClosedMollifiedRadialAdjointL2_tendsto
+lemma angularClosedMollifiedRadialAdjointL2_tendsto
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha3 : ContDiff ℝ 3 (angularCoverPotential a))
@@ -44613,7 +44613,7 @@ theorem angularClosedMollifiedRadialAdjointL2_tendsto
   exact (angularClosedMollifiedRadialAdjointL2_eq_defect_drift_commutator
     ha ha3 g ℓ m).symm
 
-theorem angularWeakResolventClosedMollifiedRootBochner_le_adjoint_matrix
+lemma angularWeakResolventClosedMollifiedRootBochner_le_adjoint_matrix
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
@@ -44681,7 +44681,7 @@ theorem angularWeakResolventClosedMollifiedRootBochner_le_adjoint_matrix
       rw [complexScalar_integral_mul_conj_re_eq_L2_norm_sq hadj]
       rfl
 
-theorem angularPhysicalWeakResolventRootCutoff_sq_le_adjoint_matrix
+lemma angularPhysicalWeakResolventRootCutoff_sq_le_adjoint_matrix
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha3 : ContDiff ℝ 3 (angularCoverPotential a))
@@ -44762,7 +44762,7 @@ theorem angularPhysicalWeakResolventRootCutoff_sq_le_adjoint_matrix
         ha ha2 hH g ℓ m)
   exact sub_nonneg.mp hnonneg
 
-theorem angularPhysicalResolventRootCutoffL2_norm_le_of_one_on_support
+lemma angularPhysicalResolventRootCutoffL2_norm_le_of_one_on_support
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
     (hH : ∀ q : LogTorus n,
@@ -44799,7 +44799,7 @@ theorem angularPhysicalResolventRootCutoffL2_norm_le_of_one_on_support
           simp [angularPhysicalResolventRootCutoffField, hmq])
   simpa only [one_mul] using hcomp
 
-theorem eventually_angularPhysicalResolventRootCutoffL2_norm_le
+lemma eventually_angularPhysicalResolventRootCutoffL2_norm_le
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
     (hH : ∀ q : LogTorus n,
@@ -44816,7 +44816,7 @@ theorem eventually_angularPhysicalResolventRootCutoffL2_norm_le
   exact angularPhysicalResolventRootCutoffL2_norm_le_of_one_on_support
     ha2 hH W m M hM
 
-theorem angularPhysicalWeakResolventRootCutoffCoercivity
+lemma angularPhysicalWeakResolventRootCutoffCoercivity
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha : Continuous a)
     (ha3 : ContDiff ℝ 3 (angularCoverPotential a))
@@ -44925,7 +44925,7 @@ def momentWeakHolomorphicJointMollifierLowerBound
     BodyScale.canonicalScale K *
       (|sourceJointCoverTime q| + ‖sourceJointRealTimeCLM n‖)
 
-theorem momentWeakHolomorphicJointMollifierLowerBound_le_mollification
+lemma momentWeakHolomorphicJointMollifierLowerBound_le_mollification
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45026,7 +45026,7 @@ def momentWeakHolomorphicJointTimeLowerBound
     BodyScale.canonicalScale K *
       (|t| + ‖sourceJointRealTimeCLM n‖)
 
-theorem momentWeakHolomorphicJointTimeLowerBound_le_mollification
+lemma momentWeakHolomorphicJointTimeLowerBound_le_mollification
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45041,7 +45041,7 @@ theorem momentWeakHolomorphicJointTimeLowerBound_le_mollification
       momentWeakHolomorphicJointMollifierLowerBound_le_mollification
         K F htransport p k (sourceJointTimeEmbedding z t)
 
-theorem momentWeakHolomorphicStrictRadialPotential_norm_lower
+lemma momentWeakHolomorphicStrictRadialPotential_norm_lower
     {n : ℕ} (K : CenteredBody n)
     (x : Space n) :
     momentBodyStrictScale K * ‖x‖ ≤
@@ -45056,7 +45056,7 @@ theorem momentWeakHolomorphicStrictRadialPotential_norm_lower
     _ ≤ momentBodyStrictRadialPotential K x :=
       momentBodyStrictRadialPotential_sum_abs_lower K x
 
-theorem momentWeakHolomorphicStrictJointTorusWeight_norm_coercivity
+lemma momentWeakHolomorphicStrictJointTorusWeight_norm_coercivity
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45089,7 +45089,7 @@ theorem momentWeakHolomorphicStrictJointTorusWeight_norm_coercivity
   rw [href]
   nlinarith
 
-theorem integrable_exp_neg_momentWeakHolomorphicStrictJointTorusWeight
+lemma integrable_exp_neg_momentWeakHolomorphicStrictJointTorusWeight
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45147,7 +45147,7 @@ theorem integrable_exp_neg_momentWeakHolomorphicStrictJointTorusWeight
   dsimp [δ, C]
   linarith
 
-theorem momentWeakHolomorphicStrictJointWeightedMeasure_isFinite
+lemma momentWeakHolomorphicStrictJointWeightedMeasure_isFinite
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45162,7 +45162,7 @@ theorem momentWeakHolomorphicStrictJointWeightedMeasure_isFinite
   exact integrable_exp_neg_momentWeakHolomorphicStrictJointTorusWeight
     K F htransport p k t hε₀ hε₁
 
-theorem momentWeakHolomorphicStrictJointPartition_pos
+lemma momentWeakHolomorphicStrictJointPartition_pos
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45176,7 +45176,7 @@ theorem momentWeakHolomorphicStrictJointPartition_pos
     (integrable_exp_neg_momentWeakHolomorphicStrictJointTorusWeight
       K F htransport p k t hε₀ hε₁)
 
-theorem momentWeakHolomorphicStrictJointProbability_univ
+lemma momentWeakHolomorphicStrictJointProbability_univ
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45220,7 +45220,7 @@ theorem momentWeakHolomorphicStrictJointProbability_univ
   rw [div_self hpart.ne']
   exact ENNReal.ofReal_one
 
-theorem momentWeakHolomorphicStrictJointProbability_isProbability
+lemma momentWeakHolomorphicStrictJointProbability_isProbability
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45234,7 +45234,7 @@ theorem momentWeakHolomorphicStrictJointProbability_isProbability
   ⟨momentWeakHolomorphicStrictJointProbability_univ
     K F htransport p k t hε₀ hε₁⟩
 
-theorem momentWeakHolomorphicStrictJointProbability_eq_smul_weighted
+lemma momentWeakHolomorphicStrictJointProbability_eq_smul_weighted
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45294,7 +45294,7 @@ open EnvelopeSmoothing EnvelopeGeneralTorusDescent LogPartitionConvexity
 open scoped BigOperators ENNReal Topology ContDiff Convolution
   ComplexConjugate ComplexOrder
 
-theorem momentWeakJointCoverUpperEnvelope_timeEmbedding_of_pos
+lemma momentWeakJointCoverUpperEnvelope_timeEmbedding_of_pos
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45318,7 +45318,7 @@ theorem momentWeakJointCoverUpperEnvelope_timeEmbedding_of_pos
       rw [sourceJointCoverTime_timeEmbedding]
       rfl
 
-theorem momentTorusEnvelopeTimeSlice_le_holomorphicJointMollification
+lemma momentTorusEnvelopeTimeSlice_le_holomorphicJointMollification
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45336,7 +45336,7 @@ theorem momentTorusEnvelopeTimeSlice_le_holomorphicJointMollification
     K F htransport p k
       (sourceJointTimeEmbedding (sourceTorusCoverPoint q) t)
 
-theorem tendsto_momentWeakHolomorphicStrictJointCoverWeight
+lemma tendsto_momentWeakHolomorphicStrictJointCoverWeight
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45372,7 +45372,7 @@ theorem tendsto_momentWeakHolomorphicStrictJointCoverWeight
   simpa [momentWeakHolomorphicStrictJointCoverWeight]
     using hmix
 
-theorem tendsto_momentWeakHolomorphicStrictJointTorusWeight
+lemma tendsto_momentWeakHolomorphicStrictJointTorusWeight
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45402,7 +45402,7 @@ def momentWeakHolomorphicUniformRadialRate
   min (((momentCoerciveMonomialDegree K : ℕ) : ℝ)⁻¹)
     (momentBodyStrictScale K)
 
-theorem momentWeakHolomorphicUniformRadialRate_pos
+lemma momentWeakHolomorphicUniformRadialRate_pos
     {n : ℕ} (K : CenteredBody n) :
     0 < momentWeakHolomorphicUniformRadialRate K := by
   unfold momentWeakHolomorphicUniformRadialRate
@@ -45418,7 +45418,7 @@ def momentWeakHolomorphicUniformCoercivityConstant
       normalizedTargetBodyMeasure K) : ℝ :=
   max (momentTorusEnvelopeCoercivityConstant K F htransport) 0
 
-theorem momentWeakHolomorphicStrictJointTorusWeight_uniform_norm_coercivity
+lemma momentWeakHolomorphicStrictJointTorusWeight_uniform_norm_coercivity
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45493,7 +45493,7 @@ def momentWeakHolomorphicUniformDensityMajorant
       (-momentWeakHolomorphicUniformRadialRate K * ‖q.1‖) *
       (1 : ℝ))
 
-theorem integrable_momentWeakHolomorphicUniformDensityMajorant
+lemma integrable_momentWeakHolomorphicUniformDensityMajorant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45534,7 +45534,7 @@ theorem integrable_momentWeakHolomorphicUniformDensityMajorant
       (momentWeakHolomorphicUniformCoercivityConstant
         K F htransport))
 
-theorem exp_neg_momentWeakHolomorphicStrictJointTorusWeight_le_uniform
+lemma exp_neg_momentWeakHolomorphicStrictJointTorusWeight_le_uniform
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45556,7 +45556,7 @@ theorem exp_neg_momentWeakHolomorphicStrictJointTorusWeight_le_uniform
       K F htransport p k ht hε₀ hε₁ q
   linarith
 
-theorem tendsto_momentWeakHolomorphicStrictJointTimeDensity
+lemma tendsto_momentWeakHolomorphicStrictJointTimeDensity
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45590,7 +45590,7 @@ theorem tendsto_momentWeakHolomorphicStrictJointTimeDensity
   refine h.congr' (Filter.Eventually.of_forall fun k => ?_)
   rfl
 
-theorem tendsto_momentWeakHolomorphicStrictJointPartition
+lemma tendsto_momentWeakHolomorphicStrictJointPartition
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45650,7 +45650,7 @@ theorem tendsto_momentWeakHolomorphicStrictJointPartition
           K F htransport p ε hε ht q)
   simpa [sourcePartition] using hdom
 
-theorem tendsto_momentWeakHolomorphicStrictJointLogPartition
+lemma tendsto_momentWeakHolomorphicStrictJointLogPartition
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45693,7 +45693,7 @@ open BergmanJetEnvelopeLimit BergmanJetTorusEnvelope BergmanJetTorusSlopeBridge
 open BergmanJetPointwiseLogKernel
 open scoped BigOperators ENNReal InnerProductSpace Topology
 
-theorem momentTorusTruncatedJetOrderDensity_nonneg
+lemma momentTorusTruncatedJetOrderDensity_nonneg
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45706,7 +45706,7 @@ theorem momentTorusTruncatedJetOrderDensity_nonneg
   exact Finset.sum_nonneg fun i _ =>
     mul_nonneg (Nat.cast_nonneg _) (Complex.normSq_nonneg _)
 
-theorem momentTorusTruncatedJetOrderDensity_le_diagonal_mul_cutoff
+lemma momentTorusTruncatedJetOrderDensity_le_diagonal_mul_cutoff
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45749,7 +45749,7 @@ theorem momentTorusTruncatedJetOrderDensity_le_diagonal_mul_cutoff
           (momentNormalizedPotential F) q.1 := by
       rw [hdiag]
 
-theorem momentPositiveTorusJetSlope_nonneg
+lemma momentPositiveTorusJetSlope_nonneg
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45765,7 +45765,7 @@ theorem momentPositiveTorusJetSlope_nonneg
       (diagonalKernel_momentNormalized_pos
         K hk F htransport q.1).le)
 
-theorem momentPositiveTorusJetSlope_le_cutoff
+lemma momentPositiveTorusJetSlope_le_cutoff
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45793,7 +45793,7 @@ theorem momentPositiveTorusJetSlope_le_cutoff
           (momentNormalizedPotential F) q.1) := by
       field_simp
 
-theorem momentPositiveTorusJetSlope_le_canonicalScale
+lemma momentPositiveTorusJetSlope_le_canonicalScale
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45822,7 +45822,7 @@ theorem momentPositiveTorusJetSlope_le_canonicalScale
           (mul_nonneg
             (BodyScale.canonicalScale_pos K).le hkreal.le))
 
-theorem continuous_momentPositiveTorusJetSlope
+lemma continuous_momentPositiveTorusJetSlope
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45859,7 +45859,7 @@ def momentTorusJetSlope
           (BodyScale.canonicalScale K * (k : ℝ))) q
   else 0
 
-theorem momentTorusJetSlope_nonneg
+lemma momentTorusJetSlope_nonneg
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45872,7 +45872,7 @@ theorem momentTorusJetSlope_nonneg
       K ‹0 < k› F htransport p _ q
   · exact le_rfl
 
-theorem momentTorusJetSlope_le_canonicalScale
+lemma momentTorusJetSlope_le_canonicalScale
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45886,7 +45886,7 @@ theorem momentTorusJetSlope_le_canonicalScale
       K ‹0 < k› F htransport p q
   · exact (BodyScale.canonicalScale_pos K).le
 
-theorem continuous_momentTorusJetSlope
+lemma continuous_momentTorusJetSlope
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45912,7 +45912,7 @@ theorem continuous_momentTorusJetSlope
       (continuous_const :
         Continuous (fun _ : LogTorus n => (0 : ℝ)))
 
-theorem momentCoverMoment_zero_eq_torusTruncatedJetOrderDensity
+lemma momentCoverMoment_zero_eq_torusTruncatedJetOrderDensity
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45936,7 +45936,7 @@ theorem momentCoverMoment_zero_eq_torusTruncatedJetOrderDensity
   rw [momentTorusRepresentative_eq_holomorphicRepresentative_cover]
   ring
 
-theorem momentCoverPartition_zero_eq_diagonalKernel
+lemma momentCoverPartition_zero_eq_diagonalKernel
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45958,7 +45958,7 @@ theorem momentCoverPartition_zero_eq_diagonalKernel
         (momentSimultaneousJetBasis K hk F htransport p)
         (sourceTorusCoverPoint q))
 
-theorem momentPositiveTorusJetSlope_eq_deriv_cover
+lemma momentPositiveTorusJetSlope_eq_deriv_cover
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -45992,7 +45992,7 @@ theorem momentPositiveTorusJetSlope_eq_deriv_cover
   unfold momentPositiveTorusJetSlope
   ring
 
-theorem momentPositiveTorusJetSlope_le_cover_positive_secant
+lemma momentPositiveTorusJetSlope_le_cover_positive_secant
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -46032,7 +46032,7 @@ theorem momentPositiveTorusJetSlope_le_cover_positive_secant
         (Set.mem_univ (0 : ℝ)) (Set.mem_univ t) ht hdiff
   simpa [slope_def_field] using h
 
-theorem momentPositiveJointGeodesic_le_tailUpperEnvelope
+lemma momentPositiveJointGeodesic_le_tailUpperEnvelope
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -46064,7 +46064,7 @@ theorem momentPositiveJointGeodesic_le_tailUpperEnvelope
         (momentJointTailSup_localUpperBounds_nonempty
           K F htransport p r w)
 
-theorem limsup_momentTorusJetSlope_le_tail_positive_secant
+lemma limsup_momentTorusJetSlope_le_tail_positive_secant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -46170,7 +46170,7 @@ theorem limsup_momentTorusJetSlope_le_tail_positive_secant
   apply (div_lt_iff₀ ht).mpr
   linarith
 
-theorem limsup_momentTorusJetSlope_le_envelope_positive_secant
+lemma limsup_momentTorusJetSlope_le_envelope_positive_secant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -46220,7 +46220,7 @@ theorem limsup_momentTorusJetSlope_le_envelope_positive_secant
     momentEnvelopeTimeSlice, ht, z, w,
     realLogCoordinate_sourceTorusCoverPoint] using hle
 
-theorem ae_limsup_momentTorusJetSlope_le_envelope_positive_secant
+lemma ae_limsup_momentTorusJetSlope_le_envelope_positive_secant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -46276,7 +46276,7 @@ open BergmanJetTorusEnvelope BergmanJetPartitionEndpoint BergmanJetTorusSlopeBri
 open BergmanJetTorusRightSlopeBridge
 open scoped BigOperators ENNReal Topology
 
-theorem eventually_integral_momentTorusJetSlope_Bergman_ge_sharp
+lemma eventually_integral_momentTorusJetSlope_Bergman_ge_sharp
     {n : ℕ} (hn : 0 < n) (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -46301,7 +46301,7 @@ def momentBodyEnvelopePositiveSecant
   (momentBodyTorusWeight K p t q -
     momentBodyTorusWeight K p 0 q) / t
 
-theorem momentBodyEnvelopePositiveSecant_le_canonicalScale
+lemma momentBodyEnvelopePositiveSecant_le_canonicalScale
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) {t : ℝ} (ht : 0 < t)
     (q : LogTorus n) :
@@ -46319,7 +46319,7 @@ theorem momentBodyEnvelopePositiveSecant_le_canonicalScale
         BodyScale.canonicalScale K * t at h
   linarith
 
-theorem measurable_momentBodyEnvelopePositiveSecant
+lemma measurable_momentBodyEnvelopePositiveSecant
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (t : ℝ) :
     Measurable (momentBodyEnvelopePositiveSecant K p t) := by
@@ -46327,7 +46327,7 @@ theorem measurable_momentBodyEnvelopePositiveSecant
   exact ((measurable_momentBodyTorusWeight K p t).sub
     (measurable_momentBodyTorusWeight K p 0)).div_const t
 
-theorem ae_limsup_momentTorusJetSlope_le_bodySecant_base
+lemma ae_limsup_momentTorusJetSlope_le_bodySecant_base
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) {t : ℝ} (ht : 0 < t) :
     ∀ᵐ q : LogTorus n ∂(sourceTorusBaseMeasure n),
@@ -46357,7 +46357,7 @@ theorem ae_limsup_momentTorusJetSlope_le_bodySecant_base
   simpa [momentBodyEnvelopePositiveSecant,
     momentBodyTorusWeight] using hq q.2
 
-theorem ae_limsup_momentTorusJetSlope_le_bodySecant_Gibbs
+lemma ae_limsup_momentTorusJetSlope_le_bodySecant_Gibbs
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) {t : ℝ} (ht : 0 < t) :
     ∀ᵐ q : LogTorus n
@@ -46386,7 +46386,7 @@ theorem ae_limsup_momentTorusJetSlope_le_bodySecant_Gibbs
       (sourceNormalizedDensity
         (momentBodyTorusWeight K p) 0 q))).ae_le hbase
 
-theorem ae_momentBodyEnvelopePositiveSecant_nonneg_Gibbs
+lemma ae_momentBodyEnvelopePositiveSecant_nonneg_Gibbs
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) {t : ℝ} (ht : 0 < t) :
     ∀ᵐ q : LogTorus n
@@ -46418,7 +46418,7 @@ theorem ae_momentBodyEnvelopePositiveSecant_nonneg_Gibbs
       hbounded
   exact hnonneg.trans hq
 
-theorem integrable_momentBodyEnvelopePositiveSecant_Gibbs
+lemma integrable_momentBodyEnvelopePositiveSecant_Gibbs
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) {t : ℝ} (ht : 0 < t) :
     Integrable (momentBodyEnvelopePositiveSecant K p t)
@@ -46442,7 +46442,7 @@ open Set Function Filter MeasureTheory
 open TorusCharacters WeightedTorusHilbert WeightedTorusDistributionBridge MatrixTorusBochnerIdentity
 open scoped BigOperators ENNReal NNReal Topology
 
-theorem limsup_measureReal_closed_le_of_probability_tendsto
+lemma limsup_measureReal_closed_le_of_probability_tendsto
     {X : Type*} [MeasurableSpace X] [TopologicalSpace X]
     [OpensMeasurableSpace X] [HasOuterApproxClosed X]
     (μ : ProbabilityMeasure X) (μk : ℕ → ProbabilityMeasure X)
@@ -46464,7 +46464,7 @@ theorem limsup_measureReal_closed_le_of_probability_tendsto
   rw [ENNReal.limsup_toReal_eq ENNReal.one_ne_top hbound]
   exact ENNReal.toReal_mono (measure_ne_top (μ : Measure X) S) hclosed
 
-theorem upperSemicontinuous_of_complexTorusCover
+lemma upperSemicontinuous_of_complexTorusCover
     {n : ℕ} (f : LogTorus n → ℝ)
     (hf : UpperSemicontinuous
       (fun z : LogSpace n =>
@@ -46485,7 +46485,7 @@ namespace BergmanJetPortmanteauUpperTailBridge
 open Set Function Filter MeasureTheory
 open scoped BigOperators ENNReal NNReal Topology
 
-theorem measurable_measureReal_upperLevel
+lemma measurable_measureReal_upperLevel
     {X : Type*} [MeasurableSpace X]
     (μ : Measure X) (g : X → ℝ) :
     Measurable (fun t : ℝ => μ.real {x : X | t ≤ g x}) := by
@@ -46493,7 +46493,7 @@ theorem measurable_measureReal_upperLevel
   exact Antitone.measurable fun s t hst =>
     measure_mono fun x hx => le_trans hst hx
 
-theorem integrable_upperSemicontinuous_of_probability_bound
+lemma integrable_upperSemicontinuous_of_probability_bound
     {X : Type*} [MeasurableSpace X] [TopologicalSpace X]
     [OpensMeasurableSpace X]
     (μ : ProbabilityMeasure X) {g : X → ℝ} {C : ℝ}
@@ -46520,13 +46520,13 @@ def movingUpperLevelClosedTail
     (f : ℕ → X → ℝ) (t : ℝ) (N : ℕ) : Set X :=
   closure (⋃ k : ℕ, ⋃ (_ : N ≤ k), {x : X | t ≤ f k x})
 
-theorem isClosed_movingUpperLevelClosedTail
+lemma isClosed_movingUpperLevelClosedTail
     {X : Type*} [TopologicalSpace X]
     (f : ℕ → X → ℝ) (t : ℝ) (N : ℕ) :
     IsClosed (movingUpperLevelClosedTail f t N) :=
   isClosed_closure
 
-theorem antitone_movingUpperLevelClosedTail
+lemma antitone_movingUpperLevelClosedTail
     {X : Type*} [TopologicalSpace X]
     (f : ℕ → X → ℝ) (t : ℝ) :
     Antitone (movingUpperLevelClosedTail f t) := by
@@ -46538,7 +46538,7 @@ theorem antitone_movingUpperLevelClosedTail
   exact Set.mem_iUnion.mpr
     ⟨k, Set.mem_iUnion.mpr ⟨le_trans hmn hnk, hxk⟩⟩
 
-theorem moving_upperLevel_subset_closedTail
+lemma moving_upperLevel_subset_closedTail
     {X : Type*} [TopologicalSpace X]
     (f : ℕ → X → ℝ) (t : ℝ)
     {N k : ℕ} (hk : N ≤ k) :
@@ -46548,7 +46548,7 @@ theorem moving_upperLevel_subset_closedTail
   exact Set.mem_iUnion.mpr
     ⟨k, Set.mem_iUnion.mpr ⟨hk, hx⟩⟩
 
-theorem iInter_movingUpperLevelClosedTail_subset_of_eventual_open_upper
+lemma iInter_movingUpperLevelClosedTail_subset_of_eventual_open_upper
     {X : Type*} [TopologicalSpace X]
     (f : ℕ → X → ℝ) (g : X → ℝ)
     (hjoint : ∀ (x : X) (t : ℝ), g x < t →
@@ -46572,7 +46572,7 @@ theorem iInter_movingUpperLevelClosedTail_subset_of_eventual_open_upper
   obtain ⟨hk, hylevel⟩ := Set.mem_iUnion.mp hyk
   exact (not_le_of_gt (hupper k hk y hyU)) hylevel
 
-theorem limsup_measureReal_moving_upperLevel_le_of_probability_tendsto
+lemma limsup_measureReal_moving_upperLevel_le_of_probability_tendsto
     {X : Type*} [MeasurableSpace X] [TopologicalSpace X]
     [OpensMeasurableSpace X] [HasOuterApproxClosed X]
     (μ : ProbabilityMeasure X) (μk : ℕ → ProbabilityMeasure X)
@@ -46636,7 +46636,7 @@ theorem limsup_measureReal_moving_upperLevel_le_of_probability_tendsto
     ge_of_tendsto hmeasure (Filter.Eventually.of_forall htail)
   exact hlimit.trans (measureReal_mono (hjoint t))
 
-theorem limsup_integral_moving_le_of_probability_tendsto
+lemma limsup_integral_moving_le_of_probability_tendsto
     {X : Type*} [MeasurableSpace X] [TopologicalSpace X]
     [OpensMeasurableSpace X] [HasOuterApproxClosed X]
     (μ : ProbabilityMeasure X) (μk : ℕ → ProbabilityMeasure X)
@@ -46710,7 +46710,7 @@ theorem limsup_integral_moving_le_of_probability_tendsto
         (Filter.Eventually.of_forall hgnonneg)
         (Filter.Eventually.of_forall hgbound)).symm
 
-theorem limsup_integral_moving_le_of_probability_tendsto_and_eventual_open_upper
+lemma limsup_integral_moving_le_of_probability_tendsto_and_eventual_open_upper
     {X : Type*} [MeasurableSpace X] [TopologicalSpace X]
     [OpensMeasurableSpace X] [HasOuterApproxClosed X]
     (μ : ProbabilityMeasure X) (μk : ℕ → ProbabilityMeasure X)
@@ -46755,13 +46755,13 @@ def angularSourceFreeScalarRadialGraphTest
     {n : ℕ} (U : LogSpace n → ℂ) (m : ℕ) (z : LogSpace n) : ℂ :=
   complexSourceCoverRadialCutoff m z * U z
 
-theorem contDiff_angularSourceFreeScalarRadialGraphTest
+lemma contDiff_angularSourceFreeScalarRadialGraphTest
     {n : ℕ} {U : LogSpace n → ℂ}
     (hU : ContDiff ℝ 3 U) (m : ℕ) :
     ContDiff ℝ 3 (angularSourceFreeScalarRadialGraphTest U m) := by
   exact (contDiff_complexSourceCoverRadialCutoff_all m 3).mul hU
 
-theorem angularSourceFreeScalarRadialGraphTest_periodic
+lemma angularSourceFreeScalarRadialGraphTest_periodic
     {n : ℕ} {U : LogSpace n → ℂ}
     (hperiod : ∀ d : Fin n → ℤ, Function.Periodic U (imaginaryShift d))
     (m : ℕ) (d : Fin n → ℤ) :
@@ -46772,7 +46772,7 @@ theorem angularSourceFreeScalarRadialGraphTest_periodic
   unfold angularSourceFreeScalarRadialGraphTest
   rw [complexSourceCoverRadialCutoff_periodic m d z, hperiod d z]
 
-theorem torusScalarRepresentative_angularSourceFreeScalarRadialGraphTest
+lemma torusScalarRepresentative_angularSourceFreeScalarRadialGraphTest
     {n : ℕ} (U : LogSpace n → ℂ) (m : ℕ) (q : LogTorus n) :
     torusScalarRepresentative
       (angularSourceFreeScalarRadialGraphTest U m) q =
@@ -46781,7 +46781,7 @@ theorem torusScalarRepresentative_angularSourceFreeScalarRadialGraphTest
   rw [torusScalarRepresentative_mul,
     torusScalarRepresentative_complexSourceCoverRadialCutoff]
 
-theorem hasCompactSupport_angularSourceFreeScalarRadialGraphTest
+lemma hasCompactSupport_angularSourceFreeScalarRadialGraphTest
     {n : ℕ} (U : LogSpace n → ℂ) (m : ℕ) :
     HasCompactSupport
       (torusScalarRepresentative
@@ -46797,7 +46797,7 @@ theorem hasCompactSupport_angularSourceFreeScalarRadialGraphTest
   rw [heq]
   exact (complexSourceRadialCutoff_hasCompactSupport m).mul_right
 
-theorem angularSourceFreeScalarRadialGraphTest_scalar_memLp
+lemma angularSourceFreeScalarRadialGraphTest_scalar_memLp
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     {U : LogSpace n → ℂ} (hU : ContDiff ℝ 3 U)
     (hperiod : ∀ d : Fin n → ℤ, Function.Periodic U (imaginaryShift d))
@@ -46813,7 +46813,7 @@ theorem angularSourceFreeScalarRadialGraphTest_scalar_memLp
     (angularSourceFreeScalarRadialGraphTest_periodic hperiod m)).memLp_of_hasCompactSupport
   exact hasCompactSupport_angularSourceFreeScalarRadialGraphTest U m
 
-theorem angularSourceFreeScalarRadialGraphTest_barPartial_memLp
+lemma angularSourceFreeScalarRadialGraphTest_barPartial_memLp
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     {U : LogSpace n → ℂ} (hU : ContDiff ℝ 3 U)
     (hperiod : ∀ d : Fin n → ℤ, Function.Periodic U (imaginaryShift d))
@@ -46839,7 +46839,7 @@ def angularSourceFreeScalarCutoffGradient
     (m : ℕ) (q : LogTorus n) : EuclideanSpace ℂ (Fin n) :=
   torusScalarRepresentative U q • sourceCutoffBarGradient m q
 
-theorem continuous_angularSourceFreeScalarCutoffGradient
+lemma continuous_angularSourceFreeScalarCutoffGradient
     {n : ℕ} {U : LogSpace n → ℂ} (hU : ContDiff ℝ 3 U)
     (hperiod : ∀ d : Fin n → ℤ, Function.Periodic U (imaginaryShift d))
     (m : ℕ) :
@@ -46847,7 +46847,7 @@ theorem continuous_angularSourceFreeScalarCutoffGradient
   exact (continuous_torusScalarRepresentative_of_periodic
     hU.continuous hperiod).smul (continuous_sourceCutoffBarGradient m)
 
-theorem angularSourceFreeScalarCutoffGradient_norm_le
+lemma angularSourceFreeScalarCutoffGradient_norm_le
     {n : ℕ} (U : LogSpace n → ℂ)
     {C : ℝ}
     (hC : ∀ x : Space n,
@@ -46864,7 +46864,7 @@ theorem angularSourceFreeScalarCutoffGradient_norm_le
         (sourceCutoffBarGradient_norm_le hC m q) (norm_nonneg _)
     _ = _ := by ring
 
-theorem angularSourceFreeScalarCutoffGradient_memLp
+lemma angularSourceFreeScalarCutoffGradient_memLp
     {n : ℕ} {a : LogTorus n → ℝ}
     {U : LogSpace n → ℂ} (hU : ContDiff ℝ 3 U)
     (hperiod : ∀ d : Fin n → ℤ, Function.Periodic U (imaginaryShift d))
@@ -46880,7 +46880,7 @@ theorem angularSourceFreeScalarCutoffGradient_memLp
   filter_upwards [] with q
   exact angularSourceFreeScalarCutoffGradient_norm_le U hC m q
 
-theorem angularSourceFreeScalarCutoffGradient_L2_norm_le
+lemma angularSourceFreeScalarCutoffGradient_L2_norm_le
     {n : ℕ} {a : LogTorus n → ℝ}
     {U : LogSpace n → ℂ} (hU : ContDiff ℝ 3 U)
     (hperiod : ∀ d : Fin n → ℤ, Function.Periodic U (imaginaryShift d))
@@ -46900,7 +46900,7 @@ theorem angularSourceFreeScalarCutoffGradient_L2_norm_le
   filter_upwards [] with q
   exact angularSourceFreeScalarCutoffGradient_norm_le U hC m q
 
-theorem angularSourceFreeScalarCutoffGradient_L2_tendsto_zero
+lemma angularSourceFreeScalarCutoffGradient_L2_tendsto_zero
     {n : ℕ} {a : LogTorus n → ℝ}
     {U : LogSpace n → ℂ} (hU : ContDiff ℝ 3 U)
     (hperiod : ∀ d : Fin n → ℤ, Function.Periodic U (imaginaryShift d))
@@ -46922,7 +46922,7 @@ theorem angularSourceFreeScalarCutoffGradient_L2_tendsto_zero
     (C * ‖hu.toLp (torusScalarRepresentative U)‖)
   simpa [mul_assoc] using hz
 
-theorem torusFunctionBarPartialRepresentative_angularSourceFreeScalarRadialGraphTest
+lemma torusFunctionBarPartialRepresentative_angularSourceFreeScalarRadialGraphTest
     {n : ℕ} {U : LogSpace n → ℂ} (hU : ContDiff ℝ 3 U)
     (m : ℕ) (q : LogTorus n) :
     torusFunctionBarPartialRepresentative
@@ -46963,7 +46963,7 @@ theorem torusFunctionBarPartialRepresentative_angularSourceFreeScalarRadialGraph
     torusScalarRepresentative_mul, torusScalarRepresentative_mul,
     torusScalarRepresentative_complexSourceCoverRadialCutoff]
 
-theorem angularSourceFreeScalarRadialGraphTest_scalar_L2_tendsto
+lemma angularSourceFreeScalarRadialGraphTest_scalar_L2_tendsto
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     {U : LogSpace n → ℂ} (hU : ContDiff ℝ 3 U)
     (hperiod : ∀ d : Fin n → ℤ, Function.Periodic U (imaginaryShift d))
@@ -47017,7 +47017,7 @@ def angularSourceFreeTruncatedGradientL2
   (angularSourceFreeScalarCutoffGradient_memLp hU hperiod hu m).toLp
     (angularSourceFreeScalarCutoffGradient U m)
 
-theorem angularSourceFreeTruncatedGradientL2_ae_eq
+lemma angularSourceFreeTruncatedGradientL2_ae_eq
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     {U : LogSpace n → ℂ} (hU : ContDiff ℝ 3 U)
     (hperiod : ∀ d : Fin n → ℤ, Function.Periodic U (imaginaryShift d))
@@ -47051,7 +47051,7 @@ theorem angularSourceFreeTruncatedGradientL2_ae_eq
       hU m q]
   simp
 
-theorem angularSourceFreeTruncatedGradientL2_resolvent_pairing
+lemma angularSourceFreeTruncatedGradientL2_resolvent_pairing
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     {U : LogSpace n → ℂ} (hU : ContDiff ℝ 3 U)
     (hperiod : ∀ d : Fin n → ℤ, Function.Periodic U (imaginaryShift d))
@@ -47089,7 +47089,7 @@ theorem angularSourceFreeTruncatedGradientL2_resolvent_pairing
     (angularSourceFreeScalarRadialGraphTest_barPartial_memLp
       ha hU hperiod m)]
 
-theorem tendsto_angularSourceFreeTruncatedGradient_resolvent_pairing
+lemma tendsto_angularSourceFreeTruncatedGradient_resolvent_pairing
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     {U : LogSpace n → ℂ} (hU : ContDiff ℝ 3 U)
     (hperiod : ∀ d : Fin n → ℤ, Function.Periodic U (imaginaryShift d))
@@ -47147,7 +47147,7 @@ theorem tendsto_angularSourceFreeTruncatedGradient_resolvent_pairing
   exact (angularSourceFreeTruncatedGradientL2_resolvent_pairing
     ha hU hperiod hu m g).symm
 
-theorem angularSourceFreeTruncatedGradient_root_pairing
+lemma angularSourceFreeTruncatedGradient_root_pairing
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
     (hH : ∀ q : LogTorus n,
@@ -47214,7 +47214,7 @@ theorem angularSourceFreeTruncatedGradient_root_pairing
     EuclideanSpace.inner_eq_star_dotProduct]
   rfl
 
-theorem tendsto_angularSourceFreeResolventRootCutoff_pairing
+lemma tendsto_angularSourceFreeResolventRootCutoff_pairing
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
     (hH : ∀ q : LogTorus n,
@@ -47249,7 +47249,7 @@ theorem tendsto_angularSourceFreeResolventRootCutoff_pairing
       (angularWeakDolbeaultResolvent a g :
         angularDolbeaultGraphAmbient a)) m
 
-theorem angularSourceFreeResolventDefectPairingBound
+lemma angularSourceFreeResolventDefectPairingBound
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (ha3 : ContDiff ℝ 3 (angularCoverPotential a))
     (hH : ∀ q : LogTorus n,
@@ -47307,7 +47307,7 @@ theorem angularSourceFreeResolventDefectPairingBound
           ha ha3 hH g m)
         (norm_nonneg r))
 
-theorem angularSourceFreeBrascampLieb_of_mem_resolventDefect_closure
+lemma angularSourceFreeBrascampLieb_of_mem_resolventDefect_closure
     {n : ℕ} {a : LogTorus n → ℝ} (ha : Continuous a)
     (ha3 : ContDiff ℝ 3 (angularCoverPotential a))
     (hH : ∀ q : LogTorus n,
@@ -47373,7 +47373,7 @@ def momentWeakHolomorphicJointMollifierSupportError
       (|sourceJointCoverTime q| + ‖sourceJointRealTimeCLM n‖) +
     ((n : ℝ) * LaurentJetSeparatedness.bodyRadius K) * 2
 
-theorem momentWeakHolomorphicJointMollification_le_support_add
+lemma momentWeakHolomorphicJointMollification_le_support_add
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -47540,7 +47540,7 @@ def momentWeakHolomorphicJointTimeSupportError
       (|t| + ‖sourceJointRealTimeCLM n‖) +
     ((n : ℝ) * LaurentJetSeparatedness.bodyRadius K) * 2
 
-theorem momentWeakHolomorphicJointTimeMollification_le_support_add
+lemma momentWeakHolomorphicJointTimeMollification_le_support_add
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -47561,7 +47561,7 @@ theorem momentWeakHolomorphicJointTimeMollification_le_support_add
     momentWeakHolomorphicJointMollifierSupportError,
     sourceJointCoverTime_timeEmbedding] using h
 
-theorem momentWeakHolomorphicStrictJointTorusWeight_le_support_add
+lemma momentWeakHolomorphicStrictJointTorusWeight_le_support_add
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -47597,7 +47597,7 @@ theorem momentWeakHolomorphicStrictJointTorusWeight_le_support_add
   rw [href]
   nlinarith
 
-theorem momentWeakHolomorphicStrictJoint_centered_mem_resolventDefect_range_closure
+lemma momentWeakHolomorphicStrictJoint_centered_mem_resolventDefect_range_closure
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -47655,7 +47655,7 @@ local instance sourceJointCoverVolume_isAddHaar (n : ℕ) :
   Measure.prod.instIsAddHaarMeasure
     (volume : Measure (LogSpace n)) (volume : Measure ℂ)
 
-theorem upperRegularization_sourceJointCover_translate_le
+lemma upperRegularization_sourceJointCover_translate_le
     {n : ℕ} (f : SourceJointComplexCover n → ℝ)
     (hlocal : ∀ q : SourceJointComplexCover n,
       (localUpperBounds f q).Nonempty)
@@ -47693,7 +47693,7 @@ theorem upperRegularization_sourceJointCover_translate_le
     f (q + d) htranslate
   linarith
 
-theorem upperRegularization_sourceJointCover_le_translate
+lemma upperRegularization_sourceJointCover_le_translate
     {n : ℕ} (f : SourceJointComplexCover n → ℝ)
     (hlocal : ∀ q : SourceJointComplexCover n,
       (localUpperBounds f q).Nonempty)
@@ -47736,7 +47736,7 @@ def momentWeakJointRealTimeShift (n : ℕ) (h : ℝ) :
     SourceJointComplexCover n :=
   ((0 : LogSpace n), (h / 2 : ℂ))
 
-@[simp] theorem sourceJointCoverTime_add_momentWeakJointRealTimeShift
+@[simp] lemma sourceJointCoverTime_add_momentWeakJointRealTimeShift
     {n : ℕ} (q : SourceJointComplexCover n) (h : ℝ) :
     sourceJointCoverTime
       (q + momentWeakJointRealTimeShift n h) =
@@ -47745,7 +47745,7 @@ def momentWeakJointRealTimeShift (n : ℕ) (h : ℝ) :
     momentWeakJointRealTimeShift, Complex.add_re]
   ring
 
-theorem momentWeakJointCoverFiniteGeodesic_le_time_translate
+lemma momentWeakJointCoverFiniteGeodesic_le_time_translate
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -47771,7 +47771,7 @@ theorem momentWeakJointCoverFiniteGeodesic_le_time_translate
     sourceJointCoverTime_add_momentWeakJointRealTimeShift]
   exact hmono
 
-theorem momentWeakJointCoverFiniteGeodesic_time_translate_le
+lemma momentWeakJointCoverFiniteGeodesic_time_translate_le
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -47796,7 +47796,7 @@ theorem momentWeakJointCoverFiniteGeodesic_time_translate_le
     sourceJointCoverTime_add_momentWeakJointRealTimeShift]
   simpa using hshift
 
-theorem momentWeakJointCoverTailSup_le_time_translate
+lemma momentWeakJointCoverTailSup_le_time_translate
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -47830,7 +47830,7 @@ theorem momentWeakJointCoverTailSup_le_time_translate
             (q + momentWeakJointRealTimeShift n h))
       exact ⟨j, rfl⟩
 
-theorem momentWeakJointCoverTailSup_time_translate_le
+lemma momentWeakJointCoverTailSup_time_translate_le
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -47867,7 +47867,7 @@ theorem momentWeakJointCoverTailSup_time_translate_le
         exact ⟨j, rfl⟩
       · exact le_rfl
 
-theorem momentWeakJointCoverTailUpperEnvelope_le_time_translate
+lemma momentWeakJointCoverTailUpperEnvelope_le_time_translate
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -47888,7 +47888,7 @@ theorem momentWeakJointCoverTailUpperEnvelope_le_time_translate
     (momentWeakJointCoverTailSup_le_time_translate
       K F htransport p r hh) q
 
-theorem momentWeakJointCoverTailUpperEnvelope_time_translate_le
+lemma momentWeakJointCoverTailUpperEnvelope_time_translate_le
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -47911,7 +47911,7 @@ theorem momentWeakJointCoverTailUpperEnvelope_time_translate_le
     (momentWeakJointCoverTailSup_time_translate_le
       K F htransport p r hh) q
 
-theorem momentWeakJointCoverUpperEnvelope_le_time_translate
+lemma momentWeakJointCoverUpperEnvelope_le_time_translate
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -47933,7 +47933,7 @@ theorem momentWeakJointCoverUpperEnvelope_le_time_translate
     momentWeakJointCoverTailUpperEnvelope_le_time_translate
       K F htransport p r hh q
 
-theorem momentWeakJointCoverUpperEnvelope_time_translate_le
+lemma momentWeakJointCoverUpperEnvelope_time_translate_le
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -47972,7 +47972,7 @@ theorem momentWeakJointCoverUpperEnvelope_time_translate_le
     momentWeakJointCoverTailUpperEnvelope_time_translate_le
       K F htransport p r hh q
 
-theorem sourceJointTimeEmbedding_sub_eq_add_realTimeShift
+lemma sourceJointTimeEmbedding_sub_eq_add_realTimeShift
     {n : ℕ} (z : LogSpace n)
     (y : SourceJointComplexCover n) (s t : ℝ) :
     sourceJointTimeEmbedding z t - y =
@@ -47985,7 +47985,7 @@ theorem sourceJointTimeEmbedding_sub_eq_add_realTimeShift
       momentWeakJointRealTimeShift]
     ring
 
-theorem abs_momentWeakJointCoverUpperEnvelope_timeEmbedding_sub_le
+lemma abs_momentWeakJointCoverUpperEnvelope_timeEmbedding_sub_le
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -48025,7 +48025,7 @@ theorem abs_momentWeakJointCoverUpperEnvelope_timeEmbedding_sub_le
       abs_of_nonpos (sub_nonpos.mpr hts)]
     linarith
 
-theorem abs_momentWeakHolomorphicJointTrueRadialMollification_time_sub_le
+lemma abs_momentWeakHolomorphicJointTrueRadialMollification_time_sub_le
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -48119,7 +48119,7 @@ theorem abs_momentWeakHolomorphicJointTrueRadialMollification_time_sub_le
           sourceJointTrueRadialMollifier n k y) * B = B
       rw [integral_sourceJointTrueRadialMollifier, one_mul]
 
-theorem abs_momentWeakHolomorphicStrictJointTorusWeight_time_sub_le
+lemma abs_momentWeakHolomorphicStrictJointTorusWeight_time_sub_le
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -48189,7 +48189,7 @@ theorem abs_momentWeakHolomorphicStrictJointTorusWeight_time_sub_le
     _ ≤ BodyScale.canonicalScale K * |t - s| := by
       simpa using mul_le_mul_of_nonneg_right hc₁ hB
 
-theorem abs_momentWeakHolomorphicStrictJointTorusVelocity_le
+lemma abs_momentWeakHolomorphicStrictJointTorusVelocity_le
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -48226,7 +48226,7 @@ theorem abs_momentWeakHolomorphicStrictJointTorusVelocity_le
     hderiv.le_of_lip' (BodyScale.canonicalScale_pos K).le
       hlip
 
-theorem abs_jointSourceCoverVelocity_momentWeakHolomorphicJointMollification_time_sub_le
+lemma abs_jointSourceCoverVelocity_momentWeakHolomorphicJointMollification_time_sub_le
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -48338,7 +48338,7 @@ theorem abs_jointSourceCoverVelocity_momentWeakHolomorphicJointMollification_tim
       dsimp [B]
       ring
 
-theorem momentWeakHolomorphicStrictJointTorusVelocity_eq_mollified
+lemma momentWeakHolomorphicStrictJointTorusVelocity_eq_mollified
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -48400,7 +48400,7 @@ theorem momentWeakHolomorphicStrictJointTorusVelocity_eq_mollified
     (hasDerivAt_jointSourceTorusWeight hG t q).unique hderived
   exact huniq
 
-theorem abs_momentWeakHolomorphicStrictJointTorusVelocity_time_sub_le
+lemma abs_momentWeakHolomorphicStrictJointTorusVelocity_time_sub_le
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -48451,7 +48451,7 @@ theorem abs_momentWeakHolomorphicStrictJointTorusVelocity_time_sub_le
           sourceJointTrueRadialTimeKernelMass n k * |t - s| := by
       simpa using mul_le_mul_of_nonneg_right hc₁ hB
 
-theorem abs_momentWeakHolomorphicStrictJointTorusAcceleration_le
+lemma abs_momentWeakHolomorphicStrictJointTorusAcceleration_le
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -48491,7 +48491,7 @@ theorem abs_momentWeakHolomorphicStrictJointTorusAcceleration_le
   simpa [G, Real.norm_eq_abs] using
     hderiv.le_of_lip' hB hlip
 
-theorem exists_momentWeakHolomorphicStrictJointTorusVelocity_local_bound
+lemma exists_momentWeakHolomorphicStrictJointTorusVelocity_local_bound
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -48509,7 +48509,7 @@ theorem exists_momentWeakHolomorphicStrictJointTorusVelocity_local_bound
   exact abs_momentWeakHolomorphicStrictJointTorusVelocity_le
     K F htransport p ε hε₀ hε₁ k u q
 
-theorem exists_momentWeakHolomorphicStrictJointTorusAcceleration_local_bound
+lemma exists_momentWeakHolomorphicStrictJointTorusAcceleration_local_bound
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -48547,7 +48547,7 @@ open TorusHomogeneousBrascampLieb
 open scoped BigOperators ENNReal ComplexConjugate ComplexOrder
   MatrixOrder InnerProductSpace Topology ContDiff
 
-theorem sourceFreeTimeDensity_integrable_of_majorant
+lemma sourceFreeTimeDensity_integrable_of_majorant
     {n : ℕ}
     (a : ℝ → LogTorus n → ℝ) (t : ℝ)
     (ha : Continuous (a t))
@@ -48562,7 +48562,7 @@ theorem sourceFreeTimeDensity_integrable_of_majorant
   rw [abs_of_pos (Real.exp_pos _)]
   exact hdom q
 
-theorem sourceFreeWeightedObservable_integrable_of_majorant
+lemma sourceFreeWeightedObservable_integrable_of_majorant
     {n : ℕ}
     (a : ℝ → LogTorus n → ℝ)
     (F : LogTorus n → ℝ) (t B : ℝ)
@@ -48590,7 +48590,7 @@ theorem sourceFreeWeightedObservable_integrable_of_majorant
         (hdom q) (Real.exp_pos _).le (abs_nonneg _)
     _ = |B| * M q := rfl
 
-theorem sourceFree_integral_sourceProbability_eq_density_integral
+lemma sourceFree_integral_sourceProbability_eq_density_integral
     {n : ℕ}
     (a : ℝ → LogTorus n → ℝ) (t : ℝ)
     (ha : Continuous (a t))
@@ -48619,7 +48619,7 @@ theorem sourceFree_integral_sourceProbability_eq_density_integral
   rw [ENNReal.toReal_ofReal hpos]
   simp [smul_eq_mul, mul_comm]
 
-theorem sourceFreeProbabilityMean_velocity_eq_logSlope
+lemma sourceFreeProbabilityMean_velocity_eq_logSlope
     {n : ℕ}
     (a f : ℝ → LogTorus n → ℝ) (t : ℝ)
     (ha : Continuous (a t))
@@ -48642,7 +48642,7 @@ theorem sourceFreeProbabilityMean_velocity_eq_logSlope
       rw [integral_div]
       rfl
 
-theorem sourceFree_integral_sourceProbability_velocity_sq_eq_secondMoment
+lemma sourceFree_integral_sourceProbability_velocity_sq_eq_secondMoment
     {n : ℕ}
     (a f : ℝ → LogTorus n → ℝ) (t : ℝ)
     (ha : Continuous (a t))
@@ -48666,7 +48666,7 @@ theorem sourceFree_integral_sourceProbability_velocity_sq_eq_secondMoment
       rw [integral_div]
       rfl
 
-theorem sourceFreeProbabilityMean_acceleration_eq_moment
+lemma sourceFreeProbabilityMean_acceleration_eq_moment
     {n : ℕ}
     (a j : ℝ → LogTorus n → ℝ) (t : ℝ)
     (ha : Continuous (a t))
@@ -48690,7 +48690,7 @@ theorem sourceFreeProbabilityMean_acceleration_eq_moment
       rw [integral_div]
       rfl
 
-theorem sourceFreeProbability_memLp_two_of_bound
+lemma sourceFreeProbability_memLp_two_of_bound
     {n : ℕ}
     (a : ℝ → LogTorus n → ℝ)
     (F : LogTorus n → ℝ) (t B : ℝ)
@@ -48704,7 +48704,7 @@ theorem sourceFreeProbability_memLp_two_of_bound
   simpa [Real.norm_eq_abs] using
     (hbound q).trans (le_abs_self B)
 
-theorem sourceFreeProbabilityVariance_eq_momentVariance
+lemma sourceFreeProbabilityVariance_eq_momentVariance
     {n : ℕ}
     (a f : ℝ → LogTorus n → ℝ) (t : ℝ)
     (ha : Continuous (a t)) (hf : Continuous (f t))
@@ -48730,7 +48730,7 @@ theorem sourceFreeProbabilityVariance_eq_momentVariance
       a f t ha hpart] at hreal
   exact hreal
 
-theorem hasDerivAt_sourceFreePartition_of_majorant
+lemma hasDerivAt_sourceFreePartition_of_majorant
     {n : ℕ}
     (a f : ℝ → LogTorus n → ℝ)
     {t : ℝ} {s : Set ℝ} {B : ℝ}
@@ -48819,7 +48819,7 @@ theorem hasDerivAt_sourceFreePartition_of_majorant
   rw [← hmoment]
   exact h.2
 
-theorem hasDerivAt_sourceFreeLogPartition_of_majorant
+lemma hasDerivAt_sourceFreeLogPartition_of_majorant
     {n : ℕ}
     (a f : ℝ → LogTorus n → ℝ)
     {t : ℝ} {s : Set ℝ} {B : ℝ}
@@ -48846,7 +48846,7 @@ theorem hasDerivAt_sourceFreeLogPartition_of_majorant
     (Filter.Eventually.of_forall fun _ => rfl)).congr_deriv ?_
   ring
 
-theorem hasDerivAt_sourceFreeFirstMoment_of_majorant
+lemma hasDerivAt_sourceFreeFirstMoment_of_majorant
     {n : ℕ}
     (a f j : ℝ → LogTorus n → ℝ)
     {t : ℝ} {s : Set ℝ} {B J : ℝ}
@@ -48970,7 +48970,7 @@ theorem hasDerivAt_sourceFreeFirstMoment_of_majorant
   rw [← hmoment]
   exact h.2
 
-theorem hasDerivAt_sourceFreeLogSlope_of_majorant
+lemma hasDerivAt_sourceFreeLogSlope_of_majorant
     {n : ℕ}
     (a f j : ℝ → LogTorus n → ℝ)
     {t : ℝ} {s : Set ℝ} {B J : ℝ}
@@ -49005,7 +49005,7 @@ theorem hasDerivAt_sourceFreeLogSlope_of_majorant
   field_simp [hpart.ne']
   ring
 
-theorem zero_lt_of_mem_positiveHalfBall
+lemma zero_lt_of_mem_positiveHalfBall
     {t u : ℝ} (ht : 0 < t)
     (hu : u ∈ Metric.ball t (t / 2)) : 0 < u := by
   have habs : |u - t| < t / 2 := by
@@ -49013,7 +49013,7 @@ theorem zero_lt_of_mem_positiveHalfBall
   have hlower := (abs_lt.mp habs).1
   linarith
 
-theorem sourceFreeLogCurvature_nonneg_of_complexBrascamp_and_schur
+lemma sourceFreeLogCurvature_nonneg_of_complexBrascamp_and_schur
     {n : ℕ}
     (a f j : ℝ → LogTorus n → ℝ)
     (E : LogTorus n → ℝ)
@@ -49051,7 +49051,7 @@ theorem sourceFreeLogCurvature_nonneg_of_complexBrascamp_and_schur
       sourceFreeProbabilityMean_acceleration_eq_moment
         a j t ha hpart
 
-theorem convexOn_sourceFreeLogPartition_Ioi_of_complexBrascamp_and_schur
+lemma convexOn_sourceFreeLogPartition_Ioi_of_complexBrascamp_and_schur
     {n : ℕ}
     (a f j E : ℝ → LogTorus n → ℝ)
     (ha : ∀ t : ℝ, Continuous (a t))
@@ -49146,7 +49146,7 @@ def momentWeakHolomorphicStrictJointPhysicalMixedCover
       K F htransport p ε k)
     (z, (t / 2 : ℂ)) : ℂ)
 
-theorem contDiff_momentWeakHolomorphicStrictJointPhysicalMixedCover
+lemma contDiff_momentWeakHolomorphicStrictJointPhysicalMixedCover
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49169,7 +49169,7 @@ theorem contDiff_momentWeakHolomorphicStrictJointPhysicalMixedCover
   exact Complex.ofRealCLM.contDiff.comp
     (hv.comp (contDiff_id.prodMk contDiff_const))
 
-theorem momentWeakHolomorphicStrictJointPhysicalMixedCover_periodic
+lemma momentWeakHolomorphicStrictJointPhysicalMixedCover_periodic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49212,7 +49212,7 @@ def momentWeakHolomorphicStrictJointPhysicalCenteredCover
       (momentWeakHolomorphicStrictJointCoverWeight
         K F htransport p ε k) t) : ℂ)
 
-theorem contDiff_momentWeakHolomorphicStrictJointPhysicalCenteredCover
+lemma contDiff_momentWeakHolomorphicStrictJointPhysicalCenteredCover
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49225,7 +49225,7 @@ theorem contDiff_momentWeakHolomorphicStrictJointPhysicalCenteredCover
     (contDiff_momentWeakHolomorphicStrictJointPhysicalMixedCover
       K F htransport p ε k t).sub contDiff_const
 
-theorem momentWeakHolomorphicStrictJointPhysicalCenteredCover_periodic
+lemma momentWeakHolomorphicStrictJointPhysicalCenteredCover_periodic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49258,7 +49258,7 @@ def momentWeakHolomorphicStrictJointPhysicalCenteredVelocity
         (momentWeakHolomorphicStrictJointCoverWeight
           K F htransport p ε k) t) : ℝ) : ℂ)
 
-theorem torusScalarRepresentative_momentWeakHolomorphicStrictJointPhysicalCenteredCover
+lemma torusScalarRepresentative_momentWeakHolomorphicStrictJointPhysicalCenteredCover
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49303,7 +49303,7 @@ def momentWeakHolomorphicStrictJointPhysicalMixedRow
     (momentWeakHolomorphicStrictJointPhysicalMixedCover
       K F htransport p ε k t) i q
 
-theorem momentWeakHolomorphicStrictJointPhysicalMixedRow_eq_cover
+lemma momentWeakHolomorphicStrictJointPhysicalMixedRow_eq_cover
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49319,7 +49319,7 @@ theorem momentWeakHolomorphicStrictJointPhysicalMixedRow_eq_cover
   funext i
   rfl
 
-theorem torusFunctionBarPartialRepresentative_momentWeakHolomorphicStrictJointPhysicalCenteredCover
+lemma torusFunctionBarPartialRepresentative_momentWeakHolomorphicStrictJointPhysicalCenteredCover
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49365,7 +49365,7 @@ def momentWeakHolomorphicStrictJointPhysicalRowEnergy
     (momentWeakHolomorphicStrictJointPhysicalMixedRow
       K F htransport p ε k t q)
 
-theorem momentWeakHolomorphicStrictJointPhysicalRowEnergy_le_acceleration
+lemma momentWeakHolomorphicStrictJointPhysicalRowEnergy_le_acceleration
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49386,7 +49386,7 @@ theorem momentWeakHolomorphicStrictJointPhysicalRowEnergy_le_acceleration
     K F htransport p ε hε₀ hε₁ k (t / 2 : ℂ)
       (sourceTorusCoverPoint q)
 
-theorem momentWeakHolomorphicStrictJointPhysicalRowEnergy_nonneg
+lemma momentWeakHolomorphicStrictJointPhysicalRowEnergy_nonneg
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49402,7 +49402,7 @@ theorem momentWeakHolomorphicStrictJointPhysicalRowEnergy_nonneg
     (momentWeakHolomorphicStrictJointPhysicalMixedRow
       K F htransport p ε k t q)
 
-theorem continuous_momentWeakHolomorphicStrictJointPhysicalCenteredVelocity
+lemma continuous_momentWeakHolomorphicStrictJointPhysicalCenteredVelocity
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49419,7 +49419,7 @@ theorem continuous_momentWeakHolomorphicStrictJointPhysicalCenteredVelocity
       (momentWeakHolomorphicStrictJointCoverWeight_spatial_periodic
         K F htransport p ε k) t).sub continuous_const)
 
-theorem momentWeakHolomorphicStrictJointPhysicalCenteredVelocity_angular_memLp
+lemma momentWeakHolomorphicStrictJointPhysicalCenteredVelocity_angular_memLp
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49458,7 +49458,7 @@ theorem momentWeakHolomorphicStrictJointPhysicalCenteredVelocity_angular_memLp
   rw [Complex.norm_real, Real.norm_eq_abs]
   exact (abs_sub _ _).trans (add_le_add (hB q) (le_refl _))
 
-theorem momentWeakHolomorphicStrictJointPhysicalCenteredVelocity_probability_integral_eq_zero
+lemma momentWeakHolomorphicStrictJointPhysicalCenteredVelocity_probability_integral_eq_zero
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49506,7 +49506,7 @@ theorem momentWeakHolomorphicStrictJointPhysicalCenteredVelocity_probability_int
   rw [integral_complex_ofReal, hreal]
   norm_num
 
-theorem momentWeakHolomorphicStrictJointPhysicalCenteredVelocity_angular_integral_eq_zero
+lemma momentWeakHolomorphicStrictJointPhysicalCenteredVelocity_angular_integral_eq_zero
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49543,7 +49543,7 @@ theorem momentWeakHolomorphicStrictJointPhysicalCenteredVelocity_angular_integra
     exact inv_ne_zero hZ.ne'
   exact (smul_eq_zero.mp hzero).resolve_left hfactor
 
-theorem momentWeakHolomorphicStrictJointPhysicalCenteredVelocity_mem_resolventDefect_closure
+lemma momentWeakHolomorphicStrictJointPhysicalCenteredVelocity_mem_resolventDefect_closure
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49575,7 +49575,7 @@ theorem momentWeakHolomorphicStrictJointPhysicalCenteredVelocity_mem_resolventDe
     (momentWeakHolomorphicStrictJointPhysicalCenteredVelocity_angular_memLp
       K F htransport p ε hε₀ hε₁ k t hB).coeFn_toLp
 
-theorem continuous_angularSourceFreeInverseRootGradientField
+lemma continuous_angularSourceFreeInverseRootGradientField
     {n : ℕ} {a : LogTorus n → ℝ}
     (ha2 : ContDiff ℝ 2 (angularCoverPotential a))
     (hH : ∀ q : LogTorus n,
@@ -49605,7 +49605,7 @@ theorem continuous_angularSourceFreeInverseRootGradientField
     (Complex.continuous_conj.comp
       ((PiLp.continuous_apply 2 (fun _ : Fin n => ℂ) j).comp hrow))
 
-theorem momentWeakHolomorphicStrictJointPhysicalRowEnergy_eq_inverseRoot_norm_sq
+lemma momentWeakHolomorphicStrictJointPhysicalRowEnergy_eq_inverseRoot_norm_sq
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49629,7 +49629,7 @@ theorem momentWeakHolomorphicStrictJointPhysicalRowEnergy_eq_inverseRoot_norm_sq
     K F htransport p ε k t q]
   rfl
 
-theorem momentWeakHolomorphicStrictJointPhysicalInverseRoot_angular_memLp
+lemma momentWeakHolomorphicStrictJointPhysicalInverseRoot_angular_memLp
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49683,7 +49683,7 @@ theorem momentWeakHolomorphicStrictJointPhysicalInverseRoot_angular_memLp
     K F htransport p ε hε₀ hε₁ k t q).trans
       ((le_abs_self _).trans ((hJ q).trans (le_abs_self J)))
 
-theorem momentWeakHolomorphicStrictJointPhysicalCenteredAngularL2_norm_sq
+lemma momentWeakHolomorphicStrictJointPhysicalCenteredAngularL2_norm_sq
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49722,7 +49722,7 @@ theorem momentWeakHolomorphicStrictJointPhysicalCenteredAngularL2_norm_sq
   unfold momentWeakHolomorphicStrictJointPhysicalCenteredVelocity
   rw [Complex.norm_real, Real.norm_eq_abs, sq_abs]
 
-theorem momentWeakHolomorphicStrictJointPhysicalInverseRootAngularL2_norm_sq
+lemma momentWeakHolomorphicStrictJointPhysicalInverseRootAngularL2_norm_sq
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49758,7 +49758,7 @@ theorem momentWeakHolomorphicStrictJointPhysicalInverseRootAngularL2_norm_sq
     (momentWeakHolomorphicStrictJointPhysicalRowEnergy_eq_inverseRoot_norm_sq
       K F htransport p ε hε₀ hε₁ k t q).symm
 
-theorem momentWeakHolomorphicStrictJointPhysicalVariance_eq_angular_L2_norm_sq_div_partition
+lemma momentWeakHolomorphicStrictJointPhysicalVariance_eq_angular_L2_norm_sq_div_partition
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49794,7 +49794,7 @@ theorem momentWeakHolomorphicStrictJointPhysicalVariance_eq_angular_L2_norm_sq_d
   rw [← momentWeakHolomorphicStrictJointPhysicalCenteredAngularL2_norm_sq
     K F htransport p ε hε₀ hε₁ k t hB]
 
-theorem momentWeakHolomorphicStrictJointPhysicalRowEnergy_probabilityMean_eq_angular_L2_norm_sq_div_partition
+lemma momentWeakHolomorphicStrictJointPhysicalRowEnergy_probabilityMean_eq_angular_L2_norm_sq_div_partition
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49832,7 +49832,7 @@ theorem momentWeakHolomorphicStrictJointPhysicalRowEnergy_probabilityMean_eq_ang
   rw [← momentWeakHolomorphicStrictJointPhysicalInverseRootAngularL2_norm_sq
     K F htransport p ε hε₀ hε₁ k t hJ]
 
-theorem momentWeakHolomorphicStrictJointPhysicalBrascamp
+lemma momentWeakHolomorphicStrictJointPhysicalBrascamp
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49931,7 +49931,7 @@ theorem momentWeakHolomorphicStrictJointPhysicalBrascamp
       (momentWeakHolomorphicStrictJointPartition_pos
         K F htransport p k t hε₀ hε₁).le)
 
-theorem continuous_momentWeakHolomorphicStrictJointPhysicalRowEnergy
+lemma continuous_momentWeakHolomorphicStrictJointPhysicalRowEnergy
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -49968,7 +49968,7 @@ theorem continuous_momentWeakHolomorphicStrictJointPhysicalRowEnergy
   rw [heq]
   exact hroot.norm.pow 2
 
-theorem convexOn_momentWeakHolomorphicStrictJointLogPartition_Ioi_of_timeBounds
+lemma convexOn_momentWeakHolomorphicStrictJointLogPartition_Ioi_of_timeBounds
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -50069,7 +50069,7 @@ theorem convexOn_momentWeakHolomorphicStrictJointLogPartition_Ioi_of_timeBounds
     exact momentWeakHolomorphicStrictJointPhysicalRowEnergy_le_acceleration
       K F htransport p ε hε₀ hε₁ k t q
 
-theorem convexOn_momentWeakHolomorphicStrictJointLogPartition_Ioi
+lemma convexOn_momentWeakHolomorphicStrictJointLogPartition_Ioi
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -50102,7 +50102,7 @@ open BergmanJetJointHolomorphicStrictSchur BergmanJetJointHolomorphicPhysicalApp
 open JetEnvelopeSlopeConvergence LogPartitionConvexity
 open scoped BigOperators ENNReal Topology
 
-theorem exp_neg_canonicalScale_mul_volume_le_momentBodyPartition
+lemma exp_neg_canonicalScale_mul_volume_le_momentBodyPartition
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) {t : ℝ} (ht : 0 < t) :
     Real.exp (-(BodyScale.canonicalScale K * t)) *
@@ -50153,7 +50153,7 @@ theorem exp_neg_canonicalScale_mul_volume_le_momentBodyPartition
     _ = momentBodyPartition K p t :=
       (momentBodyPartition_eq_integral K p t).symm
 
-theorem exp_neg_canonicalScale_mul_le_momentBodyNormalizedPartition
+lemma exp_neg_canonicalScale_mul_le_momentBodyNormalizedPartition
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) {t : ℝ} (ht : 0 < t) :
     Real.exp (-(BodyScale.canonicalScale K * t)) ≤
@@ -50163,7 +50163,7 @@ theorem exp_neg_canonicalScale_mul_le_momentBodyNormalizedPartition
   exact exp_neg_canonicalScale_mul_volume_le_momentBodyPartition
     K p ht
 
-theorem momentBodyLogPartition_le_canonicalScale_mul_of_pos
+lemma momentBodyLogPartition_le_canonicalScale_mul_of_pos
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) {t : ℝ} (ht : 0 < t) :
     momentBodyLogPartition K p t ≤
@@ -50180,7 +50180,7 @@ theorem momentBodyLogPartition_le_canonicalScale_mul_of_pos
   unfold momentBodyLogPartition
   linarith
 
-theorem convexOn_Ici_of_convexOn_Ioi_and_zero_linear_upper
+lemma convexOn_Ici_of_convexOn_Ioi_and_zero_linear_upper
     (f : ℝ → ℝ) (C : ℝ)
     (hfzero : f 0 = 0)
     (hfconv : ConvexOn ℝ (Set.Ioi 0) f)
@@ -50260,7 +50260,7 @@ theorem convexOn_Ici_of_convexOn_Ioi_and_zero_linear_upper
     · simpa [smul_eq_mul] using
         hfconv.2 hxpos hypos ha hb hab
 
-theorem convexOn_momentWeakHolomorphicEnvelopeLogPartition_Ioi_of_strict
+lemma convexOn_momentWeakHolomorphicEnvelopeLogPartition_Ioi_of_strict
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -50314,7 +50314,7 @@ theorem convexOn_momentWeakHolomorphicEnvelopeLogPartition_Ioi_of_strict
     simpa [smul_eq_mul] using
       (hstrict k).2 hx hy ha hb hab
 
-theorem convexOn_momentBodyLogPartition_Ioi_of_holomorphicStrict
+lemma convexOn_momentBodyLogPartition_Ioi_of_holomorphicStrict
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (ε : ℕ → ℝ)
     (hε : Tendsto ε atTop (𝓝 (0 : ℝ)))
@@ -50357,7 +50357,7 @@ theorem convexOn_momentBodyLogPartition_Ioi_of_holomorphicStrict
   rw [heq]
   exact hadd
 
-theorem convexOn_momentBodyLogPartition_Ici_of_holomorphicStrict
+lemma convexOn_momentBodyLogPartition_Ici_of_holomorphicStrict
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (ε : ℕ → ℝ)
     (hε : Tendsto ε atTop (𝓝 (0 : ℝ)))
@@ -50391,7 +50391,7 @@ open TorusCharacters BergmanJetPartitionEndpoint BergmanJetHolomorphicPhysicalLo
 open BergmanJetJointHolomorphicConvexTransfer
 open scoped Topology
 
-theorem convexOn_momentBodyLogPartition_Ici
+lemma convexOn_momentBodyLogPartition_Ici
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) :
     ConvexOn ℝ (Set.Ici 0)
@@ -50427,7 +50427,7 @@ open BergmanJetBasis MomentWeakGlobalKernel BergmanJetGeodesic BergmanJetProfile
 open BergmanJetRealGeodesic JetEnvelopeLocalGrowth LaurentJetMultiplicityBridge
 open scoped BigOperators Topology ENNReal InnerProductSpace
 
-theorem analyticAt_momentHolomorphicRepresentative
+lemma analyticAt_momentHolomorphicRepresentative
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -50446,7 +50446,7 @@ theorem analyticAt_momentHolomorphicRepresentative
     (LaurentJetSeparatedness.analyticAt_normalizedHolomorphicMonomial
       K hk (momentNormalizedPotential F) u p).const_smul
 
-theorem contDiff_momentHolomorphicRepresentative
+lemma contDiff_momentHolomorphicRepresentative
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -50459,7 +50459,7 @@ theorem contDiff_momentHolomorphicRepresentative
   exact (analyticAt_momentHolomorphicRepresentative
     K hk F htransport s p).contDiffAt
 
-theorem momentHolomorphicJetMap_apply_eq_iteratedFDeriv
+lemma momentHolomorphicJetMap_apply_eq_iteratedFDeriv
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -50525,7 +50525,7 @@ theorem momentHolomorphicJetMap_apply_eq_iteratedFDeriv
       K hk (momentNormalizedPotential F) u p).contDiffAt]
   simp [holomorphicMonomialJet]
 
-theorem momentHolomorphicRepresentative_iteratedFDeriv_comp_perm
+lemma momentHolomorphicRepresentative_iteratedFDeriv_comp_perm
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -50542,7 +50542,7 @@ theorem momentHolomorphicRepresentative_iteratedFDeriv_comp_perm
   exact (contDiff_momentHolomorphicRepresentative
     K hk F htransport s).contDiffAt.iteratedFDeriv_comp_perm v σ
 
-theorem moment_iteratedFDeriv_coordinate_eq_zero_of_mem_jetFiltration
+lemma moment_iteratedFDeriv_coordinate_eq_zero_of_mem_jetFiltration
     {n k r : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -50597,7 +50597,7 @@ theorem moment_iteratedFDeriv_coordinate_eq_zero_of_mem_jetFiltration
             K hk F htransport p s _ σ
     _ = 0 := hcanonical
 
-theorem moment_iteratedFDeriv_eq_zero_of_mem_jetFiltration
+lemma moment_iteratedFDeriv_eq_zero_of_mem_jetFiltration
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -50619,7 +50619,7 @@ theorem moment_iteratedFDeriv_eq_zero_of_mem_jetFiltration
     K hk F htransport p s q (coordinateMultiplicity q)
       (sum_coordinateMultiplicity q) (fun _ => rfl) hs
 
-theorem momentSimultaneousJetBasis_mem_truncatedJetFiltration
+lemma momentSimultaneousJetBasis_mem_truncatedJetFiltration
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -50656,7 +50656,7 @@ theorem momentSimultaneousJetBasis_mem_truncatedJetFiltration
     simp only [Finset.card_range] at hcard
     omega
 
-theorem momentHolomorphicRepresentative_isLittleO_of_mem_jetFiltration
+lemma momentHolomorphicRepresentative_isLittleO_of_mem_jetFiltration
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -50680,7 +50680,7 @@ theorem momentHolomorphicRepresentative_isLittleO_of_mem_jetFiltration
   exact momentJetFiltration_antitone
     K hk F htransport p (show i + 1 ≤ j + 1 by omega) hs
 
-theorem momentHolomorphicRepresentative_schwarz_of_mem_jetFiltration
+lemma momentHolomorphicRepresentative_schwarz_of_mem_jetFiltration
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -50739,7 +50739,7 @@ def momentLocalCoverPotential {n : ℕ}
     (z : TorusCharacters.LogSpace n) : ℝ :=
   momentNormalizedPotential F (realLogCoordinate z)
 
-theorem continuous_momentLocalCoverPotential
+lemma continuous_momentLocalCoverPotential
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K) :
     Continuous (momentLocalCoverPotential K F) := by
@@ -50754,7 +50754,7 @@ def momentLocalPotentialMaximum {n : ℕ}
     (p : TorusCharacters.LogSpace n) (R : ℝ) : ℝ :=
   sSup (momentLocalCoverPotential K F '' Metric.closedBall p R)
 
-theorem momentLocalPotential_image_bddAbove
+lemma momentLocalPotential_image_bddAbove
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (p : TorusCharacters.LogSpace n) (R : ℝ) :
@@ -50763,7 +50763,7 @@ theorem momentLocalPotential_image_bddAbove
   exact ((isCompact_closedBall p R).image
     (continuous_momentLocalCoverPotential K F)).bddAbove
 
-theorem momentLocalCoverPotential_le_localMaximum
+lemma momentLocalCoverPotential_le_localMaximum
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (p : TorusCharacters.LogSpace n) (R : ℝ)
@@ -50774,7 +50774,7 @@ theorem momentLocalCoverPotential_le_localMaximum
   apply le_csSup (momentLocalPotential_image_bddAbove K F p R)
   exact ⟨z, hz, rfl⟩
 
-theorem momentJetBasisRepresentative_norm_sq_le_diagonalKernel
+lemma momentJetBasisRepresentative_norm_sq_le_diagonalKernel
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -50795,7 +50795,7 @@ theorem momentJetBasisRepresentative_norm_sq_le_diagonalKernel
   simpa [momentHolomorphicBasisWeight,
     Complex.normSq_eq_norm_sq] using hsum
 
-theorem eventually_momentJetBasisRepresentative_local_bound
+lemma eventually_momentJetBasisRepresentative_local_bound
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -50834,7 +50834,7 @@ theorem eventually_momentJetBasisRepresentative_local_bound
       gcongr
       exact (globalKernelPolynomialConstant_pos K).le
 
-theorem eventually_momentJetBasisRepresentative_local_schwarz
+lemma eventually_momentJetBasisRepresentative_local_schwarz
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -50862,7 +50862,7 @@ theorem eventually_momentJetBasisRepresentative_local_schwarz
         K hk F htransport p N i)
       R _ (fun w hw => hbound hk i w hw) z hz
 
-theorem eventually_momentJetBasisWeight_exp_le_local
+lemma eventually_momentJetBasisWeight_exp_le_local
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -50960,7 +50960,7 @@ theorem eventually_momentJetBasisWeight_exp_le_local
     _ ≤ A := by
       nlinarith
 
-theorem eventually_momentJetPartition_local_bound
+lemma eventually_momentJetPartition_local_bound
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -51029,7 +51029,7 @@ theorem eventually_momentJetPartition_local_bound
       rw [show 3 * n = n + 2 * n by omega, pow_add]
       ring
 
-theorem eventually_momentJetGeodesic_local_bound
+lemma eventually_momentJetGeodesic_local_bound
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -51113,7 +51113,7 @@ open JetEnvelopeSlopeConvergence JetEnvelopeRightDerivative JetEnvelopeLocalGrow
 open LogPartitionConvexity
 open scoped BigOperators ENNReal Topology
 
-theorem eventually_momentPositiveJointGeodesic_local_bound
+lemma eventually_momentPositiveJointGeodesic_local_bound
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -51133,7 +51133,7 @@ theorem eventually_momentPositiveJointGeodesic_local_bound
       ((k + 1 : ℕ) : ℝ))) w.val.1 (jointLogTime w)
     (jointLogTime_pos w).le hw
 
-theorem eventually_momentPositiveJointGeodesic_local_le_maximum_add
+lemma eventually_momentPositiveJointGeodesic_local_le_maximum_add
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -51154,7 +51154,7 @@ theorem eventually_momentPositiveJointGeodesic_local_le_maximum_add
     with k hbound hsmall w hw
   exact (hbound w hw).trans (by linarith)
 
-theorem eventually_momentJointTailSup_local_le_maximum_add
+lemma eventually_momentJointTailSup_local_le_maximum_add
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -51174,7 +51174,7 @@ theorem eventually_momentJointTailSup_local_le_maximum_add
   exact hN (momentJointTailStart K F htransport p + r + j)
     (by omega) w hw
 
-theorem eventually_momentJointTailUpperEnvelope_local_le_maximum_add
+lemma eventually_momentJointTailUpperEnvelope_local_le_maximum_add
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -51194,7 +51194,7 @@ theorem eventually_momentJointTailUpperEnvelope_local_le_maximum_add
     ((isOpen_sourceLocalJointRegion p R).mem_nhds hw)
     (fun v hv => hr v hv)
 
-theorem momentJointUpperEnvelope_local_le_maximum
+lemma momentJointUpperEnvelope_local_le_maximum
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -51216,7 +51216,7 @@ theorem momentJointUpperEnvelope_local_le_maximum
           K F htransport p w) r
     _ ≤ momentLocalPotentialMaximum K F p R + ε := hr w hw
 
-theorem momentEnvelopeTimeSlice_local_le_maximum
+lemma momentEnvelopeTimeSlice_local_le_maximum
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -51233,7 +51233,7 @@ theorem momentEnvelopeTimeSlice_local_le_maximum
       (-jointLogTime (sourcePositiveJointTimePoint z t ht) / 2)
   simpa [jointLogTime_sourcePositiveJointTimePoint] using hz
 
-theorem momentTorusEnvelopeTimeSlice_local_le_maximum
+lemma momentTorusEnvelopeTimeSlice_local_le_maximum
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -51247,7 +51247,7 @@ theorem momentTorusEnvelopeTimeSlice_local_le_maximum
   exact momentEnvelopeTimeSlice_local_le_maximum
     K F htransport p (sourceTorusCoverPoint q) R t hR ht hq
 
-theorem momentBodyPartition_ge_local_box
+lemma momentBodyPartition_ge_local_box
     {n : ℕ} (K : CenteredBody n)
     (R t : ℝ) (hR : 0 < R) (ht : 0 < t) :
     Real.exp
@@ -51326,7 +51326,7 @@ def momentBodyLocalPartitionGrowthConstant
     Real.log (sourceLocalBallVolumeConstant n R) +
     Real.log (normalizedVolume K.carrier)
 
-theorem momentBodyLogPartition_le_linear
+lemma momentBodyLogPartition_le_linear
     {n : ℕ} (K : CenteredBody n)
     (R t : ℝ) (hR : 0 < R) (ht : 0 < t) :
     momentBodyLogPartition K (0 : LogSpace n) t ≤
@@ -51372,7 +51372,7 @@ theorem momentBodyLogPartition_le_linear
         Real.log_exp, Real.log_exp]
       ring
 
-theorem exists_momentBodyLogPartition_linear_growth
+lemma exists_momentBodyLogPartition_linear_growth
     {n : ℕ} (K : CenteredBody n) :
     ∃ C : ℝ, ∀ t : ℝ, 0 ≤ t →
       momentBodyLogPartition K (0 : LogSpace n) t ≤
@@ -51401,7 +51401,7 @@ open TorusCharacters BergmanJetPartitionEndpoint
 open BergmanJetJointHolomorphicUnconditionalBodyConvexity BergmanJetLocalEnvelopeGrowth
 open scoped Topology
 
-theorem momentBodyLogPartition_le_dimension_mul
+lemma momentBodyLogPartition_le_dimension_mul
     {n : ℕ} (K : CenteredBody n)
     {t : ℝ} (ht : 0 ≤ t) :
     momentBodyLogPartition K (0 : LogSpace n) t ≤
@@ -51445,7 +51445,7 @@ open BergmanJetPartitionEndpoint BergmanJetTorusRightSlopeGibbsBridge
 open BergmanJetBodyLogPartitionSharpGrowth
 open scoped BigOperators ENNReal Topology
 
-theorem nonnegative_le_exp_mul_one_sub_exp_neg
+lemma nonnegative_le_exp_mul_one_sub_exp_neg
     {u C : ℝ} (hu : 0 ≤ u) (huC : u ≤ C) :
     u ≤ Real.exp C * (1 - Real.exp (-u)) := by
   have hexp := mul_le_mul_of_nonneg_right
@@ -51474,7 +51474,7 @@ def momentBodyEnvelopeRelativeDensity
     (-(momentBodyTorusWeight K p t q -
       momentBodyTorusWeight K p 0 q))
 
-theorem measurable_momentBodyEnvelopeRelativeDensity
+lemma measurable_momentBodyEnvelopeRelativeDensity
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (t : ℝ) :
     Measurable (momentBodyEnvelopeRelativeDensity K p t) := by
@@ -51483,7 +51483,7 @@ theorem measurable_momentBodyEnvelopeRelativeDensity
     ((measurable_momentBodyTorusWeight K p t).sub
       (measurable_momentBodyTorusWeight K p 0)).neg
 
-theorem integral_momentBodyZeroGibbs_eq_density_integral
+lemma integral_momentBodyZeroGibbs_eq_density_integral
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (f : LogTorus n → ℝ) :
     (∫ q : LogTorus n, f q
@@ -51511,7 +51511,7 @@ theorem integral_momentBodyZeroGibbs_eq_density_integral
     (sourceNormalizedDensity_momentBody_pos K p 0 q).le]
   simp [smul_eq_mul, mul_comm]
 
-theorem integral_momentBodyEnvelopeRelativeDensity_eq_normalizedPartition
+lemma integral_momentBodyEnvelopeRelativeDensity_eq_normalizedPartition
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (t : ℝ) :
     (∫ q : LogTorus n,
@@ -51541,13 +51541,13 @@ theorem integral_momentBodyEnvelopeRelativeDensity_eq_normalizedPartition
   congr 2
   ring
 
-theorem momentBodyEnvelopeRelativeDensity_pos
+lemma momentBodyEnvelopeRelativeDensity_pos
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (t : ℝ) (q : LogTorus n) :
     0 < momentBodyEnvelopeRelativeDensity K p t q :=
   Real.exp_pos _
 
-theorem ae_momentBodyEnvelopeRelativeDensity_le_one
+lemma ae_momentBodyEnvelopeRelativeDensity_le_one
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) {t : ℝ} (ht : 0 < t) :
     ∀ᵐ q : LogTorus n
@@ -51567,7 +51567,7 @@ theorem ae_momentBodyEnvelopeRelativeDensity_le_one
     simp [momentBodyEnvelopePositiveSecant, ht.ne']
   linarith
 
-theorem integrable_momentBodyEnvelopeRelativeDensity_Gibbs
+lemma integrable_momentBodyEnvelopeRelativeDensity_Gibbs
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) {t : ℝ} (ht : 0 < t) :
     Integrable (momentBodyEnvelopeRelativeDensity K p t)
@@ -51583,7 +51583,7 @@ theorem integrable_momentBodyEnvelopeRelativeDensity_Gibbs
     (momentBodyEnvelopeRelativeDensity_pos K p t q)]
   exact hq
 
-theorem exp_neg_dimension_mul_le_momentBodyNormalizedPartition
+lemma exp_neg_dimension_mul_le_momentBodyNormalizedPartition
     {n : ℕ} (K : CenteredBody n)
     {t : ℝ} (ht : 0 ≤ t) :
     Real.exp (-((n : ℝ) * t)) ≤
@@ -51606,7 +51606,7 @@ theorem exp_neg_dimension_mul_le_momentBodyNormalizedPartition
     _ = momentBodyNormalizedPartition
           K (0 : LogSpace n) t := Real.exp_log hpos
 
-theorem one_sub_momentBodyNormalizedPartition_le_dimension_mul
+lemma one_sub_momentBodyNormalizedPartition_le_dimension_mul
     {n : ℕ} (K : CenteredBody n)
     {t : ℝ} (ht : 0 ≤ t) :
     1 - momentBodyNormalizedPartition
@@ -51616,7 +51616,7 @@ theorem one_sub_momentBodyNormalizedPartition_le_dimension_mul
   have hexp := Real.add_one_le_exp (-((n : ℝ) * t))
   linarith
 
-theorem integral_momentBodyEnvelopePositiveSecant_le_partition_complement
+lemma integral_momentBodyEnvelopePositiveSecant_le_partition_complement
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) {t : ℝ} (ht : 0 < t) :
     (∫ q : LogTorus n,
@@ -51691,7 +51691,7 @@ theorem integral_momentBodyEnvelopePositiveSecant_le_partition_complement
   rw [← heq]
   exact hint
 
-theorem integral_momentBodyEnvelopePositiveSecant_le_dimension_mul_exp
+lemma integral_momentBodyEnvelopePositiveSecant_le_dimension_mul_exp
     {n : ℕ} (K : CenteredBody n)
     {t : ℝ} (ht : 0 < t) :
     (∫ q : LogTorus n,
@@ -51741,7 +51741,7 @@ open MomentOptimizer MomentTargetGeodesic MomentFirstVariation BergmanJetUpperEn
 open BergmanJetSpatialPeriodicity BergmanJetPortmanteauSlopeBridge
 open scoped BigOperators ENNReal NNReal Topology
 
-theorem periodic_real_sourceTorusCoverPoint_projection
+lemma periodic_real_sourceTorusCoverPoint_projection
     {n : ℕ} (f : LogSpace n → ℝ)
     (hf : ∀ m : Fin n → ℤ,
       Function.Periodic f (imaginaryShift m))
@@ -51762,7 +51762,7 @@ theorem periodic_real_sourceTorusCoverPoint_projection
     at hc
   exact congrArg Complex.re hc
 
-theorem upperSemicontinuous_periodic_real_torusRepresentative
+lemma upperSemicontinuous_periodic_real_torusRepresentative
     {n : ℕ} (f : LogSpace n → ℝ)
     (hfperiod : ∀ m : Fin n → ℤ,
       Function.Periodic f (imaginaryShift m))
@@ -51780,7 +51780,7 @@ theorem upperSemicontinuous_periodic_real_torusRepresentative
   rw [heq]
   exact hf
 
-theorem continuous_sourcePositiveJointTimePoint_fixed
+lemma continuous_sourcePositiveJointTimePoint_fixed
     {n : ℕ} (t : ℝ) (ht : 0 < t) :
     Continuous
       (fun z : LogSpace n => sourcePositiveJointTimePoint z t ht) := by
@@ -51788,7 +51788,7 @@ theorem continuous_sourcePositiveJointTimePoint_fixed
   apply Continuous.subtype_mk
   exact continuous_id.prodMk continuous_const
 
-theorem momentJointTailUpperEnvelope_timeSlice_periodic
+lemma momentJointTailUpperEnvelope_timeSlice_periodic
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -51820,7 +51820,7 @@ def momentTorusTailUpperEnvelopeTimeSlice
   momentJointTailUpperEnvelope K F htransport p r
     (sourcePositiveJointTimePoint (sourceTorusCoverPoint q) t ht)
 
-theorem upperSemicontinuous_momentTorusTailUpperEnvelopeTimeSlice
+lemma upperSemicontinuous_momentTorusTailUpperEnvelopeTimeSlice
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -51851,7 +51851,7 @@ open MomentFirstVariation MomentRegularity BergmanJetBasis MomentWeakGlobalKerne
 open BergmanJetPointwiseLogKernel
 open scoped BigOperators ENNReal NNReal Topology
 
-theorem monomial_pairing_sub_le_bodyRadius
+lemma monomial_pairing_sub_le_bodyRadius
     {n k : ℕ} (K : CenteredBody n)
     (u : monomialIndex K k)
     (x y : Space n) :
@@ -51876,7 +51876,7 @@ theorem monomial_pairing_sub_le_bodyRadius
     _ = ((n : ℝ) * bodyRadius K) * dist x y := by
       rw [dist_eq_norm]
 
-theorem moment_diagonalTerm_le_exp_bodyRadius_mul
+lemma moment_diagonalTerm_le_exp_bodyRadius_mul
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -51921,7 +51921,7 @@ theorem moment_diagonalTerm_le_exp_bodyRadius_mul
             (momentNormalizedPotential F)) := by
       ring
 
-theorem moment_diagonalKernel_le_exp_bodyRadius_mul
+lemma moment_diagonalKernel_le_exp_bodyRadius_mul
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -51940,7 +51940,7 @@ theorem moment_diagonalKernel_le_exp_bodyRadius_mul
     moment_diagonalTerm_le_exp_bodyRadius_mul
       K hk F htransport u x y
 
-theorem log_momentNormalized_diagonalKernel_div_sub_le_bodyRadius
+lemma log_momentNormalized_diagonalKernel_div_sub_le_bodyRadius
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -51986,7 +51986,7 @@ theorem log_momentNormalized_diagonalKernel_div_sub_le_bodyRadius
       field_simp
       ; ring
 
-theorem abs_log_momentNormalized_diagonalKernel_div_sub_le_bodyRadius
+lemma abs_log_momentNormalized_diagonalKernel_div_sub_le_bodyRadius
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -52010,7 +52010,7 @@ theorem abs_log_momentNormalized_diagonalKernel_div_sub_le_bodyRadius
       log_momentNormalized_diagonalKernel_div_sub_le_bodyRadius
         K hk F htransport x y
 
-theorem lipschitz_log_momentNormalized_diagonalKernel_div
+lemma lipschitz_log_momentNormalized_diagonalKernel_div
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -52030,7 +52030,7 @@ theorem lipschitz_log_momentNormalized_diagonalKernel_div
   simpa [Real.dist_eq, sourceBodyLipschitzConstant,
     Real.coe_toNNReal _ hnonneg] using h
 
-theorem dense_finiteEnergySourceInteriorDifferentiability
+lemma dense_finiteEnergySourceInteriorDifferentiability
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -52046,7 +52046,7 @@ theorem dense_finiteEnergySourceInteriorDifferentiability
   exact (ae_differentiableAt_finiteEnergySource F).and
     (ae_finiteEnergySourceGradient_mem_interior_volume F htransport)
 
-theorem tendsto_of_dense_eventually_equiLipschitz
+lemma tendsto_of_dense_eventually_equiLipschitz
     {X : Type*} [PseudoMetricSpace X]
     (f : ℕ → X → ℝ) (g : X → ℝ)
     (C : ℝ≥0)
@@ -52109,7 +52109,7 @@ theorem tendsto_of_dense_eventually_equiLipschitz
       _ < ε := by linarith
   exact Filter.eventually_atTop.mp hnear
 
-theorem finiteEnergySourceNormalized_actualGradient_phase_max
+lemma finiteEnergySourceNormalized_actualGradient_phase_max
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (x : Space n)
@@ -52129,7 +52129,7 @@ theorem finiteEnergySourceNormalized_actualGradient_phase_max
   simp only [momentNormalizedPotential]
   linarith
 
-theorem tendsto_log_momentNormalized_diagonalKernel_div_all
+lemma tendsto_log_momentNormalized_diagonalKernel_div_all
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -52174,7 +52174,7 @@ theorem tendsto_log_momentNormalized_diagonalKernel_div_all
     (lipschitz_momentNormalizedPotential F)
     hS hconv x
 
-theorem exists_open_eventual_uniform_of_equiLipschitz
+lemma exists_open_eventual_uniform_of_equiLipschitz
     {X : Type*} [PseudoMetricSpace X]
     (f : ℕ → X → ℝ) (g : X → ℝ)
     (C : ℝ≥0)
@@ -52238,7 +52238,7 @@ theorem exists_open_eventual_uniform_of_equiLipschitz
             (dist (f k y) (f k x)))
     _ < ε := by linarith
 
-theorem exists_open_eventual_log_momentNormalized_diagonalKernel_uniform_all
+lemma exists_open_eventual_log_momentNormalized_diagonalKernel_uniform_all
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -52271,7 +52271,7 @@ theorem exists_open_eventual_log_momentNormalized_diagonalKernel_uniform_all
     (tendsto_log_momentNormalized_diagonalKernel_div_all
       K F htransport x) hε
 
-theorem exists_open_eventual_log_momentNormalized_diagonalKernel_div_ge_sub_all
+lemma exists_open_eventual_log_momentNormalized_diagonalKernel_div_ge_sub_all
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -52329,7 +52329,7 @@ def momentTorusClampedTailPositiveSecant
   max 0 (momentTorusTailPositiveSecant
     K F htransport p r t ht q)
 
-theorem upperSemicontinuous_momentTorusTailPositiveSecant
+lemma upperSemicontinuous_momentTorusTailPositiveSecant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -52372,7 +52372,7 @@ theorem upperSemicontinuous_momentTorusTailPositiveSecant
   rw [hsecant] at h
   exact h
 
-theorem upperSemicontinuous_momentTorusClampedTailPositiveSecant
+lemma upperSemicontinuous_momentTorusClampedTailPositiveSecant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -52401,7 +52401,7 @@ theorem upperSemicontinuous_momentTorusClampedTailPositiveSecant
   rw [hclamp] at h
   exact h
 
-theorem momentTorusJetSlope_le_tail_zeroTimeSecant
+lemma momentTorusJetSlope_le_tail_zeroTimeSecant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -52472,7 +52472,7 @@ theorem momentTorusJetSlope_le_tail_zeroTimeSecant
       exact (div_le_div_iff_of_pos_right ht).mpr
         (sub_le_sub_right htime _)
 
-theorem eventual_open_momentTorusJetSlope_lt_clampedTailSecant
+lemma eventual_open_momentTorusJetSlope_lt_clampedTailSecant
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -52599,7 +52599,7 @@ def momentBodyClampedTailPositiveSecant
     (q : LogTorus n) : ℝ :=
   max 0 (momentBodyTailPositiveSecant K p r t ht q)
 
-theorem upperSemicontinuous_momentBodyTailPositiveSecant
+lemma upperSemicontinuous_momentBodyTailPositiveSecant
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (r : ℕ) (t : ℝ) (ht : 0 < t) :
     UpperSemicontinuous
@@ -52617,7 +52617,7 @@ theorem upperSemicontinuous_momentBodyTailPositiveSecant
   rw [hsecant] at h
   exact h
 
-theorem upperSemicontinuous_momentBodyClampedTailPositiveSecant
+lemma upperSemicontinuous_momentBodyClampedTailPositiveSecant
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (r : ℕ) (t : ℝ) (ht : 0 < t) :
     UpperSemicontinuous
@@ -52627,7 +52627,7 @@ theorem upperSemicontinuous_momentBodyClampedTailPositiveSecant
     (upperSemicontinuous_momentBodyTailPositiveSecant
       K p r t ht)
 
-theorem momentBodyTailPositiveSecant_le_scale_add_inv
+lemma momentBodyTailPositiveSecant_le_scale_add_inv
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (r : ℕ) (t : ℝ) (ht : 0 < t)
     (q : LogTorus n) :
@@ -52661,14 +52661,14 @@ theorem momentBodyTailPositiveSecant_le_scale_add_inv
     _ = BodyScale.canonicalScale K + 1 / t := by
       field_simp
 
-theorem momentBodyClampedTailPositiveSecant_nonneg
+lemma momentBodyClampedTailPositiveSecant_nonneg
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (r : ℕ) (t : ℝ) (ht : 0 < t)
     (q : LogTorus n) :
     0 ≤ momentBodyClampedTailPositiveSecant K p r t ht q :=
   le_max_left _ _
 
-theorem momentBodyClampedTailPositiveSecant_le_scale_add_inv
+lemma momentBodyClampedTailPositiveSecant_le_scale_add_inv
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (r : ℕ) (t : ℝ) (ht : 0 < t)
     (q : LogTorus n) :
@@ -52681,7 +52681,7 @@ theorem momentBodyClampedTailPositiveSecant_le_scale_add_inv
   · exact momentBodyTailPositiveSecant_le_scale_add_inv
       K p r t ht q
 
-theorem limsup_momentBodyMovingJetIntegral_le_clampedTail
+lemma limsup_momentBodyMovingJetIntegral_le_clampedTail
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (r : ℕ) (t : ℝ) (ht : 0 < t)
     (hweak : Tendsto (momentBodyMovingBergmanProbability K) atTop
@@ -52738,7 +52738,7 @@ theorem limsup_momentBodyMovingJetIntegral_le_clampedTail
       K p r t ht)
     hupper
 
-theorem momentBodyJetSlopeEventualOpenTailUpper_unconditional
+lemma momentBodyJetSlopeEventualOpenTailUpper_unconditional
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (r : ℕ) (t : ℝ) (ht : 0 < t) :
     ∀ (q : LogTorus n) (a : ℝ),
@@ -52766,7 +52766,7 @@ theorem momentBodyJetSlopeEventualOpenTailUpper_unconditional
   intro k hk y hy
   exact hfinite (k + 1) (by omega) y hy
 
-theorem limsup_momentBodyMovingJetIntegral_le_clampedTail_of_weak
+lemma limsup_momentBodyMovingJetIntegral_le_clampedTail_of_weak
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (r : ℕ) (t : ℝ) (ht : 0 < t)
     (hweak : Tendsto (momentBodyMovingBergmanProbability K) atTop
@@ -52787,7 +52787,7 @@ theorem limsup_momentBodyMovingJetIntegral_le_clampedTail_of_weak
       (momentBodyJetSlopeEventualOpenTailUpper_unconditional
         K p r t ht)
 
-theorem tendsto_momentBodyTailPositiveSecant
+lemma tendsto_momentBodyTailPositiveSecant
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (t : ℝ) (ht : 0 < t)
     (q : LogTorus n) :
@@ -52812,7 +52812,7 @@ theorem tendsto_momentBodyTailPositiveSecant
     momentEnvelopeTimeSlice, ht,
     realLogCoordinate_sourceTorusCoverPoint] using hsec
 
-theorem tendsto_momentBodyClampedTailPositiveSecant
+lemma tendsto_momentBodyClampedTailPositiveSecant
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (t : ℝ) (ht : 0 < t)
     (q : LogTorus n) :
@@ -52825,7 +52825,7 @@ theorem tendsto_momentBodyClampedTailPositiveSecant
     (tendsto_const_nhds (x := (0 : ℝ))).max
       (tendsto_momentBodyTailPositiveSecant K p t ht q)
 
-theorem tendsto_integral_momentBodyClampedTailPositiveSecant
+lemma tendsto_integral_momentBodyClampedTailPositiveSecant
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (t : ℝ) (ht : 0 < t) :
     Tendsto
@@ -52879,7 +52879,7 @@ theorem tendsto_integral_momentBodyClampedTailPositiveSecant
   rw [hEq] at hlim
   exact hlim
 
-theorem integrable_momentBodyMovingJetSlope
+lemma integrable_momentBodyMovingJetSlope
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (k : ℕ) :
     Integrable
@@ -52910,7 +52910,7 @@ theorem integrable_momentBodyMovingJetSlope
       K (momentBodyOptimizer K)
         (momentBodyOptimizer_transport K) p (k + 1) q
 
-theorem integral_momentBodyMovingJetSlope_le_canonicalScale
+lemma integral_momentBodyMovingJetSlope_le_canonicalScale
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (k : ℕ) :
     (∫ q : LogTorus n,
@@ -52934,7 +52934,7 @@ theorem integral_momentBodyMovingJetSlope_le_canonicalScale
         (momentBodyOptimizer_transport K) p (k + 1) q)
   simpa using h
 
-theorem limsup_momentBodyMovingJetIntegral_ge_sharp
+lemma limsup_momentBodyMovingJetIntegral_ge_sharp
     {n : ℕ} (hn : 0 < n) (K : CenteredBody n)
     (p : LogSpace n) :
     (n : ℝ) * BodyScale.canonicalScale K /
@@ -52981,7 +52981,7 @@ theorem limsup_momentBodyMovingJetIntegral_ge_sharp
     (Filter.isBoundedUnder_of_eventually_le hbounded)
   linarith
 
-theorem integral_momentBodyEnvelopePositiveSecant_ge_sharp_of_weak
+lemma integral_momentBodyEnvelopePositiveSecant_ge_sharp_of_weak
     {n : ℕ} (hn : 0 < n) (K : CenteredBody n)
     (p : LogSpace n)
     (hweak : Tendsto (momentBodyMovingBergmanProbability K) atTop
@@ -53000,7 +53000,7 @@ theorem integral_momentBodyEnvelopePositiveSecant_ge_sharp_of_weak
       (limsup_momentBodyMovingJetIntegral_le_clampedTail_of_weak
         K p r t ht hweak)
 
-theorem momentBodySharpJetScale_le_dimension_of_weakProbability
+lemma momentBodySharpJetScale_le_dimension_of_weakProbability
     {n : ℕ} (hn : 0 < n) (K : CenteredBody n)
     (hweak : Tendsto (momentBodyMovingBergmanProbability K) atTop
       (𝓝 (momentBodyZeroGibbsProbability K (0 : LogSpace n)))) :
@@ -53053,7 +53053,7 @@ theorem momentBodySharpJetScale_le_dimension_of_weakProbability
         integral_momentBodyEnvelopePositiveSecant_le_dimension_mul_exp
           K ht
 
-theorem normalizedVolume_le_sharpConstant_of_momentBodyWeakProbability
+lemma normalizedVolume_le_sharpConstant_of_momentBodyWeakProbability
     {n : ℕ} (hn : 0 < n) (K : CenteredBody n)
     (hweak : Tendsto (momentBodyMovingBergmanProbability K) atTop
       (𝓝 (momentBodyZeroGibbsProbability K (0 : LogSpace n)))) :
@@ -53077,7 +53077,7 @@ open BergmanMonomials BergmanNormalization LatticeAsymptotics MomentOptimizer Mo
 open MomentTargetGeodesic MomentRegularity MomentWeakBergman MomentWeakGlobalKernel
 open scoped BigOperators ENNReal Topology
 
-theorem normalizedMonomialDensity_momentNormalized_integrable
+lemma normalizedMonomialDensity_momentNormalized_integrable
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -53091,7 +53091,7 @@ theorem normalizedMonomialDensity_momentNormalized_integrable
     (integrable_monomialWeight_momentNormalized_of_mem_interior
       F htransport u.property.1 hkreal).div_const _
 
-theorem normalizedMonomialDensity_momentNormalized_pos
+lemma normalizedMonomialDensity_momentNormalized_pos
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -53106,7 +53106,7 @@ theorem normalizedMonomialDensity_momentNormalized_pos
   · exact monomialIntegral_momentNormalized_pos
       F htransport u.property.1 hkreal
 
-theorem integral_normalizedMonomialDensity_momentNormalized
+lemma integral_normalizedMonomialDensity_momentNormalized
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -53129,7 +53129,7 @@ theorem integral_normalizedMonomialDensity_momentNormalized
     (monomialIntegral_momentNormalized_pos
       F htransport u.property.1 hkreal).ne'
 
-theorem weightedDiagonalKernel_momentNormalized_integrable
+lemma weightedDiagonalKernel_momentNormalized_integrable
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -53144,7 +53144,7 @@ theorem weightedDiagonalKernel_momentNormalized_integrable
     (fun u _ => normalizedMonomialDensity_momentNormalized_integrable
       K hk F htransport u)
 
-theorem integral_weightedDiagonalKernel_momentNormalized
+lemma integral_weightedDiagonalKernel_momentNormalized
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -53164,7 +53164,7 @@ theorem integral_weightedDiagonalKernel_momentNormalized
     exact normalizedMonomialDensity_momentNormalized_integrable
       K hk F htransport u
 
-theorem normalizedDiagonalDensity_momentNormalized_integrable
+lemma normalizedDiagonalDensity_momentNormalized_integrable
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -53176,7 +53176,7 @@ theorem normalizedDiagonalDensity_momentNormalized_integrable
     (weightedDiagonalKernel_momentNormalized_integrable
       K hk F htransport).div_const _
 
-theorem normalizedDiagonalDensity_momentNormalized_pos
+lemma normalizedDiagonalDensity_momentNormalized_pos
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -53190,7 +53190,7 @@ theorem normalizedDiagonalDensity_momentNormalized_pos
       K hk F htransport x)
     (by exact_mod_cast bergmanDimension_pos K hk)
 
-theorem integral_normalizedDiagonalDensity_momentNormalized
+lemma integral_normalizedDiagonalDensity_momentNormalized
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -53206,7 +53206,7 @@ theorem integral_normalizedDiagonalDensity_momentNormalized
   apply div_self
   exact_mod_cast (bergmanDimension_pos K hk).ne'
 
-theorem normalizedBergmanMeasure_momentNormalized_univ
+lemma normalizedBergmanMeasure_momentNormalized_univ
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -53226,7 +53226,7 @@ theorem normalizedBergmanMeasure_momentNormalized_univ
       K hk F htransport]
   exact ENNReal.ofReal_one
 
-theorem normalizedBergmanMeasure_momentNormalized_isProbability
+lemma normalizedBergmanMeasure_momentNormalized_isProbability
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -53237,7 +53237,7 @@ theorem normalizedBergmanMeasure_momentNormalized_isProbability
   ⟨normalizedBergmanMeasure_momentNormalized_univ
     K hk F htransport⟩
 
-theorem momentNormalizedDensity_div_volume_eq_gibbsDensity
+lemma momentNormalizedDensity_div_volume_eq_gibbsDensity
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) (x : Space n) :
     Real.exp (-momentNormalizedPotential F x) /
@@ -53281,7 +53281,7 @@ def momentWeakTorusGibbsProbability {n : ℕ}
     (F : SourceFiniteEnergyPotential K) : Measure (LogTorus n) :=
   (finiteEnergySourceGibbsProbability F).prod (angularMeasure n)
 
-theorem momentTorusBergmanProbability_eq_base_withDensity
+lemma momentTorusBergmanProbability_eq_base_withDensity
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K) :
     momentTorusBergmanProbability K F k =
@@ -53325,7 +53325,7 @@ theorem momentTorusBergmanProbability_eq_base_withDensity
   congr 1
   ring
 
-theorem momentWeakTorusGibbsProbability_eq_base_withDensity
+lemma momentWeakTorusGibbsProbability_eq_base_withDensity
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     momentWeakTorusGibbsProbability F =
@@ -53344,7 +53344,7 @@ theorem momentWeakTorusGibbsProbability_eq_base_withDensity
     sourceTorusBaseMeasure momentWeakTorusGibbsDensity
   exact MeasureTheory.prod_withDensity_left hmeas
 
-theorem momentWeakTorusGibbsDensity_body_eq_zeroTime
+lemma momentWeakTorusGibbsDensity_body_eq_zeroTime
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) (q : LogTorus n) :
     momentWeakTorusGibbsDensity
@@ -53363,7 +53363,7 @@ theorem momentWeakTorusGibbsDensity_body_eq_zeroTime
   exact (momentNormalizedDensity_div_volume_eq_gibbsDensity
     (momentBodyOptimizer K) q.1).symm
 
-theorem momentWeakTorusGibbsProbability_body_eq_zeroTime
+lemma momentWeakTorusGibbsProbability_body_eq_zeroTime
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) :
     momentWeakTorusGibbsProbability
@@ -53409,7 +53409,7 @@ def momentNormalizedAngularHaarProbability (n : ℕ) :
     ProbabilityMeasure (AngularTorus n) :=
   ⟨angularMeasure n, angularMeasure_isProbability n⟩
 
-theorem momentTorusBergmanProbability_eq_normalizedRadial_prod_angular
+lemma momentTorusBergmanProbability_eq_normalizedRadial_prod_angular
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K) :
     momentTorusBergmanProbability K F k =
@@ -53439,7 +53439,7 @@ theorem momentTorusBergmanProbability_eq_normalizedRadial_prod_angular
           (angularMeasure n)
   exact (MeasureTheory.prod_withDensity_left hmeas).symm
 
-theorem integral_normalizedBergmanMeasure_momentNormalized
+lemma integral_normalizedBergmanMeasure_momentNormalized
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -53475,7 +53475,7 @@ theorem integral_normalizedBergmanMeasure_momentNormalized
       K hk F htransport x).le]
   simp [smul_eq_mul, mul_comm]
 
-theorem tendsto_momentMovingRadialBergmanProbability_of_tests
+lemma tendsto_momentMovingRadialBergmanProbability_of_tests
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -53520,7 +53520,7 @@ theorem tendsto_momentMovingRadialBergmanProbability_of_tests
   rw [hEq]
   exact htests f
 
-theorem momentBodyMovingBergmanProbability_eq_radial_prod_angular
+lemma momentBodyMovingBergmanProbability_eq_radial_prod_angular
     {n : ℕ} (K : CenteredBody n) (k : ℕ) :
     momentBodyMovingBergmanProbability K k =
       (momentMovingRadialBergmanProbability
@@ -53531,7 +53531,7 @@ theorem momentBodyMovingBergmanProbability_eq_radial_prod_angular
   exact momentTorusBergmanProbability_eq_normalizedRadial_prod_angular
     K (Nat.zero_lt_succ k) (momentBodyOptimizer K)
 
-theorem momentBodyZeroGibbsProbability_eq_radial_prod_angular
+lemma momentBodyZeroGibbsProbability_eq_radial_prod_angular
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) :
     momentBodyZeroGibbsProbability K p =
@@ -53546,7 +53546,7 @@ theorem momentBodyZeroGibbsProbability_eq_radial_prod_angular
   exact
     (momentWeakTorusGibbsProbability_body_eq_zeroTime K p).symm
 
-theorem momentBodyBergmanWeakProbabilityConvergence_of_radial
+lemma momentBodyBergmanWeakProbabilityConvergence_of_radial
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n)
     (hrad : Tendsto
@@ -53589,7 +53589,7 @@ theorem momentBodyBergmanWeakProbabilityConvergence_of_radial
     momentBodyZeroGibbsProbability_eq_radial_prod_angular]
   exact hproduct
 
-theorem momentBodyBergmanWeakProbabilityConvergence_of_radial_tests
+lemma momentBodyBergmanWeakProbabilityConvergence_of_radial_tests
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n)
     (htests : ∀ f : Space n →ᵇ ℝ,
@@ -53620,7 +53620,7 @@ open LaplaceAsymptotics MomentOptimizer MomentFirstVariation MomentTargetGeodesi
 open MomentInteriorLegendre
 open scoped ENNReal NNReal Topology
 
-theorem ae_differentiableAt_of_locallyLipschitzOn_open
+lemma ae_differentiableAt_of_locallyLipschitzOn_open
     {n : ℕ} {s : Set (Space n)}
     (hs : IsOpen s) {f : Space n → ℝ}
     (hf : LocallyLipschitzOn s f) :
@@ -53668,7 +53668,7 @@ theorem ae_differentiableAt_of_locallyLipschitzOn_open
     exact hx.differentiableAt ((huopen i).mem_nhds hxu)
   exact ae_imp_of_ae_restrict hae
 
-theorem ae_differentiableAt_finiteEnergySourceLegendre_interior
+lemma ae_differentiableAt_finiteEnergySourceLegendre_interior
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -53681,7 +53681,7 @@ theorem ae_differentiableAt_finiteEnergySourceLegendre_interior
     (locallyLipschitzOn_finiteEnergySourceLegendre_interior
       F htransport)
 
-theorem ae_differentiableAt_finiteEnergySourceLegendre_interior_restrict
+lemma ae_differentiableAt_finiteEnergySourceLegendre_interior_restrict
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -53694,7 +53694,7 @@ theorem ae_differentiableAt_finiteEnergySourceLegendre_interior_restrict
     (ae_differentiableAt_finiteEnergySourceLegendre_interior
       F htransport)
 
-theorem ae_differentiableAt_finiteEnergySourceLegendre_target
+lemma ae_differentiableAt_finiteEnergySourceLegendre_target
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -53716,7 +53716,7 @@ open SupportFunction LaplaceAsymptotics MomentOptimizer MomentFirstVariation Mom
 open MomentRegularity MomentInteriorLegendre
 open scoped BigOperators ENNReal NNReal Topology
 
-theorem finiteEnergySourceLegendre_gradient_eq_phaseMaximizer
+lemma finiteEnergySourceLegendre_gradient_eq_phaseMaximizer
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -53798,7 +53798,7 @@ theorem finiteEnergySourceLegendre_gradient_eq_phaseMaximizer
     linarith
   simpa [v, pairing, Pi.single_apply] using hcoordinate
 
-theorem momentNormalized_phaseMaximizer_iff
+lemma momentNormalized_phaseMaximizer_iff
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (u x : Space n) :
@@ -53825,7 +53825,7 @@ open MomentTargetGeodesic MomentRegularity MomentWeakBergman BergmanJetPhaseLapl
 open BergmanJetDualPhaseConcentration
 open scoped BigOperators ENNReal NNReal Topology
 
-theorem momentNormalized_off_phase_setIntegral_le_exp_mul_base
+lemma momentNormalized_off_phase_setIntegral_le_exp_mul_base
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -53884,7 +53884,7 @@ theorem momentNormalized_off_phase_setIntegral_le_exp_mul_base
       rw [integral_const_mul]
       rfl
 
-theorem exists_momentNormalized_phase_gap_outside_ball
+lemma exists_momentNormalized_phase_gap_outside_ball
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -53995,7 +53995,7 @@ open SupportFunction LaplaceAsymptotics MomentOptimizer MomentFirstVariation Mom
 open MomentRegularity MomentWeakBergman BergmanJetMovingPhaseConcentration
 open scoped BigOperators ENNReal NNReal Topology
 
-theorem concaveOn_momentNormalized_phase
+lemma concaveOn_momentNormalized_phase
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (u : Space n) :
@@ -54015,7 +54015,7 @@ theorem concaveOn_momentNormalized_phase
   rw [← hphase]
   exact hlinear.sub (convexOn_momentNormalizedPotential F)
 
-theorem concave_radial_gap_of_off_ball
+lemma concave_radial_gap_of_off_ball
     {n : ℕ} {f : Space n → ℝ}
     (hconc : ConcaveOn ℝ Set.univ f)
     (x₀ : Space n)
@@ -54072,7 +54072,7 @@ theorem concave_radial_gap_of_off_ball
     div_mul_cancel₀ η hr.ne'
   nlinarith
 
-theorem exists_eventual_momentNormalized_moving_phase_gap_outside_ball
+lemma exists_eventual_momentNormalized_moving_phase_gap_outside_ball
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -54152,7 +54152,7 @@ open SupportFunction LaplaceAsymptotics MonomialIntegrability MomentOptimizer Mo
 open MomentTargetGeodesic MomentRegularity MomentWeakBergman
 open scoped BigOperators ENNReal NNReal Topology
 
-theorem exists_eventual_momentNormalized_moving_ball_volume_exp_le_monomialIntegral
+lemma exists_eventual_momentNormalized_moving_ball_volume_exp_le_monomialIntegral
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -54284,7 +54284,7 @@ open BergmanJetMovingPhaseConcentration BergmanJetMovingMonomialConcentration
 open BergmanJetMovingMonomialProbability
 open scoped BigOperators ENNReal NNReal Topology
 
-theorem exists_eventual_momentNormalized_moving_off_ball_exponential
+lemma exists_eventual_momentNormalized_moving_off_ball_exponential
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -54414,7 +54414,7 @@ theorem exists_eventual_momentNormalized_moving_off_ball_exponential
       linarith
     _ = A * Real.exp (-((k : ℝ) * (η / 2))) := rfl
 
-theorem tendsto_momentNormalized_moving_off_ball_probability
+lemma tendsto_momentNormalized_moving_off_ball_probability
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -54477,7 +54477,7 @@ open LaplaceAsymptotics MonomialIntegrability MomentOptimizer MomentFirstVariati
 open MomentTargetGeodesic MomentRegularity MomentWeakBergman BergmanJetMovingMonomialTailConvergence
 open scoped BigOperators ENNReal NNReal Topology
 
-theorem tendsto_integral_bounded_continuous_of_concentrating_normalized_density
+lemma tendsto_integral_bounded_continuous_of_concentrating_normalized_density
     {n : ℕ}
     (w : ℕ → Space n → ℝ)
     (hw : ∀ᶠ k : ℕ in atTop,
@@ -54655,7 +54655,7 @@ theorem tendsto_integral_bounded_continuous_of_concentrating_normalized_density
       nlinarith
     _ < ε := by linarith
 
-theorem tendsto_momentNormalized_moving_monomial_bounded_observable
+lemma tendsto_momentNormalized_moving_monomial_bounded_observable
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -54751,7 +54751,7 @@ def triangularUnitLatticeStep {n : ℕ}
         s.indicator (G (k + 1))
           ((BoxIntegral.unitPartition.prepartition (k + 1) B).tag J)) x
 
-theorem triangularUnitLatticeStep_integrable {n : ℕ}
+lemma triangularUnitLatticeStep_integrable {n : ℕ}
     (B : BoxIntegral.Box (Fin n))
     (s : Set (Space n))
     (G : ℕ → Space n → ℝ)
@@ -54770,7 +54770,7 @@ theorem triangularUnitLatticeStep_integrable {n : ℕ}
       (volume : Measure (Space n))).ne).integrable_indicator
     J.measurableSet_coe
 
-theorem integral_triangularUnitLatticeStep_eq_integralSum {n : ℕ}
+lemma integral_triangularUnitLatticeStep_eq_integralSum {n : ℕ}
     (B : BoxIntegral.Box (Fin n))
     (s : Set (Space n))
     (G : ℕ → Space n → ℝ)
@@ -54798,7 +54798,7 @@ theorem integral_triangularUnitLatticeStep_eq_integralSum {n : ℕ}
         (volume : Measure (Space n))).ne).integrable_indicator
       J.measurableSet_coe
 
-theorem integral_triangularUnitLatticeStep_eq_lattice_sum {n : ℕ}
+lemma integral_triangularUnitLatticeStep_eq_lattice_sum {n : ℕ}
     (B : BoxIntegral.Box (Fin n))
     (hB : BoxIntegral.hasIntegralVertices B)
     (s : Set (Space n))
@@ -54814,7 +54814,7 @@ theorem integral_triangularUnitLatticeStep_eq_lattice_sum {n : ℕ}
     (BoxIntegral.unitPartition.integralSum_eq_tsum_div
       (n := k + 1) s (G (k + 1)) hB hs)
 
-theorem tendsto_unitPartition_tag_index {n : ℕ}
+lemma tendsto_unitPartition_tag_index {n : ℕ}
     (x : Space n) :
     Tendsto (fun k : ℕ =>
       BoxIntegral.unitPartition.tag (k + 1)
@@ -54852,7 +54852,7 @@ theorem tendsto_unitPartition_tag_index {n : ℕ}
     _ ≤ 1 / ((k + 1 : ℕ) : ℝ) := hd
     _ ≤ 1 / (k : ℝ) := one_div_le_one_div_of_le hkr hcast
 
-theorem triangularUnitLatticeStep_eq_tag_of_mem {n : ℕ}
+lemma triangularUnitLatticeStep_eq_tag_of_mem {n : ℕ}
     (B : BoxIntegral.Box (Fin n))
     (hB : BoxIntegral.hasIntegralVertices B)
     (s : Set (Space n))
@@ -54889,7 +54889,7 @@ theorem triangularUnitLatticeStep_eq_tag_of_mem {n : ℕ}
   · intro hnot
     exact (hnot hJ).elim
 
-theorem triangularUnitLatticeStep_eq_zero_of_not_mem {n : ℕ}
+lemma triangularUnitLatticeStep_eq_zero_of_not_mem {n : ℕ}
     (B : BoxIntegral.Box (Fin n))
     (s : Set (Space n))
     (G : ℕ → Space n → ℝ)
@@ -54906,7 +54906,7 @@ theorem triangularUnitLatticeStep_eq_zero_of_not_mem {n : ℕ}
   exact ((BoxIntegral.unitPartition.prepartition (k + 1) B)
     |>.toPrepartition.le_of_mem hJ) hxJ
 
-theorem tendsto_moving_lattice_sum_of_ae_tag_convergence {n : ℕ}
+lemma tendsto_moving_lattice_sum_of_ae_tag_convergence {n : ℕ}
     (B : BoxIntegral.Box (Fin n))
     (hB : BoxIntegral.hasIntegralVertices B)
     (s : Set (Space n))
@@ -55006,7 +55006,7 @@ open MomentTargetGeodesic MomentRegularity BergmanJetDualGradientConcentration
 open BergmanJetDualPhaseConcentration
 open scoped ENNReal NNReal Topology
 
-theorem measurable_finiteEnergySourceLegendreGradient
+lemma measurable_finiteEnergySourceLegendreGradient
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K) :
     Measurable
@@ -55018,7 +55018,7 @@ theorem measurable_finiteEnergySourceLegendreGradient
     (legendreTransform F.potential)
     (Pi.single i (1 : ℝ))
 
-theorem ae_finiteEnergySourceLegendreGradient_left_inverse_gibbs
+lemma ae_finiteEnergySourceLegendreGradient_left_inverse_gibbs
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -55061,7 +55061,7 @@ theorem ae_finiteEnergySourceLegendreGradient_left_inverse_gibbs
     F htransport hinterior hdx x
       (fun z => finiteEnergySourcePhase_actualGradient_le F x hx z)
 
-theorem finiteEnergySourceLegendreGradient_pushforward_target
+lemma finiteEnergySourceLegendreGradient_pushforward_target
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -55107,7 +55107,7 @@ theorem finiteEnergySourceLegendreGradient_pushforward_target
       Measure.map_congr hleft
     _ = finiteEnergySourceGibbsProbability F := Measure.map_id'
 
-theorem integral_finiteEnergySourceLegendreGradient_target
+lemma integral_finiteEnergySourceLegendreGradient_target
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -55148,7 +55148,7 @@ open LaplaceAsymptotics MomentOptimizer MomentFirstVariation MomentTargetGeodesi
 open BergmanJetPhaseLaplace BergmanJetDualPhaseConcentration
 open scoped ENNReal NNReal Topology
 
-theorem momentNormalizedPhase_dualGradient_maximizer
+lemma momentNormalizedPhase_dualGradient_maximizer
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -55192,7 +55192,7 @@ def momentNormalizedLaurentObservable
     monomialIntegral (k : ℝ) u
       (momentNormalizedPotential F)
 
-theorem momentNormalizedLaurentObservable_eq_integral_normalizedMonomialDensity
+lemma momentNormalizedLaurentObservable_eq_integral_normalizedMonomialDensity
     {n k : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (f : Space n → ℝ)
@@ -55208,7 +55208,7 @@ theorem momentNormalizedLaurentObservable_eq_integral_normalizedMonomialDensity
   simp_rw [← mul_div_assoc]
   rw [MeasureTheory.integral_div]
 
-theorem abs_momentNormalizedLaurentObservable_le
+lemma abs_momentNormalizedLaurentObservable_le
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -55266,7 +55266,7 @@ theorem abs_momentNormalizedLaurentObservable_le
         K hk F htransport u]
       ring
 
-theorem integral_momentNormalizedDiagonal_eq_laurentObservable_average
+lemma integral_momentNormalizedDiagonal_eq_laurentObservable_average
     {n k : ℕ} (K : CenteredBody n) (hk : 0 < k)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -55351,7 +55351,7 @@ def upperTaggedLatticeExponent {n : ℕ}
     (k : ℕ) (u : Space n) : Space n :=
   fun i => (⌈(k : ℝ) * u i⌉ : ℝ) / (k : ℝ)
 
-theorem upperTaggedLatticeExponent_eq_unitPartition_tag
+lemma upperTaggedLatticeExponent_eq_unitPartition_tag
     {n k : ℕ} [NeZero k]
     (u : Space n) :
     upperTaggedLatticeExponent k u =
@@ -55362,7 +55362,7 @@ theorem upperTaggedLatticeExponent_eq_unitPartition_tag
     BoxIntegral.unitPartition.tag,
     BoxIntegral.unitPartition.index]
 
-theorem tendsto_upperTaggedLatticeExponent
+lemma tendsto_upperTaggedLatticeExponent
     {n : ℕ} (u : Space n) :
     Tendsto (fun k : ℕ => upperTaggedLatticeExponent k u)
       atTop (𝓝 u) := by
@@ -55384,7 +55384,7 @@ def momentTaggedLaurentObservable
       else 0
     else 0
 
-theorem unitPartition_tag_index_mem_scaledIntegerLattice
+lemma unitPartition_tag_index_mem_scaledIntegerLattice
     {n : ℕ} (k : ℕ) (u : Space n) :
     BoxIntegral.unitPartition.tag (k + 1)
         (BoxIntegral.unitPartition.index (k + 1) u) ∈
@@ -55394,7 +55394,7 @@ theorem unitPartition_tag_index_mem_scaledIntegerLattice
     (n := k + 1)
     (BoxIntegral.unitPartition.index (k + 1) u)
 
-theorem norm_momentTaggedLaurentObservable_le_of_mem_interior
+lemma norm_momentTaggedLaurentObservable_le_of_mem_interior
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -55418,7 +55418,7 @@ theorem norm_momentTaggedLaurentObservable_le_of_mem_interior
   · simpa using hCnonneg
   · simpa using hCnonneg
 
-theorem tendsto_momentTaggedLaurentObservable_unitPartition_tag
+lemma tendsto_momentTaggedLaurentObservable_unitPartition_tag
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -55467,7 +55467,7 @@ theorem tendsto_momentTaggedLaurentObservable_unitPartition_tag
     upperTaggedLatticeExponent_eq_unitPartition_tag,
     htag] using hshift
 
-theorem ae_tendsto_momentTaggedLaurentObservable_interior_unitPartition_tag
+lemma ae_tendsto_momentTaggedLaurentObservable_interior_unitPartition_tag
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -55549,7 +55549,7 @@ open BergmanJetUpperTaggedMonomialObservableConvergence BergmanJetPortmanteauAct
 open BergmanJetRadialHaarWeakProbabilityLift
 open scoped BigOperators ENNReal NNReal Topology BoundedContinuousFunction
 
-theorem interior_dualGradient_average_eq_sourceGibbs
+lemma interior_dualGradient_average_eq_sourceGibbs
     {n : ℕ} {K : CenteredBody n}
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -55594,7 +55594,7 @@ theorem interior_dualGradient_average_eq_sourceGibbs
       integral_finiteEnergySourceLegendreGradient_target
         F htransport f hf
 
-theorem momentNormalizedDiagonalRadialWeakTests_unconditional
+lemma momentNormalizedDiagonalRadialWeakTests_unconditional
     {n : ℕ} (K : CenteredBody n)
     (F : SourceFiniteEnergyPotential K)
     (htransport : finiteEnergySourceGradientPushforward F =
@@ -55720,7 +55720,7 @@ theorem momentNormalizedDiagonalRadialWeakTests_unconditional
   rw [← hdiagonal] at haverage
   exact haverage
 
-theorem momentBodyBergmanWeakProbabilityConvergence_unconditional
+lemma momentBodyBergmanWeakProbabilityConvergence_unconditional
     {n : ℕ} (K : CenteredBody n)
     (p : LogSpace n) :
     Tendsto (momentBodyMovingBergmanProbability K) atTop
