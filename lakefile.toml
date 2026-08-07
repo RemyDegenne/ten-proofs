@@ -2,11 +2,15 @@ name = "ten-proofs"
 version = "0.1.0"
 keywords = ["math"]
 defaultTargets = [
+  "CompactnessAndDegeneracy",
   "MulticolorTriangleRamsey",
+  "QuantumParallelRepetition",
   "SpherePacking",
   "MetricCodes",
   "ConnesRigidity",
   "NonSoficGroup",
+  "GapCVP",
+  "EhrhartVolumeInequality",
   "Permanent",
   "ComparatorChallenges",
 ]
@@ -22,10 +26,16 @@ git = "https://github.com/leanprover/comparator.git"
 rev = "v4.33.0-rc1"
 
 [[lean_lib]]
+name = "CompactnessAndDegeneracy"
+
+[[lean_lib]]
 name = "All"
 
 [[lean_lib]]
 name = "MulticolorTriangleRamsey"
+
+[[lean_lib]]
+name = "QuantumParallelRepetition"
 
 [[lean_lib]]
 name = "SpherePacking"
@@ -40,6 +50,12 @@ name = "ConnesRigidity"
 name = "NonSoficGroup"
 
 [[lean_lib]]
+name = "GapCVP"
+
+[[lean_lib]]
+name = "EhrhartVolumeInequality"
+
+[[lean_lib]]
 name = "ComparatorChallenges"
 roots = [
   "ComparatorChallenges.A_SpherePacking",
@@ -48,7 +64,12 @@ roots = [
   "ComparatorChallenges.C_PermanentFormulaLowerBound",
   "ComparatorChallenges.D_NonSoficGroup",
   "ComparatorChallenges.E_ConnesRigidity",
+  "ComparatorChallenges.F_EhrhartVolumeInequality",
+  "ComparatorChallenges.G_QuantumParallelRepetition",
+  "ComparatorChallenges.H_GapCVP",
   "ComparatorChallenges.I_MulticolorTriangleRamsey",
+  "ComparatorChallenges.J_CompactnessConjecture",
+  "ComparatorChallenges.J_TwoDegenerateGraphs",
 ]
 
 [[lean_lib]]

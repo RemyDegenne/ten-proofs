@@ -8,10 +8,6 @@ This repository contains Lean 4 formalizations of the results presented in
 
 ## The results
 
-Six of the paper's ten results are formalized here. The other four were removed
-because building and rendering all ten did not fit in a CI job; they are still
-listed below, unlinked, so the numbering matches the paper.
-
 1. **High-dimensional sphere packing:** Improved asymptotic upper bounds on
    sphere-packing density, reaching the Cohn–Elkies threshold.
    ([`SpherePacking.lean`](SpherePacking.lean))
@@ -29,25 +25,27 @@ listed below, unlinked, so the numbering matches the paper.
    $n^4 / \log n$ formula lower bound.
    ([`Permanent.lean`](Permanent.lean))
 6. **Quantum parallel repetition:** Exponential parallel repetition for
-   arbitrary finite, two-player quantum games. *(not in this repository)*
+   arbitrary finite, two-player quantum games.
+   ([`QuantumParallelRepetition.lean`](QuantumParallelRepetition.lean))
 7. **Closest vector problem:** Polynomial-factor hardness of approximation for
    the closest vector problem, with related consequences for decoding and
-   lattice problems. *(not in this repository)*
+   lattice problems. ([`GapCVP.lean`](GapCVP.lean))
 8. **Ehrhart’s volume conjecture:** The sharp maximum volume in every dimension
    for a convex body whose centroid is its only interior lattice point.
-   *(not in this repository)*
+   ([`EhrhartVolumeInequality.lean`](EhrhartVolumeInequality.lean))
 9. **Multicolor Ramsey numbers:** A superexponential lower bound for multicolor
    triangle Ramsey numbers, resolving Erdős problem 183.
    ([`MulticolorTriangleRamsey.lean`](MulticolorTriangleRamsey.lean))
 10. **Extremal number conjectures:** Counterexamples to the compactness and
     degeneracy conjectures in extremal graph theory, resolving Erdős problems
-    146 and 180. *(not in this repository)*
+    146 and 180.
+    ([`CompactnessAndDegeneracy.lean`](CompactnessAndDegeneracy.lean))
 
 ## Building the formalizations
 
 The project uses Lean 4.33.0-rc1, mathlib, and Lake. With
 [elan](https://github.com/leanprover/elan) installed, fetch the mathlib cache
-and build every formalization with:
+and build all ten formalizations with:
 
 ```sh
 lake exe cache get

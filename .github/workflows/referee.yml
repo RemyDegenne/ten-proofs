@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true  # Cancel any ongoing runs in the same group
 
 # Read-only by default. Each job below widens this to exactly what it needs, which is why only
-# `deploy` can push the ledgers or touch Pages: the six `site` jobs run the untrusted-shaped work
+# `deploy` can push the ledgers or touch Pages: the ten `site` jobs run the untrusted-shaped work
 # (importing the project, rendering) and never hold a token that can write anything.
 permissions:
   contents: read
@@ -45,16 +45,23 @@ env:
   # `All` as a prefix), and an empty `--root` matches every module in the environment, Mathlib
   # included. One root per result is the only value that selects what it names.
   #
-  # Six of the paper's ten: the four largest results were removed from the repository because
-  # building and rendering all ten did not fit in a CI job. Keep this list and `defaultTargets` in
-  # `lakefile.toml` in step — a root named here that no longer has a module fails `collect`.
+  # All ten of the paper's results. Four of them were removed for a while, when every result was
+  # rendered in one job and the whole thing did not fit; they are back because that job became ten,
+  # and because the site each one produces is no longer quadratic in its declaration count.
+  #
+  # Keep this list and `defaultTargets` in `lakefile.toml` in step — a root named here that no
+  # longer has a module fails `collect`.
   REFEREE_SITES: |
     SpherePacking|High-dimensional sphere packing
     MetricCodes|Binary and spherical codes
     NonSoficGroup|Non-sofic groups
     ConnesRigidity|Connes's rigidity conjecture
     Permanent|Arithmetic circuit complexity
+    QuantumParallelRepetition|Quantum parallel repetition
+    GapCVP|Closest vector problem
+    EhrhartVolumeInequality|Ehrhart's volume conjecture
     MulticolorTriangleRamsey|Multicolor Ramsey numbers
+    CompactnessAndDegeneracy|Extremal number conjectures
 
   # Excluded from every phase that imports the project. Repeatable, so this is passed unquoted and
   # split into arguments.
@@ -79,14 +86,14 @@ env:
   # The provenance ledgers, kept in *this* repository rather than as artifacts: they are append-only
   # and their whole value is that they remember years of history, which a 90-day artifact cannot.
   #
-  # One ledger per root, not one shared by all six. `provenance` is idempotent per commit — it
-  # returns early when the ledger's newest revision already has this sha — so six folds at one
-  # commit into one file would keep the first and silently drop five. A ledger also records the root
+  # One ledger per root, not one shared by all ten. `provenance` is idempotent per commit — it
+  # returns early when the ledger's newest revision already has this sha — so ten folds at one
+  # commit into one file would keep the first and silently drop nine. A ledger also records the root
   # prefix it belongs to, so per-root is the shape the format expects.
   #
   # They live on a branch of their own. A branch of its own is immune to any branch protection later
-  # added to `main`, which would otherwise leave GITHUB_TOKEN unable to push at all. The six `site`
-  # jobs each *fold* their own ledger and hand it on as an artifact; only `deploy` pushes, so six
+  # added to `main`, which would otherwise leave GITHUB_TOKEN unable to push at all. The ten `site`
+  # jobs each *fold* their own ledger and hand it on as an artifact; only `deploy` pushes, so ten
   # concurrent jobs cannot race each other for the branch tip.
   REFEREE_LEDGER_BRANCH: referee-ledger
   REFEREE_LEDGER_DIR: /tmp/referee-ledger
@@ -100,7 +107,7 @@ env:
 jobs:
   # Builds the project once and hashes it once. Everything after this restores rather than rebuilds:
   # `lean-action` saves `.lake` to the Actions cache under a key that includes this commit's sha, so
-  # the six `site` jobs get an exact-key hit and are ready to import the project in about a minute.
+  # the ten `site` jobs get an exact-key hit and are ready to import the project in about a minute.
   #
   # On a pull request this is the whole workflow — the jobs below are push-only.
   build:
@@ -110,7 +117,7 @@ jobs:
       sites: ${{ steps.sites.outputs.json }}
     steps:
       # Not optional here: this project's libraries are very large — hundreds of thousands of lines
-      # across six modules — and they do not fit on a stock runner alongside Mathlib's oleans.
+      # across ten modules — and they do not fit on a stock runner alongside Mathlib's oleans.
       - name: Cleanup to free disk space
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.0
         with:
@@ -150,9 +157,9 @@ jobs:
           echo "json=$json" >> "$GITHUB_OUTPUT"
           echo "$json" | python3 -m json.tool
 
-      # Once for all six roots, not once per root: `--imports` takes a list, the exporter hashes the
+      # Once for all ten roots, not once per root: `--imports` takes a list, the exporter hashes the
       # whole upstream cone it loads, and each `collect` keeps only its own exposed declarations'
-      # entries. Six exports would each re-import the project for the same result.
+      # entries. Ten exports would each re-import the project for the same result.
       #
       # Built here rather than taken as a Lake dependency, for the same reason referee is downloaded
       # rather than built: it loads this project's environment and refuses to run unless its own
@@ -190,9 +197,9 @@ jobs:
           path: ${{ env.REFEREE_HASHES }}
           retention-days: 7
 
-  # One job per result, all six at once. Each imports the project (restored from the cache `build`
+  # One job per result, all ten at once. Each imports the project (restored from the cache `build`
   # saved), collects its own root, folds its own ledger and renders its own site. Wall-clock is the
-  # slowest single result rather than the sum of all six.
+  # slowest single result rather than the sum of all ten.
   #
   # `fail-fast: false` because the results are independent: one root failing to render is a reason
   # to look at that root, not to throw away five finished sites.
@@ -286,7 +293,7 @@ jobs:
       # shallow boundary behind, and `git blame` over the whole history is the other half of what
       # `provenance` does a step later.
       #
-      # Read-only — the push is `deploy`'s, once, for all six. A missing branch is the ordinary
+      # Read-only — the push is `deploy`'s, once, for all ten. A missing branch is the ordinary
       # first run and not an error.
       - name: Fetch this result's provenance ledger
         env:
@@ -421,7 +428,7 @@ jobs:
           path: ${{ env.REFEREE_DATA_DIR }}/provenance-${{ matrix.site.root }}.json
           retention-days: 7
 
-  # Everything that writes: the ledger branch, the baseline artifact and Pages. One job, so the six
+  # Everything that writes: the ledger branch, the baseline artifact and Pages. One job, so the ten
   # folds above become one commit and there is no branch tip for concurrent jobs to race for.
   #
   # No `needs.site.result` guard: with `fail-fast: false` a single failed root should still publish
@@ -460,7 +467,7 @@ jobs:
 
       # The ledgers are only worth keeping if they survive the run that wrote them. Pushed with
       # GITHUB_TOKEN, which by design does not trigger another workflow run, so this cannot loop
-      # back into itself. All six go in one commit: they describe one revision of one repository.
+      # back into itself. All ten go in one commit: they describe one revision of one repository.
       - name: Publish the provenance ledgers
         env:
           LEDGER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -522,9 +529,38 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p home_page
-          # Counted rather than written out, so that the page stays truthful about how much of the
-          # paper this repository formalizes as results are added back or removed.
-          count=$(echo "$REFEREE_SITES" | grep -c '|')
+
+          # The index is built from what actually arrived, not from what was asked for. With
+          # `fail-fast: false` a single root can die on its own — `GapCVP` is close enough to the
+          # runner's memory ceiling that this is a question of when, not whether — and losing nine
+          # finished sites to the tenth is a worse outcome than publishing nine and saying so.
+          # Linking a directory that was never uploaded would be worse still, so a root that did not
+          # arrive is dropped from the list rather than linked into a 404.
+          present=""
+          missing=""
+          while IFS='|' read -r root title; do
+            [ -n "$root" ] || continue
+            slug=$(echo "$root" | tr '[:upper:]' '[:lower:]')
+            if [ -d "/tmp/referee-sites/site-$slug" ]; then
+              present="$present$root|$title"$'\n'
+              mkdir -p "home_page/$slug"
+              cp -r "/tmp/referee-sites/site-$slug/." "home_page/$slug/"
+            else
+              missing="$missing $root"
+            fi
+          done <<< "$REFEREE_SITES"
+          if [ -n "$missing" ]; then
+            echo "::warning::no site artifact for:$missing — those jobs failed, and the index is \
+              being built without them. The other results still deploy; check those jobs."
+          fi
+          if [ -z "$present" ]; then
+            echo "::error::no site artifact arrived at all; nothing to deploy."
+            exit 1
+          fi
+
+          # Counted from what is being published, so the page stays truthful about how much of the
+          # paper a reader can actually reach from it.
+          count=$(printf '%s' "$present" | grep -c '|')
           {
             echo '<!doctype html><html lang="en"><head><meta charset="utf-8">'
             echo '<meta name="viewport" content="width=device-width, initial-scale=1">'
@@ -544,30 +580,11 @@ jobs:
               [ -n "$root" ] || continue
               slug=$(echo "$root" | tr '[:upper:]' '[:lower:]')
               echo "<li><a href=\"$slug/\">$title</a> <code>$root</code></li>"
-            done <<< "$REFEREE_SITES"
+            done <<< "$present"
             echo '</ol>'
             echo "<p><a href=\"https://github.com/$GITHUB_REPOSITORY\">Source repository</a></p>"
             echo '</body></html>'
           } > home_page/index.html
-
-          # Checked rather than assumed: with `fail-fast: false` a root can fail on its own, and
-          # linking to a directory that was never uploaded is a broken site published silently.
-          missing=""
-          while IFS='|' read -r root _title; do
-            [ -n "$root" ] || continue
-            slug=$(echo "$root" | tr '[:upper:]' '[:lower:]')
-            if [ -d "/tmp/referee-sites/site-$slug" ]; then
-              mkdir -p "home_page/$slug"
-              cp -r "/tmp/referee-sites/site-$slug/." "home_page/$slug/"
-            else
-              missing="$missing $root"
-            fi
-          done <<< "$REFEREE_SITES"
-          if [ -n "$missing" ]; then
-            echo "::error::no site artifact for:$missing. The index links every result, so this \
-              would deploy a page with dead links; check those jobs before re-running."
-            exit 1
-          fi
           du -sh home_page
 
       - name: Upload website
